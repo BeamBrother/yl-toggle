@@ -1,0 +1,48 @@
+[package]
+name = "socketio-rs"
+version = "0.1.8"
+edition = "2021"
+description = "An implementation of a socketio written in rust."
+repository = "https://github.com/socket-iox/socket-io"
+keywords = ["socketio", "engineio", "network", "protocol"]
+categories = [
+  "network-programming",
+  "web-programming",
+  "web-programming::websocket",
+  "web-programming::socketio",
+]
+license = "MIT"
+
+[features]
+default = ["server", "client"]
+server = ["engineio-rs/server"]
+client = ["engineio-rs/client"]
+
+[dependencies]
+async-stream = "0.3"
+backoff = "0.4"
+base64 = "0.13"
+bytes = "1"
+dashmap = "5"
+engineio-rs = { version = "0.1.5", path = "../engineio", default-features = false }
+futures-util = { version = "0.3", default-features = false, features = [
+  "sink",
+] }
+parking_lot = "0.12"
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "1.0"
+tokio = "1.16"
+tokio-util = "0.7"
+tracing = "0.1"
+url = "2.2"
+regex = "1.6"
+
+[dev-dependencies]
+tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
+
+[dev-dependencies.tokio]
+# we need the `#[tokio::test]` macro
+features = ["macros"]
+
+[lib]

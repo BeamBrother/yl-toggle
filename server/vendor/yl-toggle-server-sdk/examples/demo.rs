@@ -1,0 +1,42 @@
+use yl_toggle_server_sdk::{YTConfig, YTError, YTUser, YlToggle};
+use std::time::Duration;
+use url::Url;
+
+// Connect to demo docker environment.
+// cargo run --example demo
+
+#[tokio::main]
+async fn main() -> Result<(), YTError> {
+    tracing_subscriber::fmt::init();
+    // let remote_url = Url::parse("http://localhost:4009/server").unwrap(); // for local docker
+    let remote_url = Url::parse("https://yl-toggle.io/server").expect("invalid url");
+    // Replace Server SDK key in your Project List Page.
+    let server_sdk_key = "server-7fa2f771259cb7235b96433d70b91e99abcf6ff8".to_owned();
+    let refresh_interval = Duration::from_secs(20);
+
+    let config = YTConfig {
+        remote_url,
+        server_sdk_key,
+        refresh_interval,
+        start_wait: Some(Duration::from_secs(5)),
+        ..Default::default()
+    };
+
+    let fp = YlToggle::new(config);
+    if !fp.initialized() {
+        println!("YlToggle failed to initialize, will return default value");
+    }
+
+    let mut user = YTUser::new();
+    user = user.with("userId", "00001");
+    let toggle_key = "campaign_allow_list";
+    let enable = fp.bool_value(toggle_key, &user, false);
+    println!("Result =>  : {:?}", enable);
+
+    let detail = fp.bool_detail(toggle_key, &user, false);
+    println!("       => reason : {:?}", detail.reason);
+    println!("       => rule index  : {:?}", detail.rule_index);
+
+    fp.close();
+    Ok(())
+}

@@ -1,0 +1,23 @@
+# IDE
+.idea/
+.vscode/
+
+# Dependencies
+node_modules/
+api/node/
+
+# Build outputs
+target/
+build/
+dist/
+coverage/
+server/yl-toggle-server-linux
+
+# Logs and local files
+logs/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+

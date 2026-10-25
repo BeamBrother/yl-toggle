@@ -1,0 +1,73 @@
+---
+sidebar_position: 2
+---
+
+# Android SDK
+
+:::note SDK quick links
+除了本参考指南外，我们还提供源代码、示例应用程序，相关链接如下所示：
+
+| **Resource**  | **Location**                                                 |
+| ------------- | ------------------------------------------------------------ |
+| GitHub 代码库 | [Client Side SDK for Android](https://github.com/yl-toggle/client-sdk-mobile/tree/main/sdk-android) |
+| 接入示例      | [Demo code](https://github.com/yl-toggle/client-sdk-mobile/tree/main/examples/demo-android) (Kotlin) |
+| 已发布模块    | [maven](https://mvnrepository.com/artifact/com.yl-toggle/client-sdk-android) |
+
+:::
+
+## Kotlin
+
+### 步骤 1. 安装 SDK
+
+```shell
+implementation 'com.yl-toggle:client-sdk-android:1.2.0@aar'
+implementation 'net.java.dev.jna:jna:5.7.0@aar'
+```
+
+### 步骤 2. 创建一个 yl-toggle instance
+
+```kotlin
+import com.yl-toggle.mobile.*;
+
+val url = YTUrlBuilder("https://yl-toggle.io/server").build();
+val user = YTUser()
+user.setAttr("name", "bob")
+val config = YTConfig(url!!, "client-9d885a68ca2955dfb3a7c95435c0c4faad70b50d", 10u, true)
+val fp = yl-toggle(config, user)
+```
+
+### 步骤 3. 使用 yl-toggle 开关
+
+``` kotlin
+val showFeature = fp.boolValue("toggle_key", false)
+if (showFeature) {
+    # application code to show the feature
+} else {
+    # the code to run if the feature is off
+}
+```
+
+### 步骤 4. 事件上报
+
+:::note
+Kotlin SDK 从 2.0.2 版本开始支持事件上报的能力。
+:::
+
+事件跟踪功能可以将用户在应用程序中采取的操作记录为事件。
+可以在开关的指标中关联事件。更多指标分析相关的信息，请阅读[指标分析](../../tutorials/analysis)。
+
+```kotlin
+fp.track("YOUR_CUSTOM_EVENT_NAME")
+// Providing a metric value to track
+fp.track("YOUR_CUSTOM_EVENT_NAME", 5.5)
+```
+
+### 步骤 5. 单元测试 (可选)
+
+```kotlin
+val fp_for_test = yl-toggle.newForTest("{ \"toggle_1\": true }")
+val is_true = fp_for_test.boolValue("toggle_1", false)
+assert(is_true == true)
+```
+
+Find the Demo code in [example](https://github.com/yl-toggle/client-sdk-mobile/tree/main/examples/)

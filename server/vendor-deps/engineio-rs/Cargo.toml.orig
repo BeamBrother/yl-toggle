@@ -1,0 +1,51 @@
+[package]
+name = "engineio-rs"
+version = "0.1.5"
+edition = "2021"
+description = "An implementation of a engineio written in rust."
+repository = "https://github.com/socket-iox/socket-io"
+keywords = ["socketio", "engineio", "network", "protocol"]
+categories = [
+  "network-programming",
+  "web-programming",
+  "web-programming::websocket",
+  "web-programming::socketio",
+]
+license = "MIT"
+
+[features]
+default = ["server", "client"]
+server = ["dashmap"]
+client = []
+
+
+[dependencies]
+adler32 = "1.2.0"
+async-stream = "0.3"
+async-trait = "0.1"
+base64 = "0.13.0"
+bytes = "1"
+dashmap = { optional=true, version="5" }
+futures-util = { version = "0.3", default-features = false, features = [
+  "sink",
+] }
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive", "rc"] }
+thiserror = "1.0"
+tokio = {version = "1.16.1", features = ["full"]}
+tokio-util = "0.7.3"
+tokio-tungstenite = { version = "0.17.2", features = ["rustls-tls-native-roots"] }
+tungstenite = { version = "0.17.3", features = ["rustls-tls-native-roots"]}
+tracing = "0.1"
+http = "0.2.8"
+httparse = "1.6.0"
+reqwest = { version = "0.11.12", default-features = false, features = [
+  "rustls-tls",
+  "stream",
+] }
+
+[dev-dependencies]
+tokio = { version = "1.16.1", features = ["macros"] }
+tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
+
+[lib]

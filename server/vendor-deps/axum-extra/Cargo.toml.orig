@@ -1,0 +1,48 @@
+[package]
+categories = ["asynchronous", "network-programming", "web-programming"]
+description = "Extra utilities for axum"
+edition = "2018"
+homepage = "https://github.com/tokio-rs/axum"
+keywords = ["http", "web", "framework"]
+license = "MIT"
+name = "axum-extra"
+readme = "README.md"
+repository = "https://github.com/tokio-rs/axum"
+version = "0.2.1"
+
+[features]
+default = []
+erased-json = ["serde_json", "serde"]
+typed-routing = ["axum-macros", "serde", "percent-encoding"]
+cookie = ["cookie-lib"]
+spa = ["tower-http/fs"]
+
+[dependencies]
+axum = { path = "../axum", version = "0.5" }
+bytes = "1.1.0"
+http = "0.2"
+mime = "0.3"
+pin-project-lite = "0.2"
+tower = { version = "0.4", default_features = false, features = ["util"] }
+tower-http = { version = "0.2", features = ["map-response-body"] }
+tower-layer = "0.3"
+tower-service = "0.3"
+
+# optional dependencies
+axum-macros = { path = "../axum-macros", version = "0.2", optional = true }
+serde = { version = "1.0", optional = true }
+serde_json = { version = "1.0.71", optional = true }
+percent-encoding = { version = "2.1", optional = true }
+cookie-lib = { package = "cookie", version = "0.16", features = ["percent-encode", "signed", "private"], optional = true }
+
+[dev-dependencies]
+axum = { path = "../axum", version = "0.5", features = ["headers"] }
+hyper = "0.14"
+reqwest = { version = "0.11", default-features = false, features = ["json", "stream", "multipart"] }
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.14", features = ["full"] }
+tower = { version = "0.4", features = ["util"] }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdocflags = ["--cfg", "docsrs"]

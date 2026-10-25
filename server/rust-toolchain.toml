@@ -1,0 +1,5 @@
+[toolchain]
+version = "1.67.0"
+components = [
+  "cargo",
+]

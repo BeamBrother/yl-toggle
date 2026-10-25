@@ -1,0 +1,47 @@
+[package]
+name = "rusty-hook"
+version = "0.11.2"
+authors = ["Swellaby <opensource@swellaby.com>"]
+description = "git hook utility"
+license = "MIT"
+repository = "https://github.com/swellaby/rusty-hook"
+readme = "README.md"
+edition = "2018"
+keywords = [ "hooks", "githook", "git", "hook", "commit" ]
+categories = [ "development-tools" ]
+exclude = [
+  ".coverage/**",
+  ".testresults/**",
+  ".azure-pipelines/**",
+  ".dependabot/**",
+  ".github/**",
+  ".vscode/**",
+  "scripts/**",
+  ".editorconfig",
+  ".gitattributes",
+  ".rustfmt.toml",
+  ".rusty-hook.toml",
+  "azure-pipelines.yml",
+  "kcov*/**",
+  "**/*.gcda",
+  "**/*.gcno",
+  "tests/**",
+  "cobertura.xml",
+  "tarpaulin-report.html",
+]
+
+[dependencies]
+ci_info = "0.10.1"
+getopts = "0.2.21"
+toml = "0.5.6"
+nias = "0.5.0"
+
+[build-dependencies]
+ci_info = "0.10.1"
+toml = "0.5.6"
+nias = "0.5.0"
+
+[badges]
+azure-devops = { project = "swellaby/opensource", pipeline = "rusty-hook.linux-pr", build="49" }
+codecov = { repository = "swellaby/rusty-hook", branch = "master", service = "github" }
+maintenance = { status = "actively-developed" }
