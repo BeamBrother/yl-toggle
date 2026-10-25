@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams, useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Datetime from 'react-datetime';
 import { Form, Loader } from 'semantic-ui-react';
 import moment from 'moment';
@@ -26,8 +26,10 @@ import { useQuery } from 'hooks';
 
 import styles from './index.module.scss';
 import { DOC_FAQ_NO_EVENT_EN, DOC_FAQ_NO_EVENT_ZH, DOC_FAQ_NO_JOIN_EN, DOC_FAQ_NO_JOIN_ZH, DOC_FAQ_NO_RECORD_EN, DOC_FAQ_NO_RECORD_ZH } from 'constants/docAddress';
+import { useParams } from 'utils/useParams';
 
 interface IProps {
+  children?: import('react').ReactNode;
   eventInfo?: IEvent;
   targeting?: ITarget;
   trackEvents: boolean;
@@ -53,7 +55,7 @@ const Results = (props: IProps) => {
   const [ errCode, saveErrCode ] = useState<string>();
   const { projectKey, environmentKey, toggleKey } = useParams<IRouterParams>();
   const intl = useIntl();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const startDateValid = useCallback((current: moment.Moment) => {
     return current.isBefore(moment(end));
@@ -115,7 +117,7 @@ const Results = (props: IProps) => {
       labels = result[item].distributionChart.map((val: IDistribution) => {
         return val.x;
       });
-  
+
       saveChartData(chartData);
       saveTableData(tableData);
       saveChartLabels(labels);
@@ -152,7 +154,7 @@ const Results = (props: IProps) => {
     getIteration();
   }, [getEventResult, getIteration]);
 
-  const operateTrackCollection = useCallback(trackEvents => {
+  const operateTrackCollection = useCallback((trackEvents: boolean) => {
     saveSubmitLoading(true);
     operateCollection(projectKey, environmentKey, toggleKey, {
       trackAccessEvents: trackEvents
@@ -292,7 +294,7 @@ const Results = (props: IProps) => {
                             const current = (e as moment.Moment).format('YYYY-MM-DD HH:mm:ss');
                             saveStart(current);
                             getEventResult(current, end);
-                            history.push(`/${projectKey}/${environmentKey}/${toggleKey}/analysis?start=${current}&end=${end}`);
+                            navigate(`/${projectKey}/${environmentKey}/${toggleKey}/analysis?start=${current}&end=${end}`);
                           }}
                         />
                         <img src={canlendar} alt='canlendar' className={styles['datetime-calendar']} />
@@ -315,7 +317,7 @@ const Results = (props: IProps) => {
                             const current = (e as moment.Moment).format('YYYY-MM-DD HH:mm:ss');
                             saveEnd(current);
                             getEventResult(start, current);
-                            history.push(`/${projectKey}/${environmentKey}/${toggleKey}/analysis?start=${start}&end=${current}`);
+                            navigate(`/${projectKey}/${environmentKey}/${toggleKey}/analysis?start=${start}&end=${current}`);
                           }}
                         />
                         <img src={canlendar} alt='canlendar' className={styles['datetime-calendar']} />
@@ -327,10 +329,10 @@ const Results = (props: IProps) => {
             </Form>
           )
         }
-        
+
         {
           isHaveData ? (
-            <ResultTable 
+            <ResultTable
               data={tableData}
               eventInfo={eventInfo}
             />

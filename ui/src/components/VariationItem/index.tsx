@@ -20,6 +20,7 @@ interface IItem {
 }
 
 interface IProps {
+  children?: import('react').ReactNode;
   disabled?: boolean;
   total: number;
   returnType: string;
@@ -44,9 +45,9 @@ const VariationItem: React.FC<IProps> = (props) => {
     total,
     returnType,
     item: {
-      value, 
-      name, 
-      description, 
+      value,
+      name,
+      description,
       index,
       id,
     },
@@ -115,7 +116,7 @@ const VariationItem: React.FC<IProps> = (props) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, returnType, register, unregister, setValue, value]);
 
-  const handleChange = useCallback(value => {
+  const handleChange = useCallback((value: string) => {
     setJsonValue(value);
     if (!isJSON(value)) {
       setCanSave(false);
@@ -141,7 +142,7 @@ const VariationItem: React.FC<IProps> = (props) => {
   }, [index, handleChangeVariation]);
 
   const modalContentCls = classNames(
-    styles['modal-content'], 
+    styles['modal-content'],
     {
       [styles['modal-content-error']]: !canSave
     }
@@ -149,15 +150,15 @@ const VariationItem: React.FC<IProps> = (props) => {
 
   const booleanOption = useMemo(() => {
     return[
-      { 
-        key: 'true', 
-        value: 'true', 
-        text: intl.formatMessage({id: 'common.true.text'}) 
+      {
+        key: 'true',
+        value: 'true',
+        text: intl.formatMessage({id: 'common.true.text'})
       },
-      { 
-        key: 'false', 
-        value: 'false', 
-        text: intl.formatMessage({id: 'common.false.text'}) 
+      {
+        key: 'false',
+        value: 'false',
+        text: intl.formatMessage({id: 'common.false.text'})
       },
     ];
   }, [intl]);
@@ -186,8 +187,8 @@ const VariationItem: React.FC<IProps> = (props) => {
       <div className={styles.left}>
         <Form.Group widths='equal'>
           <Form.Field className={styles[`${ prefix ? (prefix + '-') : '' }variation-name`]}>
-            <Form.Input 
-              fluid 
+            <Form.Input
+              fluid
               customname='name'
               value={name}
               index={index}
@@ -207,18 +208,18 @@ const VariationItem: React.FC<IProps> = (props) => {
                 await trigger(`variation_${id}_name`);
               }}
             />
-            { 
+            {
               errors[`variation_${id}_name`] && <div className={prefix ? 'error-text-transform' : 'error-text-normal'}>
                 { errors[`variation_${id}_name`].message }
-              </div> 
+              </div>
             }
           </Form.Field>
           <Form.Field className={styles[`${prefix ? (prefix + '-') : ''}variation-value`]}>
             {
               returnType !== 'boolean' ? (
                 <>
-                  <Form.Input 
-                    fluid 
+                  <Form.Input
+                    fluid
                     value={value}
                     customname='value'
                     index={index}
@@ -243,24 +244,24 @@ const VariationItem: React.FC<IProps> = (props) => {
                       )
                     }
                   />
-                  { 
+                  {
                     errors[`variation_${id}`] && <div className={prefix ? 'error-text-transform' : 'error-text-normal'}>
                       { errors[`variation_${id}`].message }
-                    </div> 
+                    </div>
                   }
                 </>
               ) : (
                 <>
-                  <Form.Dropdown 
-                    fluid 
-                    selection 
+                  <Form.Dropdown
+                    fluid
+                    selection
                     floating
                     value={value}
                     customname='value'
                     name={`variation_${id}_normal`}
                     className={styles['status-dropdown']}
                     selectOnBlur={false}
-                    options={booleanOption} 
+                    options={booleanOption}
                     label={(
                       <span className={styles['label-text']}>
                         <span className={styles['label-required']}>*</span>
@@ -268,7 +269,7 @@ const VariationItem: React.FC<IProps> = (props) => {
                       </span>
                     )}
                     disabled={disabled}
-                    placeholder={intl.formatMessage({id: 'common.dropdown.placeholder'})} 
+                    placeholder={intl.formatMessage({id: 'common.dropdown.placeholder'})}
                     icon={<Icon customclass={styles['angle-down']} type='angle-down' />}
                     error={errors[`variation_${id}_normal`] ? true : false}
                     onChange={async (e: SyntheticEvent, detail: DropdownProps) => {
@@ -277,20 +278,20 @@ const VariationItem: React.FC<IProps> = (props) => {
                       await trigger(`variation_${id}_normal`);
                     }}
                   />
-                  { 
+                  {
                     errors[`variation_${id}_normal`] && <div className={prefix ? 'error-text-transform' : 'error-text-normal'}>
                       { errors[`variation_${id}_normal`].message }
-                    </div> 
+                    </div>
                   }
                 </>
               )
             }
           </Form.Field>
           <Form.Field width={6}>
-            <Form.Input 
-              fluid 
+            <Form.Input
+              fluid
               index={index}
-              value={description} 
+              value={description}
               name='description'
               customname='description'
               placeholder={intl.formatMessage({id: 'common.description.lowercase.text'})}
@@ -315,7 +316,7 @@ const VariationItem: React.FC<IProps> = (props) => {
         )
       }
 
-      <Modal 
+      <Modal
         open={open}
         confirmDisabled={!canSave}
         handleCancel={handleCancel}
@@ -329,14 +330,14 @@ const VariationItem: React.FC<IProps> = (props) => {
             <Icon customclass={styles['modal-header-icon']} type='close' onClick={handleCancel} />
           </div>
           <div className={modalContentCls}>
-            <JsonEditor 
+            <JsonEditor
               value={value}
               onChange={handleChange}
             />
-            { 
+            {
               !canSave && <div className={prefix ? 'error-text-transform' : 'error-text-normal'}>
                 <FormattedMessage id='common.json.invalid' />
-              </div> 
+              </div>
             }
           </div>
         </div>

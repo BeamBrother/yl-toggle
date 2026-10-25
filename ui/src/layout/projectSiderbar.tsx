@@ -1,5 +1,5 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import { useParams, useHistory, useRouteMatch } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Dropdown, DropdownProps } from 'semantic-ui-react';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -9,7 +9,7 @@ import PutAwayMemu from 'components/PutAwayMenu';
 import TextLimit from 'components/TextLimit';
 import Loading from 'components/Loading';
 import { IRouterParams, IProject, IEnvironment } from 'interfaces/project';
-import { 
+import {
   TOGGLE_PATH,
   TARGETING_PATH,
   SEGMENT_PATH,
@@ -21,9 +21,12 @@ import {
   TRACK_EVENT_PATH,
 } from 'router/routes';
 import { SidebarContainer } from './hooks';
+import { useMatchedRoutePath } from 'utils/router';
 import styles from './sidebar.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IProps {
+  children?: import('react').ReactNode;
   isLoading: boolean;
   projectInfo: IProject;
   backgroundColor: string;
@@ -36,14 +39,24 @@ const ProjectSiderbar = (props: IProps) => {
   const [ open, setOpen ] = useState<boolean>(false);
   const [ env, setEnv ] = useState<string>('');
   const [ envName, setEnvName ] = useState<string>('');
-  const history = useHistory();
-  const match = useRouteMatch();
+  const navigate = useNavigate();
+  const matchedPath = useMatchedRoutePath([
+    TOGGLE_PATH,
+    TARGETING_PATH,
+    CONNECT_SDK_PATH,
+    TRACK_EVENT_PATH,
+    SEGMENT_PATH,
+    SEGMENT_ADD_PATH,
+    SEGMENT_EDIT_PATH,
+    SETTING_PATH,
+    EVENT_TRACKER_PATH,
+  ]);
   const intl = useIntl();
 
   const { isPutAway } = SidebarContainer.useContainer();
 
   const sidebarCls = classNames(
-    styles.sidebar, 
+    styles.sidebar,
     {
       [styles['sidebar-close']]: isPutAway
     }
@@ -51,7 +64,7 @@ const ProjectSiderbar = (props: IProps) => {
 
   const envCls = classNames(
     'joyride-environment',
-    styles.environment, 
+    styles.environment,
     {
       [styles['environment-close']]: isPutAway
     }
@@ -73,7 +86,7 @@ const ProjectSiderbar = (props: IProps) => {
   );
 
   useEffect(() => {
-    const { path } = match;
+    const path = matchedPath;
     if (path === TOGGLE_PATH || path === TARGETING_PATH || path === CONNECT_SDK_PATH || path === TRACK_EVENT_PATH) {
       setSelectedItem('toggle');
     } else if (path === SEGMENT_PATH || path === SEGMENT_ADD_PATH || path === SEGMENT_EDIT_PATH) {
@@ -83,7 +96,7 @@ const ProjectSiderbar = (props: IProps) => {
     } else if (path === EVENT_TRACKER_PATH) {
       setSelectedItem('eventTracker');
     }
-  }, [match]);
+  }, [matchedPath]);
 
   const options = projectInfo.environments.map((env: IEnvironment) => {
     return {
@@ -102,35 +115,35 @@ const ProjectSiderbar = (props: IProps) => {
   const gotoPage = useCallback(() => {
     setOpen(false);
     let url = '';
-    if (match.path === TOGGLE_PATH) {
+    if (matchedPath === TOGGLE_PATH) {
       url = `/${projectKey}/${env}/toggles`;
-    } else if (match.path === TARGETING_PATH) {
+    } else if (matchedPath === TARGETING_PATH) {
       url = `/${projectKey}/${env}/${toggleKey}/${navigation}`;
-    } else if (match.path === SEGMENT_PATH) {
+    } else if (matchedPath === SEGMENT_PATH) {
       url = `/${projectKey}/${env}/segments`;
-    } else if (match.path === SETTING_PATH) {
+    } else if (matchedPath === SETTING_PATH) {
       url = `/${projectKey}/${env}/settings`;
-    } else if (match.path === EVENT_TRACKER_PATH) {
+    } else if (matchedPath === EVENT_TRACKER_PATH) {
       url = `/${projectKey}/${env}/event-tracker`;
     }
-    history.push(url);
-  }, [history, projectKey, toggleKey, navigation, env, match.path]);
+    navigate(url);
+  }, [navigate, projectKey, toggleKey, navigation, env, matchedPath]);
 
   const gotoToggles = useCallback(() => {
-    history.push(`/${projectKey}/${environmentKey}/toggles`);
-  }, [projectKey, environmentKey, history]);
+    navigate(`/${projectKey}/${environmentKey}/toggles`);
+  }, [projectKey, environmentKey, navigate]);
 
   const gotoSegments = useCallback(() => {
-    history.push(`/${projectKey}/${environmentKey}/segments`);
-  }, [projectKey, environmentKey, history]);
+    navigate(`/${projectKey}/${environmentKey}/segments`);
+  }, [projectKey, environmentKey, navigate]);
 
   const gotoSettings = useCallback(() => {
-    history.push(`/${projectKey}/${environmentKey}/settings`);
-  }, [projectKey, environmentKey, history]);
+    navigate(`/${projectKey}/${environmentKey}/settings`);
+  }, [projectKey, environmentKey, navigate]);
 
   const gotoLiveEvents = useCallback(() => {
-    history.push(`/${projectKey}/${environmentKey}/event-tracker`);
-  }, [projectKey, environmentKey, history]);
+    navigate(`/${projectKey}/${environmentKey}/event-tracker`);
+  }, [projectKey, environmentKey, navigate]);
 
   return (
     <div className={sidebarCls}>
@@ -138,23 +151,23 @@ const ProjectSiderbar = (props: IProps) => {
          isLoading ? <Loading style={{backgroundColor: 'transparent'}} /> : (
           <>
             <div className={styles['project-name']}>
-              <TextLimit 
-                text={projectInfo.name} 
-                popupProps={{ 
+              <TextLimit
+                text={projectInfo.name}
+                popupProps={{
                   position: 'top left',
                   offset: [0, -8],
-                }} 
+                }}
               />
             </div>
             <div className={envCls} style={{ backgroundColor }}>
               <Dropdown
                 className={styles['environment-dropdown']}
-                value={environmentKey} 
+                value={environmentKey}
                 pointing={isPutAway ? 'left' : 'top'}
-                options={options} 
-                selection 
+                options={options}
+                selection
                 floating
-                fluid 
+                fluid
                 icon={<Icon customclass={styles['angle-down']} type='angle-down' />}
                 onChange={handleChangeEnv}
               />
@@ -194,8 +207,8 @@ const ProjectSiderbar = (props: IProps) => {
           </>
         )
       }
-      
-      <Modal 
+
+      <Modal
         open={open}
         width={400}
         handleCancel={() => {setOpen(false);}}
@@ -209,12 +222,12 @@ const ProjectSiderbar = (props: IProps) => {
             </span>
           </div>
           <div className={styles['modal-content']}>
-            { 
+            {
               intl.formatMessage({
                 id: 'sidebar.modal.content'
               }, {
                 envName
-              }) 
+              })
             }
           </div>
         </div>

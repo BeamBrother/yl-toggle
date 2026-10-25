@@ -1,12 +1,12 @@
 import { CSSProperties, ReactNode } from 'react';
-import { FieldErrors } from 'react-hook-form';
 import { Form } from 'semantic-ui-react';
 import 'index.scss';
 
 interface FormItemProps {
+  children?: import('react').ReactNode;
   label: ReactNode;
   required?: boolean;
-  error?: FieldErrors[string];
+  error?: { message?: string };
   errorCss?: CSSProperties
   className?: string;
 }

@@ -3,13 +3,13 @@ use super::{cors_headers, ClientParams, SdkAuthorization, ToggleUpdateParams};
 use super::{SecretsParams, SegmentUpdateParams};
 use crate::YTServerError::{NotFound, NotReady};
 use crate::{events_buffer::EventsStats, repo::SdkRepository, YTServerError};
+use async_trait::async_trait;
 use axum::{
-    async_trait,
-    extract::Query,
     http::{HeaderMap, HeaderValue, StatusCode},
     response::{IntoResponse, Response},
-    Json, TypedHeader,
+    Json,
 };
+use base64::{engine::general_purpose::STANDARD, Engine as _};
 use parking_lot::Mutex;
 use reqwest::header::{self, AUTHORIZATION, USER_AGENT};
 use serde_json::Value;
@@ -24,46 +24,32 @@ use yl_toggle_server_sdk::{Repository, SyncType, YTUser};
 
 #[async_trait]
 pub trait HttpHandler {
-    async fn server_sdk_toggles(
-        &self,
-        TypedHeader(SdkAuthorization(sdk_key)): TypedHeader<SdkAuthorization>,
-    ) -> Result<Response, YTServerError>;
+    async fn server_sdk_toggles(&self, sdk_key: String) -> Result<Response, YTServerError>;
 
     async fn client_sdk_toggles(
         &self,
-        Query(params): Query<ClientParams>,
-        TypedHeader(SdkAuthorization(sdk_key)): TypedHeader<SdkAuthorization>,
+        params: ClientParams,
+        sdk_key: String,
     ) -> Result<Response, YTServerError>;
 
-    async fn client_sdk_events(
-        &self,
-        TypedHeader(SdkAuthorization(sdk_key)): TypedHeader<SdkAuthorization>,
-    ) -> Result<Response, YTServerError>;
+    async fn client_sdk_events(&self, sdk_key: String) -> Result<Response, YTServerError>;
 
     async fn events_stats(&self) -> Result<Json<EventsStats>, YTServerError>;
 
     #[cfg(not(feature = "unstable"))]
-    async fn update_toggles(
-        &self,
-        Json(params): Json<ToggleUpdateParams>,
-    ) -> Result<Response, YTServerError>;
+    async fn update_toggles(&self, params: ToggleUpdateParams) -> Result<Response, YTServerError>;
 
     #[cfg(feature = "unstable")]
-    async fn update_toggles(
-        &self,
-        Json(params): Json<ToggleUpdateParams>,
-    ) -> Result<Response, YTServerError>;
+    async fn update_toggles(&self, params: ToggleUpdateParams) -> Result<Response, YTServerError>;
 
     #[cfg(feature = "unstable")]
-    async fn update_segments(
-        &self,
-        Json(params): Json<SegmentUpdateParams>,
-    ) -> Result<Response, YTServerError>;
+    async fn update_segments(&self, params: SegmentUpdateParams)
+        -> Result<Response, YTServerError>;
 
     #[cfg(feature = "unstable")]
     async fn check_secrets(
         &self,
-        Json(_params): Json<SecretsParams>,
+        _params: SecretsParams,
     ) -> Result<Json<HashMap<String, String>>, YTServerError>;
 
     async fn all_secrets(&self) -> Result<Json<HashMap<String, String>>, YTServerError>;
@@ -78,10 +64,7 @@ pub struct FpHttpHandler {
 
 #[async_trait]
 impl HttpHandler for FpHttpHandler {
-    async fn server_sdk_toggles(
-        &self,
-        TypedHeader(SdkAuthorization(sdk_key)): TypedHeader<SdkAuthorization>,
-    ) -> Result<Response, YTServerError> {
+    async fn server_sdk_toggles(&self, sdk_key: String) -> Result<Response, YTServerError> {
         match self.repo.server_sdk_repo_string(&sdk_key) {
             Ok(body) => Ok((
                 StatusCode::OK,
@@ -109,8 +92,8 @@ impl HttpHandler for FpHttpHandler {
 
     async fn client_sdk_toggles(
         &self,
-        Query(params): Query<ClientParams>,
-        TypedHeader(SdkAuthorization(sdk_key)): TypedHeader<SdkAuthorization>,
+        params: ClientParams,
+        sdk_key: String,
     ) -> Result<Response, YTServerError> {
         let user = decode_user(params.user)?;
         let prerequisite_deep = self.prerequisite_deep;
@@ -129,10 +112,7 @@ impl HttpHandler for FpHttpHandler {
         }
     }
 
-    async fn client_sdk_events(
-        &self,
-        TypedHeader(SdkAuthorization(sdk_key)): TypedHeader<SdkAuthorization>,
-    ) -> Result<Response, YTServerError> {
+    async fn client_sdk_events(&self, sdk_key: String) -> Result<Response, YTServerError> {
         match self.repo.client_sdk_events_string(&sdk_key) {
             Ok(body) => Ok((StatusCode::OK, cors_headers(), body).into_response()),
             Err(e) => match e {
@@ -150,10 +130,7 @@ impl HttpHandler for FpHttpHandler {
     }
 
     #[cfg(not(feature = "unstable"))]
-    async fn update_toggles(
-        &self,
-        Json(params): Json<ToggleUpdateParams>,
-    ) -> Result<Response, YTServerError> {
+    async fn update_toggles(&self, params: ToggleUpdateParams) -> Result<Response, YTServerError> {
         let sdk_key = params.sdk_key;
         match self.repo.client_sync_now(&sdk_key, SyncType::Realtime) {
             Ok(_sdk_key) => Ok((StatusCode::OK, cors_headers(), "{}").into_response()),
@@ -170,10 +147,7 @@ impl HttpHandler for FpHttpHandler {
     }
 
     #[cfg(feature = "unstable")]
-    async fn update_toggles(
-        &self,
-        Json(params): Json<ToggleUpdateParams>,
-    ) -> Result<Response, YTServerError> {
+    async fn update_toggles(&self, params: ToggleUpdateParams) -> Result<Response, YTServerError> {
         self.repo.update_toggles(&params.sdk_key, params.toggles)?;
         let status = StatusCode::OK;
         Ok(status.into_response())
@@ -182,7 +156,7 @@ impl HttpHandler for FpHttpHandler {
 
     async fn update_segments(
         &self,
-        Json(params): Json<SegmentUpdateParams>,
+        params: SegmentUpdateParams,
     ) -> Result<Response, YTServerError> {
         self.repo.update_segments(params.segments)?;
         let status = StatusCode::OK;
@@ -193,7 +167,7 @@ impl HttpHandler for FpHttpHandler {
     #[cfg(feature = "unstable")]
     async fn check_secrets(
         &self,
-        Json(_params): Json<SecretsParams>,
+        _params: SecretsParams,
     ) -> Result<Json<HashMap<String, String>>, YTServerError> {
         Ok(HashMap::new().into())
     }
@@ -247,7 +221,7 @@ fn build_header(headers: HeaderMap, sdk_key: String, user_agent: &str) -> Header
 }
 
 fn decode_user(user: String) -> Result<YTUser, YTServerError> {
-    if let Ok(user) = base64::decode(user) {
+    if let Ok(user) = STANDARD.decode(user) {
         if let Ok(user) = String::from_utf8(user) {
             if let Ok(user) = serde_json::from_str::<YTUser>(&user) {
                 return Ok(user);
@@ -258,6 +232,7 @@ fn decode_user(user: String) -> Result<YTUser, YTServerError> {
 }
 
 // used for mocking yl-toggle API
+#[allow(dead_code)]
 #[derive(Clone, Default)]
 pub struct LocalFileHttpHandlerForTest {
     pub version_update: bool,
@@ -266,10 +241,7 @@ pub struct LocalFileHttpHandlerForTest {
 
 #[async_trait]
 impl HttpHandler for LocalFileHttpHandlerForTest {
-    async fn server_sdk_toggles(
-        &self,
-        TypedHeader(SdkAuthorization(_sdk_key)): TypedHeader<SdkAuthorization>,
-    ) -> Result<Response, YTServerError> {
+    async fn server_sdk_toggles(&self, _sdk_key: String) -> Result<Response, YTServerError> {
         let mut lock = self.body.lock();
         let body = match &*lock {
             None => {
@@ -301,8 +273,8 @@ impl HttpHandler for LocalFileHttpHandlerForTest {
 
     async fn client_sdk_toggles(
         &self,
-        Query(_params): Query<ClientParams>,
-        TypedHeader(SdkAuthorization(_sdk_key)): TypedHeader<SdkAuthorization>,
+        _params: ClientParams,
+        _sdk_key: String,
     ) -> Result<Response, YTServerError> {
         let body = "{}".to_owned();
         Ok((
@@ -313,10 +285,7 @@ impl HttpHandler for LocalFileHttpHandlerForTest {
             .into_response())
     }
 
-    async fn client_sdk_events(
-        &self,
-        TypedHeader(SdkAuthorization(_sdk_key)): TypedHeader<SdkAuthorization>,
-    ) -> Result<Response, YTServerError> {
+    async fn client_sdk_events(&self, _sdk_key: String) -> Result<Response, YTServerError> {
         let body = "{}".to_owned();
         Ok((
             StatusCode::OK,
@@ -331,10 +300,7 @@ impl HttpHandler for LocalFileHttpHandlerForTest {
     }
 
     #[cfg(not(feature = "unstable"))]
-    async fn update_toggles(
-        &self,
-        Json(_params): Json<ToggleUpdateParams>,
-    ) -> Result<Response, YTServerError> {
+    async fn update_toggles(&self, _params: ToggleUpdateParams) -> Result<Response, YTServerError> {
         let body = "{}".to_owned();
         Ok((
             StatusCode::OK,
@@ -345,10 +311,7 @@ impl HttpHandler for LocalFileHttpHandlerForTest {
     }
 
     #[cfg(feature = "unstable")]
-    async fn update_toggles(
-        &self,
-        Json(_params): Json<ToggleUpdateParams>,
-    ) -> Result<Response, YTServerError> {
+    async fn update_toggles(&self, _params: ToggleUpdateParams) -> Result<Response, YTServerError> {
         let body = "{}".to_owned();
         Ok((
             StatusCode::OK,
@@ -361,7 +324,7 @@ impl HttpHandler for LocalFileHttpHandlerForTest {
     #[cfg(feature = "unstable")]
     async fn update_segments(
         &self,
-        Json(_params): Json<SegmentUpdateParams>,
+        _params: SegmentUpdateParams,
     ) -> Result<Response, YTServerError> {
         let status = StatusCode::OK;
         let body = "";
@@ -371,7 +334,7 @@ impl HttpHandler for LocalFileHttpHandlerForTest {
     #[cfg(feature = "unstable")]
     async fn check_secrets(
         &self,
-        Json(_params): Json<SecretsParams>,
+        _params: SecretsParams,
     ) -> Result<Json<HashMap<String, String>>, YTServerError> {
         Ok(HashMap::new().into())
     }

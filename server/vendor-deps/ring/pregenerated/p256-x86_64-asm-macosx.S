@@ -1,17 +1,13 @@
-# This file is generated from a similarly-named Perl script in the BoringSSL
-# source tree. Do not edit by hand.
+// This file is generated from a similarly-named Perl script in the BoringSSL
+// source tree. Do not edit by hand.
 
-#if defined(__has_feature)
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
-#endif
+#include <ring-core/asm_base.h>
 
-#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM)
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__APPLE__)
 .text	
 
 
-
+.section	__DATA,__const
 .p2align	6
 L$poly:
 .quad	0xffffffffffffffff, 0x00000000ffffffff, 0x0000000000000000, 0xffffffff00000001
@@ -30,62 +26,17 @@ L$ord:
 .quad	0xf3b9cac2fc632551, 0xbce6faada7179e84, 0xffffffffffffffff, 0xffffffff00000000
 L$ordK:
 .quad	0xccd1c8aaee00bc4f
+.text	
 
 
 
-.globl	_GFp_nistz256_add
-.private_extern _GFp_nistz256_add
-
-.p2align	5
-_GFp_nistz256_add:
-	pushq	%r12
-	pushq	%r13
-
-	movq	0(%rsi),%r8
-	xorq	%r13,%r13
-	movq	8(%rsi),%r9
-	movq	16(%rsi),%r10
-	movq	24(%rsi),%r11
-	leaq	L$poly(%rip),%rsi
-
-	addq	0(%rdx),%r8
-	adcq	8(%rdx),%r9
-	movq	%r8,%rax
-	adcq	16(%rdx),%r10
-	adcq	24(%rdx),%r11
-	movq	%r9,%rdx
-	adcq	$0,%r13
-
-	subq	0(%rsi),%r8
-	movq	%r10,%rcx
-	sbbq	8(%rsi),%r9
-	sbbq	16(%rsi),%r10
-	movq	%r11,%r12
-	sbbq	24(%rsi),%r11
-	sbbq	$0,%r13
-
-	cmovcq	%rax,%r8
-	cmovcq	%rdx,%r9
-	movq	%r8,0(%rdi)
-	cmovcq	%rcx,%r10
-	movq	%r9,8(%rdi)
-	cmovcq	%r12,%r11
-	movq	%r10,16(%rdi)
-	movq	%r11,24(%rdi)
-
-	popq	%r13
-	popq	%r12
-	.byte	0xf3,0xc3
-
-
-
-
-.globl	_GFp_nistz256_neg
-.private_extern _GFp_nistz256_neg
+.globl	_ecp_nistz256_neg
+.private_extern _ecp_nistz256_neg
 
 .p2align	5
-_GFp_nistz256_neg:
+_ecp_nistz256_neg:
 
+_CET_ENDBR
 	pushq	%r12
 
 	pushq	%r13
@@ -131,7 +82,7 @@ L$neg_body:
 	leaq	16(%rsp),%rsp
 
 L$neg_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -140,17 +91,13 @@ L$neg_epilogue:
 
 
 
-.globl	_GFp_p256_scalar_mul_mont
-.private_extern _GFp_p256_scalar_mul_mont
+.globl	_ecp_nistz256_ord_mul_mont_nohw
+.private_extern _ecp_nistz256_ord_mul_mont_nohw
 
 .p2align	5
-_GFp_p256_scalar_mul_mont:
+_ecp_nistz256_ord_mul_mont_nohw:
 
-	leaq	_GFp_ia32cap_P(%rip),%rcx
-	movq	8(%rcx),%rcx
-	andl	$0x80100,%ecx
-	cmpl	$0x80100,%ecx
-	je	L$ecp_nistz256_ord_mul_montx
+_CET_ENDBR
 	pushq	%rbp
 
 	pushq	%rbx
@@ -458,7 +405,7 @@ L$ord_mul_body:
 	leaq	48(%rsp),%rsp
 
 L$ord_mul_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -468,17 +415,13 @@ L$ord_mul_epilogue:
 
 
 
-.globl	_GFp_p256_scalar_sqr_rep_mont
-.private_extern _GFp_p256_scalar_sqr_rep_mont
+.globl	_ecp_nistz256_ord_sqr_mont_nohw
+.private_extern _ecp_nistz256_ord_sqr_mont_nohw
 
 .p2align	5
-_GFp_p256_scalar_sqr_rep_mont:
+_ecp_nistz256_ord_sqr_mont_nohw:
 
-	leaq	_GFp_ia32cap_P(%rip),%rcx
-	movq	8(%rcx),%rcx
-	andl	$0x80100,%ecx
-	cmpl	$0x80100,%ecx
-	je	L$ecp_nistz256_ord_sqr_montx
+_CET_ENDBR
 	pushq	%rbp
 
 	pushq	%rbx
@@ -756,15 +699,18 @@ L$oop_ord_sqr:
 	leaq	48(%rsp),%rsp
 
 L$ord_sqr_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
+.globl	_ecp_nistz256_ord_mul_mont_adx
+.private_extern _ecp_nistz256_ord_mul_mont_adx
 
 .p2align	5
-ecp_nistz256_ord_mul_montx:
+_ecp_nistz256_ord_mul_mont_adx:
 
-L$ecp_nistz256_ord_mul_montx:
+L$ecp_nistz256_ord_mul_mont_adx:
+_CET_ENDBR
 	pushq	%rbp
 
 	pushq	%rbx
@@ -992,15 +938,18 @@ L$ord_mulx_body:
 	leaq	48(%rsp),%rsp
 
 L$ord_mulx_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
+.globl	_ecp_nistz256_ord_sqr_mont_adx
+.private_extern _ecp_nistz256_ord_sqr_mont_adx
 
 .p2align	5
-ecp_nistz256_ord_sqr_montx:
+_ecp_nistz256_ord_sqr_mont_adx:
 
-L$ecp_nistz256_ord_sqr_montx:
+_CET_ENDBR
+L$ecp_nistz256_ord_sqr_mont_adx:
 	pushq	%rbp
 
 	pushq	%rbx
@@ -1200,7 +1149,7 @@ L$oop_ord_sqrx:
 	leaq	48(%rsp),%rsp
 
 L$ord_sqrx_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -1209,16 +1158,13 @@ L$ord_sqrx_epilogue:
 
 
 
-.globl	_GFp_nistz256_mul_mont
-.private_extern _GFp_nistz256_mul_mont
+.globl	_ecp_nistz256_mul_mont_nohw
+.private_extern _ecp_nistz256_mul_mont_nohw
 
 .p2align	5
-_GFp_nistz256_mul_mont:
+_ecp_nistz256_mul_mont_nohw:
 
-	leaq	_GFp_ia32cap_P(%rip),%rcx
-	movq	8(%rcx),%rcx
-	andl	$0x80100,%ecx
-L$mul_mont:
+_CET_ENDBR
 	pushq	%rbp
 
 	pushq	%rbx
@@ -1232,8 +1178,6 @@ L$mul_mont:
 	pushq	%r15
 
 L$mul_body:
-	cmpl	$0x80100,%ecx
-	je	L$mul_montx
 	movq	%rdx,%rbx
 	movq	0(%rdx),%rax
 	movq	0(%rsi),%r9
@@ -1242,20 +1186,7 @@ L$mul_body:
 	movq	24(%rsi),%r12
 
 	call	__ecp_nistz256_mul_montq
-	jmp	L$mul_mont_done
 
-.p2align	5
-L$mul_montx:
-	movq	%rdx,%rbx
-	movq	0(%rdx),%rdx
-	movq	0(%rsi),%r9
-	movq	8(%rsi),%r10
-	movq	16(%rsi),%r11
-	movq	24(%rsi),%r12
-	leaq	-128(%rsi),%rsi
-
-	call	__ecp_nistz256_mul_montx
-L$mul_mont_done:
 	movq	0(%rsp),%r15
 
 	movq	8(%rsp),%r14
@@ -1271,7 +1202,7 @@ L$mul_mont_done:
 	leaq	48(%rsp),%rsp
 
 L$mul_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -1489,7 +1420,7 @@ __ecp_nistz256_mul_montq:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -1500,15 +1431,13 @@ __ecp_nistz256_mul_montq:
 
 
 
-.globl	_GFp_nistz256_sqr_mont
-.private_extern _GFp_nistz256_sqr_mont
+.globl	_ecp_nistz256_sqr_mont_nohw
+.private_extern _ecp_nistz256_sqr_mont_nohw
 
 .p2align	5
-_GFp_nistz256_sqr_mont:
+_ecp_nistz256_sqr_mont_nohw:
 
-	leaq	_GFp_ia32cap_P(%rip),%rcx
-	movq	8(%rcx),%rcx
-	andl	$0x80100,%ecx
+_CET_ENDBR
 	pushq	%rbp
 
 	pushq	%rbx
@@ -1522,26 +1451,13 @@ _GFp_nistz256_sqr_mont:
 	pushq	%r15
 
 L$sqr_body:
-	cmpl	$0x80100,%ecx
-	je	L$sqr_montx
 	movq	0(%rsi),%rax
 	movq	8(%rsi),%r14
 	movq	16(%rsi),%r15
 	movq	24(%rsi),%r8
 
 	call	__ecp_nistz256_sqr_montq
-	jmp	L$sqr_mont_done
 
-.p2align	5
-L$sqr_montx:
-	movq	0(%rsi),%rdx
-	movq	8(%rsi),%r14
-	movq	16(%rsi),%r15
-	movq	24(%rsi),%r8
-	leaq	-128(%rsi),%rsi
-
-	call	__ecp_nistz256_sqr_montx
-L$sqr_mont_done:
 	movq	0(%rsp),%r15
 
 	movq	8(%rsp),%r14
@@ -1557,7 +1473,7 @@ L$sqr_mont_done:
 	leaq	48(%rsp),%rsp
 
 L$sqr_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -1721,7 +1637,56 @@ __ecp_nistz256_sqr_montq:
 	movq	%r14,16(%rdi)
 	movq	%r15,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
+
+
+.globl	_ecp_nistz256_mul_mont_adx
+.private_extern _ecp_nistz256_mul_mont_adx
+
+.p2align	5
+_ecp_nistz256_mul_mont_adx:
+
+_CET_ENDBR
+	pushq	%rbp
+
+	pushq	%rbx
+
+	pushq	%r12
+
+	pushq	%r13
+
+	pushq	%r14
+
+	pushq	%r15
+
+L$mulx_body:
+	movq	%rdx,%rbx
+	movq	0(%rdx),%rdx
+	movq	0(%rsi),%r9
+	movq	8(%rsi),%r10
+	movq	16(%rsi),%r11
+	movq	24(%rsi),%r12
+	leaq	-128(%rsi),%rsi
+
+	call	__ecp_nistz256_mul_montx
+
+	movq	0(%rsp),%r15
+
+	movq	8(%rsp),%r14
+
+	movq	16(%rsp),%r13
+
+	movq	24(%rsp),%r12
+
+	movq	32(%rsp),%rbx
+
+	movq	40(%rsp),%rbp
+
+	leaq	48(%rsp),%rsp
+
+L$mulx_epilogue:
+	ret
+
 
 
 
@@ -1889,7 +1854,54 @@ __ecp_nistz256_mul_montx:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
+
+
+
+.globl	_ecp_nistz256_sqr_mont_adx
+.private_extern _ecp_nistz256_sqr_mont_adx
+
+.p2align	5
+_ecp_nistz256_sqr_mont_adx:
+
+_CET_ENDBR
+	pushq	%rbp
+
+	pushq	%rbx
+
+	pushq	%r12
+
+	pushq	%r13
+
+	pushq	%r14
+
+	pushq	%r15
+
+L$sqrx_body:
+	movq	0(%rsi),%rdx
+	movq	8(%rsi),%r14
+	movq	16(%rsi),%r15
+	movq	24(%rsi),%r8
+	leaq	-128(%rsi),%rsi
+
+	call	__ecp_nistz256_sqr_montx
+
+	movq	0(%rsp),%r15
+
+	movq	8(%rsp),%r14
+
+	movq	16(%rsp),%r13
+
+	movq	24(%rsp),%r12
+
+	movq	32(%rsp),%rbx
+
+	movq	40(%rsp),%rbp
+
+	leaq	48(%rsp),%rsp
+
+L$sqrx_epilogue:
+	ret
 
 
 
@@ -2019,21 +2031,18 @@ __ecp_nistz256_sqr_montx:
 	movq	%r14,16(%rdi)
 	movq	%r15,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 
 
 
 
-.globl	_GFp_nistz256_select_w5
-.private_extern _GFp_nistz256_select_w5
+.globl	_ecp_nistz256_select_w5_nohw
+.private_extern _ecp_nistz256_select_w5_nohw
 
 .p2align	5
-_GFp_nistz256_select_w5:
+_ecp_nistz256_select_w5_nohw:
 
-	leaq	_GFp_ia32cap_P(%rip),%rax
-	movq	8(%rax),%rax
-	testl	$32,%eax
-	jnz	L$avx2_select_w5
+_CET_ENDBR
 	movdqa	L$One(%rip),%xmm0
 	movd	%edx,%xmm1
 
@@ -2084,23 +2093,20 @@ L$select_loop_sse_w5:
 	movdqu	%xmm5,48(%rdi)
 	movdqu	%xmm6,64(%rdi)
 	movdqu	%xmm7,80(%rdi)
-	.byte	0xf3,0xc3
+	ret
 
-L$SEH_end_GFp_nistz256_select_w5:
-
-
+L$SEH_end_ecp_nistz256_select_w5_nohw:
 
 
-.globl	_GFp_nistz256_select_w7
-.private_extern _GFp_nistz256_select_w7
+
+
+.globl	_ecp_nistz256_select_w7_nohw
+.private_extern _ecp_nistz256_select_w7_nohw
 
 .p2align	5
-_GFp_nistz256_select_w7:
+_ecp_nistz256_select_w7_nohw:
 
-	leaq	_GFp_ia32cap_P(%rip),%rax
-	movq	8(%rax),%rax
-	testl	$32,%eax
-	jnz	L$avx2_select_w7
+_CET_ENDBR
 	movdqa	L$One(%rip),%xmm8
 	movd	%edx,%xmm1
 
@@ -2140,17 +2146,19 @@ L$select_loop_sse_w7:
 	movdqu	%xmm3,16(%rdi)
 	movdqu	%xmm4,32(%rdi)
 	movdqu	%xmm5,48(%rdi)
-	.byte	0xf3,0xc3
+	ret
 
-L$SEH_end_GFp_nistz256_select_w7:
+L$SEH_end_ecp_nistz256_select_w7_nohw:
 
 
 
+.globl	_ecp_nistz256_select_w5_avx2
+.private_extern _ecp_nistz256_select_w5_avx2
 
 .p2align	5
-GFp_nistz256_avx2_select_w5:
+_ecp_nistz256_select_w5_avx2:
 
-L$avx2_select_w5:
+_CET_ENDBR
 	vzeroupper
 	vmovdqa	L$Two(%rip),%ymm0
 
@@ -2203,20 +2211,20 @@ L$select_loop_avx2_w5:
 	vmovdqu	%ymm3,32(%rdi)
 	vmovdqu	%ymm4,64(%rdi)
 	vzeroupper
-	.byte	0xf3,0xc3
+	ret
 
-L$SEH_end_GFp_nistz256_avx2_select_w5:
-
-
+L$SEH_end_ecp_nistz256_select_w5_avx2:
 
 
-.globl	_GFp_nistz256_avx2_select_w7
-.private_extern _GFp_nistz256_avx2_select_w7
+
+
+.globl	_ecp_nistz256_select_w7_avx2
+.private_extern _ecp_nistz256_select_w7_avx2
 
 .p2align	5
-_GFp_nistz256_avx2_select_w7:
+_ecp_nistz256_select_w7_avx2:
 
-L$avx2_select_w7:
+_CET_ENDBR
 	vzeroupper
 	vmovdqa	L$Three(%rip),%ymm0
 
@@ -2284,9 +2292,9 @@ L$select_loop_avx2_w7:
 	vmovdqu	%ymm2,0(%rdi)
 	vmovdqu	%ymm3,32(%rdi)
 	vzeroupper
-	.byte	0xf3,0xc3
+	ret
 
-L$SEH_end_GFp_nistz256_avx2_select_w7:
+L$SEH_end_ecp_nistz256_select_w7_avx2:
 
 
 .p2align	5
@@ -2318,7 +2326,7 @@ __ecp_nistz256_add_toq:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -2351,7 +2359,7 @@ __ecp_nistz256_sub_fromq:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -2380,7 +2388,7 @@ __ecp_nistz256_subq:
 	cmovnzq	%rcx,%r8
 	cmovnzq	%r10,%r9
 
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -2414,20 +2422,16 @@ __ecp_nistz256_mul_by_2q:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 
 
-.globl	_GFp_nistz256_point_double
-.private_extern _GFp_nistz256_point_double
+.globl	_ecp_nistz256_point_double_nohw
+.private_extern _ecp_nistz256_point_double_nohw
 
 .p2align	5
-_GFp_nistz256_point_double:
+_ecp_nistz256_point_double_nohw:
 
-	leaq	_GFp_ia32cap_P(%rip),%rcx
-	movq	8(%rcx),%rcx
-	andl	$0x80100,%ecx
-	cmpl	$0x80100,%ecx
-	je	L$point_doublex
+_CET_ENDBR
 	pushq	%rbp
 
 	pushq	%rbx
@@ -2642,20 +2646,16 @@ L$point_double_shortcutq:
 	leaq	(%rsi),%rsp
 
 L$point_doubleq_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
-.globl	_GFp_nistz256_point_add
-.private_extern _GFp_nistz256_point_add
+.globl	_ecp_nistz256_point_add_nohw
+.private_extern _ecp_nistz256_point_add_nohw
 
 .p2align	5
-_GFp_nistz256_point_add:
+_ecp_nistz256_point_add_nohw:
 
-	leaq	_GFp_ia32cap_P(%rip),%rcx
-	movq	8(%rcx),%rcx
-	andl	$0x80100,%ecx
-	cmpl	$0x80100,%ecx
-	je	L$point_addx
+_CET_ENDBR
 	pushq	%rbp
 
 	pushq	%rbx
@@ -3073,20 +3073,16 @@ L$add_doneq:
 	leaq	(%rsi),%rsp
 
 L$point_addq_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
-.globl	_GFp_nistz256_point_add_affine
-.private_extern _GFp_nistz256_point_add_affine
+.globl	_ecp_nistz256_point_add_affine_nohw
+.private_extern _ecp_nistz256_point_add_affine_nohw
 
 .p2align	5
-_GFp_nistz256_point_add_affine:
+_ecp_nistz256_point_add_affine_nohw:
 
-	leaq	_GFp_ia32cap_P(%rip),%rcx
-	movq	8(%rcx),%rcx
-	andl	$0x80100,%ecx
-	cmpl	$0x80100,%ecx
-	je	L$point_add_affinex
+_CET_ENDBR
 	pushq	%rbp
 
 	pushq	%rbx
@@ -3401,7 +3397,7 @@ L$add_affineq_body:
 	leaq	(%rsi),%rsp
 
 L$add_affineq_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -3435,7 +3431,7 @@ __ecp_nistz256_add_tox:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -3470,7 +3466,7 @@ __ecp_nistz256_sub_fromx:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -3501,7 +3497,7 @@ __ecp_nistz256_subx:
 	cmovcq	%rcx,%r8
 	cmovcq	%r10,%r9
 
-	.byte	0xf3,0xc3
+	ret
 
 
 
@@ -3536,14 +3532,16 @@ __ecp_nistz256_mul_by_2x:
 	movq	%r8,16(%rdi)
 	movq	%r9,24(%rdi)
 
-	.byte	0xf3,0xc3
+	ret
 
 
+.globl	_ecp_nistz256_point_double_adx
+.private_extern _ecp_nistz256_point_double_adx
 
 .p2align	5
-GFp_nistz256_point_doublex:
+_ecp_nistz256_point_double_adx:
 
-L$point_doublex:
+_CET_ENDBR
 	pushq	%rbp
 
 	pushq	%rbx
@@ -3758,14 +3756,16 @@ L$point_double_shortcutx:
 	leaq	(%rsi),%rsp
 
 L$point_doublex_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
+.globl	_ecp_nistz256_point_add_adx
+.private_extern _ecp_nistz256_point_add_adx
 
 .p2align	5
-GFp_nistz256_point_addx:
+_ecp_nistz256_point_add_adx:
 
-L$point_addx:
+_CET_ENDBR
 	pushq	%rbp
 
 	pushq	%rbx
@@ -4183,14 +4183,16 @@ L$add_donex:
 	leaq	(%rsi),%rsp
 
 L$point_addx_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
+.globl	_ecp_nistz256_point_add_affine_adx
+.private_extern _ecp_nistz256_point_add_affine_adx
 
 .p2align	5
-GFp_nistz256_point_add_affinex:
+_ecp_nistz256_point_add_affine_adx:
 
-L$point_add_affinex:
+_CET_ENDBR
 	pushq	%rbp
 
 	pushq	%rbx
@@ -4505,7 +4507,7 @@ L$add_affinex_body:
 	leaq	(%rsi),%rsp
 
 L$add_affinex_epilogue:
-	.byte	0xf3,0xc3
+	ret
 
 
 #endif

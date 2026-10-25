@@ -1,15 +1,15 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import Pagination from '.';
 import sleep from 'utils/sleep';
 import { IntlWrapper } from 'components/utils/wrapper';
 
-it('Pagination snapshot', (done) => {
-  (async () => {
+it('Pagination snapshot', async () => {
+  await (async () => {
     const { asFragment } = render(
-      <Pagination 
-        handlePageChange={jest.fn()}
+      <Pagination
+        handlePageChange={vi.fn()}
         pagination={{
           pageIndex: 0,
           totalPages: 10
@@ -17,15 +17,14 @@ it('Pagination snapshot', (done) => {
       />
     , { wrapper: IntlWrapper});
     expect(asFragment()).toMatchSnapshot();
-    done();
   })();
 });
 
-test('Pagination hideTotal', (done) => {
-  (async () => {
+it('Pagination hideTotal', async () => {
+  await (async () => {
     render(
-      <Pagination 
-        handlePageChange={jest.fn()}
+      <Pagination
+        handlePageChange={vi.fn()}
         hideTotal={true}
         total={100}
         pagination={{
@@ -37,17 +36,15 @@ test('Pagination hideTotal', (done) => {
 
     const ele = document.getElementsByClassName('total-count')[0];
     expect(ele).toBeUndefined();
-
-    done();
   })();
 });
 
-test('Pagination Click Test', (done) => {
-  (async () => {
-    const mockHandleChange = jest.fn();
+it('Pagination Click Test', async () => {
+  await (async () => {
+    const mockHandleChange = vi.fn();
 
     render(
-      <Pagination 
+      <Pagination
         handlePageChange={mockHandleChange}
         hideTotal={false}
         total={100}
@@ -67,7 +64,5 @@ test('Pagination Click Test', (done) => {
     // Click page 10
     await userEvent.click(screen.getByText('10'));
     expect(mockHandleChange).toBeCalled();
-
-    done();
   })();
 });

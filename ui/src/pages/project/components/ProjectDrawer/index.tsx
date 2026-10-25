@@ -1,5 +1,5 @@
 import { SyntheticEvent, useEffect, useCallback, useState, useMemo } from 'react';
-import { 
+import {
   Form,
   InputOnChangeData,
   TextAreaProps,
@@ -23,6 +23,7 @@ import { useRequestTimeCheck } from 'hooks';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   isAdd: boolean;
   visible: boolean;
   projectKey: string;
@@ -45,7 +46,7 @@ const ProjectDrawer = (props: IProps) => {
     clearErrors,
   } = hooksFormContainer.useContainer();
 
-  const { 
+  const {
     projectInfo,
     originProjectInfo,
     handleChange,
@@ -158,8 +159,8 @@ const ProjectDrawer = (props: IProps) => {
     setSubmitLoading(false);
 
     if (res.success) {
-      message.success(isAdd 
-        ? intl.formatMessage({id: 'projects.create.success'}) 
+      message.success(isAdd
+        ? intl.formatMessage({id: 'projects.create.success'})
         : intl.formatMessage({id: 'projects.edit.success'})
       );
       refreshProjectsList();
@@ -171,8 +172,8 @@ const ProjectDrawer = (props: IProps) => {
         });
         return;
       }
-      message.error(isAdd 
-        ? intl.formatMessage({id: 'projects.create.error'}) 
+      message.error(isAdd
+        ? intl.formatMessage({id: 'projects.create.error'})
         : intl.formatMessage({id: 'projects.edit.error'})
       );
     }
@@ -180,10 +181,10 @@ const ProjectDrawer = (props: IProps) => {
 
 	return (
     <div className={drawerCls}>
-      <Form 
+      <Form
         className={formCls}
         autoComplete='off'
-        onSubmit={handleSubmit(onSubmit)} 
+        onSubmit={handleSubmit(onSubmit)}
       >
         <div className={styles.title}>
           <div className={styles['title-left']}>

@@ -1,8 +1,9 @@
 import { useCallback } from 'react';
 import classNames from 'classnames';
 import { useIntl } from 'react-intl';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { PERSONAL_APITOKEN_PATH, PROFILE_PATH } from 'router/routes';
+import { useMatchedRoutePath } from 'utils/router';
 import PutAwayMemu from 'components/PutAwayMenu';
 import { PROFILE, TOKENS } from 'constants/sidebar';
 import { SidebarContainer } from './hooks';
@@ -10,8 +11,8 @@ import styles from './sidebar.module.scss';
 
 const Sidebar = () => {
   const { isPutAway } = SidebarContainer.useContainer();
-  const match = useRouteMatch();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const matchedPath = useMatchedRoutePath([PROFILE_PATH, PERSONAL_APITOKEN_PATH]);
   const intl = useIntl();
 
   const sidebarCls = classNames(styles['setting-sidebar'], {
@@ -24,7 +25,7 @@ const Sidebar = () => {
       [styles['project-menu-item-close']]: isPutAway,
     },
     {
-      [styles.selected]: match.path === PROFILE_PATH,
+      [styles.selected]: matchedPath === PROFILE_PATH,
     }
   );
 
@@ -34,15 +35,15 @@ const Sidebar = () => {
       [styles['project-menu-item-close']]: isPutAway,
     },
     {
-      [styles.selected]: match.path === PERSONAL_APITOKEN_PATH,
+      [styles.selected]: matchedPath === PERSONAL_APITOKEN_PATH,
     }
   );
 
   const gotoPage = useCallback(
     (path: string) => {
-      history.push(`/user/${path}`);
+      navigate(`/user/${path}`);
     },
-    [history]
+    [navigate]
   );
 
   return (

@@ -1,8 +1,9 @@
 import { useCallback } from 'react';
 import classNames from 'classnames';
 import { useIntl } from 'react-intl';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { APITOKEN_PATH, MEMBER_PATH, WEBHOOK_LIST_PATH } from 'router/routes';
+import { useMatchedRoutePath } from 'utils/router';
 import PutAwayMemu from 'components/PutAwayMenu';
 import { WEBHOOKLIST, MEMBERS, TOKENS } from 'constants/sidebar';
 import { SidebarContainer } from './hooks';
@@ -10,12 +11,12 @@ import styles from './sidebar.module.scss';
 
 const Sidebar = () => {
   const { isPutAway } = SidebarContainer.useContainer();
-  const match = useRouteMatch();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const matchedPath = useMatchedRoutePath([MEMBER_PATH, WEBHOOK_LIST_PATH, APITOKEN_PATH]);
   const intl = useIntl();
 
   const sidebarCls = classNames(
-    styles['setting-sidebar'], 
+    styles['setting-sidebar'],
     {
       [styles['setting-sidebar-close']]: isPutAway
     }
@@ -27,7 +28,7 @@ const Sidebar = () => {
       [styles['project-menu-item-close']]: isPutAway,
     },
     {
-      [styles.selected]: match.path === MEMBER_PATH,
+      [styles.selected]: matchedPath === MEMBER_PATH,
     }
   );
 
@@ -37,7 +38,7 @@ const Sidebar = () => {
       [styles['project-menu-item-close']]: isPutAway,
     },
     {
-      [styles.selected]: match.path === WEBHOOK_LIST_PATH,
+      [styles.selected]: matchedPath === WEBHOOK_LIST_PATH,
     }
   );
 
@@ -47,13 +48,13 @@ const Sidebar = () => {
       [styles['project-menu-item-close']]: isPutAway,
     },
     {
-      [styles.selected]: match.path === APITOKEN_PATH,
+      [styles.selected]: matchedPath === APITOKEN_PATH,
     }
   );
 
   const gotoPage = useCallback((path: string) => {
-    history.push(`/settings/${path}`);
-  }, [history]);
+    navigate(`/settings/${path}`);
+  }, [navigate]);
 
   return (
     <div className={sidebarCls}>
@@ -72,9 +73,9 @@ const Sidebar = () => {
         />
       </div>
       <div className={tokenCls} onClick={() => gotoPage(TOKENS)}>
-        <PutAwayMemu 
-          type="token" 
-          isPutAway={isPutAway} 
+        <PutAwayMemu
+          type="token"
+          isPutAway={isPutAway}
           title={intl.formatMessage({ id: 'common.tokens.text' })} />
       </div>
     </div>

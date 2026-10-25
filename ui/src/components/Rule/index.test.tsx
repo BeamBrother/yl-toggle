@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import userEvent from '@testing-library/user-event';
 import Rule from '.';
@@ -16,12 +16,12 @@ const RuleData = {
   active: true,
 };
 
-const Wrapper: React.FC = ({ children }) => {
+const Wrapper: React.FC<{ children?: import('react').ReactNode }> = ({ children }) => {
   return (
     <IntlWrapper>
       <hooksFormContainer.Provider>
         <ruleContainer.Provider>
-          <DragDropContext onDragEnd={jest.fn()}>
+          <DragDropContext onDragEnd={vi.fn()}>
             <Droppable droppableId="droppable">
               {(provided) => (
                 <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -39,7 +39,7 @@ const Wrapper: React.FC = ({ children }) => {
   );
 };
 
-const UseHookWrapper: React.FC = ({ children }) => {
+const UseHookWrapper: React.FC<{ children?: import('react').ReactNode }> = ({ children }) => {
   const { saveRules } = ruleContainer.useContainer();
 
   useEffect(() => {
@@ -51,8 +51,8 @@ const UseHookWrapper: React.FC = ({ children }) => {
   return <>{children}</>;
 };
 
-it('Rule snapshot', (done) => {
-  (async () => {
+it('Rule snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(
       <Rule
         rule={RuleData}
@@ -76,12 +76,11 @@ it('Rule snapshot', (done) => {
       ruleContainer={ruleContainer}
       hooksFormContainer={hooksFormContainer}
     />);
-    done();
   })();
 });
 
-test('Add conditions', (done) => {
-  (async () => {
+it('Add conditions', async () => {
+  await (async () => {
     const { baseElement } = render(
       <Rule
         rule={RuleData}
@@ -99,7 +98,7 @@ test('Add conditions', (done) => {
 
     const addBtn = screen.getByText('Add');
     await userEvent.click(addBtn);
-    
+
     const addString =  screen.queryByText('string');
     expect(addString).not.toBe(null);
 
@@ -113,13 +112,11 @@ test('Add conditions', (done) => {
     await userEvent.unhover(addBtn);
     await sleep(100);
     expect(addString).not.toBeInTheDocument();
-
-    done();
   })();
 });
 
-test('Click Title', (done) => {
-  (async () => {
+it('Click Title', async () => {
+  await (async () => {
     render(
       <Rule
         rule={RuleData}
@@ -133,16 +130,14 @@ test('Click Title', (done) => {
         wrapper: Wrapper,
       }
     );
-    
+
     const spans = screen.queryAllByRole('generic');
     const title = spans.find((value) => {
       return value.className.split(' ')[1] === 'title';
     });
     if(title) await userEvent.click(title);
     await sleep(200);
-    
-    expect(title?.className.split(' ')[0]).not.toBe('active');
 
-    done();
+    expect(title?.className.split(' ')[0]).not.toBe('active');
   })();
 });

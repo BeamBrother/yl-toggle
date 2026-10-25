@@ -29,9 +29,17 @@
 //! }
 //! ```
 //!
-//! ## Performance (lower is better)
+//! ## Performance
 //!
-//! ![performance](https://raw.githubusercontent.com/dtolnay/ryu/master/performance.png)
+//! The [dtoa-benchmark] compares this library and other Rust floating point
+//! formatting implementations across a range of precisions. The vertical axis
+//! in this chart shows nanoseconds taken by a single execution of
+//! `ryu::Buffer::new().format_finite(value)` so a lower result indicates a
+//! faster library.
+//!
+//! [dtoa-benchmark]: https://github.com/dtolnay/dtoa-benchmark
+//!
+//! ![performance](https://raw.githubusercontent.com/dtolnay/ryu/master/dtoa-benchmark.png)
 //!
 //! You can run upstream's benchmarks with:
 //!
@@ -81,7 +89,7 @@
 //! notation.
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/ryu/1.0.15")]
+#![doc(html_root_url = "https://docs.rs/ryu/1.0.23")]
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
@@ -95,6 +103,7 @@
     clippy::missing_panics_doc,
     clippy::module_name_repetitions,
     clippy::must_use_candidate,
+    clippy::needless_doctest_main,
     clippy::similar_names,
     clippy::too_many_lines,
     clippy::unreadable_literal,
@@ -114,6 +123,8 @@ mod digit_table;
 mod f2s;
 mod f2s_intrinsics;
 mod pretty;
+#[cfg(test)]
+mod tests;
 
 pub use crate::buffer::{Buffer, Float};
 

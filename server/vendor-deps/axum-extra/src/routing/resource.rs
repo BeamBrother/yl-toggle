@@ -1,13 +1,8 @@
 use axum::{
-    body::Body,
     handler::Handler,
-    http::Request,
-    response::Response,
-    routing::{delete, get, on, post, MethodFilter},
+    routing::{delete, get, on, post, MethodFilter, MethodRouter},
     Router,
 };
-use std::convert::Infallible;
-use tower_service::Service;
 
 /// A resource which defines a set of conventional CRUD routes.
 ///
@@ -24,38 +19,28 @@ use tower_service::Service;
 ///     .create(|| async {})
 ///     // `GET /users/new`
 ///     .new(|| async {})
-///     // `GET /users/:users_id`
+///     // `GET /users/{users_id}`
 ///     .show(|Path(user_id): Path<u64>| async {})
-///     // `GET /users/:users_id/edit`
+///     // `GET /users/{users_id}/edit`
 ///     .edit(|Path(user_id): Path<u64>| async {})
-///     // `PUT or PATCH /users/:users_id`
+///     // `PUT or PATCH /users/{users_id}`
 ///     .update(|Path(user_id): Path<u64>| async {})
-///     // `DELETE /users/:users_id`
-///     .destroy(|Path(user_id): Path<u64>| async {})
-///     // Nest another router at the "member level"
-///     // This defines a route for `GET /users/:users_id/tweets`
-///     .nest(Router::new().route(
-///         "/tweets",
-///         get(|Path(user_id): Path<u64>| async {}),
-///     ))
-///     // Nest another router at the "collection level"
-///     // This defines a route for `GET /users/featured`
-///     .nest_collection(
-///         Router::new().route("/featured", get(|| async {})),
-///     );
+///     // `DELETE /users/{users_id}`
+///     .destroy(|Path(user_id): Path<u64>| async {});
 ///
 /// let app = Router::new().merge(users);
-/// # let _: Router<axum::body::Body> = app;
+/// # let _: Router = app;
 /// ```
 #[derive(Debug)]
-pub struct Resource<B = Body> {
+#[must_use]
+pub struct Resource<S = ()> {
     pub(crate) name: String,
-    pub(crate) router: Router<B>,
+    pub(crate) router: Router<S>,
 }
 
-impl<B> Resource<B>
+impl<S> Resource<S>
 where
-    B: axum::body::HttpBody + Send + 'static,
+    S: Clone + Send + Sync + 'static,
 {
     /// Create a `Resource` with the given name.
     ///
@@ -63,14 +48,14 @@ where
     pub fn named(resource_name: &str) -> Self {
         Self {
             name: resource_name.to_owned(),
-            router: Default::default(),
+            router: Router::new(),
         }
     }
 
     /// Add a handler at `GET /{resource_name}`.
     pub fn index<H, T>(self, handler: H) -> Self
     where
-        H: Handler<T, B>,
+        H: Handler<T, S>,
         T: 'static,
     {
         let path = self.index_create_path();
@@ -80,7 +65,7 @@ where
     /// Add a handler at `POST /{resource_name}`.
     pub fn create<H, T>(self, handler: H) -> Self
     where
-        H: Handler<T, B>,
+        H: Handler<T, S>,
         T: 'static,
     {
         let path = self.index_create_path();
@@ -90,77 +75,62 @@ where
     /// Add a handler at `GET /{resource_name}/new`.
     pub fn new<H, T>(self, handler: H) -> Self
     where
-        H: Handler<T, B>,
+        H: Handler<T, S>,
         T: 'static,
     {
         let path = format!("/{}/new", self.name);
         self.route(&path, get(handler))
     }
 
-    /// Add a handler at `GET /{resource_name}/:{resource_name}_id`.
+    /// Add a handler at `GET /<resource_name>/{<resource_name>_id}`.
+    ///
+    /// For example when the resources are posts: `GET /post/{post_id}`.
     pub fn show<H, T>(self, handler: H) -> Self
     where
-        H: Handler<T, B>,
+        H: Handler<T, S>,
         T: 'static,
     {
         let path = self.show_update_destroy_path();
         self.route(&path, get(handler))
     }
 
-    /// Add a handler at `GET /{resource_name}/:{resource_name}_id/edit`.
+    /// Add a handler at `GET /<resource_name>/{<resource_name>_id}/edit`.
+    ///
+    /// For example when the resources are posts: `GET /post/{post_id}/edit`.
     pub fn edit<H, T>(self, handler: H) -> Self
     where
-        H: Handler<T, B>,
+        H: Handler<T, S>,
         T: 'static,
     {
-        let path = format!("/{0}/:{0}_id/edit", self.name);
+        let path = format!("/{0}/{{{0}_id}}/edit", self.name);
         self.route(&path, get(handler))
     }
 
-    /// Add a handler at `PUT or PATCH /resource_name/:{resource_name}_id`.
+    /// Add a handler at `PUT or PATCH /<resource_name>/{<resource_name>_id}`.
+    ///
+    /// For example when the resources are posts: `PUT /post/{post_id}`.
     pub fn update<H, T>(self, handler: H) -> Self
     where
-        H: Handler<T, B>,
+        H: Handler<T, S>,
         T: 'static,
     {
         let path = self.show_update_destroy_path();
-        self.route(&path, on(MethodFilter::PUT | MethodFilter::PATCH, handler))
+        self.route(
+            &path,
+            on(MethodFilter::PUT.or(MethodFilter::PATCH), handler),
+        )
     }
 
-    /// Add a handler at `DELETE /{resource_name}/:{resource_name}_id`.
+    /// Add a handler at `DELETE /<resource_name>/{<resource_name>_id}`.
+    ///
+    /// For example when the resources are posts: `DELETE /post/{post_id}`.
     pub fn destroy<H, T>(self, handler: H) -> Self
     where
-        H: Handler<T, B>,
+        H: Handler<T, S>,
         T: 'static,
     {
         let path = self.show_update_destroy_path();
         self.route(&path, delete(handler))
-    }
-
-    /// Nest another route at the "member level".
-    ///
-    /// The routes will be nested at `/{resource_name}/:{resource_name}_id`.
-    pub fn nest<T>(mut self, svc: T) -> Self
-    where
-        T: Service<Request<B>, Response = Response, Error = Infallible> + Clone + Send + 'static,
-        T::Future: Send + 'static,
-    {
-        let path = self.show_update_destroy_path();
-        self.router = self.router.nest(&path, svc);
-        self
-    }
-
-    /// Nest another route at the "collection level".
-    ///
-    /// The routes will be nested at `/{resource_name}`.
-    pub fn nest_collection<T>(mut self, svc: T) -> Self
-    where
-        T: Service<Request<B>, Response = Response, Error = Infallible> + Clone + Send + 'static,
-        T::Future: Send + 'static,
-    {
-        let path = self.index_create_path();
-        self.router = self.router.nest(&path, svc);
-        self
     }
 
     fn index_create_path(&self) -> String {
@@ -168,21 +138,17 @@ where
     }
 
     fn show_update_destroy_path(&self) -> String {
-        format!("/{0}/:{0}_id", self.name)
+        format!("/{0}/{{{0}_id}}", self.name)
     }
 
-    fn route<T>(mut self, path: &str, svc: T) -> Self
-    where
-        T: Service<Request<B>, Response = Response, Error = Infallible> + Clone + Send + 'static,
-        T::Future: Send + 'static,
-    {
-        self.router = self.router.route(path, svc);
+    fn route(mut self, path: &str, method_router: MethodRouter<S>) -> Self {
+        self.router = self.router.route(path, method_router);
         self
     }
 }
 
-impl<B> From<Resource<B>> for Router<B> {
-    fn from(resource: Resource<B>) -> Self {
+impl<S> From<Resource<S>> for Router<S> {
+    fn from(resource: Resource<S>) -> Self {
         resource.router
     }
 }
@@ -191,7 +157,9 @@ impl<B> From<Resource<B>> for Router<B> {
 mod tests {
     #[allow(unused_imports)]
     use super::*;
-    use axum::{extract::Path, http::Method, Router};
+    use axum::{body::Body, extract::Path, http::Method};
+    use http::Request;
+    use http_body_util::BodyExt;
     use tower::ServiceExt;
 
     #[tokio::test]
@@ -200,77 +168,55 @@ mod tests {
             .index(|| async { "users#index" })
             .create(|| async { "users#create" })
             .new(|| async { "users#new" })
-            .show(|Path(id): Path<u64>| async move { format!("users#show id={}", id) })
-            .edit(|Path(id): Path<u64>| async move { format!("users#edit id={}", id) })
-            .update(|Path(id): Path<u64>| async move { format!("users#update id={}", id) })
-            .destroy(|Path(id): Path<u64>| async move { format!("users#destroy id={}", id) })
-            .nest(Router::new().route(
-                "/tweets",
-                get(|Path(id): Path<u64>| async move { format!("users#tweets id={}", id) }),
-            ))
-            .nest_collection(
-                Router::new().route("/featured", get(|| async move { "users#featured" })),
-            );
+            .show(|Path(id): Path<u64>| async move { format!("users#show id={id}") })
+            .edit(|Path(id): Path<u64>| async move { format!("users#edit id={id}") })
+            .update(|Path(id): Path<u64>| async move { format!("users#update id={id}") })
+            .destroy(|Path(id): Path<u64>| async move { format!("users#destroy id={id}") });
 
-        let mut app = Router::new().merge(users);
+        let app = Router::new().merge(users);
+
+        assert_eq!(call_route(&app, Method::GET, "/users").await, "users#index");
 
         assert_eq!(
-            call_route(&mut app, Method::GET, "/users").await,
-            "users#index"
-        );
-
-        assert_eq!(
-            call_route(&mut app, Method::POST, "/users").await,
+            call_route(&app, Method::POST, "/users").await,
             "users#create"
         );
 
         assert_eq!(
-            call_route(&mut app, Method::GET, "/users/new").await,
+            call_route(&app, Method::GET, "/users/new").await,
             "users#new"
         );
 
         assert_eq!(
-            call_route(&mut app, Method::GET, "/users/1").await,
+            call_route(&app, Method::GET, "/users/1").await,
             "users#show id=1"
         );
 
         assert_eq!(
-            call_route(&mut app, Method::GET, "/users/1/edit").await,
+            call_route(&app, Method::GET, "/users/1/edit").await,
             "users#edit id=1"
         );
 
         assert_eq!(
-            call_route(&mut app, Method::PATCH, "/users/1").await,
+            call_route(&app, Method::PATCH, "/users/1").await,
             "users#update id=1"
         );
 
         assert_eq!(
-            call_route(&mut app, Method::PUT, "/users/1").await,
+            call_route(&app, Method::PUT, "/users/1").await,
             "users#update id=1"
         );
 
         assert_eq!(
-            call_route(&mut app, Method::DELETE, "/users/1").await,
+            call_route(&app, Method::DELETE, "/users/1").await,
             "users#destroy id=1"
-        );
-
-        assert_eq!(
-            call_route(&mut app, Method::GET, "/users/1/tweets").await,
-            "users#tweets id=1"
-        );
-
-        assert_eq!(
-            call_route(&mut app, Method::GET, "/users/featured").await,
-            "users#featured"
         );
     }
 
-    async fn call_route(app: &mut Router, method: Method, uri: &str) -> String {
+    async fn call_route(app: &Router, method: Method, uri: &str) -> String {
         let res = app
-            .ready()
-            .await
-            .unwrap()
-            .call(
+            .clone()
+            .oneshot(
                 Request::builder()
                     .method(method)
                     .uri(uri)
@@ -279,7 +225,7 @@ mod tests {
             )
             .await
             .unwrap();
-        let bytes = hyper::body::to_bytes(res).await.unwrap();
+        let bytes = res.collect().await.unwrap().to_bytes();
         String::from_utf8(bytes.to_vec()).unwrap()
     }
 }

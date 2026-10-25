@@ -9,6 +9,7 @@
 
 use super::*;
 use crate::data::*;
+use crate::gb18030_2022::*;
 use crate::handles::*;
 use crate::variant::*;
 // Rust 1.14.0 requires the following despite the asterisk above.
@@ -24,10 +25,7 @@ enum Gb18030Pending {
 
 impl Gb18030Pending {
     fn is_none(&self) -> bool {
-        match *self {
-            Gb18030Pending::None => true,
-            _ => false,
-        }
+        matches!(*self, Gb18030Pending::None)
     }
 
     fn count(&self) -> usize {
@@ -269,7 +267,7 @@ impl Gb18030Decoder {
                 } else {
                     handle.write_bmp_excl_ascii(gb18030_range_decode(pointer as u16))
                 }
-            } else if pointer >= 189_000 && pointer <= 1_237_575 {
+            } else if (189_000..=1_237_575).contains(&pointer) {
                 // Astral
                 handle.write_astral((pointer - (189_000usize - 0x1_0000usize)) as u32)
             } else {
@@ -300,10 +298,10 @@ fn gbk_encode_non_unified(bmp: u16) -> Option<(usize, usize)> {
     // Try ideographic punctuation first as it's the most likely case.
     // Throwing in the check for full-width currencies and tilde is probably
     // more size-efficient here than elsewhere.
-    if in_inclusive_range16(bmp, 0x2014, 0x3017) || in_inclusive_range16(bmp, 0xFF04, 0xFFE1) {
-        if let Some(pos) = position(&GB2312_SYMBOLS[..], bmp) {
-            return Some((0xA1, pos + 0xA1));
-        }
+    if (in_inclusive_range16(bmp, 0x2014, 0x3017) || in_inclusive_range16(bmp, 0xFF04, 0xFFE1))
+        && let Some(pos) = position(&GB2312_SYMBOLS[..], bmp)
+    {
+        return Some((0xA1, pos + 0xA1));
     }
     // Ext A
     if in_range16(bmp, 0x3400, 0x4E00) {
@@ -347,8 +345,15 @@ fn gbk_encode_non_unified(bmp: u16) -> Option<(usize, usize)> {
         }
         return None;
     }
-    if bmp >= 0xE794 {
-        // Various brackets, all in PUA or full-width regions
+
+    if in_inclusive_range16(bmp, 0xE78D, 0xE864) {
+        // The array is sorted but short, so let's do linear search.
+        if let Some(pos) = position(&GB18030_2022_OVERRIDE_PUA[..], bmp) {
+            let pair = &GB18030_2022_OVERRIDE_BYTES[pos];
+            return Some((pair[0].into(), pair[1].into()));
+        }
+    } else if bmp >= 0xFE17 {
+        // Various brackets, all in full-width regions
         if let Some(pos) = position(&GB2312_SYMBOLS_AFTER_GREEK[..], bmp) {
             return Some((0xA6, pos + (0x9F - 0x60 + 0xA1)));
         }
@@ -380,13 +385,15 @@ fn gbk_encode_non_unified(bmp: u16) -> Option<(usize, usize)> {
         let offset = if other_trail < 0x3F { 0x40 } else { 0x41 };
         return Some((other_lead + (0x81 + 0x20), other_trail + offset));
     }
-    // CJK Radicals Supplement or PUA in GBK_BOTTOM
-    if in_inclusive_range16(bmp, 0x2E81, 0x2ECA) || in_inclusive_range16(bmp, 0xE816, 0xE864) {
-        if let Some(pos) = position(&GBK_BOTTOM[21..], bmp) {
-            let trail = pos + 16;
-            let offset = if trail < 0x3F { 0x40 } else { 0x41 };
-            return Some((0xFE, trail + offset));
-        }
+    // CJK Radicals Supplement, PUA, and U+9FBx ideographs in GBK_BOTTOM
+    if (in_inclusive_range16(bmp, 0x2E81, 0x2ECA)
+        || in_inclusive_range16(bmp, 0x9FB4, 0x9FBB)
+        || in_inclusive_range16(bmp, 0xE816, 0xE855))
+        && let Some(pos) = position(&GBK_BOTTOM[21..], bmp)
+    {
+        let trail = pos + 16;
+        let offset = if trail < 0x3F { 0x40 } else { 0x41 };
+        return Some((0xFE, trail + offset));
     }
     // GB2312 bottom PUA
     let bmp_minus_gb2312_bottom_pua = bmp.wrapping_sub(0xE234);
@@ -607,10 +614,17 @@ mod tests {
         decode_gb18030(b"\x81\x80", "\u{4E90}");
         decode_gb18030(b"\x81\xFE", "\u{4FA2}");
         decode_gb18030(b"\xFE\x40", "\u{FA0C}");
-        decode_gb18030(b"\xFE\x7E", "\u{E843}");
         decode_gb18030(b"\xFE\x7F", "\u{FFFD}\u{007F}");
         decode_gb18030(b"\xFE\x80", "\u{4723}");
         decode_gb18030(b"\xFE\xFE", "\u{E4C5}");
+
+        // Changes between GB18030-2005 and GB18030-2022
+        decode_gb18030(b"\xFE\x7E", "\u{9FB9}");
+        decode_gb18030(b"\xA6\xDD", "\u{FE14}");
+
+        // These mappings remain in place the GB18030-2005 way despite GB18030-2022
+        decode_gb18030(b"\x82\x35\x91\x32", "\u{9FB9}");
+        decode_gb18030(b"\x84\x31\x83\x30", "\u{FE14}");
 
         // The difference from the original GB18030
         decode_gb18030(b"\xA3\xA0", "\u{3000}");
@@ -679,6 +693,15 @@ mod tests {
 
         // Edge cases
         encode_gb18030("\u{00F7}", b"\xA1\xC2");
+
+        // GB18030-2022
+        encode_gb18030("\u{9FB9}", b"\xFE\x7E");
+        encode_gb18030("\u{FE14}", b"\xA6\xDD");
+        encode_gb18030("\u{E843}", b"\xFE\x7E");
+        encode_gb18030("\u{E791}", b"\xA6\xDD");
+
+        // Non-change in GB18030-2022
+        encode_gb18030("\u{E817}", b"\xFE\x52");
     }
 
     #[test]
@@ -721,27 +744,15 @@ mod tests {
 
         // Edge cases
         encode_gbk("\u{00F7}", b"\xA1\xC2");
-    }
 
-    #[test]
-    #[cfg_attr(miri, ignore)] // Miri is too slow
-    fn test_gb18030_decode_all() {
-        let input = include_bytes!("test_data/gb18030_in.txt");
-        let expectation = include_str!("test_data/gb18030_in_ref.txt");
-        let (cow, had_errors) = GB18030.decode_without_bom_handling(input);
-        assert!(!had_errors, "Should not have had errors.");
-        assert_eq!(&cow[..], expectation);
-    }
+        // GB18030-2022
+        encode_gb18030("\u{9FB9}", b"\xFE\x7E");
+        encode_gb18030("\u{FE14}", b"\xA6\xDD");
+        encode_gb18030("\u{E843}", b"\xFE\x7E");
+        encode_gb18030("\u{E791}", b"\xA6\xDD");
 
-    #[test]
-    #[cfg_attr(miri, ignore)] // Miri is too slow
-    fn test_gb18030_encode_all() {
-        let input = include_str!("test_data/gb18030_out.txt");
-        let expectation = include_bytes!("test_data/gb18030_out_ref.txt");
-        let (cow, encoding, had_errors) = GB18030.encode(input);
-        assert!(!had_errors, "Should not have had errors.");
-        assert_eq!(encoding, GB18030);
-        assert_eq!(&cow[..], &expectation[..]);
+        // Non-change in GB18030-2022
+        encode_gb18030("\u{E817}", b"\xFE\x52");
     }
 
     #[test]

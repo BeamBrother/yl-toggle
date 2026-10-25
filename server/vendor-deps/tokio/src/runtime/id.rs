@@ -16,26 +16,22 @@ use std::num::NonZeroU64;
 /// # Examples
 ///
 /// ```
+/// # #[cfg(not(target_family = "wasm"))]
+/// # {
 /// use tokio::runtime::Handle;
 ///
 /// #[tokio::main(flavor = "multi_thread", worker_threads = 4)]
 /// async fn main() {
 ///   println!("Current runtime id: {}", Handle::current().id());
 /// }
+/// # }
 /// ```
-///
-/// **Note**: This is an [unstable API][unstable]. The public API of this type
-/// may break in 1.x releases. See [the documentation on unstable
-/// features][unstable] for details.
-///
-/// [unstable]: crate#unstable-features
-#[cfg_attr(not(tokio_unstable), allow(unreachable_pub))]
 #[derive(Clone, Copy, Debug, Hash, Eq, PartialEq)]
 pub struct Id(NonZeroU64);
 
-impl From<NonZeroU64> for Id {
-    fn from(value: NonZeroU64) -> Self {
-        Id(value)
+impl Id {
+    pub(crate) fn new(integer: impl Into<NonZeroU64>) -> Self {
+        Self(integer.into())
     }
 }
 

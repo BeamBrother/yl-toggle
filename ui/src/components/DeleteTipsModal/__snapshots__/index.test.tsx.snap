@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`DeleteTipsModal snapshot 1`] = `
 <body
@@ -6,51 +6,55 @@ exports[`DeleteTipsModal snapshot 1`] = `
 >
   <div />
   <div
-    class="ui page modals dimmer transition visible active"
-    style="display: flex;"
+    data-suir-portal="true"
   >
     <div
-      class="ui mini modal transition visible active"
-      style="width: 400px;"
+      class="ui page modals dimmer transition visible active"
+      style="display: flex !important;"
     >
       <div
-        class="content"
+        class="ui mini modal transition visible active"
+        style="width: 400px;"
       >
-        <div>
-          <div
-            class="modal-header"
-          >
-            <span
-              class="iconfont icon-warning-circle warning-circle"
-              customclass="warning-circle"
-              type="warning-circle"
-            />
-            <span
-              class="modal-header-text"
+        <div
+          class="content"
+        >
+          <div>
+            <div
+              class="_modal-header_e23648"
             >
-              test title
-            </span>
-          </div>
-          <div
-            class="modal-content"
-          >
-            test content
-          </div>
-          <div
-            class="footer"
-          >
-            <button
-              class="ui mini basic button btn"
-              type="reset"
+              <span
+                class="iconfont icon-warning-circle _warning-circle_e23648"
+                customclass="_warning-circle_e23648"
+                type="warning-circle"
+              />
+              <span
+                class="_modal-header-text_e23648"
+              >
+                test title
+              </span>
+            </div>
+            <div
+              class="_modal-content_e23648"
             >
-              Cancel
-            </button>
-            <button
-              class="ui mini primary button btn"
-              type="submit"
+              test content
+            </div>
+            <div
+              class="_footer_e23648"
             >
-              Confirm
-            </button>
+              <button
+                class="ui mini basic button _btn_e23648"
+                type="reset"
+              >
+                Cancel
+              </button>
+              <button
+                class="ui mini primary button _btn_e23648"
+                type="submit"
+              >
+                Confirm
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -65,51 +69,55 @@ exports[`DeleteTipsModal snapshot 2`] = `
 >
   <div />
   <div
-    class="ui page modals dimmer transition visible active"
-    style="display: flex;"
+    data-suir-portal="true"
   >
     <div
-      class="ui mini modal transition visible active"
-      style="width: 400px;"
+      class="ui page modals dimmer transition visible active"
+      style="display: flex !important;"
     >
       <div
-        class="content"
+        class="ui mini modal transition visible active"
+        style="width: 400px;"
       >
-        <div>
-          <div
-            class="modal-header"
-          >
-            <span
-              class="iconfont icon-warning-circle warning-circle"
-              customclass="warning-circle"
-              type="warning-circle"
-            />
-            <span
-              class="modal-header-text"
+        <div
+          class="content"
+        >
+          <div>
+            <div
+              class="_modal-header_e23648"
             >
-              test title
-            </span>
-          </div>
-          <div
-            class="modal-content"
-          >
-            test content
-          </div>
-          <div
-            class="footer"
-          >
-            <button
-              class="ui mini basic button btn"
-              type="reset"
+              <span
+                class="iconfont icon-warning-circle _warning-circle_e23648"
+                customclass="_warning-circle_e23648"
+                type="warning-circle"
+              />
+              <span
+                class="_modal-header-text_e23648"
+              >
+                test title
+              </span>
+            </div>
+            <div
+              class="_modal-content_e23648"
             >
-              Cancel
-            </button>
-            <button
-              class="ui mini primary button btn"
-              type="submit"
+              test content
+            </div>
+            <div
+              class="_footer_e23648"
             >
-              Confirm
-            </button>
+              <button
+                class="ui mini basic button _btn_e23648"
+                type="reset"
+              >
+                Cancel
+              </button>
+              <button
+                class="ui mini primary button _btn_e23648"
+                type="submit"
+              >
+                Confirm
+              </button>
+            </div>
           </div>
         </div>
       </div>

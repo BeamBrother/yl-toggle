@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Key snapshot 1`] = `
 <DocumentFragment>
@@ -8,19 +8,19 @@ exports[`Key snapshot 1`] = `
     >
       <label>
         <span
-          class="label-required"
+          class="_label-required_063ad5"
         >
           *
         </span>
         Key
         <span
-          class="iconfont icon-question icon-question"
-          customclass="icon-question"
+          class="iconfont icon-question _icon-question_063ad5"
+          customclass="_icon-question_063ad5"
           type="question"
         />
       </label>
       <div
-        class="field input"
+        class="field _input_063ad5"
       >
         <div
           class="ui input"
@@ -35,7 +35,7 @@ exports[`Key snapshot 1`] = `
       </div>
     </div>
     <div
-      class="tip-text"
+      class="_tip-text_063ad5"
     >
       Key can only contain letters, numbers, '.', '_' or '-'.
     </div>
@@ -51,19 +51,19 @@ exports[`Key snapshot 2`] = `
     >
       <label>
         <span
-          class="label-required"
+          class="_label-required_063ad5"
         >
           *
         </span>
         Key
         <span
-          class="iconfont icon-question icon-question"
-          customclass="icon-question"
+          class="iconfont icon-question _icon-question_063ad5"
+          customclass="_icon-question_063ad5"
           type="question"
         />
       </label>
       <div
-        class="error field input"
+        class="error field _input_063ad5"
       >
         <div
           class="ui input"
@@ -79,12 +79,12 @@ exports[`Key snapshot 2`] = `
       </div>
     </div>
     <div
-      class="error-text"
+      class="_error-text_063ad5"
     >
       error message
     </div>
     <div
-      class="tip-text"
+      class="_tip-text_063ad5"
     >
       Key can only contain letters, numbers, '.', '_' or '-'.
     </div>

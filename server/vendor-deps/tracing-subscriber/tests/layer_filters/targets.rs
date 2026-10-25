@@ -38,8 +38,8 @@ fn inner_layer_short_circuits() {
     // evaluation, we aren't left with a "dirty" per-layer filter state.
 
     let (layer, handle) = layer::mock()
-        .event(event::msg("hello world"))
-        .done()
+        .event(expect::event().with_fields(expect::msg("hello world")))
+        .only()
         .run_with_handle();
 
     let filter = Targets::new().with_target("magic_target", LevelFilter::DEBUG);

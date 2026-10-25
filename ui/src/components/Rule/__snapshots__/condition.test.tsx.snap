@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`RuleContent datetime input 1`] = `
 <body>
@@ -7,39 +7,39 @@ exports[`RuleContent datetime input 1`] = `
       class="ui form"
     >
       <div
-        class="rule-item"
+        class="_rule-item_b24de5"
       >
         <span
-          class="rule-item-prefix rule-item-first"
+          class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
         >
           <span
-            class="rule-item-text"
+            class="_rule-item-text_b24de5"
           >
             If
           </span>
         </span>
         <div
-          class="rule-item-type"
+          class="_rule-item-type_b24de5"
         >
           <div
-            class="rule-item-type-box"
+            class="_rule-item-type-box_b24de5"
           >
             <div
-              class="rule-item-type-text"
+              class="_rule-item-type-text_b24de5"
             >
               datetime
             </div>
           </div>
         </div>
         <div
-          class="equal width fields rule-item-left"
+          class="equal width fields _rule-item-left_b24de5"
         >
           <div
-            class="field rule-item-subject"
+            class="field _rule-item-subject_b24de5"
           >
             <div
               aria-expanded="false"
-              class="ui floating search selection dropdown rule-item-subject-dropdown"
+              class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
               name="rule_test-id_condition_c-test-id_subject"
               role="combobox"
             >
@@ -66,11 +66,11 @@ exports[`RuleContent datetime input 1`] = `
             </div>
           </div>
           <div
-            class="field rule-item-operator"
+            class="field _rule-item-operator_b24de5"
           >
             <div
               aria-expanded="false"
-              class="ui floating selection dropdown rule-item-operator-dropdown"
+              class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
               name="rule_test-id_condition_c-test-id_predicate"
               role="listbox"
               tabindex="0"
@@ -84,8 +84,8 @@ exports[`RuleContent datetime input 1`] = `
                 Select an operator
               </div>
               <span
-                class="iconfont icon-angle-down angle-down"
-                customclass="angle-down"
+                class="iconfont icon-angle-down _angle-down_b24de5"
+                customclass="_angle-down_b24de5"
                 type="angle-down"
               />
               <div
@@ -121,7 +121,7 @@ exports[`RuleContent datetime input 1`] = `
             </div>
           </div>
           <div
-            class="six wide field rule-item-datetime"
+            class="six wide field _rule-item-datetime_b24de5"
             name="rule_test-id_condition_c-test-id_datetime"
           >
             <div
@@ -568,8 +568,8 @@ exports[`RuleContent datetime input 1`] = `
             </div>
             <img
               alt="canlendar"
-              class="rule-item-datetime-canlendar"
-              src="calendar.svg"
+              class="_rule-item-datetime-canlendar_b24de5"
+              src="data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='UTF-8'?%3e%3csvg%20width='16px'%20height='16px'%20viewBox='0%200%2016%2016'%20version='1.1'%20xmlns='http://www.w3.org/2000/svg'%20xmlns:xlink='http://www.w3.org/1999/xlink'%3e%3ctitle%3ecalendar-o%3c/title%3e%3cg%20id='迭代需求0627'%20stroke='none'%20stroke-width='1'%20fill='none'%20fill-rule='evenodd'%3e%3cg%20transform='translate(-1377.000000,%20-580.000000)'%20fill='%2374788d'%20fill-rule='nonzero'%20id='编组-26备份-3'%3e%3cg%20transform='translate(749.000000,%20307.000000)'%3e%3cg%20id='编组-20'%20transform='translate(24.000000,%2024.000000)'%3e%3cg%20id='编组-24备份-2'%20transform='translate(0.000000,%2040.000000)'%3e%3cg%20id='编组-45备份-2'%20transform='translate(30.000000,%20201.000000)'%3e%3cg%20id='编组-25'%20transform='translate(358.000000,%200.000000)'%3e%3cg%20id='calendar-o'%20transform='translate(216.000000,%208.000000)'%3e%3cpath%20d='M13,4.33333333%20L13,3%20L3,3%20L3,4.33333333%20L13,4.33333333%20Z%20M13,5.33333333%20L3,5.33333333%20L3,13%20L13,13%20L13,5.33333333%20Z%20M2.33333333,2%20L13.6666667,2%20C13.8507616,2%2014,2.14923842%2014,2.33333333%20L14,13.6666667%20C14,13.8507616%2013.8507616,14%2013.6666667,14%20L2.33333333,14%20C2.14923842,14%202,13.8507616%202,13.6666667%20L2,2.33333333%20C2,2.14923842%202.14923842,2%202.33333333,2%20Z%20M4.83333333,6.66666667%20L5.83333333,6.66666667%20L5.83333333,7.66666667%20L4.83333333,7.66666667%20L4.83333333,6.66666667%20Z%20M7.5,6.66666667%20L8.5,6.66666667%20L8.5,7.66666667%20L7.5,7.66666667%20L7.5,6.66666667%20Z%20M10.1666667,6.66666667%20L11.1666667,6.66666667%20L11.1666667,7.66666667%20L10.1666667,7.66666667%20L10.1666667,6.66666667%20Z%20M4.83333333,8.66666667%20L5.83333333,8.66666667%20L5.83333333,9.66666667%20L4.83333333,9.66666667%20L4.83333333,8.66666667%20Z%20M7.5,8.66666667%20L8.5,8.66666667%20L8.5,9.66666667%20L7.5,9.66666667%20L7.5,8.66666667%20Z%20M10.1666667,8.66666667%20L11.1666667,8.66666667%20L11.1666667,9.66666667%20L10.1666667,9.66666667%20L10.1666667,8.66666667%20Z%20M4.83333333,10.6666667%20L5.83333333,10.6666667%20L5.83333333,11.6666667%20L4.83333333,11.6666667%20L4.83333333,10.6666667%20Z%20M7.5,10.6666667%20L8.5,10.6666667%20L8.5,11.6666667%20L7.5,11.6666667%20L7.5,10.6666667%20Z'%20id='形状'%3e%3c/path%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/svg%3e"
             />
           </div>
           <div
@@ -598,8 +598,8 @@ exports[`RuleContent datetime input 1`] = `
                 UTC +8
               </div>
               <span
-                class="iconfont icon-angle-down angle-down"
-                customclass="angle-down"
+                class="iconfont icon-angle-down _angle-down_b24de5"
+                customclass="_angle-down_b24de5"
                 type="angle-down"
               />
               <div
@@ -936,8 +936,8 @@ exports[`RuleContent datetime input 1`] = `
           </div>
         </div>
         <span
-          class="iconfont icon-minus icon-minus"
-          customclass="icon-minus"
+          class="iconfont icon-minus _icon-minus_b24de5"
+          customclass="_icon-minus_b24de5"
           type="minus"
         />
       </div>
@@ -952,39 +952,39 @@ exports[`RuleContent normal input 1`] = `
     class="ui form"
   >
     <div
-      class="rule-item"
+      class="_rule-item_b24de5"
     >
       <span
-        class="rule-item-prefix rule-item-first"
+        class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
       >
         <span
-          class="rule-item-text"
+          class="_rule-item-text_b24de5"
         >
           If
         </span>
       </span>
       <div
-        class="rule-item-type"
+        class="_rule-item-type_b24de5"
       >
         <div
-          class="rule-item-type-box"
+          class="_rule-item-type-box_b24de5"
         >
           <div
-            class="rule-item-type-text"
+            class="_rule-item-type-text_b24de5"
           >
             string
           </div>
         </div>
       </div>
       <div
-        class="equal width fields rule-item-left"
+        class="equal width fields _rule-item-left_b24de5"
       >
         <div
-          class="field rule-item-subject"
+          class="field _rule-item-subject_b24de5"
         >
           <div
             aria-expanded="true"
-            class="ui active visible floating search selection dropdown rule-item-subject-dropdown"
+            class="ui active visible floating search selection dropdown _rule-item-subject-dropdown_b24de5"
             name="rule_test-id_condition_c-test-id_subject"
             role="combobox"
           >
@@ -1032,11 +1032,11 @@ exports[`RuleContent normal input 1`] = `
           </div>
         </div>
         <div
-          class="field rule-item-operator"
+          class="field _rule-item-operator_b24de5"
         >
           <div
             aria-expanded="false"
-            class="ui floating selection dropdown rule-item-operator-dropdown"
+            class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
             name="rule_test-id_condition_c-test-id_predicate"
             role="listbox"
             tabindex="0"
@@ -1050,8 +1050,8 @@ exports[`RuleContent normal input 1`] = `
               is one of
             </div>
             <span
-              class="iconfont icon-angle-down angle-down"
-              customclass="angle-down"
+              class="iconfont icon-angle-down _angle-down_b24de5"
+              customclass="_angle-down_b24de5"
               type="angle-down"
             />
             <div
@@ -1205,8 +1205,8 @@ exports[`RuleContent normal input 1`] = `
             >
               2022-11-09T10:14:06+08:00
               <span
-                class="iconfont icon-close dropdown-remove-icon"
-                customclass="dropdown-remove-icon"
+                class="iconfont icon-close _dropdown-remove-icon_b24de5"
+                customclass="_dropdown-remove-icon_b24de5"
                 type="close"
               />
             </a>
@@ -1238,8 +1238,8 @@ exports[`RuleContent normal input 1`] = `
         </div>
       </div>
       <span
-        class="iconfont icon-minus icon-minus"
-        customclass="icon-minus"
+        class="iconfont icon-minus _icon-minus_b24de5"
+        customclass="_icon-minus_b24de5"
         type="minus"
       />
     </div>
@@ -1253,39 +1253,39 @@ exports[`RuleContent normal input 2`] = `
     class="ui form"
   >
     <div
-      class="rule-item"
+      class="_rule-item_b24de5"
     >
       <span
-        class="rule-item-prefix rule-item-first"
+        class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
       >
         <span
-          class="rule-item-text"
+          class="_rule-item-text_b24de5"
         >
           If
         </span>
       </span>
       <div
-        class="rule-item-type"
+        class="_rule-item-type_b24de5"
       >
         <div
-          class="rule-item-type-box"
+          class="_rule-item-type-box_b24de5"
         >
           <div
-            class="rule-item-type-text"
+            class="_rule-item-type-text_b24de5"
           >
             string
           </div>
         </div>
       </div>
       <div
-        class="equal width fields rule-item-left"
+        class="equal width fields _rule-item-left_b24de5"
       >
         <div
-          class="field rule-item-subject"
+          class="field _rule-item-subject_b24de5"
         >
           <div
             aria-expanded="false"
-            class="ui floating search selection dropdown rule-item-subject-dropdown"
+            class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
             name="rule_test-id_condition_c-test-id_subject"
             role="combobox"
           >
@@ -1312,11 +1312,11 @@ exports[`RuleContent normal input 2`] = `
           </div>
         </div>
         <div
-          class="field rule-item-operator"
+          class="field _rule-item-operator_b24de5"
         >
           <div
             aria-expanded="false"
-            class="ui floating selection dropdown rule-item-operator-dropdown"
+            class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
             name="rule_test-id_condition_c-test-id_predicate"
             role="listbox"
             tabindex="0"
@@ -1330,8 +1330,8 @@ exports[`RuleContent normal input 2`] = `
               is not any of
             </div>
             <span
-              class="iconfont icon-angle-down angle-down"
-              customclass="angle-down"
+              class="iconfont icon-angle-down _angle-down_b24de5"
+              customclass="_angle-down_b24de5"
               type="angle-down"
             />
             <div
@@ -1485,8 +1485,8 @@ exports[`RuleContent normal input 2`] = `
             >
               2022-11-09T10:14:06+08:00
               <span
-                class="iconfont icon-close dropdown-remove-icon"
-                customclass="dropdown-remove-icon"
+                class="iconfont icon-close _dropdown-remove-icon_b24de5"
+                customclass="_dropdown-remove-icon_b24de5"
                 type="close"
               />
             </a>
@@ -1496,8 +1496,8 @@ exports[`RuleContent normal input 2`] = `
             >
               test text
               <span
-                class="iconfont icon-close dropdown-remove-icon"
-                customclass="dropdown-remove-icon"
+                class="iconfont icon-close _dropdown-remove-icon_b24de5"
+                customclass="_dropdown-remove-icon_b24de5"
                 type="close"
               />
             </a>
@@ -1507,8 +1507,8 @@ exports[`RuleContent normal input 2`] = `
             >
               test text 2
               <span
-                class="iconfont icon-close dropdown-remove-icon"
-                customclass="dropdown-remove-icon"
+                class="iconfont icon-close _dropdown-remove-icon_b24de5"
+                customclass="_dropdown-remove-icon_b24de5"
                 type="close"
               />
             </a>
@@ -1544,8 +1544,8 @@ exports[`RuleContent normal input 2`] = `
         </div>
       </div>
       <span
-        class="iconfont icon-minus icon-minus"
-        customclass="icon-minus"
+        class="iconfont icon-minus _icon-minus_b24de5"
+        customclass="_icon-minus_b24de5"
         type="minus"
       />
     </div>
@@ -1559,39 +1559,39 @@ exports[`RuleContent number input 1`] = `
     class="ui form"
   >
     <div
-      class="rule-item"
+      class="_rule-item_b24de5"
     >
       <span
-        class="rule-item-prefix rule-item-first"
+        class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
       >
         <span
-          class="rule-item-text"
+          class="_rule-item-text_b24de5"
         >
           If
         </span>
       </span>
       <div
-        class="rule-item-type"
+        class="_rule-item-type_b24de5"
       >
         <div
-          class="rule-item-type-box"
+          class="_rule-item-type-box_b24de5"
         >
           <div
-            class="rule-item-type-text"
+            class="_rule-item-type-text_b24de5"
           >
             number
           </div>
         </div>
       </div>
       <div
-        class="equal width fields rule-item-left"
+        class="equal width fields _rule-item-left_b24de5"
       >
         <div
-          class="field rule-item-subject"
+          class="field _rule-item-subject_b24de5"
         >
           <div
             aria-expanded="false"
-            class="ui floating search selection dropdown rule-item-subject-dropdown"
+            class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
             name="rule_test-id_condition_c-test-id_subject"
             role="combobox"
           >
@@ -1618,11 +1618,11 @@ exports[`RuleContent number input 1`] = `
           </div>
         </div>
         <div
-          class="field rule-item-operator"
+          class="field _rule-item-operator_b24de5"
         >
           <div
             aria-expanded="false"
-            class="ui floating selection dropdown rule-item-operator-dropdown"
+            class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
             name="rule_test-id_condition_c-test-id_predicate"
             role="listbox"
             tabindex="0"
@@ -1636,8 +1636,8 @@ exports[`RuleContent number input 1`] = `
               Select an operator
             </div>
             <span
-              class="iconfont icon-angle-down angle-down"
-              customclass="angle-down"
+              class="iconfont icon-angle-down _angle-down_b24de5"
+              customclass="_angle-down_b24de5"
               type="angle-down"
             />
             <div
@@ -1778,8 +1778,8 @@ exports[`RuleContent number input 1`] = `
         </div>
       </div>
       <span
-        class="iconfont icon-minus icon-minus"
-        customclass="icon-minus"
+        class="iconfont icon-minus _icon-minus_b24de5"
+        customclass="_icon-minus_b24de5"
         type="minus"
       />
     </div>
@@ -1789,8 +1789,8 @@ exports[`RuleContent number input 1`] = `
 
 exports[`RuleContent other opt 1`] = `
 <span
-  class="iconfont icon-minus icon-minus"
-  customclass="icon-minus"
+  class="iconfont icon-minus _icon-minus_b24de5"
+  customclass="_icon-minus_b24de5"
   type="minus"
 />
 `;
@@ -1802,39 +1802,39 @@ exports[`RuleContent segment render 1`] = `
       class="ui form"
     >
       <div
-        class="rule-item"
+        class="_rule-item_b24de5"
       >
         <span
-          class="rule-item-prefix rule-item-first"
+          class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
         >
           <span
-            class="rule-item-text"
+            class="_rule-item-text_b24de5"
           >
             If
           </span>
         </span>
         <div
-          class="rule-item-type"
+          class="_rule-item-type_b24de5"
         >
           <div
-            class="rule-item-type-box"
+            class="_rule-item-type-box_b24de5"
           >
             <div
-              class="rule-item-type-text"
+              class="_rule-item-type-text_b24de5"
             >
               datetime
             </div>
           </div>
         </div>
         <div
-          class="equal width fields rule-item-left"
+          class="equal width fields _rule-item-left_b24de5"
         >
           <div
-            class="field rule-item-subject"
+            class="field _rule-item-subject_b24de5"
           >
             <div
               aria-expanded="false"
-              class="ui floating search selection dropdown rule-item-subject-dropdown"
+              class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
               name="rule_test-id_condition_c-test-id_subject"
               role="combobox"
             >
@@ -1861,11 +1861,11 @@ exports[`RuleContent segment render 1`] = `
             </div>
           </div>
           <div
-            class="field rule-item-operator"
+            class="field _rule-item-operator_b24de5"
           >
             <div
               aria-expanded="false"
-              class="ui floating selection dropdown rule-item-operator-dropdown"
+              class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
               name="rule_test-id_condition_c-test-id_predicate"
               role="listbox"
               tabindex="0"
@@ -1879,8 +1879,8 @@ exports[`RuleContent segment render 1`] = `
                 Select an operator
               </div>
               <span
-                class="iconfont icon-angle-down angle-down"
-                customclass="angle-down"
+                class="iconfont icon-angle-down _angle-down_b24de5"
+                customclass="_angle-down_b24de5"
                 type="angle-down"
               />
               <div
@@ -1916,7 +1916,7 @@ exports[`RuleContent segment render 1`] = `
             </div>
           </div>
           <div
-            class="six wide field rule-item-datetime"
+            class="six wide field _rule-item-datetime_b24de5"
             name="rule_test-id_condition_c-test-id_datetime"
           >
             <div
@@ -2363,8 +2363,8 @@ exports[`RuleContent segment render 1`] = `
             </div>
             <img
               alt="canlendar"
-              class="rule-item-datetime-canlendar"
-              src="calendar.svg"
+              class="_rule-item-datetime-canlendar_b24de5"
+              src="data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='UTF-8'?%3e%3csvg%20width='16px'%20height='16px'%20viewBox='0%200%2016%2016'%20version='1.1'%20xmlns='http://www.w3.org/2000/svg'%20xmlns:xlink='http://www.w3.org/1999/xlink'%3e%3ctitle%3ecalendar-o%3c/title%3e%3cg%20id='迭代需求0627'%20stroke='none'%20stroke-width='1'%20fill='none'%20fill-rule='evenodd'%3e%3cg%20transform='translate(-1377.000000,%20-580.000000)'%20fill='%2374788d'%20fill-rule='nonzero'%20id='编组-26备份-3'%3e%3cg%20transform='translate(749.000000,%20307.000000)'%3e%3cg%20id='编组-20'%20transform='translate(24.000000,%2024.000000)'%3e%3cg%20id='编组-24备份-2'%20transform='translate(0.000000,%2040.000000)'%3e%3cg%20id='编组-45备份-2'%20transform='translate(30.000000,%20201.000000)'%3e%3cg%20id='编组-25'%20transform='translate(358.000000,%200.000000)'%3e%3cg%20id='calendar-o'%20transform='translate(216.000000,%208.000000)'%3e%3cpath%20d='M13,4.33333333%20L13,3%20L3,3%20L3,4.33333333%20L13,4.33333333%20Z%20M13,5.33333333%20L3,5.33333333%20L3,13%20L13,13%20L13,5.33333333%20Z%20M2.33333333,2%20L13.6666667,2%20C13.8507616,2%2014,2.14923842%2014,2.33333333%20L14,13.6666667%20C14,13.8507616%2013.8507616,14%2013.6666667,14%20L2.33333333,14%20C2.14923842,14%202,13.8507616%202,13.6666667%20L2,2.33333333%20C2,2.14923842%202.14923842,2%202.33333333,2%20Z%20M4.83333333,6.66666667%20L5.83333333,6.66666667%20L5.83333333,7.66666667%20L4.83333333,7.66666667%20L4.83333333,6.66666667%20Z%20M7.5,6.66666667%20L8.5,6.66666667%20L8.5,7.66666667%20L7.5,7.66666667%20L7.5,6.66666667%20Z%20M10.1666667,6.66666667%20L11.1666667,6.66666667%20L11.1666667,7.66666667%20L10.1666667,7.66666667%20L10.1666667,6.66666667%20Z%20M4.83333333,8.66666667%20L5.83333333,8.66666667%20L5.83333333,9.66666667%20L4.83333333,9.66666667%20L4.83333333,8.66666667%20Z%20M7.5,8.66666667%20L8.5,8.66666667%20L8.5,9.66666667%20L7.5,9.66666667%20L7.5,8.66666667%20Z%20M10.1666667,8.66666667%20L11.1666667,8.66666667%20L11.1666667,9.66666667%20L10.1666667,9.66666667%20L10.1666667,8.66666667%20Z%20M4.83333333,10.6666667%20L5.83333333,10.6666667%20L5.83333333,11.6666667%20L4.83333333,11.6666667%20L4.83333333,10.6666667%20Z%20M7.5,10.6666667%20L8.5,10.6666667%20L8.5,11.6666667%20L7.5,11.6666667%20L7.5,10.6666667%20Z'%20id='形状'%3e%3c/path%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/svg%3e"
             />
           </div>
           <div
@@ -2393,8 +2393,8 @@ exports[`RuleContent segment render 1`] = `
                 UTC +8
               </div>
               <span
-                class="iconfont icon-angle-down angle-down"
-                customclass="angle-down"
+                class="iconfont icon-angle-down _angle-down_b24de5"
+                customclass="_angle-down_b24de5"
                 type="angle-down"
               />
               <div
@@ -2731,8 +2731,8 @@ exports[`RuleContent segment render 1`] = `
           </div>
         </div>
         <span
-          class="iconfont icon-minus icon-minus"
-          customclass="icon-minus"
+          class="iconfont icon-minus _icon-minus_b24de5"
+          customclass="_icon-minus_b24de5"
           type="minus"
         />
       </div>
@@ -2743,40 +2743,40 @@ exports[`RuleContent segment render 1`] = `
       class="ui form"
     >
       <div
-        class="rule-item"
+        class="_rule-item_b24de5"
       >
         <span
-          class="rule-item-prefix rule-item-first"
+          class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
         >
           <span
-            class="rule-item-text"
+            class="_rule-item-text_b24de5"
           >
             If
           </span>
         </span>
         <div
-          class="rule-item-type"
+          class="_rule-item-type_b24de5"
         >
           <div
-            class="rule-item-type-box"
+            class="_rule-item-type-box_b24de5"
           >
             <div
-              class="rule-item-type-text"
+              class="_rule-item-type-text_b24de5"
             >
               segment
             </div>
           </div>
         </div>
         <div
-          class="equal width fields rule-item-left"
+          class="equal width fields _rule-item-left_b24de5"
         >
           <div
-            class="field rule-item-subject"
+            class="field _rule-item-subject_b24de5"
           >
             <div
               aria-disabled="true"
               aria-expanded="false"
-              class="ui disabled floating search selection dropdown rule-item-subject-dropdown"
+              class="ui disabled floating search selection dropdown _rule-item-subject-dropdown_b24de5"
               name="rule_test-id_condition_c-test-id_subject"
               role="combobox"
             >
@@ -2815,11 +2815,11 @@ exports[`RuleContent segment render 1`] = `
             </div>
           </div>
           <div
-            class="field rule-item-operator"
+            class="field _rule-item-operator_b24de5"
           >
             <div
               aria-expanded="false"
-              class="ui floating selection dropdown rule-item-operator-dropdown"
+              class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
               name="rule_test-id_condition_c-test-id_predicate"
               role="listbox"
               tabindex="0"
@@ -2833,8 +2833,8 @@ exports[`RuleContent segment render 1`] = `
                 Select an operator
               </div>
               <span
-                class="iconfont icon-angle-down angle-down"
-                customclass="angle-down"
+                class="iconfont icon-angle-down _angle-down_b24de5"
+                customclass="_angle-down_b24de5"
                 type="angle-down"
               />
               <div
@@ -2898,8 +2898,8 @@ exports[`RuleContent segment render 1`] = `
                 Please select
               </div>
               <span
-                class="iconfont icon-angle-down angle-down"
-                customclass="angle-down"
+                class="iconfont icon-angle-down _angle-down_b24de5"
+                customclass="_angle-down_b24de5"
                 type="angle-down"
               />
               <div
@@ -2925,8 +2925,8 @@ exports[`RuleContent segment render 1`] = `
           </div>
         </div>
         <span
-          class="iconfont icon-minus icon-minus"
-          customclass="icon-minus"
+          class="iconfont icon-minus _icon-minus_b24de5"
+          customclass="_icon-minus_b24de5"
           type="minus"
         />
       </div>
@@ -2941,44 +2941,44 @@ exports[`RuleContent semver input 1`] = `
     class="ui form"
   >
     <div
-      class="rule-item"
+      class="_rule-item_b24de5"
     >
       <span
-        class="rule-item-prefix rule-item-first"
+        class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
       >
         <span
-          class="rule-item-text"
+          class="_rule-item-text_b24de5"
         >
           If
         </span>
       </span>
       <div
-        class="rule-item-type"
+        class="_rule-item-type_b24de5"
       >
         <div
-          class="rule-item-type-box"
+          class="_rule-item-type-box_b24de5"
         >
           <div
-            class="rule-item-type-text"
+            class="_rule-item-type-text_b24de5"
           >
             semver
             <span
-              class="iconfont icon-question icon-info"
-              customclass="icon-info"
+              class="iconfont icon-question _icon-info_b24de5"
+              customclass="_icon-info_b24de5"
               type="question"
             />
           </div>
         </div>
       </div>
       <div
-        class="equal width fields rule-item-left"
+        class="equal width fields _rule-item-left_b24de5"
       >
         <div
-          class="field rule-item-subject"
+          class="field _rule-item-subject_b24de5"
         >
           <div
             aria-expanded="false"
-            class="ui floating search selection dropdown rule-item-subject-dropdown"
+            class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
             name="rule_test-id_condition_c-test-id_subject"
             role="combobox"
           >
@@ -3005,11 +3005,11 @@ exports[`RuleContent semver input 1`] = `
           </div>
         </div>
         <div
-          class="field rule-item-operator"
+          class="field _rule-item-operator_b24de5"
         >
           <div
             aria-expanded="false"
-            class="ui floating selection dropdown rule-item-operator-dropdown"
+            class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
             name="rule_test-id_condition_c-test-id_predicate"
             role="listbox"
             tabindex="0"
@@ -3023,8 +3023,8 @@ exports[`RuleContent semver input 1`] = `
               Select an operator
             </div>
             <span
-              class="iconfont icon-angle-down angle-down"
-              customclass="angle-down"
+              class="iconfont icon-angle-down _angle-down_b24de5"
+              customclass="_angle-down_b24de5"
               type="angle-down"
             />
             <div
@@ -3152,8 +3152,8 @@ exports[`RuleContent semver input 1`] = `
         </div>
       </div>
       <span
-        class="iconfont icon-minus icon-minus"
-        customclass="icon-minus"
+        class="iconfont icon-minus _icon-minus_b24de5"
+        customclass="_icon-minus_b24de5"
         type="minus"
       />
     </div>
@@ -3167,37 +3167,37 @@ exports[`RuleContent snapshot 1`] = `
     class="ui form"
   >
     <div
-      class="rule-item"
+      class="_rule-item_b24de5"
     >
       <span
-        class="rule-item-prefix rule-item-first"
+        class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
       >
         <span
-          class="rule-item-text"
+          class="_rule-item-text_b24de5"
         >
           If
         </span>
       </span>
       <div
-        class="rule-item-type"
+        class="_rule-item-type_b24de5"
       >
         <div
-          class="rule-item-type-box"
+          class="_rule-item-type-box_b24de5"
         >
           <div
-            class="rule-item-type-text"
+            class="_rule-item-type-text_b24de5"
           />
         </div>
       </div>
       <div
-        class="equal width fields rule-item-left"
+        class="equal width fields _rule-item-left_b24de5"
       >
         <div
-          class="field rule-item-subject"
+          class="field _rule-item-subject_b24de5"
         >
           <div
             aria-expanded="false"
-            class="ui floating search selection dropdown rule-item-subject-dropdown"
+            class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
             name="rule_test-id_condition_undefined_subject"
             role="combobox"
           >
@@ -3224,11 +3224,11 @@ exports[`RuleContent snapshot 1`] = `
           </div>
         </div>
         <div
-          class="field rule-item-operator"
+          class="field _rule-item-operator_b24de5"
         >
           <div
             aria-expanded="false"
-            class="ui floating selection dropdown rule-item-operator-dropdown"
+            class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
             name="rule_test-id_condition_undefined_predicate"
             role="listbox"
             tabindex="0"
@@ -3242,8 +3242,8 @@ exports[`RuleContent snapshot 1`] = `
               Select an operator
             </div>
             <span
-              class="iconfont icon-angle-down angle-down"
-              customclass="angle-down"
+              class="iconfont icon-angle-down _angle-down_b24de5"
+              customclass="_angle-down_b24de5"
               type="angle-down"
             />
             <div
@@ -3288,8 +3288,8 @@ exports[`RuleContent snapshot 1`] = `
         </div>
       </div>
       <span
-        class="iconfont icon-minus icon-minus"
-        customclass="icon-minus"
+        class="iconfont icon-minus _icon-minus_b24de5"
+        customclass="_icon-minus_b24de5"
         type="minus"
       />
     </div>
@@ -3303,38 +3303,38 @@ exports[`RuleContent snapshot 2 1`] = `
     class="ui form"
   >
     <div
-      class="rule-item"
+      class="_rule-item_b24de5"
     >
       <span
-        class="rule-item-prefix rule-item-first"
+        class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
       >
         <span
-          class="rule-item-text"
+          class="_rule-item-text_b24de5"
         >
           If
         </span>
       </span>
       <div
-        class="rule-item-type"
+        class="_rule-item-type_b24de5"
       >
         <div
-          class="rule-item-type-box"
+          class="_rule-item-type-box_b24de5"
         >
           <div
-            class="rule-item-type-text"
+            class="_rule-item-type-text_b24de5"
           />
         </div>
       </div>
       <div
-        class="equal width fields rule-item-left"
+        class="equal width fields _rule-item-left_b24de5"
       >
         <div
-          class="field rule-item-subject"
+          class="field _rule-item-subject_b24de5"
         >
           <div
             aria-disabled="true"
             aria-expanded="false"
-            class="ui disabled floating search selection dropdown rule-item-subject-dropdown"
+            class="ui disabled floating search selection dropdown _rule-item-subject-dropdown_b24de5"
             name="rule_test-id_condition_undefined_subject"
             role="combobox"
           >
@@ -3361,12 +3361,12 @@ exports[`RuleContent snapshot 2 1`] = `
           </div>
         </div>
         <div
-          class="field rule-item-operator"
+          class="field _rule-item-operator_b24de5"
         >
           <div
             aria-disabled="true"
             aria-expanded="false"
-            class="ui disabled floating selection dropdown rule-item-operator-dropdown"
+            class="ui disabled floating selection dropdown _rule-item-operator-dropdown_b24de5"
             name="rule_test-id_condition_undefined_predicate"
             role="listbox"
             tabindex="-1"
@@ -3380,8 +3380,8 @@ exports[`RuleContent snapshot 2 1`] = `
               Select an operator
             </div>
             <span
-              class="iconfont icon-angle-down angle-down"
-              customclass="angle-down"
+              class="iconfont icon-angle-down _angle-down_b24de5"
+              customclass="_angle-down_b24de5"
               type="angle-down"
             />
             <div

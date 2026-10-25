@@ -1,13 +1,13 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`PutAwayMenu snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="putaway"
+    class="_putaway_cbd81d"
   >
     <span
-      class="iconfont icon-type iconfont"
-      customclass="iconfont"
+      class="iconfont icon-type _iconfont_cbd81d"
+      customclass="_iconfont_cbd81d"
       type="type"
     />
   </div>
@@ -17,15 +17,15 @@ exports[`PutAwayMenu snapshot 1`] = `
 exports[`PutAwayMenu snapshot 2`] = `
 <DocumentFragment>
   <div
-    class="putaway"
+    class="_putaway_cbd81d"
   >
     <span
-      class="iconfont icon-type iconfont"
-      customclass="iconfont"
+      class="iconfont icon-type _iconfont_cbd81d"
+      customclass="_iconfont_cbd81d"
       type="type"
     />
     <span
-      class="menu"
+      class="_menu_cbd81d"
     >
       title
     </span>
@@ -37,26 +37,30 @@ exports[`hover PutAwayMenu 1`] = `
 <body>
   <div>
     <div
-      class="putaway"
+      class="_putaway_cbd81d"
     >
       <span
-        class="iconfont icon-type iconfont"
-        customclass="iconfont"
+        class="iconfont icon-type _iconfont_cbd81d"
+        customclass="_iconfont_cbd81d"
         type="type"
       />
     </div>
   </div>
   <div
-    style="display: flex; position: absolute; left: 0px; top: 0px; transform: translate(20px, 0px);"
+    data-suir-portal="true"
   >
     <div
-      class="ui right center inverted popup transition visible"
-      style="position: initial; opacity: 0.8;"
+      style="display: flex; position: absolute; left: 0px; top: 0px; z-index: auto; right: auto; bottom: auto; transform: translate(20px, 0px);"
     >
       <div
-        class="content"
+        class="ui right center inverted popup transition visible"
+        style="left: auto; right: auto; position: initial; opacity: 0.8;"
       >
-        title
+        <div
+          class="content"
+        >
+          title
+        </div>
       </div>
     </div>
   </div>

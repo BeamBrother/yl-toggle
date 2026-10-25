@@ -1,7 +1,5 @@
-use std::f64;
-
 use ron::{
-    de::{ErrorCode, Position},
+    de::{Position, Span, SpannedError},
     Error,
 };
 
@@ -36,33 +34,18 @@ fn test_float_literal_parsing() {
     assert_eq!(ron::from_str(".3e+1"), Ok(3.0_f64));
     assert_eq!(ron::from_str(".4E-1"), Ok(0.04_f64));
 
-    assert_eq!(
-        ron::from_str::<f64>("1_0.1_0"),
-        Err(Error {
-            code: ErrorCode::FloatUnderscore,
-            position: Position { line: 1, col: 2 },
-        })
-    );
-    assert_eq!(
-        ron::from_str::<f64>("1_0.10"),
-        Err(Error {
-            code: ErrorCode::FloatUnderscore,
-            position: Position { line: 1, col: 2 },
-        })
-    );
-    assert_eq!(
-        ron::from_str::<f64>("10.1_0"),
-        Err(Error {
-            code: ErrorCode::FloatUnderscore,
-            position: Position { line: 1, col: 5 },
-        })
-    );
+    assert_eq!(ron::from_str("1_0.1_0"), Ok(10.1_f32),);
+    assert_eq!(ron::from_str("1_0.10"), Ok(10.1_f32),);
+    assert_eq!(ron::from_str("10.1_0"), Ok(10.1_f32),);
 
     assert_eq!(
         ron::from_str::<f64>("1.0e1.0"),
-        Err(Error {
-            code: ErrorCode::ExpectedFloat,
-            position: Position { line: 1, col: 1 },
+        Err(SpannedError {
+            code: Error::ExpectedFloat,
+            span: Span {
+                start: Position { line: 1, col: 1 },
+                end: Position { line: 1, col: 1 },
+            }
         })
     );
 }

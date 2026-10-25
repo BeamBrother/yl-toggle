@@ -1,15 +1,15 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Pagination snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="pagination"
+    class="_pagination_e6e225"
   >
     <div
-      class="total"
+      class="_total_e6e225"
     >
       <span
-        class="total-count"
+        class="_total-count_e6e225"
       >
          
       </span>

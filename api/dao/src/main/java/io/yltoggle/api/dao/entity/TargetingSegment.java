@@ -12,10 +12,10 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Table;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -27,7 +27,7 @@ import javax.persistence.Table;
 @DynamicInsert
 @EntityListeners(TenantEntityListener.class)
 @ToString(callSuper = true)
-@FilterDef(name = "tenantFilter", parameters = {@ParamDef(name = "organizationId", type = "long")})
+@FilterDef(name = "tenantFilter", parameters = {@ParamDef(name = "organizationId", type = Long.class)})
 @Filter(name = "tenantFilter", condition = "organization_id = :organizationId")
 public class TargetingSegment extends AbstractAuditEntity implements TenantSupport {
 

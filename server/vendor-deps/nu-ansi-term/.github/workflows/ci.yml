@@ -1,39 +1,67 @@
-on: pull_request
+on:
+  pull_request:
+  push:
+    branches:
+      - main
 
-name: Continuous integration
+name: Continuous Integration
+
+env:
+  RUSTFLAGS: -D warnings
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    name: ${{ matrix.target.name }} [${{ matrix.rust_version }}]
+    runs-on: ${{ matrix.target.os }}
     strategy:
+      fail-fast: false
       matrix:
-        rust:
-          - stable
+        rust_version: ["stable", "1.62.1"]
+        target:
+          - name: Linux
+            os: ubuntu-latest
+            extra_flags: --all-features
+            run_tests: true
+
+          - name: Linux (no-std)
+            os: ubuntu-latest
+            extra_flags: --no-default-features
+            run_tests: true
+
+          - name: Windows
+            os: windows-latest
+            extra_flags: --all-features
+            run_tests: true
+
+          - name: Windows (no-std)
+            os: windows-latest
+            extra_flags: --no-default-features
+            run_tests: true
+
+          - name: Bare Metal (no-std)
+            os: ubuntu-latest
+            extra_flags: --no-default-features
+            run_tests: false
+            env:
+              TARGET: thumbv7em-none-eabihf
+
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@master
         with:
-          profile: minimal
-          toolchain: ${{ matrix.rust }}
-          override: true
-          components: rustfmt, clippy
+          targets: ${{ matrix.target.env.TARGET || '' }}
+          toolchain: ${{ matrix.rust_version }}
+          components: clippy, rustfmt
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
+      - run: cargo fmt --check --all
+      - run: cargo clippy ${{ matrix.target.extra_flags }}
+      - run: cargo build ${{ matrix.target.extra_flags }}
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
-
-      - uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings
+      - if: matrix.target.run_tests
+        run: |
+          cargo test ${{ matrix.target.extra_flags }}
+          cargo run ${{ matrix.target.extra_flags }} --example 256_colors
+          cargo run ${{ matrix.target.extra_flags }} --example hyperlink
+          cargo run ${{ matrix.target.extra_flags }} --example title

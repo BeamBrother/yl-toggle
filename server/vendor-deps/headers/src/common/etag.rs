@@ -1,7 +1,8 @@
 use std::str::FromStr;
-use util::EntityTag;
 
-/// `ETag` header, defined in [RFC7232](http://tools.ietf.org/html/rfc7232#section-2.3)
+use crate::util::EntityTag;
+
+/// `ETag` header, defined in [RFC7232](https://datatracker.ietf.org/doc/html/rfc7232#section-2.3)
 ///
 /// The `ETag` header field in a response provides the current entity-tag
 /// for the selected representation, as determined at the conclusion of
@@ -43,6 +44,11 @@ impl ETag {
     pub(crate) fn from_static(src: &'static str) -> ETag {
         ETag(EntityTag::from_static(src))
     }
+
+    /// Returns `true` if the etag is [weak](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag#directives).
+    pub fn is_weak(&self) -> bool {
+        self.0.is_weak()
+    }
 }
 
 error_type!(InvalidETag);
@@ -54,7 +60,7 @@ impl FromStr for ETag {
 
         EntityTag::from_owned(val)
             .map(ETag)
-            .ok_or_else(|| InvalidETag { _inner: () })
+            .ok_or(InvalidETag { _inner: () })
     }
 }
 

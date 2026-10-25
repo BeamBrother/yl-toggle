@@ -1,5 +1,5 @@
 import { SyntheticEvent, useEffect, useState, useCallback, useMemo } from 'react';
-import { 
+import {
   Form,
   Checkbox,
   Dropdown,
@@ -21,7 +21,7 @@ import { createMember, updateMember, getMember } from 'services/member';
 import styles from './index.module.scss';
 
 interface IParams {
-  isAdd: boolean;
+isAdd: boolean;
   visible: boolean;
   editUser?: IUser
   setDrawerVisible: (visible: boolean) => void;
@@ -36,7 +36,7 @@ const MemberDrawer = (props: IParams) => {
   const { isAdd, visible, editUser, setDrawerVisible, refreshMemberList } = props;
   const [ passwordVisible, setPasswordVisible ] = useState<boolean>(false);
   const [ memberValues, setMemberValues ] = useState<string[]>([]);
-  const [ dulplicateAccount, setDulplicateAccount ] = useState<string>(); 
+  const [ dulplicateAccount, setDulplicateAccount ] = useState<string>();
   const [ role, saveRole ] = useState<string>('WRITER');
   const intl = useIntl();
 
@@ -52,7 +52,7 @@ const MemberDrawer = (props: IParams) => {
 
   const options = useMemo(() => {
     return [
-      { 
+      {
         key: 'WRITER',
         value: 'WRITER',
         text: 'Writer',
@@ -65,7 +65,7 @@ const MemberDrawer = (props: IParams) => {
           </div>
         )
       },
-      { 
+      {
         key: 'OWNER',
         value: 'OWNER',
         text: 'Owner',
@@ -97,22 +97,22 @@ const MemberDrawer = (props: IParams) => {
 
   useEffect(() => {
     if (isAdd) {
-      register('accounts', { 
+      register('accounts', {
         required: intl.formatMessage({id: 'members.add.members.placeholder'}),
       });
       unregister('account',
         { keepIsValid: true }
       );
     } else {
-      register('account', { 
+      register('account', {
         required: intl.formatMessage({id: 'login.account.required'}),
       });
       unregister('accounts',
         { keepIsValid: true }
       );
     }
-    register('role', { 
-      required: intl.formatMessage({id: 'members.select.role.placeholder'}), 
+    register('role', {
+      required: intl.formatMessage({id: 'members.select.role.placeholder'}),
     });
   }, [isAdd, intl, register, unregister]);
 
@@ -209,7 +209,7 @@ const MemberDrawer = (props: IParams) => {
       setDulplicateAccount(account);
     }
   }, [intl]);
-  
+
   useEffect(() => {
     const filterMemberValues = memberValues.filter(member => member !== dulplicateAccount);
     if (filterMemberValues.length !== memberValues.length) {
@@ -217,7 +217,7 @@ const MemberDrawer = (props: IParams) => {
       setValue('accounts', filterMemberValues);
     }
   }, [dulplicateAccount, memberValues, setValue]);
- 
+
   const drawerCls = classNames(
     styles['member-drawer'],
     {
@@ -234,9 +234,9 @@ const MemberDrawer = (props: IParams) => {
 
 	return (
     <div className={drawerCls}>
-      <Form 
+      <Form
         autoComplete='off'
-        onSubmit={handleSubmit(onSubmit)} 
+        onSubmit={handleSubmit(onSubmit)}
         className={drawerFormCls}
       >
         <div className={styles.title}>
@@ -253,7 +253,7 @@ const MemberDrawer = (props: IParams) => {
           isDemo && (
             <div className={styles['demo-tips']}>
               <FormattedMessage id='login.demo.password.tip' />
-            </div> 
+            </div>
           )
         }
         <div className={styles['member-drawer-form-content']}>
@@ -287,15 +287,15 @@ const MemberDrawer = (props: IParams) => {
                     onChange={(e: SyntheticEvent, detail: DropdownProps) => handleChange(e, detail)}
                   />
                 </Form.Field>
-                { errors.accounts && <div className={styles['error-text']}>{ errors.accounts.message }</div> }
+                { errors.accounts && <div className={styles['error-text']}>{String(errors.accounts?.message ?? '')}</div> }
 
                 {
                   !isDemo && (
                     <FormField>
-                      <Checkbox 
-                        checked={ !passwordVisible } 
+                      <Checkbox
+                        checked={ !passwordVisible }
                         label={intl.formatMessage({id: 'members.defalut.password'})}
-                        onChange={handleCheckboxChange} 
+                        onChange={handleCheckboxChange}
                       />
                       <div>
                         <div className={styles.password}>
@@ -327,15 +327,15 @@ const MemberDrawer = (props: IParams) => {
                     }}
                   />
                 </Form.Field>
-                { errors.account && <div className={styles['error-text']}>{ errors.account.message }</div> }
+                { errors.account && <div className={styles['error-text']}>{String(errors.account?.message ?? '')}</div> }
               </>
             )
           }
-          
+
           {/* Password */}
           {
             (!isAdd || passwordVisible) && !isDemo && (
-              <FormItemPassword 
+              <FormItemPassword
                 errors={errors}
                 register={register}
                 onChange={async (e: SyntheticEvent, detail: InputOnChangeData) => {
@@ -352,15 +352,15 @@ const MemberDrawer = (props: IParams) => {
               <span className={styles['label-required']}>*</span>
               <FormattedMessage id='members.role' />
             </label>
-            <Dropdown 
+            <Dropdown
               fluid
               floating
-              selection 
+              selection
               clearable
               value={ role }
               name='role'
               error={ errors.role ? true : false }
-              options={options} 
+              options={options}
               placeholder={intl.formatMessage({id: 'toggles.returntype.placeholder'})}
               icon={ <Icon customclass={styles['angle-down']} type='angle-down' /> }
               onChange={async (e: SyntheticEvent, detail: DropdownProps) => {
@@ -370,7 +370,7 @@ const MemberDrawer = (props: IParams) => {
               }}
             />
           </Form.Field>
-          { errors.role && <div className={styles['error-text']}>{ errors.role.message }</div> }
+          { errors.role && <div className={styles['error-text']}>{String(errors.role?.message ?? '')}</div> }
           {
             !isAdd && <div className={styles['role-tips']}><FormattedMessage id='members.role.tips' /></div>
           }

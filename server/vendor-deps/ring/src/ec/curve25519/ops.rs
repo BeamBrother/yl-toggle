@@ -4,9 +4,9 @@
 // purpose with or without fee is hereby granted, provided that the above
 // copyright notice and this permission notice appear in all copies.
 //
-// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHORS DISCLAIM ALL WARRANTIES
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
 // WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
 // SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
 // OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
@@ -17,10 +17,10 @@
 
 pub use super::scalar::{MaskedScalar, Scalar, SCALAR_LEN};
 use crate::{
-    bssl, error,
+    bssl, cpu, error,
     limb::{Limb, LIMB_BITS},
 };
-use core::marker::PhantomData;
+use core::{ffi::c_int, marker::PhantomData};
 
 // Elem<T>` is `fe` in curve25519/internal.h.
 // Elem<L> is `fe_loose` in curve25519/internal.h.
@@ -49,7 +49,7 @@ impl<E: Encoding> Elem<E> {
 impl Elem<T> {
     fn negate(&mut self) {
         unsafe {
-            GFp_x25519_fe_neg(self);
+            x25519_fe_neg(self);
         }
     }
 }
@@ -73,27 +73,39 @@ pub struct ExtPoint {
 }
 
 impl ExtPoint {
-    pub fn new_at_infinity() -> Self {
-        Self {
+    // Returns the result of multiplying the base point by the scalar in constant time.
+    pub(super) fn from_scalarmult_base(scalar: &Scalar, cpu: cpu::Features) -> Self {
+        let mut r = Self {
             x: Elem::zero(),
             y: Elem::zero(),
             z: Elem::zero(),
             t: Elem::zero(),
+        };
+        prefixed_extern! {
+            fn x25519_ge_scalarmult_base(h: &mut ExtPoint, a: &Scalar, has_fe25519_adx: c_int);
         }
+        unsafe {
+            x25519_ge_scalarmult_base(&mut r, scalar, has_fe25519_adx(cpu).into());
+        }
+        r
     }
 
     pub fn from_encoded_point_vartime(encoded: &EncodedPoint) -> Result<Self, error::Unspecified> {
-        let mut point = Self::new_at_infinity();
+        let mut point = Self {
+            x: Elem::zero(),
+            y: Elem::zero(),
+            z: Elem::zero(),
+            t: Elem::zero(),
+        };
 
-        Result::from(unsafe { GFp_x25519_ge_frombytes_vartime(&mut point, encoded) })
-            .map(|()| point)
+        Result::from(unsafe { x25519_ge_frombytes_vartime(&mut point, encoded) }).map(|()| point)
     }
 
-    pub fn into_encoded_point(self) -> EncodedPoint {
-        encode_point(self.x, self.y, self.z)
+    pub(super) fn into_encoded_point(self, cpu_features: cpu::Features) -> EncodedPoint {
+        encode_point(self.x, self.y, self.z, cpu_features)
     }
 
-    pub fn invert_vartime(&mut self) {
+    pub(super) fn invert_vartime(&mut self) {
         self.x.negate();
         self.t.negate();
     }
@@ -116,26 +128,26 @@ impl Point {
         }
     }
 
-    pub fn into_encoded_point(self) -> EncodedPoint {
-        encode_point(self.x, self.y, self.z)
+    pub(super) fn into_encoded_point(self, cpu_features: cpu::Features) -> EncodedPoint {
+        encode_point(self.x, self.y, self.z, cpu_features)
     }
 }
 
-fn encode_point(x: Elem<T>, y: Elem<T>, z: Elem<T>) -> EncodedPoint {
+fn encode_point(x: Elem<T>, y: Elem<T>, z: Elem<T>, _cpu_features: cpu::Features) -> EncodedPoint {
     let mut bytes = [0; ELEM_LEN];
 
     let sign_bit: u8 = unsafe {
         let mut recip = Elem::zero();
-        GFp_x25519_fe_invert(&mut recip, &z);
+        x25519_fe_invert(&mut recip, &z);
 
         let mut x_over_z = Elem::zero();
-        GFp_x25519_fe_mul_ttt(&mut x_over_z, &x, &recip);
+        x25519_fe_mul_ttt(&mut x_over_z, &x, &recip);
 
         let mut y_over_z = Elem::zero();
-        GFp_x25519_fe_mul_ttt(&mut y_over_z, &y, &recip);
-        GFp_x25519_fe_tobytes(&mut bytes, &y_over_z);
+        x25519_fe_mul_ttt(&mut y_over_z, &y, &recip);
+        x25519_fe_tobytes(&mut bytes, &y_over_z);
 
-        GFp_x25519_fe_isnegative(&x_over_z)
+        x25519_fe_isnegative(&x_over_z)
     };
 
     // The preceding computations must execute in constant time, but this
@@ -145,11 +157,24 @@ fn encode_point(x: Elem<T>, y: Elem<T>, z: Elem<T>) -> EncodedPoint {
     bytes
 }
 
-extern "C" {
-    fn GFp_x25519_fe_invert(out: &mut Elem<T>, z: &Elem<T>);
-    fn GFp_x25519_fe_isnegative(elem: &Elem<T>) -> u8;
-    fn GFp_x25519_fe_mul_ttt(h: &mut Elem<T>, f: &Elem<T>, g: &Elem<T>);
-    fn GFp_x25519_fe_neg(f: &mut Elem<T>);
-    fn GFp_x25519_fe_tobytes(bytes: &mut EncodedPoint, elem: &Elem<T>);
-    fn GFp_x25519_ge_frombytes_vartime(h: &mut ExtPoint, s: &EncodedPoint) -> bssl::Result;
+#[inline(always)]
+pub(super) fn has_fe25519_adx(cpu: cpu::Features) -> bool {
+    cfg_if::cfg_if! {
+        if #[cfg(all(target_arch = "x86_64", not(target_os = "windows")))] {
+            use cpu::{intel::{Adx, Bmi1, Bmi2}, GetFeature as _};
+            matches!(cpu.get_feature(), Some((Adx { .. }, Bmi1 { .. }, Bmi2 { .. })))
+        } else {
+            let _ = cpu;
+            false
+        }
+    }
+}
+
+prefixed_extern! {
+    fn x25519_fe_invert(out: &mut Elem<T>, z: &Elem<T>);
+    fn x25519_fe_isnegative(elem: &Elem<T>) -> u8;
+    fn x25519_fe_mul_ttt(h: &mut Elem<T>, f: &Elem<T>, g: &Elem<T>);
+    fn x25519_fe_neg(f: &mut Elem<T>);
+    fn x25519_fe_tobytes(bytes: &mut EncodedPoint, elem: &Elem<T>);
+    fn x25519_ge_frombytes_vartime(h: &mut ExtPoint, s: &EncodedPoint) -> bssl::Result;
 }

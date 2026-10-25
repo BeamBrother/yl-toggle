@@ -1,5 +1,5 @@
 import { SyntheticEvent, FormEvent, useEffect, useState, useCallback, useMemo } from 'react';
-import { 
+import {
   Form,
   Popup,
   Dropdown,
@@ -10,11 +10,10 @@ import {
   CheckboxProps,
   DropdownItemProps,
 } from 'semantic-ui-react';
-import { useParams } from 'react-router-dom';
 import debounce from 'lodash/debounce';
 import cloneDeep from 'lodash/cloneDeep';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Joyride, { CallBackProps, EVENTS, Step, ACTIONS } from 'react-joyride';
+import { Joyride, EventData, EVENTS, Step, ACTIONS } from 'react-joyride';
 import message from 'components/MessageBox';
 import Button from 'components/Button';
 import Variations from 'components/Variations';
@@ -33,12 +32,13 @@ import { createToggle, getTags, addTag, editToggle, checkToggleExist } from 'ser
 import { saveDictionary, getFromDictionary } from 'services/dictionary';
 
 import { useFormErrorScrollIntoView, useRequestTimeCheck } from 'hooks';
-import { commonConfig, floaterStyle, tourStyle } from 'constants/tourConfig';
+import { commonConfig, tourStyle } from 'constants/tourConfig';
 import { USER_GUIDE_TOGGLE } from 'constants/dictionaryKeys';
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IParams {
-  isAdd: boolean;
+isAdd: boolean;
   visible: boolean;
   environmentKey?: string;
   setDrawerVisible: (visible: boolean) => void;
@@ -46,6 +46,7 @@ interface IParams {
 }
 
 interface ILocationParams {
+  [key: string]: string | undefined;
   projectKey: string;
   environmentKey: string;
 }
@@ -134,11 +135,11 @@ const Drawer = (props: IParams) => {
   const intl = useIntl();
   const { scrollToError } = useFormErrorScrollIntoView(errors);
 
-  const { 
-    toggleInfo, 
-    originToggleInfo, 
-    handleChange, 
-    saveToggleInfo, 
+  const {
+    toggleInfo,
+    originToggleInfo,
+    handleChange,
+    saveToggleInfo,
     saveOriginToggleInfo,
   } = toggleInfoContainer.useContainer();
 
@@ -257,15 +258,15 @@ const Drawer = (props: IParams) => {
   }, [isAdd, toggleInfo.returnType, saveVariations]);
 
   useEffect(() => {
-    register('returnType', { 
-      required: true, 
+    register('returnType', {
+      required: true,
     });
 
-    register('disabledServe', { 
-      required: true, 
+    register('disabledServe', {
+      required: true,
     });
 
-    register('sdk-radio', { 
+    register('sdk-radio', {
       validate: (value?: boolean) => {
         return value !== undefined;
       },
@@ -328,7 +329,7 @@ const Drawer = (props: IParams) => {
     const res = await addTag(projectKey, {
       name: detail.value?.toString() || '',
     });
-    
+
     if (res.success) {
       getTagList();
     } else {
@@ -352,7 +353,7 @@ const Drawer = (props: IParams) => {
   }, [getValues, clearErrors]);
 
   const creatRequestTimeCheck = useRequestTimeCheck();
-  
+
   const debounceNameExist = useMemo(() => {
     return debounce(async (type:string, value: string) => {
       const check = creatRequestTimeCheck('name');
@@ -402,7 +403,7 @@ const Drawer = (props: IParams) => {
     await debounceKeyExist(type, value);
   }, [debounceKeyExist]);
 
-  const handleJoyrideCallback = (data: CallBackProps) => {
+  const handleJoyrideCallback = (data: EventData) => {
     const { action, index, type } = data;
 
     if (([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND] as string[]).includes(type)) {
@@ -414,9 +415,9 @@ const Drawer = (props: IParams) => {
 
 	return (
     <div className={`${styles['toggle-drawer']} ${visible && styles['toggle-drawer-inactive']}`}>
-      <Form 
+      <Form
         autoComplete='off'
-        onSubmit={handleSubmit(onSubmit, onError)} 
+        onSubmit={handleSubmit(onSubmit, onError)}
         className={`${styles['toggle-drawer-form']} ${visible && styles['toggle-drawer-form-inactive']}`}
       >
         <div className={styles.title}>
@@ -435,7 +436,7 @@ const Drawer = (props: IParams) => {
           !isAdd && (
             <div className={styles['edit-tips']}>
               <FormattedMessage id='toggles.edit.tips' />
-            </div> 
+            </div>
           )
         }
         <div className={styles['toggle-drawer-form-content']}>
@@ -549,9 +550,9 @@ const Drawer = (props: IParams) => {
                 className={styles['radio-group-item']}
                 checked={toggleInfo?.clientAvailability === true}
                 value="yes"
-                disabled={!isAdd} 
+                disabled={!isAdd}
                 error={!!errors['sdk-radio']}
-                onChange={(e: FormEvent, detail: CheckboxProps) => handleChange(e, detail, 'clientAvailability')} 
+                onChange={(e: FormEvent, detail: CheckboxProps) => handleChange(e, detail, 'clientAvailability')}
               />
               <Form.Radio
                 name='sdk-radio'
@@ -559,17 +560,17 @@ const Drawer = (props: IParams) => {
                 className={styles['radio-group-item']}
                 checked={toggleInfo?.clientAvailability === false}
                 value="no"
-                disabled={!isAdd} 
+                disabled={!isAdd}
                 error={!!errors['sdk-radio']}
-                onChange={(e: FormEvent, detail: CheckboxProps) => handleChange(e, detail, 'clientAvailability')} 
+                onChange={(e: FormEvent, detail: CheckboxProps) => handleChange(e, detail, 'clientAvailability')}
               />
             </div>
           </Form.Field>
-          { 
+          {
             errors['sdk-radio'] && (
               <div className={styles['error-text']}>
                 <FormattedMessage id='toggles.sdk.errortext' />
-              </div> 
+              </div>
             )
           }
 
@@ -588,7 +589,7 @@ const Drawer = (props: IParams) => {
                 className='popup-override'
               />
             </label>
-            <Select 
+            <Select
               floating
               name='returnType'
               placeholder={intl.formatMessage({id: 'toggles.returntype.placeholder'})}
@@ -602,20 +603,20 @@ const Drawer = (props: IParams) => {
                 await trigger('returnType');
               }}
               value={toggleInfo?.returnType}
-              options={returnTypeOptions} 
+              options={returnTypeOptions}
               icon={
                 <Icon customclass={styles['angle-down']} type='angle-down' />
               }
             />
           </Form.Field>
-          { 
+          {
             errors.returnType && (
               <div className={styles['error-text']}>
                 <FormattedMessage id='toggles.returntype.errortext' />
-              </div> 
+              </div>
             )
           }
-          
+
           {isAdd && (
             <>
               {/* Toggle Variations */}
@@ -668,7 +669,7 @@ const Drawer = (props: IParams) => {
                     await trigger('disabledServe');
                   }}
                   className={styles['dropdown']}
-                  options={options} 
+                  options={options}
                   placeholder={intl.formatMessage({id: 'common.dropdown.placeholder'})}
                   icon={
                     <Icon customclass={styles['angle-down']} type='angle-down' />
@@ -697,43 +698,44 @@ const Drawer = (props: IParams) => {
                 label={intl.formatMessage({id: 'common.yes.text'})}
                 className={styles['radio-group-item']}
                 checked={!!toggleInfo.permanent}
-                onChange={(e: FormEvent, detail: CheckboxProps) => handleChange(e, detail, 'permanent')} 
+                onChange={(e: FormEvent, detail: CheckboxProps) => handleChange(e, detail, 'permanent')}
               />
-              <Form.Radio 
+              <Form.Radio
                 name='permanent-no'
                 label={intl.formatMessage({id: 'common.no.text'})}
                 className={styles['radio-group-item']}
                 checked={!toggleInfo.permanent}
-                onChange={(e: FormEvent, detail: CheckboxProps) => handleChange(e, detail, 'permanent')} 
+                onChange={(e: FormEvent, detail: CheckboxProps) => handleChange(e, detail, 'permanent')}
               />
             </div>
           </Form.Field>
-          { 
+          {
             errors.disabledServe && (
               <div className={styles['error-text']}>
                 <FormattedMessage id='toggles.disabled.return.type.errortext' />
-              </div> 
+              </div>
             )
           }
         </div>
       </Form>
       <Joyride
         run={run}
-        callback={handleJoyrideCallback}
+        onEvent={handleJoyrideCallback}
         stepIndex={stepIndex}
-        continuous
-        hideCloseButton
         scrollToFirstStep
-        showProgress={false}
-        showSkipButton
+options={{
+          ...commonConfig,
+          buttons: ['back', 'skip', 'primary'] as const,
+          showProgress: false,
+          dismissKeyAction: false,
+          scrollOffset: 100,
+        }}
         steps={STEPS}
-        disableCloseOnEsc={true}
         locale={{
           'back': intl.formatMessage({id: 'guide.last'}),
           'next': intl.formatMessage({id: 'guide.next'}),
           'last': intl.formatMessage({id: 'guide.done'}),
         }}
-        floaterProps={{...floaterStyle}}
         styles={{...tourStyle}}
       />
     </div>

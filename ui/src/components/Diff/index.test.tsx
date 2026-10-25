@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import Diff from './';
 import { IntlWrapper } from 'components/utils/wrapper';
@@ -29,8 +29,8 @@ const Component = () => {
   );
 };
 
-it('Diff snapshot', (done) => {
-  (async () => {
+it('Diff snapshot', async () => {
+  await (async () => {
     const { asFragment } = render(<Component />, {
       wrapper: IntlWrapper,
     });
@@ -39,7 +39,5 @@ it('Diff snapshot', (done) => {
     const tips = screen.getByText('The following is a before and after comparison of this change.');
     await userEvent.click(tips);
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });

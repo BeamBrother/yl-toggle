@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import { IntlWrapper } from 'components/utils/wrapper';
 import History from '.';
@@ -7,17 +7,17 @@ import segmentResponse from './mockData/segmentResponse.json';
 import targetResponse from './mockData/targetResponse.json';
 import sleep from 'utils/sleep';
 
-it('History snapshot', (done) => {
-  (async () => {
+it('History snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(
       <History
         versions={[]}
         hasMore={true}
         latestVersion={0}
-        loadMore={jest.fn()}
+        loadMore={vi.fn()}
         selectedVersion={0}
         isHistoryLoading={false}
-        reviewHistory={jest.fn()}
+        reviewHistory={vi.fn()}
       />,
       {
         wrapper: IntlWrapper,
@@ -30,22 +30,21 @@ it('History snapshot', (done) => {
       versions={[]}
       hasMore={true}
       latestVersion={0}
-      loadMore={jest.fn()}
+      loadMore={vi.fn()}
       selectedVersion={0}
       isHistoryLoading={true}
-      reviewHistory={jest.fn()}
+      reviewHistory={vi.fn()}
     />);
 
     expect(asFragment()).toMatchSnapshot();
-    done();
   })();
 });
 
-test('History render segment data', (done) => {
-  (async () => {
-    const load = jest.fn().mockResolvedValue(segmentResponse);
+it('History render segment data', async () => {
+  await (async () => {
+    const load = vi.fn().mockResolvedValue(segmentResponse);
 
-    const mock = jest.fn();
+    const mock = vi.fn();
     const { asFragment, rerender } = render(
       <History
         versions={segmentResponse.content}
@@ -84,15 +83,14 @@ test('History render segment data', (done) => {
     );
     await userEvent.click(screen.getByText('7'));
     expect(mock).toBeCalledTimes(1);
-    done();
   })();
 });
 
-test('History render target data', (done) => {
-  (async () => {
-    const load = jest.fn().mockResolvedValue(targetResponse);
+it('History render target data', async () => {
+  await (async () => {
+    const load = vi.fn().mockResolvedValue(targetResponse);
 
-    const mock = jest.fn();
+    const mock = vi.fn();
     const { asFragment } = render(
       <History
         versions={targetResponse.content}
@@ -109,9 +107,5 @@ test('History render target data', (done) => {
     );
 
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });
-
-

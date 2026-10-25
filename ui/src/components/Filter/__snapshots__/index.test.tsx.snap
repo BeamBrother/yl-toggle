@@ -1,43 +1,47 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Filter Confirm Button click snapshot 1`] = `
 <body>
   <div>
     <span
-      class="iconfont icon-filter icon-filter icon-filter-selected"
-      customclass="icon-filter icon-filter-selected"
+      class="iconfont icon-filter _icon-filter_8b85ef _icon-filter-selected_8b85ef"
+      customclass="_icon-filter_8b85ef _icon-filter-selected_8b85ef"
       type="filter"
     />
   </div>
   <div
-    style="display: flex; position: absolute; left: 0px; top: 0px; right: 0px; transform: translate(0px, 0px);"
+    data-suir-portal="true"
   >
     <div
-      class="ui bottom right basic popup transition visible popup"
-      style="position: initial;"
+      style="display: flex; position: absolute; left: auto; top: 0px; z-index: auto; right: 0px; bottom: auto; transform: translate(0px, 0px);"
     >
-      <div>
+      <div
+        class="ui bottom right basic popup transition visible _popup_8b85ef"
+        style="left: auto; right: auto; position: initial;"
+      >
         <div>
           <div>
-            1
+            <div>
+              1
+            </div>
+            <div>
+              2
+            </div>
           </div>
-          <div>
-            2
+          <div
+            class="_popup-footer_8b85ef"
+          >
+            <span
+              class="_popup-footer-clear_8b85ef"
+            >
+              Clear
+            </span>
+            <span
+              class="_popup-footer-confirm_8b85ef"
+            >
+              Confirm
+            </span>
           </div>
-        </div>
-        <div
-          class="popup-footer"
-        >
-          <span
-            class="popup-footer-clear"
-          >
-            Clear
-          </span>
-          <span
-            class="popup-footer-confirm"
-          >
-            Confirm
-          </span>
         </div>
       </div>
     </div>
@@ -49,8 +53,8 @@ exports[`Filter Confirm Button click snapshot 2`] = `
 <body>
   <div>
     <span
-      class="iconfont icon-filter icon-filter icon-filter-selected"
-      customclass="icon-filter icon-filter-selected"
+      class="iconfont icon-filter _icon-filter_8b85ef _icon-filter-selected_8b85ef"
+      customclass="_icon-filter_8b85ef _icon-filter-selected_8b85ef"
       type="filter"
     />
   </div>
@@ -61,40 +65,44 @@ exports[`Filter icon click snapshot 1`] = `
 <body>
   <div>
     <span
-      class="iconfont icon-filter icon-filter icon-filter-selected"
-      customclass="icon-filter icon-filter-selected"
+      class="iconfont icon-filter _icon-filter_8b85ef _icon-filter-selected_8b85ef"
+      customclass="_icon-filter_8b85ef _icon-filter-selected_8b85ef"
       type="filter"
     />
   </div>
   <div
-    style="display: flex; position: absolute; left: 0px; top: 0px; right: 0px; transform: translate(0px, 0px);"
+    data-suir-portal="true"
   >
     <div
-      class="ui bottom right basic popup transition visible popup"
-      style="position: initial;"
+      style="display: flex; position: absolute; left: auto; top: 0px; z-index: auto; right: 0px; bottom: auto; transform: translate(0px, 0px);"
     >
-      <div>
+      <div
+        class="ui bottom right basic popup transition visible _popup_8b85ef"
+        style="left: auto; right: auto; position: initial;"
+      >
         <div>
           <div>
-            1
+            <div>
+              1
+            </div>
+            <div>
+              2
+            </div>
           </div>
-          <div>
-            2
+          <div
+            class="_popup-footer_8b85ef"
+          >
+            <span
+              class="_popup-footer-clear_8b85ef"
+            >
+              Clear
+            </span>
+            <span
+              class="_popup-footer-confirm_8b85ef"
+            >
+              Confirm
+            </span>
           </div>
-        </div>
-        <div
-          class="popup-footer"
-        >
-          <span
-            class="popup-footer-clear"
-          >
-            Clear
-          </span>
-          <span
-            class="popup-footer-confirm"
-          >
-            Confirm
-          </span>
         </div>
       </div>
     </div>
@@ -105,8 +113,8 @@ exports[`Filter icon click snapshot 1`] = `
 exports[`Filter snapshot 1`] = `
 <DocumentFragment>
   <span
-    class="iconfont icon-filter icon-filter icon-filter-selected"
-    customclass="icon-filter icon-filter-selected"
+    class="iconfont icon-filter _icon-filter_8b85ef _icon-filter-selected_8b85ef"
+    customclass="_icon-filter_8b85ef _icon-filter-selected_8b85ef"
     type="filter"
   />
 </DocumentFragment>

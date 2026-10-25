@@ -20,9 +20,9 @@ pub struct RngSeed {
 
 /// Fast random number generate.
 ///
-/// Implement xorshift64+: 2 32-bit xorshift sequences added together.
+/// Implement `xorshift64+`: 2 32-bit `xorshift` sequences added together.
 /// Shift triplet `[17,7,16]` was calculated as indicated in Marsaglia's
-/// Xorshift paper: <https://www.jstatsoft.org/article/view/v008i14/xorshift.pdf>
+/// `Xorshift` paper: <https://www.jstatsoft.org/article/view/v008i14/xorshift.pdf>
 /// This generator passes the SmallCrush suite, part of TestU01 framework:
 /// <http://simul.iro.umontreal.ca/testu01/tu01.html>
 #[derive(Clone, Copy, Debug)]
@@ -39,18 +39,17 @@ impl RngSeed {
 
     fn from_u64(seed: u64) -> Self {
         let one = (seed >> 32) as u32;
-        let mut two = seed as u32;
-
-        if two == 0 {
-            // This value cannot be zero
-            two = 1;
-        }
+        let two = seed as u32;
 
         Self::from_pair(one, two)
     }
 
     fn from_pair(s: u32, r: u32) -> Self {
-        Self { s, r }
+        if s == 0 && r == 0 {
+            Self { s: 0, r: 1 }
+        } else {
+            Self { s, r }
+        }
     }
 }
 
@@ -68,11 +67,7 @@ impl FastRand {
         }
     }
 
-    #[cfg(any(
-        feature = "macros",
-        feature = "rt-multi-thread",
-        all(feature = "sync", feature = "rt")
-    ))]
+    #[cfg(any(feature = "macros", feature = "sync", feature = "rt"))]
     pub(crate) fn fastrand_n(&mut self, n: u32) -> u32 {
         // This is similar to fastrand() % n, but faster.
         // See https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
@@ -91,5 +86,24 @@ impl FastRand {
         self.two = s1;
 
         s0.wrapping_add(s1)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn non_zero_seed_from_u64() {
+        let seed = RngSeed::from_u64(0);
+        assert_eq!(seed.s, 0);
+        assert_eq!(seed.r, 1);
+    }
+
+    #[test]
+    fn non_zero_seed_from_pair() {
+        let seed = RngSeed::from_pair(0, 0);
+        assert_eq!(seed.s, 0);
+        assert_eq!(seed.r, 1);
     }
 }

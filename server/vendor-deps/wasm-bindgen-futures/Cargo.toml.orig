@@ -2,33 +2,38 @@
 authors = ["The wasm-bindgen Developers"]
 description = "Bridging the gap between Rust Futures and JavaScript Promises"
 documentation = "https://docs.rs/wasm-bindgen-futures"
-homepage = "https://rustwasm.github.io/wasm-bindgen/"
-license = "MIT/Apache-2.0"
+edition = "2021"
+homepage = "https://wasm-bindgen.github.io/wasm-bindgen/"
+include = ["/LICENSE-*", "/src"]
+license = "MIT OR Apache-2.0"
 name = "wasm-bindgen-futures"
-repository = "https://github.com/rustwasm/wasm-bindgen/tree/master/crates/futures"
 readme = "./README.md"
-version = "0.4.37"
-edition = "2018"
-rust-version = "1.56"
+repository = "https://github.com/wasm-bindgen/wasm-bindgen/tree/master/crates/futures"
+rust-version = "1.81"
+version = "0.4.79"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
 
 [dependencies]
-cfg-if = "1.0.0"
-js-sys = { path = "../js-sys", version = '0.3.64' }
-wasm-bindgen = { path = "../..", version = '0.2.87' }
-futures-core =  { version = '0.3.8', default-features = false, optional = true }
+js-sys = { path = "../js-sys", version = "=0.3.106", default-features = false }
+wasm-bindgen = { path = "../..", version = "=0.2.129", default-features = false }
+
+# Unstable: only pulled in under `--cfg wasm_bindgen_unstable_tokio`, and
+# requires tokio's emscripten event-loop support (tokio-rs/tokio#8484).
+[target.'cfg(all(target_os = "emscripten", wasm_bindgen_unstable_tokio))'.dependencies]
+tokio = { version = "1", features = ["rt", "time"], default-features = false }
 
 [features]
-futures-core-03-stream = ['futures-core']
-
-[target.'cfg(target_feature = "atomics")'.dependencies.web-sys]
-path = "../web-sys"
-version = "0.3.24"
-features = [
-    "MessageEvent",
-    "Worker",
-]
+default = ["std"]
+futures-core-03-stream = ["js-sys/futures-core-03-stream"]
+std = ["wasm-bindgen/std", "js-sys/std"]
 
 [target.'cfg(target_arch = "wasm32")'.dev-dependencies]
-wasm-bindgen-test = { path = '../test', version = '0.3.37' }
-futures-channel-preview = { version = "0.3.0-alpha.18" }
-futures-lite = { version = "1.11.3", default-features = false }
+futures-channel = "0.3"
+futures-lite = { version = "2", default-features = false }
+wasm-bindgen-test = { path = '../test' }
+
+[lints]
+workspace = true

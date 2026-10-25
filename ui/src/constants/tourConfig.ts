@@ -1,14 +1,7 @@
-import { Styles, FloaterProps } from 'react-joyride';
+import { PartialDeep, Styles } from 'react-joyride';
 
-export const tourStyle: Styles = {
-  options: {
-    arrowColor: '#FFFFFF',
-    backgroundColor: '#FFFFFF',
-    overlayColor: 'rgba(0, 0, 0, 0.5)',
-    textColor: '#212529',
-    zIndex: 1000,
-  },
-  buttonNext: {
+export const tourStyle: PartialDeep<Styles> = {
+  buttonPrimary: {
     background: '#556EE6',
     color: '#FFFFFF',
     fontSize: '12px',
@@ -38,27 +31,17 @@ export const tourStyle: Styles = {
   },
   tooltipFooter: {
     marginTop: '24px'
-  },
-  spotlight: {
-    borderRadius: '12px',
-  },
-};
-
-export const floaterStyle: FloaterProps = {
-  styles: {
-    arrow: {
-      spread: 12,
-      length: 6,
-      color: '#FFFFFF'
-    },
-  },
-};
+  }
+} as const;
 
 export const commonConfig = {
-  disableBeacon: true,
-  showSkipButton: false,
-  disableOverlayClose: true,
-  hideCloseButton: true,
-  hideFooter: false,
-  spotlightClicks: false,
-};
+  skipBeacon: true,
+  blockTargetInteraction: true,
+  overlayClickAction: false,
+  arrowColor: '#FFFFFF',
+  backgroundColor: '#FFFFFF',
+  overlayColor: 'rgba(0, 0, 0, 0.5)',
+  textColor: '#212529',
+  zIndex: 1000,
+  spotlightRadius: 12
+} as const;

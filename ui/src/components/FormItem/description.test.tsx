@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import { FieldErrorsImpl, useForm } from 'react-hook-form';
 import { IntlWrapper } from 'components/utils/wrapper';
 import FormItemDes from './description';
@@ -15,12 +15,12 @@ const SnapshotTest = (props: { errors?: Partial<FieldErrorsImpl<{
     disabled={false}
     errors={props.errors ?? {}}
     register={register}
-    onChange={jest.fn()}
+    onChange={vi.fn()}
   />;
 };
 
-it('Key snapshot', () => {
-  (async () => {
+it('Key snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(
       <SnapshotTest />,
       {

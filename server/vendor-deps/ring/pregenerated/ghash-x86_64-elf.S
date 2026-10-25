@@ -1,22 +1,18 @@
-# This file is generated from a similarly-named Perl script in the BoringSSL
-# source tree. Do not edit by hand.
+// This file is generated from a similarly-named Perl script in the BoringSSL
+// source tree. Do not edit by hand.
 
-#if defined(__has_feature)
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
-#endif
+#include <ring-core/asm_base.h>
 
-#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM)
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__ELF__)
 .text	
-.extern	GFp_ia32cap_P
-.hidden GFp_ia32cap_P
-.globl	GFp_gcm_init_clmul
-.hidden GFp_gcm_init_clmul
-.type	GFp_gcm_init_clmul,@function
+.globl	gcm_init_clmul
+.hidden gcm_init_clmul
+.type	gcm_init_clmul,@function
 .align	16
-GFp_gcm_init_clmul:
+gcm_init_clmul:
 .cfi_startproc	
+
+_CET_ENDBR
 .L_init_clmul:
 	movdqu	(%rsi),%xmm2
 	pshufd	$78,%xmm2,%xmm2
@@ -167,69 +163,18 @@ GFp_gcm_init_clmul:
 	movdqu	%xmm0,64(%rdi)
 .byte	102,15,58,15,227,8
 	movdqu	%xmm4,80(%rdi)
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
-.size	GFp_gcm_init_clmul,.-GFp_gcm_init_clmul
-.globl	GFp_gcm_gmult_clmul
-.hidden GFp_gcm_gmult_clmul
-.type	GFp_gcm_gmult_clmul,@function
-.align	16
-GFp_gcm_gmult_clmul:
-.cfi_startproc	
-.L_gmult_clmul:
-	movdqu	(%rdi),%xmm0
-	movdqa	.Lbswap_mask(%rip),%xmm5
-	movdqu	(%rsi),%xmm2
-	movdqu	32(%rsi),%xmm4
-.byte	102,15,56,0,197
-	movdqa	%xmm0,%xmm1
-	pshufd	$78,%xmm0,%xmm3
-	pxor	%xmm0,%xmm3
-.byte	102,15,58,68,194,0
-.byte	102,15,58,68,202,17
-.byte	102,15,58,68,220,0
-	pxor	%xmm0,%xmm3
-	pxor	%xmm1,%xmm3
 
-	movdqa	%xmm3,%xmm4
-	psrldq	$8,%xmm3
-	pslldq	$8,%xmm4
-	pxor	%xmm3,%xmm1
-	pxor	%xmm4,%xmm0
-
-	movdqa	%xmm0,%xmm4
-	movdqa	%xmm0,%xmm3
-	psllq	$5,%xmm0
-	pxor	%xmm0,%xmm3
-	psllq	$1,%xmm0
-	pxor	%xmm3,%xmm0
-	psllq	$57,%xmm0
-	movdqa	%xmm0,%xmm3
-	pslldq	$8,%xmm0
-	psrldq	$8,%xmm3
-	pxor	%xmm4,%xmm0
-	pxor	%xmm3,%xmm1
-
-
-	movdqa	%xmm0,%xmm4
-	psrlq	$1,%xmm0
-	pxor	%xmm4,%xmm1
-	pxor	%xmm0,%xmm4
-	psrlq	$5,%xmm0
-	pxor	%xmm4,%xmm0
-	psrlq	$1,%xmm0
-	pxor	%xmm1,%xmm0
-.byte	102,15,56,0,197
-	movdqu	%xmm0,(%rdi)
-	.byte	0xf3,0xc3
-.cfi_endproc	
-.size	GFp_gcm_gmult_clmul,.-GFp_gcm_gmult_clmul
-.globl	GFp_gcm_ghash_clmul
-.hidden GFp_gcm_ghash_clmul
-.type	GFp_gcm_ghash_clmul,@function
+.size	gcm_init_clmul,.-gcm_init_clmul
+.globl	gcm_ghash_clmul
+.hidden gcm_ghash_clmul
+.type	gcm_ghash_clmul,@function
 .align	32
-GFp_gcm_ghash_clmul:
+gcm_ghash_clmul:
 .cfi_startproc	
+
+_CET_ENDBR
 .L_ghash_clmul:
 	movdqa	.Lbswap_mask(%rip),%xmm10
 
@@ -242,14 +187,8 @@ GFp_gcm_ghash_clmul:
 	jz	.Lodd_tail
 
 	movdqu	16(%rsi),%xmm6
-	leaq	GFp_ia32cap_P(%rip),%rax
-	movl	4(%rax),%eax
 	cmpq	$0x30,%rcx
 	jb	.Lskip4x
-
-	andl	$71303168,%eax
-	cmpl	$4194304,%eax
-	je	.Lskip4x
 
 	subq	$0x30,%rcx
 	movq	$0xA040608020C0E000,%rax
@@ -608,15 +547,18 @@ GFp_gcm_ghash_clmul:
 .Ldone:
 .byte	102,65,15,56,0,194
 	movdqu	%xmm0,(%rdi)
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
-.size	GFp_gcm_ghash_clmul,.-GFp_gcm_ghash_clmul
-.globl	GFp_gcm_init_avx
-.hidden GFp_gcm_init_avx
-.type	GFp_gcm_init_avx,@function
+
+.size	gcm_ghash_clmul,.-gcm_ghash_clmul
+.globl	gcm_init_avx
+.hidden gcm_init_avx
+.type	gcm_init_avx,@function
 .align	32
-GFp_gcm_init_avx:
+gcm_init_avx:
 .cfi_startproc	
+
+_CET_ENDBR
 	vzeroupper
 
 	vmovdqu	(%rsi),%xmm2
@@ -718,15 +660,18 @@ GFp_gcm_init_avx:
 	vmovdqu	%xmm5,-16(%rdi)
 
 	vzeroupper
-	.byte	0xf3,0xc3
+	ret
+
 .cfi_endproc	
-.size	GFp_gcm_init_avx,.-GFp_gcm_init_avx
-.globl	GFp_gcm_ghash_avx
-.hidden GFp_gcm_ghash_avx
-.type	GFp_gcm_ghash_avx,@function
+.size	gcm_init_avx,.-gcm_init_avx
+.globl	gcm_ghash_avx
+.hidden gcm_ghash_avx
+.type	gcm_ghash_avx,@function
 .align	32
-GFp_gcm_ghash_avx:
+gcm_ghash_avx:
 .cfi_startproc	
+
+_CET_ENDBR
 	vzeroupper
 
 	vmovdqu	(%rdi),%xmm10
@@ -1097,9 +1042,11 @@ GFp_gcm_ghash_avx:
 	vpshufb	%xmm13,%xmm10,%xmm10
 	vmovdqu	%xmm10,(%rdi)
 	vzeroupper
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
-.size	GFp_gcm_ghash_avx,.-GFp_gcm_ghash_avx
+
+.size	gcm_ghash_avx,.-gcm_ghash_avx
+.section	.rodata
 .align	64
 .Lbswap_mask:
 .byte	15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
@@ -1111,5 +1058,5 @@ GFp_gcm_ghash_avx:
 
 .byte	71,72,65,83,72,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	64
+.text	
 #endif
-.section	.note.GNU-stack,"",@progbits

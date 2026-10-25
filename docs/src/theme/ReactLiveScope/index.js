@@ -1,10 +1,10 @@
 import React from 'react';
-import { yl-toggle, FPUser } from 'yl-toggle-client-sdk-js';
+import { FPUser, YlToggle } from './sdk';
 // Add react-live imports you need here
 const ReactLiveScope = {
   React,
   ...React,
-  yl-toggle,
+  YlToggle,
   FPUser,
 };
 export default ReactLiveScope;

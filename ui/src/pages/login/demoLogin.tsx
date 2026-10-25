@@ -1,8 +1,9 @@
+import asset_play_png from 'images/play.png';
 import { useCallback, SyntheticEvent, useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Form, InputOnChangeData, Modal } from 'semantic-ui-react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useForm } from 'react-hook-form';
+import { FieldValues, useForm } from 'react-hook-form';
 import Button from 'components/Button';
 import Icon from 'components/Icon';
 import message from 'components/MessageBox';
@@ -17,7 +18,7 @@ import { IUserInfo } from 'interfaces/member';
 import styles from './index.module.scss';
 
 const DemoLogin = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const intl = useIntl();
   const location = useLocation();
   const [ left, saveLeft ] = useState<number>((document.body.clientWidth - 655) / 2);
@@ -48,7 +49,7 @@ const DemoLogin = () => {
   }, []);
 
   useEffect(() => {
-    register('account', { 
+    register('account', {
       required: {
         value: true,
         message: intl.formatMessage({id: 'common.email.placeholder.text'})
@@ -66,13 +67,14 @@ const DemoLogin = () => {
 
   const gotoHome = useCallback(async () => {
     const redirectUrl = await getRedirectUrl('/notfound');
-    history.push(redirectUrl);
-  }, [history]);
+    navigate(redirectUrl);
+  }, [navigate]);
 
-  const onSubmit = useCallback(async (params) => {
+  const onSubmit = useCallback(async (params: FieldValues) => {
     const res = await demoLogin<IUserInfo>({
       source: 'platform',
-      ...params
+      account: String(params.account),
+      password: String(params.password)
     });
     const { success, data } = res;
     if (success && data) {
@@ -80,7 +82,7 @@ const DemoLogin = () => {
       localStorage.setItem('organizeId', String(data.organizeId));
       localStorage.setItem('account', data.account);
       gotoHome();
-    } 
+    }
     else if (res.code === FORBIDDEN) {
       message.error(intl.formatMessage({id: 'login.error.text'}));
     }
@@ -109,7 +111,7 @@ const DemoLogin = () => {
           <div className={styles['player']} style={{left: left}}>
             <EventTracker category='login' action='demo-play-video'>
               <div className={styles['player-box']}>
-                <img src={require('images/play.png')} alt='play' className={styles['player-image']} />
+                <img src={asset_play_png} alt='play' className={styles['player-image']} />
               </div>
             </EventTracker>
           </div>
@@ -120,14 +122,14 @@ const DemoLogin = () => {
             width={'100%'}
             height={'100%'}
             title='yl-toggle'
-            src="//player.bilibili.com/player.html?bvid=BV1GG4y1R7oH&page=1" 
-            scrolling="no" 
-            frameBorder="no" 
+            src="//player.bilibili.com/player.html?bvid=BV1GG4y1R7oH&page=1"
+            scrolling="no"
+            frameBorder="no"
             allowFullScreen={true}
           />
         </div>
       </Modal>
-     
+
       <div className={`${styles['demo-login-card']} login-card`}>
         <div className={styles['demo-product']}>
           <img className={styles.logo} src={logo} alt='logo' />
@@ -139,9 +141,9 @@ const DemoLogin = () => {
           <FormattedMessage id='login.demo.tip' />
         </div>
         <div className={styles['demo-form']}>
-          <Form 
+          <Form
             autoComplete='off'
-            onSubmit={handleSubmit(onSubmit)} 
+            onSubmit={handleSubmit(onSubmit)}
           >
             <Form.Field className={styles.field}>
               <label className={styles.label}>
@@ -159,11 +161,11 @@ const DemoLogin = () => {
                   await trigger('account');
                 }}
               />
-              { errors.account && <div className={styles['error-text']}>{ errors.account.message }</div> }
+              { errors.account && <div className={styles['error-text']}>{String(errors.account?.message ?? '')}</div> }
             </Form.Field>
             <div className={styles['demo-tips']}>
               <FormattedMessage id='login.demo.password.tip' />
-            </div> 
+            </div>
             <div className={styles['demo-footer']}>
               <EventTracker category='login' action='demo-login'>
                 <Button className={styles['demo-btn']} type='submit' primary disabled={!!errors.account || !!errors.password}>

@@ -2,7 +2,7 @@ package io.yltoggle.api.utils;
 
 import org.apache.commons.validator.routines.InetAddressValidator;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class IpUtil {
 

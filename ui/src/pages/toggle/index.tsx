@@ -1,13 +1,15 @@
+import asset_archived_en_png from 'images/archived-en.png';
+import asset_archived_zh_png from 'images/archived-zh.png';
 import { SyntheticEvent, useEffect, useState, useCallback } from 'react';
-import { useHistory, useParams, useLocation } from 'react-router-dom';
-import { 
-  Table, 
-  Form, 
+import { useNavigate, useLocation } from 'react-router-dom';
+import {
+  Table,
+  Form,
   Popup,
-  PaginationProps, 
-  Dropdown, 
-  DropdownItemProps, 
-  DropdownProps, 
+  PaginationProps,
+  Dropdown,
+  DropdownItemProps,
+  DropdownProps,
   InputOnChangeData,
   Checkbox,
   CheckboxProps,
@@ -37,8 +39,10 @@ import { LAST_SEEN } from 'constants/dictionaryKeys';
 import { evaluationOptions, permanentOptions, statusOptions } from './options';
 
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IParams {
+  [key: string]: string | undefined;
   projectKey: string;
   environmentKey: string;
 }
@@ -90,7 +94,7 @@ const Toggle = () => {
   const [ popupOpen, savePopupOpen ] = useState<boolean>(false);
   const [ releaseStatusList, saveReleaseStatusList ] = useState<string[]>([]);
   const [ enableApproval, saveEnableApproval ] = useState<boolean>(false);
-  const history = useHistory();
+  const navigate = useNavigate();
   const intl = useIntl();
   const { i18n } = I18NContainer.useContainer();
 
@@ -126,7 +130,7 @@ const Toggle = () => {
           return;
         } else if (!success && code === NOT_FOUND) {
           saveDictionary(LAST_SEEN, {});
-          history.push('/notfound');
+          navigate('/notfound');
           return;
         } else {
           if (res.success)
@@ -139,7 +143,7 @@ const Toggle = () => {
           message.error(intl.formatMessage({id: 'toggles.list.error.text'}));
         }
       });
-  }, [intl, projectKey, environmentKey, history, searchParams]);
+  }, [intl, projectKey, environmentKey, navigate, searchParams]);
 
   const getEnvironmentInfo = useCallback(async() => {
     const res = await getEnvironment<IEnvironment>(projectKey, environmentKey);
@@ -204,8 +208,8 @@ const Toggle = () => {
     } else {
       existSearchParams.delete(key);
     }
-    history.push({ search: existSearchParams.toString() });
-  }, [history, location.search]);
+    navigate({ search: existSearchParams.toString() });
+  }, [navigate, location.search]);
 
   // Change evaluated
   const handleEvaluationChange = useCallback((e: SyntheticEvent, data: DropdownProps) => {
@@ -272,7 +276,7 @@ const Toggle = () => {
   }, [pushToHistory, searchParams]);
 
   // Change publishing status
-  const handleChange = useCallback((status) => {
+  const handleChange = useCallback((status: string) => {
     if (releaseStatusList.includes(status)) {
       const index = releaseStatusList.indexOf(status);
       releaseStatusList.splice(index, 1);
@@ -307,14 +311,14 @@ const Toggle = () => {
         {
           isArchived && (
             <div className={styles.archive}>
-              <img 
-                alt='archived' 
-                className={styles['archived-img']} 
-                src={ 
-                  i18n === 'en-US' 
-                    ? require('images/archived-en.png') 
-                    : require('images/archived-zh.png')
-                } 
+              <img
+                alt='archived'
+                className={styles['archived-img']}
+                src={
+                  i18n === 'en-US'
+                    ? asset_archived_en_png
+                    : asset_archived_zh_png
+                }
               />
             </div>
           )
@@ -325,13 +329,13 @@ const Toggle = () => {
               {
                 isArchived ? (
                   <div className={styles['heading-archive']}>
-                    <Icon 
-                      type='back' 
-                      customclass={styles['icon-back']} 
-                      onClick={() => { 
-                        setArchived(false); 
+                    <Icon
+                      type='back'
+                      customclass={styles['icon-back']}
+                      onClick={() => {
+                        setArchived(false);
                         handleSearchArchivedList(false);
-                      }} 
+                      }}
                     />
                     <span className={styles.divider}></span>
                     <FormattedMessage id='common.archived.toggles.text' />
@@ -363,7 +367,7 @@ const Toggle = () => {
                     position='bottom right'
                     className={styles.popup}
                     trigger={
-                      <div 
+                      <div
                         onClick={(e: SyntheticEvent) => {
                           document.body.click();
                           e.stopPropagation();
@@ -380,17 +384,17 @@ const Toggle = () => {
                     }}>
                       {
                         isArchived ? (
-                          <div className={styles['menu-item']} onClick={() => { 
+                          <div className={styles['menu-item']} onClick={() => {
                             document.body.click();
-                            setArchived(false); 
+                            setArchived(false);
                             handleSearchArchivedList(false);
                           }}>
                             <FormattedMessage id='toggles.menu.view.active.toggle' />
                           </div>
                         ) : (
-                          <div className={styles['menu-item']} onClick={() => { 
+                          <div className={styles['menu-item']} onClick={() => {
                             document.body.click();
-                            setArchived(true); 
+                            setArchived(true);
                             handleSearchArchivedList(true);
                           }}>
                             <FormattedMessage id='toggles.menu.view.archive.toggle' />
@@ -409,15 +413,15 @@ const Toggle = () => {
                         <FormattedMessage id='toggles.filter.evaluated' />
                       </label>
                       <Dropdown
-                        fluid 
+                        fluid
                         selection
                         floating
                         clearable
                         selectOnBlur={false}
                         value={search.get('visitFilter') ?? ''}
                         className={styles['dropdown']}
-                        placeholder={intl.formatMessage({id: 'common.dropdown.placeholder'})} 
-                        options={evaluationOptions()} 
+                        placeholder={intl.formatMessage({id: 'common.dropdown.placeholder'})}
+                        options={evaluationOptions()}
                         icon={<Icon customclass={styles['angle-down']} type={searchParams.visitFilter ? 'remove-circle' : 'angle-down'} />}
                         onChange={handleEvaluationChange}
                       />
@@ -426,15 +430,15 @@ const Toggle = () => {
                       <label className={styles.label}>
                         <FormattedMessage id='toggles.filter.status' />
                       </label>
-                      <Dropdown 
-                        fluid 
-                        selection 
+                      <Dropdown
+                        fluid
+                        selection
                         floating
                         clearable
                         className={styles['status-dropdown']}
                         value={search.get('disabled') ? search.get('disabled') === 'true' : ''}
                         selectOnBlur={false}
-                        placeholder={intl.formatMessage({id: 'common.dropdown.placeholder'})} 
+                        placeholder={intl.formatMessage({id: 'common.dropdown.placeholder'})}
                         options={statusOptions()}
                         icon={<Icon customclass={styles['angle-down']} type={search.get('disabled') ? 'remove-circle' : 'angle-down'} />}
                         onChange={handleStatusChange}
@@ -444,16 +448,16 @@ const Toggle = () => {
                       <label className={styles.label}>
                         <FormattedMessage id='common.tags.text' />
                       </label>
-                      <Dropdown 
-                        fluid 
-                        multiple 
-                        selection 
+                      <Dropdown
+                        fluid
+                        multiple
+                        selection
                         floating
                         clearable
                         search
                         selectOnBlur={false}
                         className={styles['dropdown']}
-                        placeholder={intl.formatMessage({id: 'common.dropdown.placeholder'})} 
+                        placeholder={intl.formatMessage({id: 'common.dropdown.placeholder'})}
                         options={tagOptions}
                         value={search.get('tags') ? search.get('tags')?.split(',') : []}
                         renderLabel={renderLabel}
@@ -465,14 +469,14 @@ const Toggle = () => {
                       <label className={styles.label}>
                         <FormattedMessage id='toggles.filter.permanent.status' />
                       </label>
-                      <Dropdown 
-                        fluid 
-                        selection 
+                      <Dropdown
+                        fluid
+                        selection
                         floating
                         clearable
                         className={styles['permanent-dropdown']}
                         selectOnBlur={false}
-                        placeholder={intl.formatMessage({id: 'common.dropdown.placeholder'})} 
+                        placeholder={intl.formatMessage({id: 'common.dropdown.placeholder'})}
                         value={search.get('permanent') ? search.get('permanent') === 'true' : ''}
                         options={permanentOptions()}
                         icon={<Icon customclass={styles['angle-down']} type={typeof searchParams.permanent === 'boolean' ? 'remove-circle' : 'angle-down'} />}
@@ -482,8 +486,8 @@ const Toggle = () => {
                   </div>
                   <div className={styles['filter-form-right']}>
                     <Form.Field className={styles['keywords-field']}>
-                      <Form.Input 
-                        placeholder={intl.formatMessage({id: 'toggles.filter.search.placeholder'})} 
+                      <Form.Input
+                        placeholder={intl.formatMessage({id: 'toggles.filter.search.placeholder'})}
                         icon={<Icon customclass={styles['icon-search']} type='search' />}
                         value={search.get('keyword') ?? ''}
                         onChange={handleSearch}
@@ -496,7 +500,7 @@ const Toggle = () => {
                           handleRelated(detail);
                         }}
                         checked={search.get('related') ? search.get('related') === 'true' : false}
-                        label={intl.formatMessage({id: 'toggles.filter.related.me'})} 
+                        label={intl.formatMessage({id: 'toggles.filter.related.me'})}
                       />
                       <Popup
                         inverted
@@ -550,7 +554,7 @@ const Toggle = () => {
                                     >
                                       <div className={styles['menu']}>
                                         <div className={styles['menu-item']}>
-                                          <Checkbox 
+                                          <Checkbox
                                             label={intl.formatMessage({id: 'approvals.status.pending'})}
                                             checked={releaseStatusList.includes('PENDING_APPROVAL')}
                                             onChange={(e: SyntheticEvent) => {
@@ -560,7 +564,7 @@ const Toggle = () => {
                                           />
                                         </div>
                                         <div className={styles['menu-item']}>
-                                          <Checkbox 
+                                          <Checkbox
                                             label={intl.formatMessage({id: 'approvals.status.unpublished'})}
                                             checked={releaseStatusList.includes('PENDING_RELEASE')}
                                             onChange={(e: SyntheticEvent) => {
@@ -570,7 +574,7 @@ const Toggle = () => {
                                           />
                                         </div>
                                         <div className={styles['menu-item']}>
-                                          <Checkbox 
+                                          <Checkbox
                                             label={intl.formatMessage({id: 'approvals.status.declined'})}
                                             checked={releaseStatusList.includes('REJECT')}
                                             onChange={(e: SyntheticEvent) => {
@@ -580,7 +584,7 @@ const Toggle = () => {
                                           />
                                         </div>
                                         <div className={styles['menu-item']}>
-                                          <Checkbox 
+                                          <Checkbox
                                             label={intl.formatMessage({id: 'approvals.status.published'})}
                                             checked={releaseStatusList.includes('RELEASE')}
                                             onChange={(e: SyntheticEvent) => {
@@ -623,9 +627,9 @@ const Toggle = () => {
                                     {
                                       toggleList?.map((toggle: IToggle) => {
                                         return (
-                                          <ToggleItem 
+                                          <ToggleItem
                                             key={toggle.key}
-                                            toggle={toggle} 
+                                            toggle={toggle}
                                             isArchived={isArchived}
                                             enableApproval={enableApproval}
                                             setIsAdd={setIsAdd}
@@ -656,7 +660,7 @@ const Toggle = () => {
                 )
               }
             </div>
-            <ToggleDrawer 
+            <ToggleDrawer
               isAdd={isAdd}
               visible={visible}
               setDrawerVisible={setDrawerVisible}

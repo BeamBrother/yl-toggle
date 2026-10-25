@@ -16,7 +16,7 @@ public class GuestAuthenticationToken extends AbstractAuthenticationToken {
     private AuthenticatedMember principal;
 
     public GuestAuthenticationToken(String account, String source, String password) {
-        super(null);
+        super(java.util.List.of());
         this.account = account;
         this.source = source;
         this.password = password;

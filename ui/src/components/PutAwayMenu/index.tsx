@@ -3,6 +3,7 @@ import Icon from 'components/Icon';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   isPutAway: boolean;
   title: string;
   type: string;
@@ -16,15 +17,15 @@ const PutAwayMemu = (props: IProps) => {
       {
         isPutAway ? (
           <>
-            <Popup 
+            <Popup
               inverted
               position='right center'
               offset={[0, 20]}
-              content={title} 
+              content={title}
               style={{opacity: 0.8}}
               trigger={
                 <Icon customclass={styles['iconfont']} type={type} />
-              } 
+              }
             />
           </>
         ) : (

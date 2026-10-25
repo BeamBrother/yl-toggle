@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import TextLimit from '.';
 import sleep from 'utils/sleep';
 
-it('TextLimit snapshot', () => {
-  (async () => {
+it('TextLimit snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(<TextLimit text="These are test words." maxLength={10} />);
     expect(asFragment()).toMatchSnapshot();
 
@@ -24,10 +24,10 @@ it('TextLimit snapshot', () => {
   })();
 });
 
-console.error = jest.fn;
+console.error = vi.fn;
 
-test('TextLimit text maxLenth test', (done) => {
-  (async () => {
+it('TextLimit text maxLenth test', async () => {
+  await (async () => {
     const { baseElement } = render(<TextLimit text="This is a test text." maxLength={10} />);
 
     expect(screen.getByText('This is...')).toBeInTheDocument();
@@ -35,12 +35,11 @@ test('TextLimit text maxLenth test', (done) => {
     await sleep(200);
 
     expect(baseElement).toMatchSnapshot();
-    done();
   })();
 });
 
-test('TextLimit text maxWidth test', (done) => {
-  (async () => {
+it('TextLimit text maxWidth test', async () => {
+  await (async () => {
     const { baseElement } = render(<TextLimit text="This is a test text." maxWidth={50} />);
 
     expect(screen.getByText('This is a test text.')).toBeInTheDocument();
@@ -48,6 +47,5 @@ test('TextLimit text maxWidth test', (done) => {
     await sleep(200);
 
     expect(baseElement).toMatchSnapshot();
-    done();
   })();
 });

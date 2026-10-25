@@ -1,12 +1,11 @@
 use std::error::Error;
 
-use crate::error::{ConfigError, Unexpected};
+use crate::format;
 use crate::map::Map;
 use crate::value::{Value, ValueKind};
 
-#[derive(serde::Deserialize, Debug)]
-#[serde(untagged)]
-pub enum Val {
+#[derive(Debug)]
+pub(crate) enum Val {
     Null,
     Boolean(bool),
     Integer(i64),
@@ -16,24 +15,29 @@ pub enum Val {
     Object(Map<String, Self>),
 }
 
-pub fn parse(
+impl<'de> serde_core::de::Deserialize<'de> for Val {
+    fn deserialize<D>(d: D) -> Result<Self, D::Error>
+    where
+        D: serde_core::de::Deserializer<'de>,
+    {
+        serde_untagged::UntaggedEnumVisitor::new()
+            .bool(|value| Ok(Self::Boolean(value)))
+            .i64(|value| Ok(Self::Integer(value)))
+            .f64(|value| Ok(Self::Float(value)))
+            .string(|value| Ok(Self::String(value.to_owned())))
+            .unit(|| Ok(Self::Null))
+            .seq(|value| value.deserialize().map(Val::Array))
+            .map(|value| value.deserialize().map(Val::Object))
+            .deserialize(d)
+    }
+}
+
+pub(crate) fn parse(
     uri: Option<&String>,
     text: &str,
 ) -> Result<Map<String, Value>, Box<dyn Error + Send + Sync>> {
-    match json5_rs::from_str::<Val>(text)? {
-        Val::String(ref value) => Err(Unexpected::Str(value.clone())),
-        Val::Integer(value) => Err(Unexpected::I64(value)),
-        Val::Float(value) => Err(Unexpected::Float(value)),
-        Val::Boolean(value) => Err(Unexpected::Bool(value)),
-        Val::Array(_) => Err(Unexpected::Seq),
-        Val::Null => Err(Unexpected::Unit),
-        Val::Object(o) => match from_json5_value(uri, Val::Object(o)).kind {
-            ValueKind::Table(map) => Ok(map),
-            _ => Ok(Map::new()),
-        },
-    }
-    .map_err(|err| ConfigError::invalid_root(uri, err))
-    .map_err(|err| Box::new(err) as Box<dyn Error + Send + Sync>)
+    let value = from_json5_value(uri, json5::from_str::<Val>(text)?);
+    format::extract_root_table(uri, value)
 }
 
 fn from_json5_value(uri: Option<&String>, value: Val) -> Value {

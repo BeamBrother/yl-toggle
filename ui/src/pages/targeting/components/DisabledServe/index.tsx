@@ -10,13 +10,14 @@ import { variationContainer, disabledServeContainer, hooksFormContainer } from '
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   disabled?: boolean;
 }
 
 const DisabledServe = (props: IProps) => {
   const intl = useIntl();
   const { disabled } = props;
-  const { 
+  const {
     disabledServe,
     saveDisabledServe,
   } = disabledServeContainer.useContainer();
@@ -71,11 +72,11 @@ const DisabledServe = (props: IProps) => {
           disabled={disabled}
           value={disabledServe?.select}
           className={styles['serve-dropdown']}
-          options={options} 
+          options={options}
           placeholder={intl.formatMessage({id: 'common.dropdown.placeholder'})}
           error={ errors.disabledServe ? true : false }
           {
-            ...register('disabledServe', { 
+            ...register('disabledServe', {
               required: {
                 value: true,
                 message: intl.formatMessage({id: 'targeting.disabled.return.value.required'})
@@ -93,7 +94,7 @@ const DisabledServe = (props: IProps) => {
         />
       </div>
       { errors.disabledServe && <div className={styles['error-text']}>
-        { errors.disabledServe.message }
+        {String(errors.disabledServe?.message ?? '')}
       </div> }
     </div>
   );

@@ -5,7 +5,7 @@ name = "h2"
 #   - html_root_url.
 # - Update CHANGELOG.md.
 # - Create git tag
-version = "0.3.24"
+version = "0.3.27"
 license = "MIT"
 authors = [
   "Carl Lerche <me@carllerche.com>",
@@ -70,6 +70,9 @@ tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "net"]
 env_logger = { version = "0.10", default-features = false }
 tokio-rustls = "0.24"
 webpki-roots = "0.25"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(fuzzing)"] }
 
 [package.metadata.docs.rs]
 features = ["stream"]

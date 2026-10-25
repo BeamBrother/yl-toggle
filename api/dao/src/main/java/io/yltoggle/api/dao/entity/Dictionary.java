@@ -11,9 +11,9 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
@@ -24,7 +24,7 @@ import javax.persistence.Table;
 @Table(name = "dictionary")
 @ToString(callSuper = true)
 @DynamicInsert
-@FilterDef(name = "deletedFilter", parameters = {@ParamDef(name = "deleted", type = "boolean")})
+@FilterDef(name = "deletedFilter", parameters = {@ParamDef(name = "deleted", type = Boolean.class)})
 @Filter(name = "deletedFilter", condition = "deleted = :deleted")
 public class Dictionary extends AbstractAuditEntity {
 

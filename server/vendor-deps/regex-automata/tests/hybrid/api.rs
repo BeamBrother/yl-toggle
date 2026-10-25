@@ -6,6 +6,36 @@ use regex_automata::{
     HalfMatch, Input, MatchError,
 };
 
+// A tagged start state can be reached after the DFA has recorded a match. A
+// prefilter must not skip to a new candidate while that match is pending.
+#[test]
+#[cfg(feature = "perf-literal-multisubstring")]
+fn prefilter_does_not_skip_pending_match() -> Result<(), Box<dyn Error>> {
+    use regex_automata::{util::prefilter::Prefilter, Anchored, MatchKind};
+
+    let pre = Prefilter::new(MatchKind::LeftmostFirst, &["ab", "c"])
+        .expect("prefilter");
+    let dfa = DFA::builder()
+        .configure(
+            DFA::config().prefilter(Some(pre)).starts_for_each_pattern(true),
+        )
+        .build(r"(?:ab|c)*c")?;
+    let mut cache = dfa.create_cache();
+    let haystack = "cabac";
+    let expected = Some(HalfMatch::must(0, 1));
+
+    // Cache the anchored start state before the equivalent state is reached
+    // via an ordinary transition. Otherwise, that state is left untagged and
+    // the prefilter bug remains hidden.
+    let input = Input::new(haystack).anchored(Anchored::Yes);
+    assert_eq!(expected, dfa.try_search_fwd(&mut cache, &input)?);
+    assert_eq!(
+        expected,
+        dfa.try_search_fwd(&mut cache, &Input::new(haystack))?,
+    );
+    Ok(())
+}
+
 // Tests that too many cache resets cause the lazy DFA to quit.
 //
 // We only test this on 64-bit because the test is gingerly crafted based on
@@ -55,7 +85,7 @@ fn too_many_cache_resets_cause_quit() -> Result<(), Box<dyn Error>> {
     let mut cache = dfa.create_cache();
 
     let haystack = "a".repeat(101).into_bytes();
-    let err = MatchError::gave_up(25);
+    let err = MatchError::gave_up(24);
     // Notice that we make the same amount of progress in each search! That's
     // because the cache is reused and already has states to handle the first
     // N bytes.
@@ -83,7 +113,7 @@ fn too_many_cache_resets_cause_quit() -> Result<(), Box<dyn Error>> {
     // OK, if we reset the cache, then we should be able to create more states
     // and make more progress with searching for betas.
     cache.reset(&dfa);
-    let err = MatchError::gave_up(27);
+    let err = MatchError::gave_up(26);
     assert_eq!(
         Err(err),
         dfa.try_search_fwd(&mut cache, &Input::new(&haystack))

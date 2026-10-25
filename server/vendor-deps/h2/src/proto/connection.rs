@@ -1,18 +1,18 @@
 use crate::codec::UserError;
 use crate::frame::{Reason, StreamId};
-use crate::{client, frame, server};
+use crate::{client, server};
 
 use crate::frame::DEFAULT_INITIAL_WINDOW_SIZE;
 use crate::proto::*;
 
-use bytes::{Buf, Bytes};
+use bytes::Bytes;
 use futures_core::Stream;
 use std::io;
 use std::marker::PhantomData;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 use std::time::Duration;
-use tokio::io::{AsyncRead, AsyncWrite};
+use tokio::io::AsyncRead;
 
 /// An H2 connection
 #[derive(Debug)]
@@ -428,24 +428,7 @@ where
             // error. This is handled by setting a GOAWAY frame followed by
             // terminating the connection.
             Err(Error::GoAway(debug_data, reason, initiator)) => {
-                let e = Error::GoAway(debug_data.clone(), reason, initiator);
-                tracing::debug!(error = ?e, "Connection::poll; connection error");
-
-                // We may have already sent a GOAWAY for this error,
-                // if so, don't send another, just flush and close up.
-                if self
-                    .go_away
-                    .going_away()
-                    .map_or(false, |frame| frame.reason() == reason)
-                {
-                    tracing::trace!("    -> already going away");
-                    *self.state = State::Closing(reason, initiator);
-                    return Ok(());
-                }
-
-                // Reset all active streams
-                self.streams.handle_error(e);
-                self.go_away_now_data(reason, debug_data);
+                self.handle_go_away(reason, debug_data, initiator);
                 Ok(())
             }
             // Attempting to read a frame resulted in a stream level error.
@@ -454,7 +437,12 @@ where
             Err(Error::Reset(id, reason, initiator)) => {
                 debug_assert_eq!(initiator, Initiator::Library);
                 tracing::trace!(?id, ?reason, "stream error");
-                self.streams.send_reset(id, reason);
+                match self.streams.send_reset(id, reason) {
+                    Ok(()) => (),
+                    Err(crate::proto::error::GoAway { debug_data, reason }) => {
+                        self.handle_go_away(reason, debug_data, Initiator::Library);
+                    }
+                }
                 Ok(())
             }
             // Attempting to read a frame resulted in an I/O error. All
@@ -472,6 +460,27 @@ where
                 Err(e)
             }
         }
+    }
+
+    fn handle_go_away(&mut self, reason: Reason, debug_data: Bytes, initiator: Initiator) {
+        let e = Error::GoAway(debug_data.clone(), reason, initiator);
+        tracing::debug!(error = ?e, "Connection::poll; connection error");
+
+        // We may have already sent a GOAWAY for this error,
+        // if so, don't send another, just flush and close up.
+        if self
+            .go_away
+            .going_away()
+            .map_or(false, |frame| frame.reason() == reason)
+        {
+            tracing::trace!("    -> already going away");
+            *self.state = State::Closing(reason, initiator);
+            return;
+        }
+
+        // Reset all active streams
+        self.streams.handle_error(e);
+        self.go_away_now_data(reason, debug_data);
     }
 
     fn recv_frame(&mut self, frame: Option<Frame>) -> Result<ReceivedFrame, Error> {

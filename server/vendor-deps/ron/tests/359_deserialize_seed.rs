@@ -17,7 +17,7 @@ fn test_deserialize_seed() {
             impl<'de> serde::de::Visitor<'de> for Visitor {
                 type Value = i64;
 
-                fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                fn expecting(&self, formatter: &mut core::fmt::Formatter) -> core::fmt::Result {
                     write!(formatter, "an integer")
                 }
 
@@ -46,11 +46,15 @@ fn test_deserialize_seed() {
 
     assert_eq!(
         ron::Options::default().from_str_seed("'a'", Seed(42)),
-        Err(ron::error::Error {
-            code: ron::ErrorCode::Message(String::from(
-                "invalid type: string \"a\", expected an integer"
-            )),
-            position: ron::error::Position { line: 0, col: 0 },
+        Err(ron::error::SpannedError {
+            code: ron::Error::InvalidValueForType {
+                expected: String::from("an integer"),
+                found: String::from("the string \"a\""),
+            },
+            span: ron::error::Span {
+                start: ron::error::Position { line: 1, col: 3 },
+                end: ron::error::Position { line: 1, col: 4 },
+            }
         })
     );
 }

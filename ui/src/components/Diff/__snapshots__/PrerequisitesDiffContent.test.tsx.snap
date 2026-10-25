@@ -1,27 +1,27 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`DiffPrerequisites snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="diff-content"
+    class="_diff-content_a8252c"
   >
     <div
-      class="before"
+      class="_before_a8252c"
     >
       <div
-        class="diff-fields"
+        class="_diff-fields_a8252c"
       >
         <table
           class="ui small unstackable very basic table"
         >
           <thead
-            class="table-header"
+            class="_table-header_a8252c"
           >
             <tr
               class=""
             >
               <th
-                class="table-header-name"
+                class="_table-header-name_dbe969"
               >
                 Toggles
               </th>
@@ -36,13 +36,13 @@ exports[`DiffPrerequisites snapshot 1`] = `
             class=""
           >
             <tr
-              class="diff-item diff-item-remove"
+              class="_diff-item_dbe969 _diff-item-remove_a8252c"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   key 1
                 </div>
@@ -51,20 +51,20 @@ exports[`DiffPrerequisites snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   value 1
                 </div>
               </td>
             </tr>
             <tr
-              class="diff-item diff-item-same"
+              class="_diff-item_dbe969 _diff-item-same_a8252c"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   key 2
                 </div>
@@ -73,20 +73,20 @@ exports[`DiffPrerequisites snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   value 2
                 </div>
               </td>
             </tr>
             <tr
-              class="diff-item diff-item-same"
+              class="_diff-item_dbe969 _diff-item-same_a8252c"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   key 3
                 </div>
@@ -95,17 +95,17 @@ exports[`DiffPrerequisites snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   value 3
                 </div>
               </td>
             </tr>
             <tr
-              class="diff-item "
+              class="_diff-item_dbe969 "
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               />
               <td
                 class=""
@@ -116,22 +116,22 @@ exports[`DiffPrerequisites snapshot 1`] = `
       </div>
     </div>
     <div
-      class="after"
+      class="_after_a8252c"
     >
       <div
-        class="diff-fields"
+        class="_diff-fields_a8252c"
       >
         <table
           class="ui small unstackable very basic table"
         >
           <thead
-            class="table-header"
+            class="_table-header_a8252c"
           >
             <tr
               class=""
             >
               <th
-                class="table-header-name"
+                class="_table-header-name_dbe969"
               >
                 Toggles
               </th>
@@ -146,23 +146,23 @@ exports[`DiffPrerequisites snapshot 1`] = `
             class=""
           >
             <tr
-              class="diff-item "
+              class="_diff-item_dbe969 "
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               />
               <td
                 class=""
               />
             </tr>
             <tr
-              class="diff-item diff-item-same"
+              class="_diff-item_dbe969 _diff-item-same_a8252c"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   key 2
                 </div>
@@ -171,20 +171,20 @@ exports[`DiffPrerequisites snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   value 2
                 </div>
               </td>
             </tr>
             <tr
-              class="diff-item diff-item-same"
+              class="_diff-item_dbe969 _diff-item-same_a8252c"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   key 3
                 </div>
@@ -193,20 +193,20 @@ exports[`DiffPrerequisites snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   value 3
                 </div>
               </td>
             </tr>
             <tr
-              class="diff-item diff-item-add"
+              class="_diff-item_dbe969 _diff-item-add_a8252c"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   key 4
                 </div>
@@ -215,7 +215,7 @@ exports[`DiffPrerequisites snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   value 4
                 </div>
@@ -232,25 +232,25 @@ exports[`DiffPrerequisites snapshot 1`] = `
 exports[`DiffPrerequisites snapshot 2`] = `
 <DocumentFragment>
   <div
-    class="diff-content"
+    class="_diff-content_a8252c"
   >
     <div
-      class="before"
+      class="_before_a8252c"
     >
       <div
-        class="diff-fields"
+        class="_diff-fields_a8252c"
       >
         <table
           class="ui small unstackable very basic table"
         >
           <thead
-            class="table-header"
+            class="_table-header_a8252c"
           >
             <tr
               class=""
             >
               <th
-                class="table-header-name"
+                class="_table-header-name_dbe969"
               >
                 Toggles
               </th>
@@ -265,13 +265,13 @@ exports[`DiffPrerequisites snapshot 2`] = `
             class=""
           >
             <tr
-              class="diff-item"
+              class="_diff-item_dbe969"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-same"
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
                 >
                   key 1
                 </div>
@@ -280,7 +280,7 @@ exports[`DiffPrerequisites snapshot 2`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-remove"
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
                 >
                   value 1
                 </div>
@@ -291,22 +291,22 @@ exports[`DiffPrerequisites snapshot 2`] = `
       </div>
     </div>
     <div
-      class="after"
+      class="_after_a8252c"
     >
       <div
-        class="diff-fields"
+        class="_diff-fields_a8252c"
       >
         <table
           class="ui small unstackable very basic table"
         >
           <thead
-            class="table-header"
+            class="_table-header_a8252c"
           >
             <tr
               class=""
             >
               <th
-                class="table-header-name"
+                class="_table-header-name_dbe969"
               >
                 Toggles
               </th>
@@ -321,13 +321,13 @@ exports[`DiffPrerequisites snapshot 2`] = `
             class=""
           >
             <tr
-              class="diff-item"
+              class="_diff-item_dbe969"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-same"
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
                 >
                   key 1
                 </div>
@@ -336,7 +336,7 @@ exports[`DiffPrerequisites snapshot 2`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-add"
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
                 >
                   value 2
                 </div>

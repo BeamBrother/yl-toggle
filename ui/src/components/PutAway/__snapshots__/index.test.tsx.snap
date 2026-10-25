@@ -1,21 +1,21 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`PutAway false snapshot 1`] = `
 <body>
   <div>
     <div
-      class="put-away"
+      class="_put-away_cb3619"
     >
       <div
-        class="put-away-divider"
+        class="_put-away-divider_cb3619"
       />
       <span
-        class="iconfont icon-put-away iconfont"
-        customclass="iconfont"
+        class="iconfont icon-put-away _iconfont_cb3619"
+        customclass="_iconfont_cb3619"
         type="put-away"
       />
       <span
-        class="menu"
+        class="_menu_cb3619"
       >
         Collapse
       </span>
@@ -28,14 +28,14 @@ exports[`PutAway true snapshot 1`] = `
 <body>
   <div>
     <div
-      class="put-away put-away-close"
+      class="_put-away_cb3619 _put-away-close_cb3619"
     >
       <div
-        class="put-away-divider put-away-divider-close"
+        class="_put-away-divider_cb3619 _put-away-divider-close_cb3619"
       />
       <span
-        class="iconfont icon-put-up iconfont"
-        customclass="iconfont"
+        class="iconfont icon-put-up _iconfont_cb3619"
+        customclass="_iconfont_cb3619"
         type="put-up"
       />
     </div>
@@ -50,14 +50,14 @@ exports[`PutAway true snapshot 1`] = `
 exports[`click PutAway 1`] = `
 <DocumentFragment>
   <div
-    class="put-away put-away-close"
+    class="_put-away_cb3619 _put-away-close_cb3619"
   >
     <div
-      class="put-away-divider put-away-divider-close"
+      class="_put-away-divider_cb3619 _put-away-divider-close_cb3619"
     />
     <span
-      class="iconfont icon-put-up iconfont"
-      customclass="iconfont"
+      class="iconfont icon-put-up _iconfont_cb3619"
+      customclass="_iconfont_cb3619"
       type="put-up"
     />
   </div>

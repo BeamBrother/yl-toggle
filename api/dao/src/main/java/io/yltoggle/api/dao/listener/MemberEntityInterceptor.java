@@ -4,9 +4,9 @@ import io.yltoggle.api.base.component.SpringBeanManager;
 import io.yltoggle.api.base.security.IEncryptionService;
 import io.yltoggle.api.dao.entity.Member;
 
-import javax.persistence.PostLoad;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import java.util.Date;
 
 public class MemberEntityInterceptor {

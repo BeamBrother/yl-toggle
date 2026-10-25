@@ -1,35 +1,35 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`VariationItem snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="line"
+    class="_line_9f8bc5"
   >
     <div
-      class="name"
+      class="_name_9f8bc5"
     >
       <span
-        class="name-color"
+        class="_name-color_9f8bc5"
         style="background: rgb(255, 156, 27);"
       />
     </div>
     <div
-      class="left"
+      class="_left_9f8bc5"
     >
       <div
         class="equal width fields"
       >
         <div
-          class="field drawer-variation-name"
+          class="field _drawer-variation-name_9f8bc5"
         >
           <div
             class="field"
           >
             <span
-              class="label-text"
+              class="_label-text_9f8bc5"
             >
               <span
-                class="label-required"
+                class="_label-required_9f8bc5"
               >
                 *
               </span>
@@ -44,22 +44,21 @@ exports[`VariationItem snapshot 1`] = `
                 name="variation_undefined_name"
                 placeholder="name"
                 type="text"
-                value=""
               />
             </div>
           </div>
         </div>
         <div
-          class="field drawer-variation-value"
+          class="field _drawer-variation-value_9f8bc5"
         >
           <div
-            class="field status-dropdown"
+            class="field _status-dropdown_9f8bc5"
           >
             <span
-              class="label-text"
+              class="_label-text_9f8bc5"
             >
               <span
-                class="label-required"
+                class="_label-required_9f8bc5"
               >
                 *
               </span>
@@ -82,8 +81,8 @@ exports[`VariationItem snapshot 1`] = `
                 Please select
               </div>
               <span
-                class="iconfont icon-angle-down angle-down"
-                customclass="angle-down"
+                class="iconfont icon-angle-down _angle-down_9f8bc5"
+                customclass="_angle-down_9f8bc5"
                 type="angle-down"
               />
               <div
@@ -126,7 +125,7 @@ exports[`VariationItem snapshot 1`] = `
             class="field"
           >
             <span
-              class="label"
+              class="_label_9f8bc5"
             >
               description
             </span>
@@ -139,7 +138,6 @@ exports[`VariationItem snapshot 1`] = `
                 name="description"
                 placeholder="description"
                 type="text"
-                value=""
               />
             </div>
           </div>
@@ -147,11 +145,11 @@ exports[`VariationItem snapshot 1`] = `
       </div>
     </div>
     <div
-      class="operation"
+      class="_operation_9f8bc5"
     >
       <span
-        class="iconfont icon-minus iconfont"
-        customclass="iconfont"
+        class="iconfont icon-minus _iconfont_9f8bc5"
+        customclass="_iconfont_9f8bc5"
         type="minus"
       />
     </div>
@@ -162,33 +160,33 @@ exports[`VariationItem snapshot 1`] = `
 exports[`VariationItem snapshot 2`] = `
 <DocumentFragment>
   <div
-    class="line"
+    class="_line_9f8bc5"
   >
     <div
-      class="name"
+      class="_name_9f8bc5"
     >
       <span
-        class="name-color"
+        class="_name-color_9f8bc5"
         style="background: rgb(255, 156, 27);"
       />
     </div>
     <div
-      class="left"
+      class="_left_9f8bc5"
     >
       <div
         class="equal width fields"
       >
         <div
-          class="field variation-name"
+          class="field _variation-name_9f8bc5"
         >
           <div
             class="field"
           >
             <span
-              class="label-text"
+              class="_label-text_9f8bc5"
             >
               <span
-                class="label-required"
+                class="_label-required_9f8bc5"
               >
                 *
               </span>
@@ -203,22 +201,21 @@ exports[`VariationItem snapshot 2`] = `
                 name="variation_undefined_name"
                 placeholder="name"
                 type="text"
-                value=""
               />
             </div>
           </div>
         </div>
         <div
-          class="field variation-value"
+          class="field _variation-value_9f8bc5"
         >
           <div
-            class="field status-dropdown"
+            class="field _status-dropdown_9f8bc5"
           >
             <span
-              class="label-text"
+              class="_label-text_9f8bc5"
             >
               <span
-                class="label-required"
+                class="_label-required_9f8bc5"
               >
                 *
               </span>
@@ -241,8 +238,8 @@ exports[`VariationItem snapshot 2`] = `
                 Please select
               </div>
               <span
-                class="iconfont icon-angle-down angle-down"
-                customclass="angle-down"
+                class="iconfont icon-angle-down _angle-down_9f8bc5"
+                customclass="_angle-down_9f8bc5"
                 type="angle-down"
               />
               <div
@@ -285,7 +282,7 @@ exports[`VariationItem snapshot 2`] = `
             class="field"
           >
             <span
-              class="label"
+              class="_label_9f8bc5"
             >
               description
             </span>
@@ -298,7 +295,6 @@ exports[`VariationItem snapshot 2`] = `
                 name="description"
                 placeholder="description"
                 type="text"
-                value=""
               />
             </div>
           </div>
@@ -306,11 +302,11 @@ exports[`VariationItem snapshot 2`] = `
       </div>
     </div>
     <div
-      class="operation"
+      class="_operation_9f8bc5"
     >
       <span
-        class="iconfont icon-minus iconfont"
-        customclass="iconfont"
+        class="iconfont icon-minus _iconfont_9f8bc5"
+        customclass="_iconfont_9f8bc5"
         type="minus"
       />
     </div>

@@ -1,5 +1,4 @@
 import { SyntheticEvent, useCallback, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { PaginationProps, Table } from 'semantic-ui-react';
 import cloneDeep from 'lodash/cloneDeep';
@@ -15,8 +14,10 @@ import { segmentContainer } from '../../provider';
 import ToggleList from 'pages/segmentEdit/components/ToggleList';
 
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface ILocationParams {
+  [key: string]: string | undefined;
   projectKey: string;
   environmentKey: string;
 }
@@ -28,6 +29,7 @@ interface ISearchParams {
 }
 
 interface IProps {
+  children?: import('react').ReactNode;
   segment: ISegment;
   fetchSegmentLists(): void;
   handleEdit: (segmentKey: string) => void;
@@ -48,7 +50,7 @@ const ToggleItem = (props: IProps) => {
   const { projectKey } = useParams<ILocationParams>();
   const intl = useIntl();
 
-  const { 
+  const {
     saveSegmentInfo,
     saveOriginSegmentInfo,
   } = segmentContainer.useContainer();
@@ -148,8 +150,8 @@ const ToggleItem = (props: IProps) => {
       </Table.Cell>
       <Table.Cell>
         <div className={styles['toggle-operation']}>
-          <div 
-            className={styles['toggle-operation-item']} 
+          <div
+            className={styles['toggle-operation-item']}
             onClick={(e) => {
               e.stopPropagation();
               gotoEditing(segment);}
@@ -157,8 +159,8 @@ const ToggleItem = (props: IProps) => {
           >
             <FormattedMessage id='common.edit.text' />
           </div>
-          <div 
-            className={styles['toggle-operation-item']} 
+          <div
+            className={styles['toggle-operation-item']}
             onClick={(e: SyntheticEvent) => {
               document.body.click();
               e.stopPropagation();
@@ -170,7 +172,7 @@ const ToggleItem = (props: IProps) => {
           </div>
         </div>
       </Table.Cell>
-      <DeleteTipsModal 
+      <DeleteTipsModal
         open={open}
         onCancel={() => {
           setOpen(false);
@@ -184,7 +186,7 @@ const ToggleItem = (props: IProps) => {
       />
       <Modal
         open={canNotDeleteOpen}
-        width={800} 
+        width={800}
         footer={
           <div className={styles['modal-footer']}>
             <Button
@@ -220,7 +222,7 @@ const ToggleItem = (props: IProps) => {
               {intl.formatMessage({ id: 'segments.modal.cannot.delete.text'}, { count: total })}
             </div>
             <div className={styles['modal-not-delete-content']}>
-              <ToggleList 
+              <ToggleList
                 total={total}
                 pagination={pagination}
                 toggleList={toggleList}

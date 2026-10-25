@@ -1,29 +1,17 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if !defined(__has_feature)
-#define __has_feature(x) 0
-#endif
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
+#include <ring-core/asm_base.h>
 
-#if !defined(OPENSSL_NO_ASM)
-#include <GFp/arm_arch.h>
-
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_AARCH64) && defined(__APPLE__)
 .text
 
-.globl	_GFp_bn_mul_mont
-.private_extern	_GFp_bn_mul_mont
+.globl	_bn_mul_mont_nohw
+.private_extern	_bn_mul_mont_nohw
 
 .align	5
-_GFp_bn_mul_mont:
+_bn_mul_mont_nohw:
 	AARCH64_SIGN_LINK_REGISTER
-	tst	x5,#7
-	b.eq	__bn_sqr8x_mont
-	tst	x5,#3
-	b.eq	__bn_mul4x_mont
-Lmul_mont:
 	stp	x29,x30,[sp,#-64]!
 	add	x29,sp,#0
 	stp	x19,x20,[sp,#16]
@@ -219,14 +207,12 @@ Lcond_copy:
 	AARCH64_VALIDATE_LINK_REGISTER
 	ret
 
+.globl	_bn_sqr8x_mont
+.private_extern	_bn_sqr8x_mont
 
 .align	5
-__bn_sqr8x_mont:
-	// Not adding AARCH64_SIGN_LINK_REGISTER here because __bn_sqr8x_mont is jumped to
-	// only from bn_mul_mont which has already signed the return address.
-	cmp	x1,x2
-	b.ne	__bn_mul4x_mont
-Lsqr8x_mont:
+_bn_sqr8x_mont:
+	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-128]!
 	add	x29,sp,#0
 	stp	x19,x20,[sp,#16]
@@ -981,12 +967,12 @@ Lsqr8x_done:
 	AARCH64_VALIDATE_LINK_REGISTER
 	ret
 
+.globl	_bn_mul4x_mont
+.private_extern	_bn_mul4x_mont
 
 .align	5
-__bn_mul4x_mont:
-	// Not adding AARCH64_SIGN_LINK_REGISTER here because __bn_mul4x_mont is jumped to
-	// only from bn_mul_mont or __bn_mul8x_mont which have already signed the
-	// return address.
+_bn_mul4x_mont:
+	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-128]!
 	add	x29,sp,#0
 	stp	x19,x20,[sp,#16]
@@ -1427,4 +1413,4 @@ Lmul4x_done:
 .byte	77,111,110,116,103,111,109,101,114,121,32,77,117,108,116,105,112,108,105,99,97,116,105,111,110,32,102,111,114,32,65,82,77,118,56,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	2
 .align	4
-#endif  // !OPENSSL_NO_ASM
+#endif  // !OPENSSL_NO_ASM && defined(OPENSSL_AARCH64) && defined(__APPLE__)

@@ -5,6 +5,7 @@ import { variationContainer, defaultServeContainer, hooksFormContainer } from '.
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   disabled?: boolean;
 }
 
@@ -13,7 +14,7 @@ const DefaultRule = (props: IProps) => {
   const { variations } = variationContainer.useContainer();
   const intl = useIntl();
 
-  const { 
+  const {
     defaultServe,
     saveDefaultServe,
   } = defaultServeContainer.useContainer();
@@ -27,7 +28,7 @@ const DefaultRule = (props: IProps) => {
           tooltipText={intl.formatMessage({id: 'targeting.default.rule.tips'})}
         />
         <div className={styles['serve-select']}>
-          <Serve 
+          <Serve
             disabled={disabled}
             serve={defaultServe}
             variations={variations}

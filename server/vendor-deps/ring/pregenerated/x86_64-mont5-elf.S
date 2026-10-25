@@ -1,470 +1,21 @@
-# This file is generated from a similarly-named Perl script in the BoringSSL
-# source tree. Do not edit by hand.
+// This file is generated from a similarly-named Perl script in the BoringSSL
+// source tree. Do not edit by hand.
 
-#if defined(__has_feature)
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
-#endif
+#include <ring-core/asm_base.h>
 
-#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM)
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__ELF__)
 .text	
 
-.extern	GFp_ia32cap_P
-.hidden GFp_ia32cap_P
-
-.globl	GFp_bn_mul_mont_gather5
-.hidden GFp_bn_mul_mont_gather5
-.type	GFp_bn_mul_mont_gather5,@function
-.align	64
-GFp_bn_mul_mont_gather5:
-.cfi_startproc	
-	movl	%r9d,%r9d
-	movq	%rsp,%rax
-.cfi_def_cfa_register	%rax
-	testl	$7,%r9d
-	jnz	.Lmul_enter
-	leaq	GFp_ia32cap_P(%rip),%r11
-	movl	8(%r11),%r11d
-	jmp	.Lmul4x_enter
-
-.align	16
-.Lmul_enter:
-	movd	8(%rsp),%xmm5
-	pushq	%rbx
-.cfi_offset	%rbx,-16
-	pushq	%rbp
-.cfi_offset	%rbp,-24
-	pushq	%r12
-.cfi_offset	%r12,-32
-	pushq	%r13
-.cfi_offset	%r13,-40
-	pushq	%r14
-.cfi_offset	%r14,-48
-	pushq	%r15
-.cfi_offset	%r15,-56
-
-	negq	%r9
-	movq	%rsp,%r11
-	leaq	-280(%rsp,%r9,8),%r10
-	negq	%r9
-	andq	$-1024,%r10
-
-
-
-
-
-
-
-
-
-	subq	%r10,%r11
-	andq	$-4096,%r11
-	leaq	(%r10,%r11,1),%rsp
-	movq	(%rsp),%r11
-	cmpq	%r10,%rsp
-	ja	.Lmul_page_walk
-	jmp	.Lmul_page_walk_done
-
-.Lmul_page_walk:
-	leaq	-4096(%rsp),%rsp
-	movq	(%rsp),%r11
-	cmpq	%r10,%rsp
-	ja	.Lmul_page_walk
-.Lmul_page_walk_done:
-
-	leaq	.Linc(%rip),%r10
-	movq	%rax,8(%rsp,%r9,8)
-.cfi_escape	0x0f,0x0a,0x77,0x08,0x79,0x00,0x38,0x1e,0x22,0x06,0x23,0x08
-.Lmul_body:
-
-	leaq	128(%rdx),%r12
-	movdqa	0(%r10),%xmm0
-	movdqa	16(%r10),%xmm1
-	leaq	24-112(%rsp,%r9,8),%r10
-	andq	$-16,%r10
-
-	pshufd	$0,%xmm5,%xmm5
-	movdqa	%xmm1,%xmm4
-	movdqa	%xmm1,%xmm2
-	paddd	%xmm0,%xmm1
-	pcmpeqd	%xmm5,%xmm0
-.byte	0x67
-	movdqa	%xmm4,%xmm3
-	paddd	%xmm1,%xmm2
-	pcmpeqd	%xmm5,%xmm1
-	movdqa	%xmm0,112(%r10)
-	movdqa	%xmm4,%xmm0
-
-	paddd	%xmm2,%xmm3
-	pcmpeqd	%xmm5,%xmm2
-	movdqa	%xmm1,128(%r10)
-	movdqa	%xmm4,%xmm1
-
-	paddd	%xmm3,%xmm0
-	pcmpeqd	%xmm5,%xmm3
-	movdqa	%xmm2,144(%r10)
-	movdqa	%xmm4,%xmm2
-
-	paddd	%xmm0,%xmm1
-	pcmpeqd	%xmm5,%xmm0
-	movdqa	%xmm3,160(%r10)
-	movdqa	%xmm4,%xmm3
-	paddd	%xmm1,%xmm2
-	pcmpeqd	%xmm5,%xmm1
-	movdqa	%xmm0,176(%r10)
-	movdqa	%xmm4,%xmm0
-
-	paddd	%xmm2,%xmm3
-	pcmpeqd	%xmm5,%xmm2
-	movdqa	%xmm1,192(%r10)
-	movdqa	%xmm4,%xmm1
-
-	paddd	%xmm3,%xmm0
-	pcmpeqd	%xmm5,%xmm3
-	movdqa	%xmm2,208(%r10)
-	movdqa	%xmm4,%xmm2
-
-	paddd	%xmm0,%xmm1
-	pcmpeqd	%xmm5,%xmm0
-	movdqa	%xmm3,224(%r10)
-	movdqa	%xmm4,%xmm3
-	paddd	%xmm1,%xmm2
-	pcmpeqd	%xmm5,%xmm1
-	movdqa	%xmm0,240(%r10)
-	movdqa	%xmm4,%xmm0
-
-	paddd	%xmm2,%xmm3
-	pcmpeqd	%xmm5,%xmm2
-	movdqa	%xmm1,256(%r10)
-	movdqa	%xmm4,%xmm1
-
-	paddd	%xmm3,%xmm0
-	pcmpeqd	%xmm5,%xmm3
-	movdqa	%xmm2,272(%r10)
-	movdqa	%xmm4,%xmm2
-
-	paddd	%xmm0,%xmm1
-	pcmpeqd	%xmm5,%xmm0
-	movdqa	%xmm3,288(%r10)
-	movdqa	%xmm4,%xmm3
-	paddd	%xmm1,%xmm2
-	pcmpeqd	%xmm5,%xmm1
-	movdqa	%xmm0,304(%r10)
-
-	paddd	%xmm2,%xmm3
-.byte	0x67
-	pcmpeqd	%xmm5,%xmm2
-	movdqa	%xmm1,320(%r10)
-
-	pcmpeqd	%xmm5,%xmm3
-	movdqa	%xmm2,336(%r10)
-	pand	64(%r12),%xmm0
-
-	pand	80(%r12),%xmm1
-	pand	96(%r12),%xmm2
-	movdqa	%xmm3,352(%r10)
-	pand	112(%r12),%xmm3
-	por	%xmm2,%xmm0
-	por	%xmm3,%xmm1
-	movdqa	-128(%r12),%xmm4
-	movdqa	-112(%r12),%xmm5
-	movdqa	-96(%r12),%xmm2
-	pand	112(%r10),%xmm4
-	movdqa	-80(%r12),%xmm3
-	pand	128(%r10),%xmm5
-	por	%xmm4,%xmm0
-	pand	144(%r10),%xmm2
-	por	%xmm5,%xmm1
-	pand	160(%r10),%xmm3
-	por	%xmm2,%xmm0
-	por	%xmm3,%xmm1
-	movdqa	-64(%r12),%xmm4
-	movdqa	-48(%r12),%xmm5
-	movdqa	-32(%r12),%xmm2
-	pand	176(%r10),%xmm4
-	movdqa	-16(%r12),%xmm3
-	pand	192(%r10),%xmm5
-	por	%xmm4,%xmm0
-	pand	208(%r10),%xmm2
-	por	%xmm5,%xmm1
-	pand	224(%r10),%xmm3
-	por	%xmm2,%xmm0
-	por	%xmm3,%xmm1
-	movdqa	0(%r12),%xmm4
-	movdqa	16(%r12),%xmm5
-	movdqa	32(%r12),%xmm2
-	pand	240(%r10),%xmm4
-	movdqa	48(%r12),%xmm3
-	pand	256(%r10),%xmm5
-	por	%xmm4,%xmm0
-	pand	272(%r10),%xmm2
-	por	%xmm5,%xmm1
-	pand	288(%r10),%xmm3
-	por	%xmm2,%xmm0
-	por	%xmm3,%xmm1
-	por	%xmm1,%xmm0
-	pshufd	$0x4e,%xmm0,%xmm1
-	por	%xmm1,%xmm0
-	leaq	256(%r12),%r12
-.byte	102,72,15,126,195
-
-	movq	(%r8),%r8
-	movq	(%rsi),%rax
-
-	xorq	%r14,%r14
-	xorq	%r15,%r15
-
-	movq	%r8,%rbp
-	mulq	%rbx
-	movq	%rax,%r10
-	movq	(%rcx),%rax
-
-	imulq	%r10,%rbp
-	movq	%rdx,%r11
-
-	mulq	%rbp
-	addq	%rax,%r10
-	movq	8(%rsi),%rax
-	adcq	$0,%rdx
-	movq	%rdx,%r13
-
-	leaq	1(%r15),%r15
-	jmp	.L1st_enter
-
-.align	16
-.L1st:
-	addq	%rax,%r13
-	movq	(%rsi,%r15,8),%rax
-	adcq	$0,%rdx
-	addq	%r11,%r13
-	movq	%r10,%r11
-	adcq	$0,%rdx
-	movq	%r13,-16(%rsp,%r15,8)
-	movq	%rdx,%r13
-
-.L1st_enter:
-	mulq	%rbx
-	addq	%rax,%r11
-	movq	(%rcx,%r15,8),%rax
-	adcq	$0,%rdx
-	leaq	1(%r15),%r15
-	movq	%rdx,%r10
-
-	mulq	%rbp
-	cmpq	%r9,%r15
-	jne	.L1st
-
-
-	addq	%rax,%r13
-	adcq	$0,%rdx
-	addq	%r11,%r13
-	adcq	$0,%rdx
-	movq	%r13,-16(%rsp,%r9,8)
-	movq	%rdx,%r13
-	movq	%r10,%r11
-
-	xorq	%rdx,%rdx
-	addq	%r11,%r13
-	adcq	$0,%rdx
-	movq	%r13,-8(%rsp,%r9,8)
-	movq	%rdx,(%rsp,%r9,8)
-
-	leaq	1(%r14),%r14
-	jmp	.Louter
-.align	16
-.Louter:
-	leaq	24+128(%rsp,%r9,8),%rdx
-	andq	$-16,%rdx
-	pxor	%xmm4,%xmm4
-	pxor	%xmm5,%xmm5
-	movdqa	-128(%r12),%xmm0
-	movdqa	-112(%r12),%xmm1
-	movdqa	-96(%r12),%xmm2
-	movdqa	-80(%r12),%xmm3
-	pand	-128(%rdx),%xmm0
-	pand	-112(%rdx),%xmm1
-	por	%xmm0,%xmm4
-	pand	-96(%rdx),%xmm2
-	por	%xmm1,%xmm5
-	pand	-80(%rdx),%xmm3
-	por	%xmm2,%xmm4
-	por	%xmm3,%xmm5
-	movdqa	-64(%r12),%xmm0
-	movdqa	-48(%r12),%xmm1
-	movdqa	-32(%r12),%xmm2
-	movdqa	-16(%r12),%xmm3
-	pand	-64(%rdx),%xmm0
-	pand	-48(%rdx),%xmm1
-	por	%xmm0,%xmm4
-	pand	-32(%rdx),%xmm2
-	por	%xmm1,%xmm5
-	pand	-16(%rdx),%xmm3
-	por	%xmm2,%xmm4
-	por	%xmm3,%xmm5
-	movdqa	0(%r12),%xmm0
-	movdqa	16(%r12),%xmm1
-	movdqa	32(%r12),%xmm2
-	movdqa	48(%r12),%xmm3
-	pand	0(%rdx),%xmm0
-	pand	16(%rdx),%xmm1
-	por	%xmm0,%xmm4
-	pand	32(%rdx),%xmm2
-	por	%xmm1,%xmm5
-	pand	48(%rdx),%xmm3
-	por	%xmm2,%xmm4
-	por	%xmm3,%xmm5
-	movdqa	64(%r12),%xmm0
-	movdqa	80(%r12),%xmm1
-	movdqa	96(%r12),%xmm2
-	movdqa	112(%r12),%xmm3
-	pand	64(%rdx),%xmm0
-	pand	80(%rdx),%xmm1
-	por	%xmm0,%xmm4
-	pand	96(%rdx),%xmm2
-	por	%xmm1,%xmm5
-	pand	112(%rdx),%xmm3
-	por	%xmm2,%xmm4
-	por	%xmm3,%xmm5
-	por	%xmm5,%xmm4
-	pshufd	$0x4e,%xmm4,%xmm0
-	por	%xmm4,%xmm0
-	leaq	256(%r12),%r12
-
-	movq	(%rsi),%rax
-.byte	102,72,15,126,195
-
-	xorq	%r15,%r15
-	movq	%r8,%rbp
-	movq	(%rsp),%r10
-
-	mulq	%rbx
-	addq	%rax,%r10
-	movq	(%rcx),%rax
-	adcq	$0,%rdx
-
-	imulq	%r10,%rbp
-	movq	%rdx,%r11
-
-	mulq	%rbp
-	addq	%rax,%r10
-	movq	8(%rsi),%rax
-	adcq	$0,%rdx
-	movq	8(%rsp),%r10
-	movq	%rdx,%r13
-
-	leaq	1(%r15),%r15
-	jmp	.Linner_enter
-
-.align	16
-.Linner:
-	addq	%rax,%r13
-	movq	(%rsi,%r15,8),%rax
-	adcq	$0,%rdx
-	addq	%r10,%r13
-	movq	(%rsp,%r15,8),%r10
-	adcq	$0,%rdx
-	movq	%r13,-16(%rsp,%r15,8)
-	movq	%rdx,%r13
-
-.Linner_enter:
-	mulq	%rbx
-	addq	%rax,%r11
-	movq	(%rcx,%r15,8),%rax
-	adcq	$0,%rdx
-	addq	%r11,%r10
-	movq	%rdx,%r11
-	adcq	$0,%r11
-	leaq	1(%r15),%r15
-
-	mulq	%rbp
-	cmpq	%r9,%r15
-	jne	.Linner
-
-	addq	%rax,%r13
-	adcq	$0,%rdx
-	addq	%r10,%r13
-	movq	(%rsp,%r9,8),%r10
-	adcq	$0,%rdx
-	movq	%r13,-16(%rsp,%r9,8)
-	movq	%rdx,%r13
-
-	xorq	%rdx,%rdx
-	addq	%r11,%r13
-	adcq	$0,%rdx
-	addq	%r10,%r13
-	adcq	$0,%rdx
-	movq	%r13,-8(%rsp,%r9,8)
-	movq	%rdx,(%rsp,%r9,8)
-
-	leaq	1(%r14),%r14
-	cmpq	%r9,%r14
-	jb	.Louter
-
-	xorq	%r14,%r14
-	movq	(%rsp),%rax
-	leaq	(%rsp),%rsi
-	movq	%r9,%r15
-	jmp	.Lsub
-.align	16
-.Lsub:	sbbq	(%rcx,%r14,8),%rax
-	movq	%rax,(%rdi,%r14,8)
-	movq	8(%rsi,%r14,8),%rax
-	leaq	1(%r14),%r14
-	decq	%r15
-	jnz	.Lsub
-
-	sbbq	$0,%rax
-	movq	$-1,%rbx
-	xorq	%rax,%rbx
-	xorq	%r14,%r14
-	movq	%r9,%r15
-
-.Lcopy:
-	movq	(%rdi,%r14,8),%rcx
-	movq	(%rsp,%r14,8),%rdx
-	andq	%rbx,%rcx
-	andq	%rax,%rdx
-	movq	%r14,(%rsp,%r14,8)
-	orq	%rcx,%rdx
-	movq	%rdx,(%rdi,%r14,8)
-	leaq	1(%r14),%r14
-	subq	$1,%r15
-	jnz	.Lcopy
-
-	movq	8(%rsp,%r9,8),%rsi
-.cfi_def_cfa	%rsi,8
-	movq	$1,%rax
-
-	movq	-48(%rsi),%r15
-.cfi_restore	%r15
-	movq	-40(%rsi),%r14
-.cfi_restore	%r14
-	movq	-32(%rsi),%r13
-.cfi_restore	%r13
-	movq	-24(%rsi),%r12
-.cfi_restore	%r12
-	movq	-16(%rsi),%rbp
-.cfi_restore	%rbp
-	movq	-8(%rsi),%rbx
-.cfi_restore	%rbx
-	leaq	(%rsi),%rsp
-.cfi_def_cfa_register	%rsp
-.Lmul_epilogue:
-	.byte	0xf3,0xc3
-.cfi_endproc	
-.size	GFp_bn_mul_mont_gather5,.-GFp_bn_mul_mont_gather5
+.globl	bn_mul4x_mont_gather5
+.hidden bn_mul4x_mont_gather5
 .type	bn_mul4x_mont_gather5,@function
 .align	32
 bn_mul4x_mont_gather5:
 .cfi_startproc	
+_CET_ENDBR
 .byte	0x67
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax
-.Lmul4x_enter:
-	andl	$0x80108,%r11d
-	cmpl	$0x80108,%r11d
-	je	.Lmulx4x_enter
 	pushq	%rbx
 .cfi_offset	%rbx,-16
 	pushq	%rbp
@@ -480,6 +31,9 @@ bn_mul4x_mont_gather5:
 .Lmul4x_prologue:
 
 .byte	0x67
+
+
+
 	shll	$3,%r9d
 	leaq	(%r9,%r9,2),%r10
 	negq	%r9
@@ -556,7 +110,7 @@ bn_mul4x_mont_gather5:
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lmul4x_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	bn_mul4x_mont_gather5,.-bn_mul4x_mont_gather5
 
@@ -695,6 +249,7 @@ mul4x_internal:
 	por	%xmm2,%xmm0
 	por	%xmm3,%xmm1
 	por	%xmm1,%xmm0
+
 	pshufd	$0x4e,%xmm0,%xmm1
 	por	%xmm1,%xmm0
 	leaq	256(%r12),%r12
@@ -902,6 +457,7 @@ mul4x_internal:
 	por	%xmm2,%xmm4
 	por	%xmm3,%xmm5
 	por	%xmm5,%xmm4
+
 	pshufd	$0x4e,%xmm4,%xmm0
 	por	%xmm4,%xmm0
 	leaq	256(%r12),%r12
@@ -1087,19 +643,15 @@ mul4x_internal:
 	jmp	.Lsqr4x_sub_entry
 .cfi_endproc	
 .size	mul4x_internal,.-mul4x_internal
-.globl	GFp_bn_power5
-.hidden GFp_bn_power5
-.type	GFp_bn_power5,@function
+.globl	bn_power5_nohw
+.hidden bn_power5_nohw
+.type	bn_power5_nohw,@function
 .align	32
-GFp_bn_power5:
+bn_power5_nohw:
 .cfi_startproc	
+_CET_ENDBR
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax
-	leaq	GFp_ia32cap_P(%rip),%r11
-	movl	8(%r11),%r11d
-	andl	$0x80108,%r11d
-	cmpl	$0x80108,%r11d
-	je	.Lpowerx5_enter
 	pushq	%rbx
 .cfi_offset	%rbx,-16
 	pushq	%rbp
@@ -1113,6 +665,9 @@ GFp_bn_power5:
 	pushq	%r15
 .cfi_offset	%r15,-56
 .Lpower5_prologue:
+
+
+
 
 	shll	$3,%r9d
 	leal	(%r9,%r9,2),%r10d
@@ -1220,18 +775,19 @@ GFp_bn_power5:
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lpower5_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
-.size	GFp_bn_power5,.-GFp_bn_power5
+.size	bn_power5_nohw,.-bn_power5_nohw
 
-.globl	GFp_bn_sqr8x_internal
-.hidden GFp_bn_sqr8x_internal
-.hidden	GFp_bn_sqr8x_internal
-.type	GFp_bn_sqr8x_internal,@function
+.globl	bn_sqr8x_internal
+.hidden bn_sqr8x_internal
+.hidden	bn_sqr8x_internal
+.type	bn_sqr8x_internal,@function
 .align	32
-GFp_bn_sqr8x_internal:
+bn_sqr8x_internal:
 __bn_sqr8x_internal:
 .cfi_startproc	
+_CET_ENDBR
 
 
 
@@ -2005,9 +1561,9 @@ __bn_sqr8x_reduction:
 
 	cmpq	%rdx,%rdi
 	jb	.L8x_reduction_loop
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
-.size	GFp_bn_sqr8x_internal,.-GFp_bn_sqr8x_internal
+.size	bn_sqr8x_internal,.-bn_sqr8x_internal
 .type	__bn_post4x_internal,@function
 .align	32
 __bn_post4x_internal:
@@ -2061,197 +1617,18 @@ __bn_post4x_internal:
 
 	movq	%r9,%r10
 	negq	%r9
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__bn_post4x_internal,.-__bn_post4x_internal
-.globl	GFp_bn_from_montgomery
-.hidden GFp_bn_from_montgomery
-.type	GFp_bn_from_montgomery,@function
-.align	32
-GFp_bn_from_montgomery:
-.cfi_startproc	
-	testl	$7,%r9d
-	jz	bn_from_mont8x
-	xorl	%eax,%eax
-	.byte	0xf3,0xc3
-.cfi_endproc	
-.size	GFp_bn_from_montgomery,.-GFp_bn_from_montgomery
-
-.type	bn_from_mont8x,@function
-.align	32
-bn_from_mont8x:
-.cfi_startproc	
-.byte	0x67
-	movq	%rsp,%rax
-.cfi_def_cfa_register	%rax
-	pushq	%rbx
-.cfi_offset	%rbx,-16
-	pushq	%rbp
-.cfi_offset	%rbp,-24
-	pushq	%r12
-.cfi_offset	%r12,-32
-	pushq	%r13
-.cfi_offset	%r13,-40
-	pushq	%r14
-.cfi_offset	%r14,-48
-	pushq	%r15
-.cfi_offset	%r15,-56
-.Lfrom_prologue:
-
-	shll	$3,%r9d
-	leaq	(%r9,%r9,2),%r10
-	negq	%r9
-	movq	(%r8),%r8
-
-
-
-
-
-
-
-
-	leaq	-320(%rsp,%r9,2),%r11
-	movq	%rsp,%rbp
-	subq	%rdi,%r11
-	andq	$4095,%r11
-	cmpq	%r11,%r10
-	jb	.Lfrom_sp_alt
-	subq	%r11,%rbp
-	leaq	-320(%rbp,%r9,2),%rbp
-	jmp	.Lfrom_sp_done
-
-.align	32
-.Lfrom_sp_alt:
-	leaq	4096-320(,%r9,2),%r10
-	leaq	-320(%rbp,%r9,2),%rbp
-	subq	%r10,%r11
-	movq	$0,%r10
-	cmovcq	%r10,%r11
-	subq	%r11,%rbp
-.Lfrom_sp_done:
-	andq	$-64,%rbp
-	movq	%rsp,%r11
-	subq	%rbp,%r11
-	andq	$-4096,%r11
-	leaq	(%r11,%rbp,1),%rsp
-	movq	(%rsp),%r10
-	cmpq	%rbp,%rsp
-	ja	.Lfrom_page_walk
-	jmp	.Lfrom_page_walk_done
-
-.Lfrom_page_walk:
-	leaq	-4096(%rsp),%rsp
-	movq	(%rsp),%r10
-	cmpq	%rbp,%rsp
-	ja	.Lfrom_page_walk
-.Lfrom_page_walk_done:
-
-	movq	%r9,%r10
-	negq	%r9
-
-
-
-
-
-
-
-
-
-
-	movq	%r8,32(%rsp)
-	movq	%rax,40(%rsp)
-.cfi_escape	0x0f,0x05,0x77,0x28,0x06,0x23,0x08
-.Lfrom_body:
-	movq	%r9,%r11
-	leaq	48(%rsp),%rax
-	pxor	%xmm0,%xmm0
-	jmp	.Lmul_by_1
-
-.align	32
-.Lmul_by_1:
-	movdqu	(%rsi),%xmm1
-	movdqu	16(%rsi),%xmm2
-	movdqu	32(%rsi),%xmm3
-	movdqa	%xmm0,(%rax,%r9,1)
-	movdqu	48(%rsi),%xmm4
-	movdqa	%xmm0,16(%rax,%r9,1)
-.byte	0x48,0x8d,0xb6,0x40,0x00,0x00,0x00
-	movdqa	%xmm1,(%rax)
-	movdqa	%xmm0,32(%rax,%r9,1)
-	movdqa	%xmm2,16(%rax)
-	movdqa	%xmm0,48(%rax,%r9,1)
-	movdqa	%xmm3,32(%rax)
-	movdqa	%xmm4,48(%rax)
-	leaq	64(%rax),%rax
-	subq	$64,%r11
-	jnz	.Lmul_by_1
-
-.byte	102,72,15,110,207
-.byte	102,72,15,110,209
-.byte	0x67
-	movq	%rcx,%rbp
-.byte	102,73,15,110,218
-	leaq	GFp_ia32cap_P(%rip),%r11
-	movl	8(%r11),%r11d
-	andl	$0x80108,%r11d
-	cmpl	$0x80108,%r11d
-	jne	.Lfrom_mont_nox
-
-	leaq	(%rax,%r9,1),%rdi
-	call	__bn_sqrx8x_reduction
-	call	__bn_postx4x_internal
-
-	pxor	%xmm0,%xmm0
-	leaq	48(%rsp),%rax
-	jmp	.Lfrom_mont_zero
-
-.align	32
-.Lfrom_mont_nox:
-	call	__bn_sqr8x_reduction
-	call	__bn_post4x_internal
-
-	pxor	%xmm0,%xmm0
-	leaq	48(%rsp),%rax
-	jmp	.Lfrom_mont_zero
-
-.align	32
-.Lfrom_mont_zero:
-	movq	40(%rsp),%rsi
-.cfi_def_cfa	%rsi,8
-	movdqa	%xmm0,0(%rax)
-	movdqa	%xmm0,16(%rax)
-	movdqa	%xmm0,32(%rax)
-	movdqa	%xmm0,48(%rax)
-	leaq	64(%rax),%rax
-	subq	$32,%r9
-	jnz	.Lfrom_mont_zero
-
-	movq	$1,%rax
-	movq	-48(%rsi),%r15
-.cfi_restore	%r15
-	movq	-40(%rsi),%r14
-.cfi_restore	%r14
-	movq	-32(%rsi),%r13
-.cfi_restore	%r13
-	movq	-24(%rsi),%r12
-.cfi_restore	%r12
-	movq	-16(%rsi),%rbp
-.cfi_restore	%rbp
-	movq	-8(%rsi),%rbx
-.cfi_restore	%rbx
-	leaq	(%rsi),%rsp
-.cfi_def_cfa_register	%rsp
-.Lfrom_epilogue:
-	.byte	0xf3,0xc3
-.cfi_endproc	
-.size	bn_from_mont8x,.-bn_from_mont8x
+.globl	bn_mulx4x_mont_gather5
+.hidden bn_mulx4x_mont_gather5
 .type	bn_mulx4x_mont_gather5,@function
 .align	32
 bn_mulx4x_mont_gather5:
 .cfi_startproc	
+_CET_ENDBR
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax
-.Lmulx4x_enter:
 	pushq	%rbx
 .cfi_offset	%rbx,-16
 	pushq	%rbp
@@ -2265,6 +1642,9 @@ bn_mulx4x_mont_gather5:
 	pushq	%r15
 .cfi_offset	%r15,-56
 .Lmulx4x_prologue:
+
+
+
 
 	shll	$3,%r9d
 	leaq	(%r9,%r9,2),%r10
@@ -2352,7 +1732,7 @@ bn_mulx4x_mont_gather5:
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lmulx4x_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	bn_mulx4x_mont_gather5,.-bn_mulx4x_mont_gather5
 
@@ -2499,6 +1879,7 @@ mulx4x_internal:
 	por	%xmm2,%xmm0
 	por	%xmm3,%xmm1
 	pxor	%xmm1,%xmm0
+
 	pshufd	$0x4e,%xmm0,%xmm1
 	por	%xmm1,%xmm0
 	leaq	256(%rdi),%rdi
@@ -2649,6 +2030,7 @@ mulx4x_internal:
 	por	%xmm2,%xmm4
 	por	%xmm3,%xmm5
 	por	%xmm5,%xmm4
+
 	pshufd	$0x4e,%xmm4,%xmm0
 	por	%xmm4,%xmm0
 	leaq	256(%rdi),%rdi
@@ -2780,13 +2162,15 @@ mulx4x_internal:
 	jmp	.Lsqrx4x_sub_entry
 .cfi_endproc	
 .size	mulx4x_internal,.-mulx4x_internal
+.globl	bn_powerx5
+.hidden bn_powerx5
 .type	bn_powerx5,@function
 .align	32
 bn_powerx5:
 .cfi_startproc	
+_CET_ENDBR
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax
-.Lpowerx5_enter:
 	pushq	%rbx
 .cfi_offset	%rbx,-16
 	pushq	%rbp
@@ -2800,6 +2184,9 @@ bn_powerx5:
 	pushq	%r15
 .cfi_offset	%r15,-56
 .Lpowerx5_prologue:
+
+
+
 
 	shll	$3,%r9d
 	leaq	(%r9,%r9,2),%r10
@@ -2911,17 +2298,19 @@ bn_powerx5:
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lpowerx5_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	bn_powerx5,.-bn_powerx5
 
-.globl	GFp_bn_sqrx8x_internal
-.hidden GFp_bn_sqrx8x_internal
-.type	GFp_bn_sqrx8x_internal,@function
+.globl	bn_sqrx8x_internal
+.hidden bn_sqrx8x_internal
+.hidden	bn_sqrx8x_internal
+.type	bn_sqrx8x_internal,@function
 .align	32
-GFp_bn_sqrx8x_internal:
+bn_sqrx8x_internal:
 __bn_sqrx8x_internal:
 .cfi_startproc	
+_CET_ENDBR
 
 
 
@@ -3532,9 +2921,9 @@ __bn_sqrx8x_reduction:
 	leaq	64(%rdi,%rcx,1),%rdi
 	cmpq	8+8(%rsp),%r8
 	jb	.Lsqrx8x_reduction_loop
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
-.size	GFp_bn_sqrx8x_internal,.-GFp_bn_sqrx8x_internal
+.size	bn_sqrx8x_internal,.-bn_sqrx8x_internal
 .align	32
 .type	__bn_postx4x_internal,@function
 __bn_postx4x_internal:
@@ -3585,17 +2974,27 @@ __bn_postx4x_internal:
 
 	negq	%r9
 
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	__bn_postx4x_internal,.-__bn_postx4x_internal
-.globl	GFp_bn_scatter5
-.hidden GFp_bn_scatter5
-.type	GFp_bn_scatter5,@function
+.globl	bn_scatter5
+.hidden bn_scatter5
+.type	bn_scatter5,@function
 .align	16
-GFp_bn_scatter5:
+bn_scatter5:
 .cfi_startproc	
+_CET_ENDBR
 	cmpl	$0,%esi
 	jz	.Lscatter_epilogue
+
+
+
+
+
+
+
+
+
 	leaq	(%rdx,%rcx,8),%rdx
 .Lscatter:
 	movq	(%rdi),%rax
@@ -3605,17 +3004,18 @@ GFp_bn_scatter5:
 	subl	$1,%esi
 	jnz	.Lscatter
 .Lscatter_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
-.size	GFp_bn_scatter5,.-GFp_bn_scatter5
+.size	bn_scatter5,.-bn_scatter5
 
-.globl	GFp_bn_gather5
-.hidden GFp_bn_gather5
-.type	GFp_bn_gather5,@function
+.globl	bn_gather5
+.hidden bn_gather5
+.type	bn_gather5,@function
 .align	32
-GFp_bn_gather5:
+bn_gather5:
 .cfi_startproc	
-.LSEH_begin_GFp_bn_gather5:
+.LSEH_begin_bn_gather5:
+_CET_ENDBR
 
 .byte	0x4c,0x8d,0x14,0x24
 .cfi_def_cfa_register	%r10
@@ -3764,6 +3164,7 @@ GFp_bn_gather5:
 	por	%xmm3,%xmm5
 	por	%xmm5,%xmm4
 	leaq	256(%r11),%r11
+
 	pshufd	$0x4e,%xmm4,%xmm0
 	por	%xmm4,%xmm0
 	movq	%xmm0,(%rdi)
@@ -3773,14 +3174,15 @@ GFp_bn_gather5:
 
 	leaq	(%r10),%rsp
 .cfi_def_cfa_register	%rsp
-	.byte	0xf3,0xc3
-.LSEH_end_GFp_bn_gather5:
+	ret
+.LSEH_end_bn_gather5:
 .cfi_endproc	
-.size	GFp_bn_gather5,.-GFp_bn_gather5
+.size	bn_gather5,.-bn_gather5
+.section	.rodata
 .align	64
 .Linc:
 .long	0,0, 1,1
 .long	2,2, 2,2
 .byte	77,111,110,116,103,111,109,101,114,121,32,77,117,108,116,105,112,108,105,99,97,116,105,111,110,32,119,105,116,104,32,115,99,97,116,116,101,114,47,103,97,116,104,101,114,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
+.text	
 #endif
-.section	.note.GNU-stack,"",@progbits

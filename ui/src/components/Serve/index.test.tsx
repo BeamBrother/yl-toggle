@@ -1,12 +1,12 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import Serve from '.';
 import { hooksFormContainer } from 'pages/toggle/provider';
 import { IntlWrapper } from 'components/utils/wrapper';
 import { IVariation } from 'interfaces/targeting';
 
-const Wrapper: React.FC = (props) => {
+const Wrapper: React.FC<{ children?: import('react').ReactNode }> = (props) => {
   return (
     <IntlWrapper>
       <hooksFormContainer.Provider>{props.children}</hooksFormContainer.Provider>
@@ -29,17 +29,17 @@ const variations: IVariation[] = [
   },
 ];
 
-it('Serve snapshot', (done) => {
-  (async () => {
+it('Serve snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(
-      <Serve variations={[]} handleChangeServe={jest.fn()} hooksFormContainer={hooksFormContainer} />,
+      <Serve variations={[]} handleChangeServe={vi.fn()} hooksFormContainer={hooksFormContainer} />,
       {
         wrapper: Wrapper,
       }
     );
     expect(asFragment()).toMatchSnapshot();
 
-    rerender(<Serve variations={variations} handleChangeServe={jest.fn()} hooksFormContainer={hooksFormContainer} />);
+    rerender(<Serve variations={variations} handleChangeServe={vi.fn()} hooksFormContainer={hooksFormContainer} />);
     expect(asFragment()).toMatchSnapshot();
 
     rerender(
@@ -47,7 +47,7 @@ it('Serve snapshot', (done) => {
         disabled={true}
         variations={variations}
         serve={{ split: [0, 0], select: 2 }}
-        handleChangeServe={jest.fn()}
+        handleChangeServe={vi.fn()}
         hooksFormContainer={hooksFormContainer}
       />
     );
@@ -58,19 +58,17 @@ it('Serve snapshot', (done) => {
         disabled={false}
         variations={variations}
         serve={{ select: 0 }}
-        handleChangeServe={jest.fn()}
+        handleChangeServe={vi.fn()}
         hooksFormContainer={hooksFormContainer}
       />
     );
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });
 
-test('Serve select', (done) => {
-  (async () => {
-    const mockHandleChangeServe = jest.fn();
+it('Serve select', async () => {
+  await (async () => {
+    const mockHandleChangeServe = vi.fn();
 
     const { asFragment } = render(
       <Serve
@@ -125,7 +123,5 @@ test('Serve select', (done) => {
 
     await userEvent.keyboard('50');
     expect(mockHandleChangeServe).toHaveBeenLastCalledWith(expect.objectContaining({ split: [0, 10000] }));
-
-    done();
   })();
 });

@@ -115,7 +115,7 @@ pub trait LookupSpan<'a> {
     /// should only implement `span_data`.
     ///
     /// [`span_data`]: LookupSpan::span_data()
-    fn span(&'a self, id: &Id) -> Option<SpanRef<'_, Self>>
+    fn span(&'a self, id: &Id) -> Option<SpanRef<'a, Self>>
     where
         Self: Sized,
     {
@@ -200,11 +200,9 @@ pub trait SpanData<'a> {
 
 /// A reference to [span data] and the associated [registry].
 ///
-/// This type implements all the same methods as [`SpanData`][span data], and
-/// provides additional methods for querying the registry based on values from
-/// the span.
+/// This type implements all the same methods as [`SpanData`], and provides
+/// additional methods for querying the registry based on values from the span.
 ///
-/// [span data]: SpanData
 /// [registry]: LookupSpan
 #[derive(Debug)]
 pub struct SpanRef<'a, R: LookupSpan<'a>> {
@@ -521,7 +519,10 @@ mod tests {
         prelude::*,
         registry::LookupSpan,
     };
-    use std::sync::{Arc, Mutex};
+    use std::{
+        sync::{Arc, Mutex},
+        vec::Vec,
+    };
     use tracing::{span, Subscriber};
 
     #[test]

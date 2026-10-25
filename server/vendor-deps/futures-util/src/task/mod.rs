@@ -13,24 +13,28 @@
 #[doc(no_inline)]
 pub use core::task::{Context, Poll, RawWaker, RawWakerVTable, Waker};
 
+#[cfg(all(feature = "alloc", target_has_atomic = "ptr"))]
+#[doc(no_inline)]
+pub use alloc::task::Wake;
+
 pub use futures_task::{FutureObj, LocalFutureObj, LocalSpawn, Spawn, SpawnError, UnsafeFutureObj};
 
 pub use futures_task::noop_waker;
 pub use futures_task::noop_waker_ref;
 
-#[cfg(not(futures_no_atomic_cas))]
+#[cfg(target_has_atomic = "ptr")]
 #[cfg(feature = "alloc")]
 pub use futures_task::ArcWake;
 
-#[cfg(not(futures_no_atomic_cas))]
+#[cfg(target_has_atomic = "ptr")]
 #[cfg(feature = "alloc")]
 pub use futures_task::waker;
 
-#[cfg(not(futures_no_atomic_cas))]
+#[cfg(target_has_atomic = "ptr")]
 #[cfg(feature = "alloc")]
 pub use futures_task::{waker_ref, WakerRef};
 
-#[cfg(not(futures_no_atomic_cas))]
+#[cfg(any(target_has_atomic = "ptr", feature = "portable-atomic"))]
 pub use futures_core::task::__internal::AtomicWaker;
 
 mod spawn;

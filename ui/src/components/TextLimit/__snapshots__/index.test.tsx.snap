@@ -1,9 +1,9 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`TextLimit snapshot 1`] = `
 <DocumentFragment>
   <span
-    class="limit-str-container-n"
+    class="_limit-str-container-n_64332b"
     style="max-width: 100%;"
   >
     These a...
@@ -14,7 +14,7 @@ exports[`TextLimit snapshot 1`] = `
 exports[`TextLimit snapshot 2`] = `
 <DocumentFragment>
   <span
-    class="limit-str-container-w"
+    class="_limit-str-container-w_64332b"
     style="max-width: 40px;"
   >
     These are test words.
@@ -25,7 +25,7 @@ exports[`TextLimit snapshot 2`] = `
 exports[`TextLimit snapshot 3`] = `
 <DocumentFragment>
   <span
-    class="limit-str-container-n"
+    class="_limit-str-container-n_64332b"
     style="max-width: 100%;"
   >
     These are test words.
@@ -36,7 +36,7 @@ exports[`TextLimit snapshot 3`] = `
 exports[`TextLimit snapshot 4`] = `
 <DocumentFragment>
   <span
-    class="limit-str-container-w"
+    class="_limit-str-container-w_64332b"
     style="max-width: 1000px;"
   >
     These are test words.
@@ -48,23 +48,27 @@ exports[`TextLimit text maxLenth test 1`] = `
 <body>
   <div>
     <span
-      class="limit-str-container-n"
+      class="_limit-str-container-n_64332b"
       style="max-width: 100%;"
     >
       This is...
     </span>
   </div>
   <div
-    style="display: flex; position: absolute; left: 0px; top: 0px; bottom: 0px; transform: translate(0px, 0px);"
+    data-suir-portal="true"
   >
     <div
-      class="ui top left very wide inverted popup transition visible popup-override"
-      style="position: initial;"
+      style="display: flex; position: absolute; left: 0px; top: auto; z-index: auto; right: auto; bottom: 0px; transform: translate(0px, 0px);"
     >
       <div
-        class="content"
+        class="ui top left very wide inverted popup transition visible popup-override"
+        style="left: auto; right: auto; position: initial;"
       >
-        This is a test text.
+        <div
+          class="content"
+        >
+          This is a test text.
+        </div>
       </div>
     </div>
   </div>
@@ -75,7 +79,7 @@ exports[`TextLimit text maxWidth test 1`] = `
 <body>
   <div>
     <span
-      class="limit-str-container-w"
+      class="_limit-str-container-w_64332b"
       style="max-width: 50px;"
     >
       This is a test text.

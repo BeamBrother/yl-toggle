@@ -25,8 +25,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -81,7 +81,7 @@ public class EventTrackerService {
                     .collect(Collectors.toList());
             List<Traffic> traffic = trafficRepository
                     .findAllBySdkKeyAndStartDateGreaterThanEqual(environment.getServerSdkKey(),
-                    new Date(eventTracker.getTime()));
+                        new Date(eventTracker.getTime()));
             List<SummaryEvent> summaryEvents = traffic.stream().map(SummaryEvent::create).collect(Collectors.toList());
             events.addAll(debugEvents);
             events.addAll(summaryEvents);

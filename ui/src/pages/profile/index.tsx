@@ -25,7 +25,7 @@ const Member = () => {
   const intl = useIntl();
   const { userInfo } = HeaderContainer.useContainer();
 
-  const onSubmit = useCallback(async (data) => {
+  const onSubmit = useCallback(async (data: Record<string, string>) => {
     const res = await modifyPassword({
       'oldPassword': data[OLD_PASSWORD],
       'newPassword': data[NEW_PASSWORD]
@@ -35,14 +35,14 @@ const Member = () => {
       message.success(intl.formatMessage({id: 'profile.password.update.success.text'}));
     } else if (res.code === INVALID_REQUEST) {
       setError(
-        OLD_PASSWORD, 
-        { 
+        OLD_PASSWORD,
+        {
           message: intl.formatMessage({
             id: 'profile.password.error.text'
           })
         }
       );
-    } 
+    }
     else {
       message.error(intl.formatMessage({id: 'profile.password.update.error.text'}));
     }
@@ -87,9 +87,9 @@ const Member = () => {
           <FormattedMessage id='common.profile.text' />
         </div>
         <div className={styles.form}>
-          <Form 
+          <Form
             autoComplete='off'
-            onSubmit={handleSubmit(onSubmit)} 
+            onSubmit={handleSubmit(onSubmit)}
           >
             <div className={styles.section}>
               <SectionTitle
@@ -140,7 +140,7 @@ const Member = () => {
                         }}
                       />
                     </Form.Field>
-                    { errors[OLD_PASSWORD] && <div className={styles['error-text']}>{ errors[OLD_PASSWORD]?.message }</div> }
+                    { errors[OLD_PASSWORD] && <div className={styles['error-text']}>{String(errors[OLD_PASSWORD]?.message ?? '')}</div> }
 
                     <Form.Field>
                       <label className={styles.label}>
@@ -157,7 +157,7 @@ const Member = () => {
                         }}
                       />
                     </Form.Field>
-                    { errors[NEW_PASSWORD] && <div className={styles['error-text']}>{ errors[NEW_PASSWORD]?.message }</div> }
+                    { errors[NEW_PASSWORD] && <div className={styles['error-text']}>{String(errors[NEW_PASSWORD]?.message ?? '')}</div> }
                     <div className={styles['tip-text']}>
                       <FormattedMessage id='login.password.tips' />
                     </div>
@@ -183,14 +183,14 @@ const Member = () => {
                         }}
                       />
                     </Form.Field>
-                    { errors[CONFIRM_NEW_PASSWORD] && <div className={styles['error-text']}>{ errors[CONFIRM_NEW_PASSWORD]?.message }</div> }
+                    { errors[CONFIRM_NEW_PASSWORD] && <div className={styles['error-text']}>{String(errors[CONFIRM_NEW_PASSWORD]?.message ?? '')}</div> }
                   </div>
 
-                  <Button 
-                    primary 
+                  <Button
+                    primary
                     type='submit'
-                    className={styles.btn} 
-                    disabled={ !!errors[OLD_PASSWORD] || !!errors[NEW_PASSWORD] || !!errors[CONFIRM_NEW_PASSWORD] } 
+                    className={styles.btn}
+                    disabled={ !!errors[OLD_PASSWORD] || !!errors[NEW_PASSWORD] || !!errors[CONFIRM_NEW_PASSWORD] }
                   >
                     <FormattedMessage id='profile.password.update' />
                   </Button>

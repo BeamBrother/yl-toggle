@@ -54,12 +54,12 @@ SDK 会遍历规则，直到找到与给定用户匹配的第一条规则。如�
 | is not in            | segment | user不在所有人群组中                   |
 | after                | datetime | user属性值在这个日期之后或等于该日期 |
 | before               | datetime | user属性值在这个日期之前          |
-| =                    | number/semver | 属性值至少等于其中一个值      |
-| !=                   | number/semver | 属性值与所有值不相等           |
-| >                    | number/semver | 属性值至少大其中一个值  |
-| >=                   | number/semver | 属性值至少大于等于其中一个值  |
-| <                    | number/semver | 属性值至少小于其中一个值  |
-| <=                   | number/semver | 属性值至少小于等于其中一个值 |
+| `=` | number/semver | 属性值至少等于其中一个值      |
+| `!=` | number/semver | 属性值与所有值不相等           |
+| `>` | number/semver | 属性值至少大其中一个值  |
+| `>=` | number/semver | 属性值至少大于等于其中一个值  |
+| `<` | number/semver | 属性值至少小于其中一个值  |
+| `<=` | number/semver | 属性值至少小于等于其中一个值 |
 
 当规则条件的值类型为 “segment” 时，值列表是该 segment 的唯一键，通过该键可以获取到相应的 Segment 规则。与开关的规则匹配计算类似，只要当前的 YTUser 命中了该人群组中的任意一个规则，就认为该 YTUser 属于该人群组。如果该键不存在，则认为该 YTUser 未命中该人群组。
 

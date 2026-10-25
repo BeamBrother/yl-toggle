@@ -1,10 +1,17 @@
 #! /usr/bin/env perl
 # Copyright 2007-2016 The OpenSSL Project Authors. All Rights Reserved.
 #
-# Licensed under the OpenSSL license (the "License").  You may not use
-# this file except in compliance with the License.  You can obtain a copy
-# in the file LICENSE in the source distribution or at
-# https://www.openssl.org/source/license.html
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 
 package x86gas;
@@ -170,8 +177,8 @@ sub ::file_end
 	    {	push(@out,"$non_lazy_ptr{$i}:\n.indirect_symbol\t$i\n.long\t0\n");   }
 	}
     }
-    if (0 && grep {/\b${nmdecor}GFp_ia32cap_P\b/i} @out) {
-	my $tmp=".comm\t${nmdecor}GFp_ia32cap_P,16";
+    if (0 && grep {/\b${nmdecor}OPENSSL_ia32cap_P\b/i} @out) {
+	my $tmp=".comm\t${nmdecor}OPENSSL_ia32cap_P,16";
 	if ($::macosx)	{ push (@out,"$tmp,2\n"); }
 	elsif ($::elf)	{ push (@out,"$tmp,4\n"); }
 	else		{ push (@out,"$tmp\n"); }
@@ -208,7 +215,7 @@ sub ::picmeup
 	    &::mov($dst,&::DWP("$indirect-$reflabel",$base));
 	    $non_lazy_ptr{"$nmdecor$sym"}=$indirect;
 	}
-	elsif ($sym eq "GFp_ia32cap_P" && $::elf>0)
+	elsif ($sym eq "OPENSSL_ia32cap_P" && $::elf>0)
 	{   &::lea($dst,&::DWP("$sym-$reflabel",$base));   }
 	else
 	{   &::lea($dst,&::DWP("_GLOBAL_OFFSET_TABLE_+[.-$reflabel]",
@@ -264,6 +271,14 @@ ___
 
 sub ::dataseg
 {   push(@out,".data\n");   }
+
+sub ::preprocessor_ifdef
+{ my($define)=@_;
+    push(@out,"#ifdef ${define}\n");
+}
+
+sub ::preprocessor_endif
+{ push(@out,"#endif\n");    }
 
 *::hidden = sub { push(@out,".hidden\t$nmdecor$_[0]\n"); } if ($::elf);
 

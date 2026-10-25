@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import SizeTips from '.';
 import { IntlWrapper } from 'components/utils/wrapper';
 
-it('SizeTips snapshot', (done) => {
-  (async () => {
+it('SizeTips snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(
       <SizeTips
         hide={false}
@@ -30,20 +30,17 @@ it('SizeTips snapshot', (done) => {
       />
     );
     expect(asFragment()).toMatchSnapshot();
-    done();
   })();
 });
 
-test('click SizeTips', (done) => {
-  (async () => {
-    const handleConfirm = jest.fn();
+it('click SizeTips', async () => {
+  await (async () => {
+    const handleConfirm = vi.fn();
     render(<SizeTips onConfirm={handleConfirm} size={0} hide={false}></SizeTips>, {
       wrapper: IntlWrapper,
     });
 
     await userEvent.click(screen.getByText('I see'));
     expect(handleConfirm).toBeCalled();
-
-    done();
   })();
 });

@@ -9,6 +9,7 @@ import { IContainer } from 'interfaces/provider';
 import { useFormErrorScrollIntoView } from 'hooks';
 import styles from './index.module.scss';
 interface IProps {
+  children?: import('react').ReactNode;
   disabled?: boolean;
   returnType: string;
   prefix?: string;
@@ -56,7 +57,7 @@ const Variations = (props: IProps) => {
       // });
       // const len = valueNotNullVariations.length;
 
-      // const uniqValueLen = uniqBy(valueNotNullVariations, 'value').length; 
+      // const uniqValueLen = uniqBy(valueNotNullVariations, 'value').length;
       // if (uniqValueLen !== len) {
       //   setIsError(true);
       //   setErrorType('value');
@@ -83,7 +84,7 @@ const Variations = (props: IProps) => {
   useEffect(() => {
     if (isError) {
       setError(
-        'variations_duplicated', { 
+        'variations_duplicated', {
           message: intl.formatMessage({
             id: 'variations.duplicated.error.text'
           })
@@ -119,7 +120,7 @@ const Variations = (props: IProps) => {
             returnType={returnType}
             total={variations.length}
             item={{
-              index, 
+              index,
               ...variation
             }}
             prefix={prefix}
@@ -134,12 +135,12 @@ const Variations = (props: IProps) => {
       }
 
       <div className={styles[`${prefix ? (prefix + '-') : ''}variation-add`]}>
-        <Button 
+        <Button
           primary
           type='button'
           onClick={onAdd}
-          disabled={variations.length >= 20 || disabled} 
-          className={styles['variation-add-btn']} 
+          disabled={variations.length >= 20 || disabled}
+          className={styles['variation-add-btn']}
         >
           <>
             <Icon customclass={styles['iconfont']} type='add' />

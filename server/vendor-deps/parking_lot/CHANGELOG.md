@@ -1,3 +1,166 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## 0.13.0 (`parking_lot`), 0.10.0 (`parking_lot_core`), 0.5.0 (`lock_api`) - 2026-10-21
+
+- Signficantly improved `Mutex` and `RwLock` performance under contention by
+  deferring waking up parked threads until after the lock is released. (#545)
+- Added per-acquisition state to `lock_api` raw locks. `RawMutex::Guard`
+  replaces `GuardMarker`; rwlocks have separate `SharedGuard`, `ExclusiveGuard`,
+  and `UpgradableGuard` types. Unlock operations consume this state, while
+  upgrade and downgrade operations return replacement state. Bump and raw
+  condition-variable waits borrow and update the state. Consuming operations
+  must release their acquisition on unwind; borrowing operations must restore
+  ownership and valid state, or abort if restoration fails. (#544)
+- Raised the MSRV to Rust 1.95 and upgraded all crates to edition 2024. (#533)
+- Removed the `hardware-lock-elision` feature. (#533)
+- Removed automatic eventual fairness. Fair unlocking remains available through
+  the explicit fair-unlock APIs. This removes `UnparkResult::be_fair`. (#533)
+- Removed the no-op `lock_api/nightly` feature. (#533)
+- Removed the legacy `lock_api` `const_new` methods and the redundant
+  `parking_lot` `const_*` constructor functions; the corresponding `new`
+  methods can be called in constant contexts. (#533)
+- Replaced the recursive read methods on `RwLock` with a dedicated reader-biased
+  `RecursiveRwLock` type. The `RawRwLockRecursive` and `RawRwLockRecursiveTimed`
+  extension traits have been removed from `lock_api`. (#533)
+- Added `Once::new_completed` for constructing a `Once` in the completed state. (#520)
+- Added `Once::{is_completed, wait, wait_force}` and the corresponding
+  `OnceState` query methods. (#533)
+- Made additional lock, timeout, parking, and spin-wait accessors usable in
+  constant contexts. (#533)
+- Added `into_inner_with_raw` to `lock_api`'s `Mutex`, `RwLock`, and `ReentrantMutex`. (#524)
+- Added `RawCondvar`, `RawCondvarTimed`, and the generic `Condvar` wrapper to
+  `lock_api`, and implemented `parking_lot::Condvar` using them. Custom raw
+  condition variables may allow spurious wakeups; their notification methods
+  must then return `false` or `0`. `parking_lot::Condvar` still guarantees no
+  spurious wakeups and exact notification counts. (#523) (#533)
+- Corrected the `Send` and `Sync` bounds of lock guards in `lock_api`. (#533)
+- Made `RawMutex::is_locked` and `RawRwLock::{is_locked, is_locked_exclusive}` required methods. (#533)
+- Renamed `MappedRwLockReadGuard::try_map_or_else` to `try_map_or_err`. (#533)
+- Clarified the safety requirements of raw lock implementations, including
+  acquire/release synchronization, moving or dropping a locked raw lock,
+  preserving the original lock mode on a failed upgrade, and stable thread IDs.
+  Acquisitions may unwind without leaving a new acquisition held; consuming
+  guard operations release their acquisition on unwind, while bump and wait
+  operations must restore ownership or abort. (#533) (#544)
+- Clarified the aliasing requirements of unsafe raw-access, force-unlock, and
+  guard-construction APIs in `lock_api`. (#533)
+- Guard `unlocked` and `unlocked_fair` operations now abort if re-locking panics.
+  Default raw-lock bump implementations also abort if re-locking panics. (#533)
+- Guard `with_upgraded` operations abort if raw upgrading or downgrading panics,
+  preserving continuous lock ownership. (#544)
+- Parking-lot operations in `parking_lot_core` are now guaranteed to never
+  unwind. (#533)
+- Documented that parking-lot-based synchronization primitives must not be used
+  internally by global allocators. (#533)
+- Fixed `unlock_upgradable_fair` not forcing a fair handoff. (#533)
+- Fixed conditional `Condvar` waits reporting a timeout without rechecking the predicate. (#533)
+- Fixed the generic thread parker continuously busy-spinning while parked. (#533)
+- Fixed parking on WASI by using the pthread backend when the nightly atomic
+  intrinsics are unavailable, including on stable threaded WASI targets. (#538)
+- Fixed timed waits on ESP-IDF using the wrong clock. (#533)
+- Made timed waits on Apple platforms independent of wall-clock changes. (#533)
+- Fixed the futex timeout ABI on 32-bit Linux targets, including time64-only
+  architectures, with fallback to time32 when the kernel lacks time64 support. (#533)
+- Corrected `RwLock` deadlock tracking to avoid false positives and missed
+  cycles, and prevented dependency feature unification from enabling tracking
+  when only `parking_lot_core/deadlock_detection` is enabled. (#533)
+- Added `Once` deadlock tracking and made overlapping wait cycles report as a
+  single component. (#533)
+- Fixed compilation on L4Re. (#549)
+
+## `parking_lot` - [0.12.5](https://github.com/Amanieu/parking_lot/compare/parking_lot-v0.12.4...parking_lot-v0.12.5) - 2025-09-30
+
+- Bumped MSRV to 1.71
+- Fixed Miri when the `hardware-lock-elision` feature is enabled (#491)
+- Added missing `into_arc(_fair)` methods (#472)
+- Fixed `RawRwLock::bump_*()` not releasing lock when there are multiple readers (#471)
+
+## `parking_lot_core` - [0.9.12](https://github.com/Amanieu/parking_lot/compare/parking_lot_core-v0.9.11...parking_lot_core-v0.9.12) - 2025-09-30
+
+- Bumped MSRV to 1.71
+- Switched from `windows-targets` to `windows-link`. (#493)
+- Replaced `thread-id` dependency with `std::thread::ThreadId` (#483)
+- Added SGX implementation for `ThreadParker.park_until` (#481)
+
+## `lock_api` - [0.4.14](https://github.com/Amanieu/parking_lot/compare/lock_api-v0.4.13...lock_api-v0.4.14) - 2025-09-30
+
+- Fixed use of `doc_cfg` when building on docs.rs.
+- Bumped MSRV to 1.71
+- Added `#[track_caller]` where locking implementations could feasibly need to panic
+- Added `try_map_or_err` to various mutex guards (#480)
+- Removed unnecessary build script and `autocfg` dependency (#474)
+- Added missing `into_arc(_fair)` methods (#472)
+
+## `parking_lot` - [0.12.4](https://github.com/Amanieu/parking_lot/compare/parking_lot-v0.12.3...parking_lot-v0.12.4) - 2025-05-29
+
+- Fix parked upgraders potentially not being woken up after a write lock
+- Fix clearing `PARKED_WRITER_BIT` after a timeout
+
+## `parking_lot_core` - [0.9.11](https://github.com/Amanieu/parking_lot/compare/parking_lot_core-v0.9.10...parking_lot_core-v0.9.11) - 2025-05-29
+
+- Use Release/Acquire ordering in thread_parker::windows::Backend::create
+- Remove warnings due to new lint on unknown cfgs
+
+## `lock_api` - [0.4.13](https://github.com/Amanieu/parking_lot/compare/lock_api-v0.4.12...lock_api-v0.4.13) - 2025-05-29
+
+- Remove warnings due to new lint on unknown cfgs
+
+## parking_lot 0.12.3 (2024-05-24)
+
+- Export types provided by arc_lock feature (#442)
+
+## parking_lot 0.12.2, parking_lot_core 0.9.10, lock_api 0.4.12 (2024-04-15)
+
+- Fixed panic when calling `with_upgraded` twice on a `ArcRwLockUpgradableReadGuard` (#431)
+- Fixed `RwLockUpgradeableReadGuard::with_upgraded`
+- Added lock_api::{Mutex, ReentrantMutex, RwLock}::from_raw methods (#429)
+- Added Apple visionOS support (#433)
+
+## parking_lot_core 0.9.9, lock_api 0.4.11 (2023-10-18)
+
+- Fixed `RwLockUpgradeableReadGuard::with_upgraded`. (#393)
+- Fixed `ReentrantMutex::bump` lock count. (#390)
+- Added methods to unsafely create a lock guard out of thin air. (#403)
+- Added support for Apple tvOS. (#405)
+
+## parking_lot_core 0.9.8, lock_api 0.4.10 (2023-06-05)
+
+- Mark guards with `#[clippy::has_significant_drop]` (#369, #371)
+- Removed windows-sys dependency (#374, #378)
+- Add `atomic_usize` default feature to support platforms without atomics. (#380)
+- Add with_upgraded API to upgradable read locks (#386)
+- Make RwLock guards Sync again (#370)
+
+## parking_lot_core 0.9.7 (2023-02-01)
+
+- Update windows-sys dependency to 0.45. (#368)
+
+## parking_lot_core 0.9.6 (2023-01-11)
+
+- Add support for watchOS. (#367)
+
+## parking_lot_core 0.9.5 (2022-11-29)
+
+- Update use of `libc::timespec` to prepare for future libc version (#363)
+
+## parking_lot_core 0.9.4 (2022-10-18)
+
+- Bump windows-sys dependency to 0.42. (#356)
+
+## lock_api 0.4.9 (2022-09-20)
+
+- Fixed `ReentrantMutexGuard::try_map` signature (#355)
+
+## lock_api 0.4.8 (2022-08-28)
+
+- Fixed unsound `Sync`/`Send` impls for `ArcMutexGuard`. (#349)
+- Added `ArcMutexGuard::into_arc`. (#350)
+
 ## parking_lot 0.12.1 (2022-05-31)
 
 - Fixed incorrect memory ordering in `RwLock`. (#344)

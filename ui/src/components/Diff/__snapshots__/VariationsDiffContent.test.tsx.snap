@@ -1,27 +1,27 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`DiffVariations snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="diff-content"
+    class="_diff-content_a8252c"
   >
     <div
-      class="before"
+      class="_before_a8252c"
     >
       <div
-        class="diff-fields"
+        class="_diff-fields_a8252c"
       >
         <table
           class="ui small unstackable very basic table"
         >
           <thead
-            class="table-header"
+            class="_table-header_a8252c"
           >
             <tr
               class=""
             >
               <th
-                class="table-header-name"
+                class="_table-header-name_dbe969"
               >
                 name
               </th>
@@ -41,13 +41,13 @@ exports[`DiffVariations snapshot 1`] = `
             class=""
           >
             <tr
-              class="diff-item diff-item-remove"
+              class="_diff-item_dbe969 _diff-item-remove_a8252c"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   name 1
                 </div>
@@ -56,7 +56,7 @@ exports[`DiffVariations snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   value 1
                 </div>
@@ -65,20 +65,20 @@ exports[`DiffVariations snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   description 1
                 </div>
               </td>
             </tr>
             <tr
-              class="diff-item diff-item-same"
+              class="_diff-item_dbe969 _diff-item-same_a8252c"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   name 2
                 </div>
@@ -87,7 +87,7 @@ exports[`DiffVariations snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   value 2
                 </div>
@@ -96,20 +96,20 @@ exports[`DiffVariations snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   description 2
                 </div>
               </td>
             </tr>
             <tr
-              class="diff-item"
+              class="_diff-item_dbe969"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-same"
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
                 >
                   name 3
                 </div>
@@ -118,7 +118,7 @@ exports[`DiffVariations snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-same"
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
                 >
                   value 3
                 </div>
@@ -127,17 +127,17 @@ exports[`DiffVariations snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-remove"
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
                 >
                   description 3
                 </div>
               </td>
             </tr>
             <tr
-              class="diff-item "
+              class="_diff-item_dbe969 "
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               />
               <td
                 class=""
@@ -151,22 +151,22 @@ exports[`DiffVariations snapshot 1`] = `
       </div>
     </div>
     <div
-      class="after"
+      class="_after_a8252c"
     >
       <div
-        class="diff-fields"
+        class="_diff-fields_a8252c"
       >
         <table
           class="ui small unstackable very basic table"
         >
           <thead
-            class="table-header"
+            class="_table-header_a8252c"
           >
             <tr
               class=""
             >
               <th
-                class="table-header-name"
+                class="_table-header-name_dbe969"
               >
                 name
               </th>
@@ -186,10 +186,10 @@ exports[`DiffVariations snapshot 1`] = `
             class=""
           >
             <tr
-              class="diff-item "
+              class="_diff-item_dbe969 "
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               />
               <td
                 class=""
@@ -199,13 +199,13 @@ exports[`DiffVariations snapshot 1`] = `
               />
             </tr>
             <tr
-              class="diff-item diff-item-same"
+              class="_diff-item_dbe969 _diff-item-same_a8252c"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   name 2
                 </div>
@@ -214,7 +214,7 @@ exports[`DiffVariations snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   value 2
                 </div>
@@ -223,20 +223,20 @@ exports[`DiffVariations snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   description 2
                 </div>
               </td>
             </tr>
             <tr
-              class="diff-item"
+              class="_diff-item_dbe969"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-same"
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
                 >
                   name 3
                 </div>
@@ -245,7 +245,7 @@ exports[`DiffVariations snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-same"
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
                 >
                   value 3
                 </div>
@@ -254,20 +254,20 @@ exports[`DiffVariations snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-add"
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
                 >
                   description 3 modify
                 </div>
               </td>
             </tr>
             <tr
-              class="diff-item diff-item-add"
+              class="_diff-item_dbe969 _diff-item-add_a8252c"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   name 4
                 </div>
@@ -276,7 +276,7 @@ exports[`DiffVariations snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   value 4
                 </div>
@@ -285,7 +285,7 @@ exports[`DiffVariations snapshot 1`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   description 4
                 </div>
@@ -302,25 +302,25 @@ exports[`DiffVariations snapshot 1`] = `
 exports[`DiffVariations snapshot 2`] = `
 <DocumentFragment>
   <div
-    class="diff-content"
+    class="_diff-content_a8252c"
   >
     <div
-      class="before"
+      class="_before_a8252c"
     >
       <div
-        class="diff-fields"
+        class="_diff-fields_a8252c"
       >
         <table
           class="ui small unstackable very basic table"
         >
           <thead
-            class="table-header"
+            class="_table-header_a8252c"
           >
             <tr
               class=""
             >
               <th
-                class="table-header-name"
+                class="_table-header-name_dbe969"
               >
                 name
               </th>
@@ -340,13 +340,13 @@ exports[`DiffVariations snapshot 2`] = `
             class=""
           >
             <tr
-              class="diff-item"
+              class="_diff-item_dbe969"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 <div
-                  class="diff-field-value field-value-remove"
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
                 >
                   name 1
                 </div>
@@ -355,7 +355,7 @@ exports[`DiffVariations snapshot 2`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-remove"
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
                 >
                   value 1
                 </div>
@@ -364,7 +364,7 @@ exports[`DiffVariations snapshot 2`] = `
                 class=""
               >
                 <div
-                  class="diff-field-value field-value-remove"
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
                 >
                   description 1
                 </div>
@@ -375,22 +375,22 @@ exports[`DiffVariations snapshot 2`] = `
       </div>
     </div>
     <div
-      class="after"
+      class="_after_a8252c"
     >
       <div
-        class="diff-fields"
+        class="_diff-fields_a8252c"
       >
         <table
           class="ui small unstackable very basic table"
         >
           <thead
-            class="table-header"
+            class="_table-header_a8252c"
           >
             <tr
               class=""
             >
               <th
-                class="table-header-name"
+                class="_table-header-name_dbe969"
               >
                 name
               </th>
@@ -410,10 +410,10 @@ exports[`DiffVariations snapshot 2`] = `
             class=""
           >
             <tr
-              class="diff-item"
+              class="_diff-item_dbe969"
             >
               <td
-                class="table-item-name"
+                class="_table-item-name_dbe969"
               >
                 null
               </td>

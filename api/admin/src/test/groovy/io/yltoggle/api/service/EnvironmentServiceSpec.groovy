@@ -25,7 +25,7 @@ import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import spock.lang.Specification
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 class EnvironmentServiceSpec extends Specification {
 
@@ -105,7 +105,7 @@ class EnvironmentServiceSpec extends Specification {
         then:
         1 * applicationContext.getBean(_) >> new YlToggle("_")
         1 * projectRepository.findByKey(projectKey) >>
-                new Optional<>(new Project(name: projectName, key: projectKey))
+                Optional.of(new Project(name: projectName, key: projectKey))
         1 * environmentRepository.save(_) >> new Environment(name: environmentName, key: environmentKey,
                 serverSdkKey: serverSdkKey, clientSdkKey: clientSdkKey, version: 1)
         1 * toggleRepository.findAllByProjectKey(projectKey) >> [new Toggle(name: toggleName,
@@ -131,7 +131,7 @@ class EnvironmentServiceSpec extends Specification {
         then:
         1 * applicationContext.getBean(_) >> new YlToggle("_")
         1 * projectRepository.findByKey(projectKey) >>
-                new Optional<>(new Project(name: projectName, key: projectKey))
+                Optional.of(new Project(name: projectName, key: projectKey))
         1 * environmentRepository.save(_) >> new Environment(name: environmentName, key: environmentKey,
                 serverSdkKey: serverSdkKey, clientSdkKey: clientSdkKey, version: 1)
         1 * targetingRepository.findAllByProjectKeyAndEnvironmentKey(projectKey, _) >> [new Targeting()]
@@ -245,4 +245,3 @@ class EnvironmentServiceSpec extends Specification {
                         .claim("role", role).claim("account", account).build())))
     }
 }
-

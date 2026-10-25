@@ -27,7 +27,7 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 class AccessTokenServiceSpec extends Specification {
 
@@ -186,4 +186,3 @@ class AccessTokenServiceSpec extends Specification {
     }
 
 }
-

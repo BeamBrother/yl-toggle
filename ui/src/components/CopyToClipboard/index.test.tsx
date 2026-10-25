@@ -1,15 +1,15 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import { IntlWrapper } from 'components/utils/wrapper';
 import CopyToClipboard from '.';
 import sleep from 'utils/sleep';
 
-window.prompt = jest.fn();
+window.prompt = vi.fn();
 
-it('CopyToClipboard snapshot', (done) => {
-  (async () => {
+it('CopyToClipboard snapshot', async () => {
+  await (async () => {
     const { asFragment } = render(
       <CopyToClipboard text="this is a test text">
         <span>this is a test text</span>
@@ -17,12 +17,11 @@ it('CopyToClipboard snapshot', (done) => {
     );
     await sleep(3000);
     expect(asFragment()).toMatchSnapshot();
-    done();
   })();
 });
 
-test('CopyToClipboard hover snapshot', (done) => {
-  (async () => {
+it('CopyToClipboard hover snapshot', async () => {
+  await (async () => {
     const { baseElement } = render(
       <CopyToClipboard text="this is a test text">
         <span>this is a test text</span>
@@ -46,16 +45,14 @@ test('CopyToClipboard hover snapshot', (done) => {
     });
 
     expect(baseElement).toMatchSnapshot();
-
-    done();
   })();
 });
 
-console.error = jest.fn();
+console.error = vi.fn();
 
-test('Click CopyToClipboard', (done) => {
-  jest.setTimeout(10000);
-  (async () => {
+it('Click CopyToClipboard', async () => {
+  vi.setConfig({ testTimeout: 10000 });
+  await (async () => {
     const { baseElement } = render(
       <CopyToClipboard text="this is a test text">
         <span>this is a test text</span>
@@ -64,7 +61,7 @@ test('Click CopyToClipboard', (done) => {
         wrapper: IntlWrapper,
       }
     );
-  
+
     await act(async () => {
       const ele = screen.getByText('this is a test text');
       await userEvent.click(ele);
@@ -74,7 +71,5 @@ test('Click CopyToClipboard', (done) => {
       await sleep(2000);
       expect(baseElement).toMatchSnapshot();
     });
-    
-    done();
   })();
 });

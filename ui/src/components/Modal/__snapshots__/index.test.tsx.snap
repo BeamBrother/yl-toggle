@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Modal snapshot 1`] = `
 <body
@@ -6,34 +6,38 @@ exports[`Modal snapshot 1`] = `
 >
   <div />
   <div
-    class="ui page modals dimmer transition visible active"
-    style="display: flex;"
+    data-suir-portal="true"
   >
     <div
-      class="ui mini modal transition visible active"
-      style="width: 400px;"
+      class="ui page modals dimmer transition visible active"
+      style="display: flex !important;"
     >
       <div
-        class="content"
+        class="ui mini modal transition visible active"
+        style="width: 400px;"
       >
-        <div>
-          modal content
-        </div>
         <div
-          class="footer"
+          class="content"
         >
-          <button
-            class="ui mini basic button btn"
-            type="reset"
+          <div>
+            modal content
+          </div>
+          <div
+            class="_footer_8976da"
           >
-            Cancel
-          </button>
-          <button
-            class="ui mini primary button"
-            type="submit"
-          >
-            Confirm
-          </button>
+            <button
+              class="ui mini basic button _btn_8976da"
+              type="reset"
+            >
+              Cancel
+            </button>
+            <button
+              class="ui mini primary button"
+              type="submit"
+            >
+              Confirm
+            </button>
+          </div>
         </div>
       </div>
     </div>

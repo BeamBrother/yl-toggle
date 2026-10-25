@@ -3,21 +3,23 @@ package com.yltoggle.api.analysis
 import com.github.michaelbull.result.*
 import kotliquery.queryOf
 import kotliquery.sessionOf
-import org.junit.Assert
-import org.junit.ClassRule
-import org.junit.Test
-import org.springframework.boot.test.context.SpringBootTest
+import org.junit.jupiter.api.Assertions.*
+import org.testcontainers.junit.jupiter.Container
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.Test
+import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.containers.MySQLContainer
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
 
 // for mac with M1/M2 chips:  docker pull arm64v8/mysql:8.0
 // for mac with M1/M2 chips:  docker pull arm64v8/postgres:14.6
-@SpringBootTest
+@Tag("integration")
+@Testcontainers
 class AnalysisControllerTests {
 
     companion object {
-        @ClassRule
+        @Container
         @JvmField
         val mysql: MySQLContainer<*> = MySQLContainer(DockerImageName.parse("mysql:8.0"))
             .withDatabaseName("yl-toggle-events")
@@ -25,7 +27,7 @@ class AnalysisControllerTests {
             .withUsername("root")
             .withPassword("root")
 
-        @ClassRule
+        @Container
         @JvmField
         val pg: PostgreSQLContainer<*> = PostgreSQLContainer(DockerImageName.parse("postgres:14.6"))
             .withDatabaseName("yl-toggle-events")
@@ -162,14 +164,14 @@ class AnalysisControllerTests {
         val result =
             service.doAnalysis("sdk_key", "click_1", "toggle_1", "binomial", start, end)
 
-        Assert.assertNotNull(result.get())
-        Assert.assertEquals(3, result.get()!!["1"]?.sampleSize)
-        Assert.assertEquals(0.6, result.get()!!["1"]?.mean!!, 0.1)
-        Assert.assertEquals(0.64, result.get()!!["1"]?.winningPercentage!!, 0.1)
+        assertNotNull(result.get())
+        assertEquals(3, result.get()!!["1"]?.sampleSize)
+        assertEquals(0.6, result.get()!!["1"]?.mean!!, 0.1)
+        assertEquals(0.64, result.get()!!["1"]?.winningPercentage!!, 0.1)
 
-        Assert.assertEquals(2, result.get()!!["2"]?.sampleSize)
-        Assert.assertEquals(0.5, result.get()!!["2"]?.mean!!, 0.1)
-        Assert.assertEquals(0.36, result.get()!!["2"]?.winningPercentage!!, 0.1)
+        assertEquals(2, result.get()!!["2"]?.sampleSize)
+        assertEquals(0.5, result.get()!!["2"]?.mean!!, 0.1)
+        assertEquals(0.36, result.get()!!["2"]?.winningPercentage!!, 0.1)
     }
 
     fun testVariationEmptyAnalysis(jdbcUrl: String, type: String) {
@@ -180,8 +182,8 @@ class AnalysisControllerTests {
         val result =
             service.doAnalysis("sdk_key", "click_not_collect", "toggle_not_collect", type, start, end)
 
-        Assert.assertNotNull(result.get())
-        Assert.assertTrue(result.get()!!.isEmpty())
+        assertNotNull(result.get())
+        assertTrue(result.get()!!.isEmpty())
     }
 
     fun testEventEmptyAnalysis(jdbcUrl: String, type: String) {
@@ -192,8 +194,8 @@ class AnalysisControllerTests {
         val result =
             service.doAnalysis("sdk_key", "click_not_collect", "toggle_1", type, start, end)
 
-        Assert.assertNotNull(result.get())
-        Assert.assertTrue(result.get()!!.isEmpty())
+        assertNotNull(result.get())
+        assertTrue(result.get()!!.isEmpty())
     }
 
     fun doTestGaussianAnalysis(jdbcUrl: String) {
@@ -211,31 +213,31 @@ class AnalysisControllerTests {
             service.doAnalysis("sdk_key2", "purchase", "toggle_2", "gaussian",
                 start, end, true, AggregateFn.AVG, Join.LEFT)
 
-        Assert.assertNotNull(result.get())
-        Assert.assertEquals(5, result.get()!!["1"]?.sampleSize)
-        Assert.assertEquals(37.0, result.get()!!["1"]?.mean!!, 0.1)
-        Assert.assertEquals(51.58, result.get()!!["1"]?.stdDeviation!!, 0.1)
-        Assert.assertEquals(0.1, result.get()!!["1"]?.winningPercentage!!, 0.1)
+        assertNotNull(result.get())
+        assertEquals(5, result.get()!!["1"]?.sampleSize)
+        assertEquals(37.0, result.get()!!["1"]?.mean!!, 0.1)
+        assertEquals(51.58, result.get()!!["1"]?.stdDeviation!!, 0.1)
+        assertEquals(0.1, result.get()!!["1"]?.winningPercentage!!, 0.1)
 
-        Assert.assertEquals(4, result.get()!!["2"]?.sampleSize)
-        Assert.assertEquals(126.25, result.get()!!["2"]?.mean!!, 0.1)
-        Assert.assertEquals(48.15, result.get()!!["2"]?.stdDeviation!!, 0.1)
-        Assert.assertEquals(0.9, result.get()!!["2"]?.winningPercentage!!, 0.1)
+        assertEquals(4, result.get()!!["2"]?.sampleSize)
+        assertEquals(126.25, result.get()!!["2"]?.mean!!, 0.1)
+        assertEquals(48.15, result.get()!!["2"]?.stdDeviation!!, 0.1)
+        assertEquals(0.9, result.get()!!["2"]?.winningPercentage!!, 0.1)
 
         result =
             service.doAnalysis("sdk_key2", "purchase", "toggle_2", "gaussian",
                 start, end, true, AggregateFn.AVG, Join.INNER)
 
-        Assert.assertNotNull(result.get())
-        Assert.assertEquals(4, result.get()!!["1"]?.sampleSize)
-        Assert.assertEquals(46.25, result.get()!!["1"]?.mean!!, 0.1)
-        Assert.assertEquals(48.15, result.get()!!["1"]?.stdDeviation!!, 0.1)
-        Assert.assertEquals(0.11, result.get()!!["1"]?.winningPercentage!!, 0.1)
+        assertNotNull(result.get())
+        assertEquals(4, result.get()!!["1"]?.sampleSize)
+        assertEquals(46.25, result.get()!!["1"]?.mean!!, 0.1)
+        assertEquals(48.15, result.get()!!["1"]?.stdDeviation!!, 0.1)
+        assertEquals(0.11, result.get()!!["1"]?.winningPercentage!!, 0.1)
 
-        Assert.assertEquals(4, result.get()!!["2"]?.sampleSize)
-        Assert.assertEquals(126.25, result.get()!!["2"]?.mean!!, 0.1)
-        Assert.assertEquals(48.15, result.get()!!["2"]?.stdDeviation!!, 0.1)
-        Assert.assertEquals(0.88, result.get()!!["2"]?.winningPercentage!!, 0.1)
+        assertEquals(4, result.get()!!["2"]?.sampleSize)
+        assertEquals(126.25, result.get()!!["2"]?.mean!!, 0.1)
+        assertEquals(48.15, result.get()!!["2"]?.stdDeviation!!, 0.1)
+        assertEquals(0.88, result.get()!!["2"]?.winningPercentage!!, 0.1)
     }
 
     fun testGaussianAnalysisCOUNT(jdbcUrl: String) {
@@ -247,31 +249,31 @@ class AnalysisControllerTests {
             service.doAnalysis("sdk_key2", "purchase", "toggle_2", "gaussian",
                 start, end, true, AggregateFn.COUNT, Join.LEFT)
 
-        Assert.assertNotNull(result.get())
-        Assert.assertEquals(5, result.get()!!["1"]?.sampleSize)
-        Assert.assertEquals(1.8, result.get()!!["1"]?.mean!!, 0.1)
-        Assert.assertEquals(1.248, result.get()!!["1"]?.stdDeviation!!, 0.1)
-        Assert.assertEquals(0.382, result.get()!!["1"]?.winningPercentage!!, 0.1)
+        assertNotNull(result.get())
+        assertEquals(5, result.get()!!["1"]?.sampleSize)
+        assertEquals(1.8, result.get()!!["1"]?.mean!!, 0.1)
+        assertEquals(1.248, result.get()!!["1"]?.stdDeviation!!, 0.1)
+        assertEquals(0.382, result.get()!!["1"]?.winningPercentage!!, 0.1)
 
-        Assert.assertEquals(4, result.get()!!["2"]?.sampleSize)
-        Assert.assertEquals(2.25, result.get()!!["2"]?.mean!!, 0.1)
-        Assert.assertEquals(0.866, result.get()!!["2"]?.stdDeviation!!, 0.1)
-        Assert.assertEquals(0.618, result.get()!!["2"]?.winningPercentage!!, 0.1)
+        assertEquals(4, result.get()!!["2"]?.sampleSize)
+        assertEquals(2.25, result.get()!!["2"]?.mean!!, 0.1)
+        assertEquals(0.866, result.get()!!["2"]?.stdDeviation!!, 0.1)
+        assertEquals(0.618, result.get()!!["2"]?.winningPercentage!!, 0.1)
 
         result =
             service.doAnalysis("sdk_key2", "purchase", "toggle_2", "gaussian",
                 start, end, true, AggregateFn.COUNT, Join.INNER)
 
-        Assert.assertNotNull(result.get())
-        Assert.assertEquals(4, result.get()!!["1"]?.sampleSize)
-        Assert.assertEquals(2.25, result.get()!!["1"]?.mean!!, 0.1)
-        Assert.assertEquals(0.866, result.get()!!["1"]?.stdDeviation!!, 0.1)
-        Assert.assertEquals(0.506, result.get()!!["1"]?.winningPercentage!!, 0.1)
+        assertNotNull(result.get())
+        assertEquals(4, result.get()!!["1"]?.sampleSize)
+        assertEquals(2.25, result.get()!!["1"]?.mean!!, 0.1)
+        assertEquals(0.866, result.get()!!["1"]?.stdDeviation!!, 0.1)
+        assertEquals(0.506, result.get()!!["1"]?.winningPercentage!!, 0.1)
 
-        Assert.assertEquals(4, result.get()!!["2"]?.sampleSize)
-        Assert.assertEquals(2.25, result.get()!!["2"]?.mean!!, 0.1)
-        Assert.assertEquals(0.866, result.get()!!["2"]?.stdDeviation!!, 0.1)
-        Assert.assertEquals(0.494, result.get()!!["2"]?.winningPercentage!!, 0.1)
+        assertEquals(4, result.get()!!["2"]?.sampleSize)
+        assertEquals(2.25, result.get()!!["2"]?.mean!!, 0.1)
+        assertEquals(0.866, result.get()!!["2"]?.stdDeviation!!, 0.1)
+        assertEquals(0.494, result.get()!!["2"]?.winningPercentage!!, 0.1)
     }
 
     fun testGaussianAnalysisSUM(jdbcUrl: String) {
@@ -283,31 +285,31 @@ class AnalysisControllerTests {
             service.doAnalysis("sdk_key2", "purchase", "toggle_2", "gaussian",
                 start, end, true, AggregateFn.SUM, Join.LEFT)
 
-        Assert.assertNotNull(result.get())
-        Assert.assertEquals(5, result.get()!!["1"]?.sampleSize)
-        Assert.assertEquals(90.0, result.get()!!["1"]?.mean!!, 0.1)
-        Assert.assertEquals(164.012, result.get()!!["1"]?.stdDeviation!!, 0.1)
-        Assert.assertEquals(0.263, result.get()!!["1"]?.winningPercentage!!, 0.1)
+        assertNotNull(result.get())
+        assertEquals(5, result.get()!!["1"]?.sampleSize)
+        assertEquals(90.0, result.get()!!["1"]?.mean!!, 0.1)
+        assertEquals(164.012, result.get()!!["1"]?.stdDeviation!!, 0.1)
+        assertEquals(0.263, result.get()!!["1"]?.winningPercentage!!, 0.1)
 
-        Assert.assertEquals(4, result.get()!!["2"]?.sampleSize)
-        Assert.assertEquals(292.5, result.get()!!["2"]?.mean!!, 0.1)
-        Assert.assertEquals(223.774, result.get()!!["2"]?.stdDeviation!!, 0.1)
-        Assert.assertEquals(0.764, result.get()!!["2"]?.winningPercentage!!, 0.1)
+        assertEquals(4, result.get()!!["2"]?.sampleSize)
+        assertEquals(292.5, result.get()!!["2"]?.mean!!, 0.1)
+        assertEquals(223.774, result.get()!!["2"]?.stdDeviation!!, 0.1)
+        assertEquals(0.764, result.get()!!["2"]?.winningPercentage!!, 0.1)
 
         result =
             service.doAnalysis("sdk_key2", "purchase", "toggle_2", "gaussian",
                 start, end, true, AggregateFn.SUM, Join.INNER)
 
-        Assert.assertNotNull(result.get())
-        Assert.assertEquals(4, result.get()!!["1"]?.sampleSize)
-        Assert.assertEquals(112.5, result.get()!!["1"]?.mean!!, 0.1)
-        Assert.assertEquals(157.718, result.get()!!["1"]?.stdDeviation!!, 0.1)
-        Assert.assertEquals(0.272, result.get()!!["1"]?.winningPercentage!!, 0.1)
+        assertNotNull(result.get())
+        assertEquals(4, result.get()!!["1"]?.sampleSize)
+        assertEquals(112.5, result.get()!!["1"]?.mean!!, 0.1)
+        assertEquals(157.718, result.get()!!["1"]?.stdDeviation!!, 0.1)
+        assertEquals(0.272, result.get()!!["1"]?.winningPercentage!!, 0.1)
 
-        Assert.assertEquals(4, result.get()!!["2"]?.sampleSize)
-        Assert.assertEquals(292.5, result.get()!!["2"]?.mean!!, 0.1)
-        Assert.assertEquals(223.774, result.get()!!["2"]?.stdDeviation!!, 0.1)
-        Assert.assertEquals(0.728, result.get()!!["2"]?.winningPercentage!!, 0.1)
+        assertEquals(4, result.get()!!["2"]?.sampleSize)
+        assertEquals(292.5, result.get()!!["2"]?.mean!!, 0.1)
+        assertEquals(223.774, result.get()!!["2"]?.stdDeviation!!, 0.1)
+        assertEquals(0.728, result.get()!!["2"]?.winningPercentage!!, 0.1)
     }
 
     fun doTestDiagnose(jdbcUrl: String) {
@@ -319,31 +321,31 @@ class AnalysisControllerTests {
             service.doDiagnose( "sdk_key2", "purchase", "toggle_2", "not_exist_type",
                 start, end, AggregateFn.COUNT, Join.LEFT)
 
-        Assert.assertEquals(Err(NotSupportAnalysisType), result)
+        assertEquals(Err(NotSupportAnalysisType), result)
 
         result =
             service.doDiagnose("sdk_key2", "purchase", "toggle_not_exist", "gaussian",
                 start, end, AggregateFn.COUNT, Join.LEFT)
 
-        Assert.assertEquals(Err(NoVariationRecords), result)
+        assertEquals(Err(NoVariationRecords), result)
 
         result =
             service.doDiagnose("sdk_key2", "not_exist_metric", "toggle_3", "binomial",
                 start, end, AggregateFn.COUNT, Join.LEFT)
 
-        Assert.assertEquals(Err(NoEventRecords), result)
+        assertEquals(Err(NoEventRecords), result)
 
         result =
             service.doDiagnose("sdk_key2", "can_not_join", "toggle_3", "binomial",
                 start, end, AggregateFn.COUNT, Join.LEFT)
 
-        Assert.assertEquals(Err(NoJoinRecords), result)
+        assertEquals(Err(NoJoinRecords), result)
 
         result =
             service.doDiagnose("sdk_key2", "can_not_join", "toggle_3", "gaussian",
                 start, end, AggregateFn.COUNT, Join.LEFT)
 
-        Assert.assertEquals(Err(NoJoinRecords), result)
+        assertEquals(Err(NoJoinRecords), result)
 
     }
 

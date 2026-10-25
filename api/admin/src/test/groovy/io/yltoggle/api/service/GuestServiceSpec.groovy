@@ -20,12 +20,12 @@ import io.yltoggle.api.dao.repository.ProjectRepository
 import io.yltoggle.api.dao.repository.PublishMessageRepository
 import io.yltoggle.api.dao.repository.TargetingSketchRepository
 import org.hibernate.internal.SessionImpl
-import org.hibernate.query.spi.NativeQueryImplementor
+import org.hibernate.query.sql.spi.NativeQueryImplementor
 import org.springframework.context.ApplicationContext
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
-import javax.persistence.Query
+import jakarta.persistence.EntityManager
+import jakarta.persistence.Query
 
 class GuestServiceSpec extends Specification {
 
@@ -103,4 +103,3 @@ class GuestServiceSpec extends Specification {
     }
 
 }
-

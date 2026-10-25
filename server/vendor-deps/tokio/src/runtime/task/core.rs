@@ -9,15 +9,27 @@
 //! Make sure to consult the relevant safety section of each function before
 //! use.
 
+// It doesn't make sense to enforce `unsafe_op_in_unsafe_fn` for this module because
+//
+// * This module is doing the low-level task management that requires tons of unsafe
+//   operations.
+// * Excessive `unsafe {}` blocks hurt readability significantly.
+// TODO: replace with `#[expect(unsafe_op_in_unsafe_fn)]` after bumpping
+// the MSRV to 1.81.0.
+#![allow(unsafe_op_in_unsafe_fn)]
+
 use crate::future::Future;
 use crate::loom::cell::UnsafeCell;
 use crate::runtime::context;
+use crate::runtime::metrics::ScheduleLatencyInstant;
 use crate::runtime::task::raw::{self, Vtable};
 use crate::runtime::task::state::State;
-use crate::runtime::task::{Id, Schedule};
+use crate::runtime::task::{Id, Schedule, TaskHarnessScheduleHooks};
 use crate::util::linked_list;
 
 use std::num::NonZeroU64;
+#[cfg(tokio_unstable)]
+use std::panic::Location;
 use std::pin::Pin;
 use std::ptr::NonNull;
 use std::task::{Context, Poll, Waker};
@@ -28,7 +40,7 @@ use std::task::{Context, Poll, Waker};
 /// be referenced by both *mut Cell and *mut Header.
 ///
 /// Any changes to the layout of this struct _must_ also be reflected in the
-/// const fns in raw.rs.
+/// `const` fns in raw.rs.
 ///
 // # This struct should be cache padded to avoid false sharing. The cache padding rules are copied
 // from crossbeam-utils/src/cache_padded.rs
@@ -57,25 +69,20 @@ use std::task::{Context, Poll, Waker};
     ),
     repr(align(128))
 )]
-// arm, mips, mips64, riscv64, sparc, and hexagon have 32-byte cache line size.
+// arm, mips, mips64, sparc, and hexagon have 32-byte cache line size.
 //
 // Sources:
 // - https://github.com/golang/go/blob/3dd58676054223962cd915bb0934d1f9f489d4d2/src/internal/cpu/cpu_arm.go#L7
 // - https://github.com/golang/go/blob/3dd58676054223962cd915bb0934d1f9f489d4d2/src/internal/cpu/cpu_mips.go#L7
 // - https://github.com/golang/go/blob/3dd58676054223962cd915bb0934d1f9f489d4d2/src/internal/cpu/cpu_mipsle.go#L7
 // - https://github.com/golang/go/blob/3dd58676054223962cd915bb0934d1f9f489d4d2/src/internal/cpu/cpu_mips64x.go#L9
-// - https://github.com/golang/go/blob/3dd58676054223962cd915bb0934d1f9f489d4d2/src/internal/cpu/cpu_riscv64.go#L7
 // - https://github.com/torvalds/linux/blob/3516bd729358a2a9b090c1905bd2a3fa926e24c6/arch/sparc/include/asm/cache.h#L17
 // - https://github.com/torvalds/linux/blob/3516bd729358a2a9b090c1905bd2a3fa926e24c6/arch/hexagon/include/asm/cache.h#L12
-//
-// riscv32 is assumed not to exceed the cache line size of riscv64.
 #[cfg_attr(
     any(
         target_arch = "arm",
         target_arch = "mips",
         target_arch = "mips64",
-        target_arch = "riscv32",
-        target_arch = "riscv64",
         target_arch = "sparc",
         target_arch = "hexagon",
     ),
@@ -92,12 +99,13 @@ use std::task::{Context, Poll, Waker};
 // - https://github.com/golang/go/blob/3dd58676054223962cd915bb0934d1f9f489d4d2/src/internal/cpu/cpu_s390x.go#L7
 // - https://github.com/torvalds/linux/blob/3516bd729358a2a9b090c1905bd2a3fa926e24c6/arch/s390/include/asm/cache.h#L13
 #[cfg_attr(target_arch = "s390x", repr(align(256)))]
-// x86, wasm, and sparc64 have 64-byte cache line size.
+// x86, riscv, wasm, and sparc64 have 64-byte cache line size.
 //
 // Sources:
 // - https://github.com/golang/go/blob/dda2991c2ea0c5914714469c4defc2562a907230/src/internal/cpu/cpu_x86.go#L9
 // - https://github.com/golang/go/blob/3dd58676054223962cd915bb0934d1f9f489d4d2/src/internal/cpu/cpu_wasm.go#L7
 // - https://github.com/torvalds/linux/blob/3516bd729358a2a9b090c1905bd2a3fa926e24c6/arch/sparc/include/asm/cache.h#L19
+// - https://github.com/torvalds/linux/blob/3516bd729358a2a9b090c1905bd2a3fa926e24c6/arch/riscv/include/asm/cache.h#L10
 //
 // All others are assumed to have 64-byte cache line size.
 #[cfg_attr(
@@ -108,8 +116,6 @@ use std::task::{Context, Poll, Waker};
         target_arch = "arm",
         target_arch = "mips",
         target_arch = "mips64",
-        target_arch = "riscv32",
-        target_arch = "riscv64",
         target_arch = "sparc",
         target_arch = "hexagon",
         target_arch = "m68k",
@@ -138,7 +144,7 @@ pub(super) struct CoreStage<T: Future> {
 /// Holds the future or output, depending on the stage of execution.
 ///
 /// Any changes to the layout of this struct _must_ also be reflected in the
-/// const fns in raw.rs.
+/// `const` fns in raw.rs.
 #[repr(C)]
 pub(super) struct Core<T: Future, S> {
     /// Scheduler used to drive this future.
@@ -146,6 +152,13 @@ pub(super) struct Core<T: Future, S> {
 
     /// The task's ID, used for populating `JoinError`s.
     pub(super) task_id: Id,
+
+    /// The source code location where the task was spawned.
+    ///
+    /// This is used for populating the `TaskMeta` passed to the task runtime
+    /// hooks.
+    #[cfg(tokio_unstable)]
+    pub(super) spawned_at: &'static Location<'static>,
 
     /// Either the future or the output.
     pub(super) stage: CoreStage<T>,
@@ -163,10 +176,10 @@ pub(crate) struct Header {
     /// Table of function pointers for executing actions on the task.
     pub(super) vtable: &'static Vtable,
 
-    /// This integer contains the id of the OwnedTasks or LocalOwnedTasks that
-    /// this task is stored in. If the task is not in any list, should be the
-    /// id of the list that it was previously in, or `None` if it has never been
-    /// in any list.
+    /// This integer contains the id of the `OwnedTasks` or `LocalOwnedTasks`
+    /// that this task is stored in. If the task is not in any list, should be
+    /// the id of the list that it was previously in, or `None` if it has never
+    /// been in any list.
     ///
     /// Once a task has been bound to a list, it can never be bound to another
     /// list, even if removed from the first list.
@@ -179,6 +192,9 @@ pub(crate) struct Header {
     /// The tracing ID for this instrumented task.
     #[cfg(all(tokio_unstable, feature = "tracing"))]
     pub(super) tracing_id: Option<tracing::Id>,
+
+    /// The last time this task was scheduled. Used to measure schedule latency.
+    pub(super) scheduled_at: UnsafeCell<ScheduleLatencyInstant>,
 }
 
 unsafe impl Send for Header {}
@@ -191,6 +207,9 @@ pub(super) struct Trailer {
     pub(super) owned: linked_list::Pointers<Header>,
     /// Consumer task waiting on completion of this task.
     pub(super) waker: UnsafeCell<Option<Waker>>,
+    /// Optional hooks needed in the harness.
+    #[cfg_attr(not(tokio_unstable), allow(dead_code))] //TODO: remove when hooks are stabilized
+    pub(super) hooks: TaskHarnessScheduleHooks,
 }
 
 generate_addr_of_methods! {
@@ -202,6 +221,7 @@ generate_addr_of_methods! {
 }
 
 /// Either the future or the output.
+#[repr(C)] // https://github.com/rust-lang/miri/issues/3780
 pub(super) enum Stage<T: Future> {
     Running(T),
     Finished(super::Result<T::Output>),
@@ -211,7 +231,13 @@ pub(super) enum Stage<T: Future> {
 impl<T: Future, S: Schedule> Cell<T, S> {
     /// Allocates a new task cell, containing the header, trailer, and core
     /// structures.
-    pub(super) fn new(future: T, scheduler: S, state: State, task_id: Id) -> Box<Cell<T, S>> {
+    pub(super) fn new(
+        future: T,
+        scheduler: S,
+        state: State,
+        task_id: Id,
+        #[cfg(tokio_unstable)] spawned_at: &'static Location<'static>,
+    ) -> Box<Cell<T, S>> {
         // Separated into a non-generic function to reduce LLVM codegen
         fn new_header(
             state: State,
@@ -225,6 +251,7 @@ impl<T: Future, S: Schedule> Cell<T, S> {
                 owner_id: UnsafeCell::new(None),
                 #[cfg(all(tokio_unstable, feature = "tracing"))]
                 tracing_id,
+                scheduled_at: UnsafeCell::new(ScheduleLatencyInstant::new(None)),
             }
         }
 
@@ -232,6 +259,7 @@ impl<T: Future, S: Schedule> Cell<T, S> {
         let tracing_id = future.id();
         let vtable = raw::vtable::<T, S>();
         let result = Box::new(Cell {
+            trailer: Trailer::new(scheduler.hooks()),
             header: new_header(
                 state,
                 vtable,
@@ -244,14 +272,21 @@ impl<T: Future, S: Schedule> Cell<T, S> {
                     stage: UnsafeCell::new(Stage::Running(future)),
                 },
                 task_id,
+                #[cfg(tokio_unstable)]
+                spawned_at,
             },
-            trailer: Trailer::new(),
         });
 
         #[cfg(debug_assertions)]
         {
             // Using a separate function for this code avoids instantiating it separately for every `T`.
-            unsafe fn check<S>(header: &Header, trailer: &Trailer, scheduler: &S, task_id: &Id) {
+            unsafe fn check<S>(
+                header: &Header,
+                trailer: &Trailer,
+                scheduler: &S,
+                task_id: &Id,
+                #[cfg(tokio_unstable)] spawn_location: &&'static Location<'static>,
+            ) {
                 let trailer_addr = trailer as *const Trailer as usize;
                 let trailer_ptr = unsafe { Header::get_trailer(NonNull::from(header)) };
                 assert_eq!(trailer_addr, trailer_ptr.as_ptr() as usize);
@@ -263,6 +298,15 @@ impl<T: Future, S: Schedule> Cell<T, S> {
                 let id_addr = task_id as *const Id as usize;
                 let id_ptr = unsafe { Header::get_id_ptr(NonNull::from(header)) };
                 assert_eq!(id_addr, id_ptr.as_ptr() as usize);
+
+                #[cfg(tokio_unstable)]
+                {
+                    let spawn_location_addr =
+                        spawn_location as *const &'static Location<'static> as usize;
+                    let spawn_location_ptr =
+                        unsafe { Header::get_spawn_location_ptr(NonNull::from(header)) };
+                    assert_eq!(spawn_location_addr, spawn_location_ptr.as_ptr() as usize);
+                }
             }
             unsafe {
                 check(
@@ -270,6 +314,8 @@ impl<T: Future, S: Schedule> Cell<T, S> {
                     &result.trailer,
                     &result.core.scheduler,
                     &result.core.task_id,
+                    #[cfg(tokio_unstable)]
+                    &result.core.spawned_at,
                 );
             }
         }
@@ -385,7 +431,7 @@ impl<T: Future, S: Schedule> Core<T, S> {
 
     unsafe fn set_stage(&self, stage: Stage<T>) {
         let _guard = TaskIdGuard::enter(self.task_id);
-        self.stage.stage.with_mut(|ptr| *ptr = stage)
+        self.stage.stage.with_mut(|ptr| *ptr = stage);
     }
 }
 
@@ -453,6 +499,37 @@ impl Header {
         *ptr
     }
 
+    /// Gets a pointer to the source code location where the task containing
+    /// this `Header` was spawned.
+    ///
+    /// # Safety
+    ///
+    /// The provided raw pointer must point at the header of a task.
+    #[cfg(tokio_unstable)]
+    pub(super) unsafe fn get_spawn_location_ptr(
+        me: NonNull<Header>,
+    ) -> NonNull<&'static Location<'static>> {
+        let offset = me.as_ref().vtable.spawn_location_offset;
+        let spawned_at = me
+            .as_ptr()
+            .cast::<u8>()
+            .add(offset)
+            .cast::<&'static Location<'static>>();
+        NonNull::new_unchecked(spawned_at)
+    }
+
+    /// Gets the source code location where the task containing
+    /// this `Header` was spawned
+    ///
+    /// # Safety
+    ///
+    /// The provided raw pointer must point at the header of a task.
+    #[cfg(tokio_unstable)]
+    pub(super) unsafe fn get_spawn_location(me: NonNull<Header>) -> &'static Location<'static> {
+        let ptr = Header::get_spawn_location_ptr(me).as_ptr();
+        *ptr
+    }
+
     /// Gets the tracing id of the task containing this `Header`.
     ///
     /// # Safety
@@ -462,13 +539,31 @@ impl Header {
     pub(super) unsafe fn get_tracing_id(me: &NonNull<Header>) -> Option<&tracing::Id> {
         me.as_ref().tracing_id.as_ref()
     }
+
+    /// Updates the last time this task was scheduled. Used to calculate
+    /// the time elapsed between task scheduling and polling.
+    ///
+    /// # Safety
+    ///
+    /// The caller must guarantee exclusive access to this field.
+    pub(super) unsafe fn set_scheduled_at(&self, scheduled_at: ScheduleLatencyInstant) {
+        self.scheduled_at.with_mut(|ptr| *ptr = scheduled_at);
+    }
+
+    /// Gets the last time this task was scheduled.
+    pub(super) fn get_scheduled_at(&self) -> ScheduleLatencyInstant {
+        // Safety: If there are concurrent writes, then that write has violated
+        // the safety requirements on `set_scheduled_at`.
+        unsafe { self.scheduled_at.with(|ptr| *ptr) }
+    }
 }
 
 impl Trailer {
-    fn new() -> Self {
+    fn new(hooks: TaskHarnessScheduleHooks) -> Self {
         Trailer {
             waker: UnsafeCell::new(None),
             owned: linked_list::Pointers::new(),
+            hooks,
         }
     }
 
@@ -494,7 +589,5 @@ impl Trailer {
 #[test]
 #[cfg(not(loom))]
 fn header_lte_cache_line() {
-    use std::mem::size_of;
-
-    assert!(size_of::<Header>() <= 8 * size_of::<*const ()>());
+    assert!(std::mem::size_of::<Header>() <= 8 * std::mem::size_of::<*const ()>());
 }

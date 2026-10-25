@@ -1,17 +1,17 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Diff snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="box"
+    class="_box_a32f3a"
   >
     <div
-      class="tips"
+      class="_tips_a32f3a"
     >
       <div>
         <span
-          class="iconfont icon-warning-circle warning-circle"
-          customclass="warning-circle"
+          class="iconfont icon-warning-circle _warning-circle_a32f3a"
+          customclass="_warning-circle_a32f3a"
           type="warning-circle"
         />
         The following is a before and after comparison of this change.
@@ -22,81 +22,81 @@ exports[`Diff snapshot 1`] = `
       <div>
         <div>
           <div
-            class="old-square"
+            class="_old-square_a32f3a"
           />
           Old/Delete
         </div>
         <div>
           <div
-            class="new-square"
+            class="_new-square_a32f3a"
           />
           New/Create
         </div>
         <div>
           <span
-            class="iconfont icon-angle-down icon-accordion"
-            customclass="icon-accordion"
+            class="iconfont icon-angle-down _icon-accordion_a32f3a"
+            customclass="_icon-accordion_a32f3a"
             type="angle-down"
           />
         </div>
       </div>
     </div>
     <div
-      class="diff"
+      class="_diff_a32f3a"
       style="display: none;"
     >
       <div
-        class="diff-section"
+        class="_diff-section_91cb86"
       >
         <div
-          class="head-line"
+          class="_head-line_91cb86"
         >
           <div
-            class="before"
+            class="_before_91cb86"
           >
             <div
-              class="title"
+              class="_title_91cb86"
             >
               Status
             </div>
           </div>
           <div
-            class="after"
+            class="_after_91cb86"
           >
             <div
-              class="title"
+              class="_title_91cb86"
             >
               Status
             </div>
           </div>
         </div>
         <div
-          class="content"
+          class="_content_91cb86"
         >
           <div
-            class="diff-status-content"
+            class="_diff-status-content_0dfc2b"
           >
             <div
-              class="diff-status-item"
+              class="_diff-status-item_0dfc2b"
             >
               <div
-                class="diff-status-field"
+                class="_diff-status-field_0dfc2b"
               >
                 <div
-                  class="diff-field-value field-value-remove"
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
                 >
                   disabled
                 </div>
               </div>
             </div>
             <div
-              class="diff-status-item"
+              class="_diff-status-item_0dfc2b"
             >
               <div
-                class="diff-status-field"
+                class="_diff-status-field_0dfc2b"
               >
                 <div
-                  class="diff-field-value field-value-add"
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
                 >
                   enabled
                 </div>
@@ -113,15 +113,15 @@ exports[`Diff snapshot 1`] = `
 exports[`Diff snapshot 2`] = `
 <DocumentFragment>
   <div
-    class="box"
+    class="_box_a32f3a"
   >
     <div
-      class="tips"
+      class="_tips_a32f3a"
     >
       <div>
         <span
-          class="iconfont icon-warning-circle warning-circle"
-          customclass="warning-circle"
+          class="iconfont icon-warning-circle _warning-circle_a32f3a"
+          customclass="_warning-circle_a32f3a"
           type="warning-circle"
         />
         The following is a before and after comparison of this change.
@@ -132,81 +132,81 @@ exports[`Diff snapshot 2`] = `
       <div>
         <div>
           <div
-            class="old-square"
+            class="_old-square_a32f3a"
           />
           Old/Delete
         </div>
         <div>
           <div
-            class="new-square"
+            class="_new-square_a32f3a"
           />
           New/Create
         </div>
         <div>
           <span
-            class="iconfont icon-angle-up icon-accordion"
-            customclass="icon-accordion"
+            class="iconfont icon-angle-up _icon-accordion_a32f3a"
+            customclass="_icon-accordion_a32f3a"
             type="angle-up"
           />
         </div>
       </div>
     </div>
     <div
-      class="diff"
+      class="_diff_a32f3a"
       style="display: block;"
     >
       <div
-        class="diff-section"
+        class="_diff-section_91cb86"
       >
         <div
-          class="head-line"
+          class="_head-line_91cb86"
         >
           <div
-            class="before"
+            class="_before_91cb86"
           >
             <div
-              class="title"
+              class="_title_91cb86"
             >
               Status
             </div>
           </div>
           <div
-            class="after"
+            class="_after_91cb86"
           >
             <div
-              class="title"
+              class="_title_91cb86"
             >
               Status
             </div>
           </div>
         </div>
         <div
-          class="content"
+          class="_content_91cb86"
         >
           <div
-            class="diff-status-content"
+            class="_diff-status-content_0dfc2b"
           >
             <div
-              class="diff-status-item"
+              class="_diff-status-item_0dfc2b"
             >
               <div
-                class="diff-status-field"
+                class="_diff-status-field_0dfc2b"
               >
                 <div
-                  class="diff-field-value field-value-remove"
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
                 >
                   disabled
                 </div>
               </div>
             </div>
             <div
-              class="diff-status-item"
+              class="_diff-status-item_0dfc2b"
             >
               <div
-                class="diff-status-field"
+                class="_diff-status-field_0dfc2b"
               >
                 <div
-                  class="diff-field-value field-value-add"
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
                 >
                   enabled
                 </div>

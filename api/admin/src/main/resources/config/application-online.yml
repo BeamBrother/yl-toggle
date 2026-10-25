@@ -18,7 +18,6 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL57InnoDBDialect
     open-in-view: true
   flyway:
     enabled: true
@@ -55,5 +54,3 @@ app:
         - /api/application/**
       guest-disabled: true
       guest-default-password: Guest_12345
-
-

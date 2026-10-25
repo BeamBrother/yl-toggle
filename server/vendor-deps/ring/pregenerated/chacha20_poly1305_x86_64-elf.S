@@ -1,20 +1,12 @@
-# This file is generated from a similarly-named Perl script in the BoringSSL
-# source tree. Do not edit by hand.
+// This file is generated from a similarly-named Perl script in the BoringSSL
+// source tree. Do not edit by hand.
 
-#if defined(__has_feature)
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
-#endif
+#include <ring-core/asm_base.h>
 
-#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM)
-.text	
-.extern	GFp_ia32cap_P
-.hidden GFp_ia32cap_P
-
-chacha20_poly1305_constants:
-
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__ELF__)
+.section	.rodata
 .align	64
+chacha20_poly1305_constants:
 .Lchacha20_consts:
 .byte	'e','x','p','a','n','d',' ','3','2','-','b','y','t','e',' ','k'
 .byte	'e','x','p','a','n','d',' ','3','2','-','b','y','t','e',' ','k'
@@ -51,6 +43,7 @@ chacha20_poly1305_constants:
 .byte	0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x00,0x00
 .byte	0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x00
 .byte	0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff
+.text	
 
 .type	poly_hash_ad_internal,@function
 .align	64
@@ -106,7 +99,7 @@ poly_hash_ad_internal:
 	adcq	%r9,%r11
 	adcq	$0,%r12
 
-	.byte	0xf3,0xc3
+	ret
 .Lhash_ad_loop:
 
 	cmpq	$16,%r8
@@ -215,16 +208,17 @@ poly_hash_ad_internal:
 
 
 .Lhash_ad_done:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	poly_hash_ad_internal, .-poly_hash_ad_internal
 
-.globl	GFp_chacha20_poly1305_open
-.hidden GFp_chacha20_poly1305_open
-.type	GFp_chacha20_poly1305_open,@function
+.globl	chacha20_poly1305_open_sse41
+.hidden chacha20_poly1305_open_sse41
+.type	chacha20_poly1305_open_sse41,@function
 .align	64
-GFp_chacha20_poly1305_open:
+chacha20_poly1305_open_sse41:
 .cfi_startproc	
+_CET_ENDBR
 	pushq	%rbp
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%rbp,-16
@@ -257,11 +251,6 @@ GFp_chacha20_poly1305_open:
 	movq	%rdx,%rbx
 	movq	%r8,0+0+32(%rbp)
 	movq	%rbx,8+0+32(%rbp)
-
-	movl	GFp_ia32cap_P+8(%rip),%eax
-	andl	$288,%eax
-	xorl	$288,%eax
-	jz	chacha20_poly1305_open_avx2
 
 	cmpq	$128,%rbx
 	jbe	.Lopen_sse_128
@@ -1863,7 +1852,7 @@ GFp_chacha20_poly1305_open:
 	popq	%rbp
 .cfi_adjust_cfa_offset	-8
 .cfi_restore	%rbp
-	.byte	0xf3,0xc3
+	ret
 
 .Lopen_sse_128:
 .cfi_restore_state	
@@ -2095,7 +2084,7 @@ GFp_chacha20_poly1305_open:
 	movdqa	%xmm10,%xmm6
 	movdqa	%xmm14,%xmm10
 	jmp	.Lopen_sse_128_xor_hash
-.size	GFp_chacha20_poly1305_open, .-GFp_chacha20_poly1305_open
+.size	chacha20_poly1305_open_sse41, .-chacha20_poly1305_open_sse41
 .cfi_endproc	
 
 
@@ -2103,12 +2092,14 @@ GFp_chacha20_poly1305_open:
 
 
 
-.globl	GFp_chacha20_poly1305_seal
-.hidden GFp_chacha20_poly1305_seal
-.type	GFp_chacha20_poly1305_seal,@function
+
+.globl	chacha20_poly1305_seal_sse41
+.hidden chacha20_poly1305_seal_sse41
+.type	chacha20_poly1305_seal_sse41,@function
 .align	64
-GFp_chacha20_poly1305_seal:
+chacha20_poly1305_seal_sse41:
 .cfi_startproc	
+_CET_ENDBR
 	pushq	%rbp
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%rbp,-16
@@ -2142,11 +2133,6 @@ GFp_chacha20_poly1305_seal:
 	movq	%r8,0+0+32(%rbp)
 	movq	%rbx,8+0+32(%rbp)
 	movq	%rdx,%rbx
-
-	movl	GFp_ia32cap_P+8(%rip),%eax
-	andl	$288,%eax
-	xorl	$288,%eax
-	jz	chacha20_poly1305_seal_avx2
 
 	cmpq	$128,%rbx
 	jbe	.Lseal_sse_128
@@ -3927,7 +3913,7 @@ process_extra_in_trailer:
 	popq	%rbp
 .cfi_adjust_cfa_offset	-8
 .cfi_restore	%rbp
-	.byte	0xf3,0xc3
+	ret
 
 .Lseal_sse_128:
 .cfi_restore_state	
@@ -4099,31 +4085,49 @@ process_extra_in_trailer:
 	movq	%r8,%r8
 	call	poly_hash_ad_internal
 	jmp	.Lseal_sse_128_tail_xor
-.size	GFp_chacha20_poly1305_seal, .-GFp_chacha20_poly1305_seal
+.size	chacha20_poly1305_seal_sse41, .-chacha20_poly1305_seal_sse41
 .cfi_endproc	
 
 
+.globl	chacha20_poly1305_open_avx2
+.hidden chacha20_poly1305_open_avx2
 .type	chacha20_poly1305_open_avx2,@function
 .align	64
 chacha20_poly1305_open_avx2:
 .cfi_startproc	
-
-
+_CET_ENDBR
+	pushq	%rbp
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%rbp,-16
+	pushq	%rbx
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%rbx,-24
+	pushq	%r12
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%r12,-32
+	pushq	%r13
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%r13,-40
+	pushq	%r14
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%r14,-48
+	pushq	%r15
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%r15,-56
+
+
+	pushq	%r9
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%r9,-64
+	subq	$288 + 0 + 32,%rsp
 .cfi_adjust_cfa_offset	288 + 32
+
+	leaq	32(%rsp),%rbp
+	andq	$-32,%rbp
+
+	movq	%rdx,%rbx
+	movq	%r8,0+0+32(%rbp)
+	movq	%rbx,8+0+32(%rbp)
 
 	vzeroupper
 	vmovdqa	.Lchacha20_consts(%rip),%ymm0
@@ -6258,27 +6262,46 @@ chacha20_poly1305_open_avx2:
 .cfi_endproc	
 
 
+.globl	chacha20_poly1305_seal_avx2
+.hidden chacha20_poly1305_seal_avx2
 .type	chacha20_poly1305_seal_avx2,@function
 .align	64
 chacha20_poly1305_seal_avx2:
 .cfi_startproc	
-
-
+_CET_ENDBR
+	pushq	%rbp
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%rbp,-16
+	pushq	%rbx
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%rbx,-24
+	pushq	%r12
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%r12,-32
+	pushq	%r13
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%r13,-40
+	pushq	%r14
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%r14,-48
+	pushq	%r15
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%r15,-56
+
+
+	pushq	%r9
 .cfi_adjust_cfa_offset	8
 .cfi_offset	%r9,-64
+	subq	$288 + 0 + 32,%rsp
 .cfi_adjust_cfa_offset	288 + 32
+	leaq	32(%rsp),%rbp
+	andq	$-32,%rbp
+
+	movq	56(%r9),%rbx
+	addq	%rdx,%rbx
+	movq	%r8,0+0+32(%rbp)
+	movq	%rbx,8+0+32(%rbp)
+	movq	%rdx,%rbx
 
 	vzeroupper
 	vmovdqa	.Lchacha20_consts(%rip),%ymm0
@@ -8915,4 +8938,3 @@ chacha20_poly1305_seal_avx2:
 .cfi_endproc	
 .size	chacha20_poly1305_seal_avx2, .-chacha20_poly1305_seal_avx2
 #endif
-.section	.note.GNU-stack,"",@progbits

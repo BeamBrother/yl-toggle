@@ -1,21 +1,21 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`PutAwayMenu snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="title"
+    class="_title_ee4416"
   >
     <div
-      class="divider"
+      class="_divider_ee4416"
     />
     <div
-      class="name"
+      class="_name_ee4416"
     >
       title
     </div>
     <span
-      class="iconfont icon-question icon-question"
-      customclass="icon-question"
+      class="iconfont icon-question _icon-question_ee4416"
+      customclass="_icon-question_ee4416"
       type="question"
     />
   </div>

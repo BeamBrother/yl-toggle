@@ -12,6 +12,7 @@ import styles from './index.module.scss';
 import { SEGMENT_TYPE } from 'components/Rule/constants';
 
 interface IProps {
+  children?: import('react').ReactNode;
   disabled?: boolean;
   useSegment?: boolean;
   ruleContainer: IContainer;
@@ -24,24 +25,24 @@ const MAX_RULES = 30;
 
 const Rules = (props: IProps) => {
   const intl = useIntl();
-  const { 
-    disabled, 
-    useSegment, 
-    ruleContainer, 
-    variationContainer, 
-    hooksFormContainer, 
-    segmentContainer 
+  const {
+    disabled,
+    useSegment,
+    ruleContainer,
+    variationContainer,
+    hooksFormContainer,
+    segmentContainer
   } = props;
 
   const [ subjectOptions, saveSubjectOptions ] = useState<IOption[]>([]);
 
-  const { 
+  const {
     rules,
     saveRules,
-    handleAddRule, 
+    handleAddRule,
   } = ruleContainer.useContainer();
 
-  const { 
+  const {
     clearErrors
   } = hooksFormContainer.useContainer();
 
@@ -127,9 +128,9 @@ const Rules = (props: IProps) => {
           )}
         </Droppable>
       </DragDropContext>
-      
-      <div 
-        className={cls} 
+
+      <div
+        className={cls}
         onClick={() => {
           if (rules.length >= MAX_RULES || disabled) {
             return;

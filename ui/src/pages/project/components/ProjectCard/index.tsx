@@ -1,3 +1,4 @@
+import asset_no_data_available_png from 'images/no-data-available.png';
 import { useCallback, useEffect, useState, SyntheticEvent } from 'react';
 import { Popup } from 'semantic-ui-react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -19,6 +20,7 @@ import { OWNER } from 'constants/auth';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   project: IProject;
   handleEditProject(projectKey: string): void;
   refreshProjectsList(): void;
@@ -165,8 +167,8 @@ const ProjectCard = (props: IProps) => {
                     </div>
                     {
                       isArchived ? (
-                        <div 
-                          className={styles['menu-item']} 
+                        <div
+                          className={styles['menu-item']}
                           onClick={() => {
                             setIsArchived(false);
                             refreshEnvironmentList(false);
@@ -175,8 +177,8 @@ const ProjectCard = (props: IProps) => {
                           <FormattedMessage id='projects.menu.view.active.environment' />
                         </div>
                       ) : (
-                        <div 
-                          className={styles['menu-item']} 
+                        <div
+                          className={styles['menu-item']}
                           onClick={() => {
                             setIsArchived(true);
                             refreshEnvironmentList(true);
@@ -229,7 +231,7 @@ const ProjectCard = (props: IProps) => {
             {
               environments.length === 0 && (
                 <div className={styles['no-data']}>
-                  <img className={styles['no-data-img']} src={require('images/no-data-available.png')} alt='no-data' />
+                  <img className={styles['no-data-img']} src={asset_no_data_available_png} alt='no-data' />
                   <div className={styles['no-data-text']}>
                     <FormattedMessage id='targeting.traffic.no.data.text' />
                   </div>
@@ -247,7 +249,7 @@ const ProjectCard = (props: IProps) => {
         handleCancel={handleCancel}
         handleConfirm={handleConfirm}
       />
-      <Modal 
+      <Modal
         open={deleteOpen}
         width={400}
         handleCancel={(e: SyntheticEvent) => {
@@ -273,7 +275,7 @@ const ProjectCard = (props: IProps) => {
         </div>
       </Modal>
 
-      <Modal 
+      <Modal
         open={cannotDeleteOpen}
         width={400}
         footer={null}

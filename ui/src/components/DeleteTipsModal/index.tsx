@@ -7,6 +7,7 @@ import { Button, ButtonProps } from 'semantic-ui-react';
 import styles from './index.module.scss';
 
 interface DeleteTipsModalProps {
+  children?: import('react').ReactNode;
   open: boolean;
   onCancel: () => void;
   onConfirm: () => void;

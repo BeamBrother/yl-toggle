@@ -1,34 +1,34 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`DiffSection snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="diff-section"
+    class="_diff-section_91cb86"
   >
     <div
-      class="head-line"
+      class="_head-line_91cb86"
     >
       <div
-        class="before"
+        class="_before_91cb86"
       >
         <div
-          class="title"
+          class="_title_91cb86"
         >
           Test
         </div>
       </div>
       <div
-        class="after"
+        class="_after_91cb86"
       >
         <div
-          class="title"
+          class="_title_91cb86"
         >
           Test
         </div>
       </div>
     </div>
     <div
-      class="content"
+      class="_content_91cb86"
     >
       <div>
         test
@@ -41,33 +41,33 @@ exports[`DiffSection snapshot 1`] = `
 exports[`DiffSection snapshot 2`] = `
 <DocumentFragment>
   <div
-    class="diff-section"
+    class="_diff-section_91cb86"
     hidden=""
   >
     <div
-      class="head-line"
+      class="_head-line_91cb86"
     >
       <div
-        class="before"
+        class="_before_91cb86"
       >
         <div
-          class="title"
+          class="_title_91cb86"
         >
           Test
         </div>
       </div>
       <div
-        class="after"
+        class="_after_91cb86"
       >
         <div
-          class="title"
+          class="_title_91cb86"
         >
           Test
         </div>
       </div>
     </div>
     <div
-      class="content"
+      class="_content_91cb86"
     >
       <div>
         test

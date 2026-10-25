@@ -4,9 +4,9 @@
 // purpose with or without fee is hereby granted, provided that the above
 // copyright notice and this permission notice appear in all copies.
 //
-// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHORS DISCLAIM ALL WARRANTIES
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
 // WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
 // SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
 // OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
@@ -104,12 +104,14 @@
 //! ```
 //!
 //! [RFC 2104]: https://tools.ietf.org/html/rfc2104
-//! [code for `ring::pbkdf2`]:
-//!     https://github.com/briansmith/ring/blob/main/src/pbkdf2.rs
-//! [code for `ring::hkdf`]:
-//!     https://github.com/briansmith/ring/blob/main/src/hkdf.rs
 
-use crate::{constant_time, digest, error, hkdf, rand};
+use crate::{
+    bb, cpu,
+    digest::{self, Digest, FinishError},
+    error, hkdf, rand,
+};
+
+pub(crate) use crate::digest::InputTooLongError;
 
 /// An HMAC algorithm.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -135,15 +137,11 @@ pub static HMAC_SHA384: Algorithm = Algorithm(&digest::SHA384);
 /// HMAC using SHA-512.
 pub static HMAC_SHA512: Algorithm = Algorithm(&digest::SHA512);
 
-/// A deprecated alias for `Tag`.
-#[deprecated(note = "`Signature` was renamed to `Tag`. This alias will be removed soon.")]
-pub type Signature = Tag;
-
 /// An HMAC tag.
 ///
 /// For a given tag `t`, use `t.as_ref()` to get the tag value as a byte slice.
 #[derive(Clone, Copy, Debug)]
-pub struct Tag(digest::Digest);
+pub struct Tag(Digest);
 
 impl AsRef<[u8]> for Tag {
     #[inline]
@@ -158,16 +156,6 @@ pub struct Key {
     inner: digest::BlockContext,
     outer: digest::BlockContext,
 }
-
-/// `hmac::SigningKey` was renamed to `hmac::Key`.
-#[deprecated(note = "Renamed to `hmac::Key`.")]
-pub type SigningKey = Key;
-
-/// `hmac::VerificationKey` was merged into `hmac::Key`.
-#[deprecated(
-    note = "The distinction between verification & signing keys was removed. Use `hmac::Key`."
-)]
-pub type VerificationKey = Key;
 
 impl core::fmt::Debug for Key {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> Result<(), core::fmt::Error> {
@@ -189,17 +177,21 @@ impl Key {
         algorithm: Algorithm,
         rng: &dyn rand::SecureRandom,
     ) -> Result<Self, error::Unspecified> {
-        Self::construct(algorithm, |buf| rng.fill(buf))
+        Self::construct(algorithm, |buf| rng.fill(buf), cpu::features())
     }
 
-    fn construct<F>(algorithm: Algorithm, fill: F) -> Result<Self, error::Unspecified>
+    fn construct<F>(
+        algorithm: Algorithm,
+        fill: F,
+        cpu: cpu::Features,
+    ) -> Result<Self, error::Unspecified>
     where
         F: FnOnce(&mut [u8]) -> Result<(), error::Unspecified>,
     {
         let mut key_bytes = [0; digest::MAX_OUTPUT_LEN];
-        let key_bytes = &mut key_bytes[..algorithm.0.output_len];
+        let key_bytes = &mut key_bytes[..algorithm.0.output_len()];
         fill(key_bytes)?;
-        Ok(Self::new(algorithm, key_bytes))
+        Self::try_new(algorithm, key_bytes, cpu).map_err(error::erase::<InputTooLongError>)
     }
 
     /// Construct an HMAC signing key using the given digest algorithm and key
@@ -212,8 +204,8 @@ impl Key {
     /// `key_value` shouldn't be a password.
     ///
     /// As specified in RFC 2104, if `key_value` is shorter than the digest
-    /// algorithm's block length (as returned by `digest::Algorithm::block_len`,
-    /// not the digest length returned by `digest::Algorithm::output_len`) then
+    /// algorithm's block length (as returned by `digest::Algorithm::block_len()`,
+    /// not the digest length returned by `digest::Algorithm::output_len()`) then
     /// it will be padded with zeros. Similarly, if it is longer than the block
     /// length then it will be compressed using the digest algorithm.
     ///
@@ -222,43 +214,54 @@ impl Key {
     /// `digest_alg.output_len * 8` bits. Support for such keys is likely to be
     /// removed in a future version of *ring*.
     pub fn new(algorithm: Algorithm, key_value: &[u8]) -> Self {
+        Self::try_new(algorithm, key_value, cpu::features())
+            .map_err(error::erase::<InputTooLongError>)
+            .unwrap()
+    }
+
+    pub(crate) fn try_new(
+        algorithm: Algorithm,
+        key_value: &[u8],
+        cpu_features: cpu::Features,
+    ) -> Result<Self, InputTooLongError> {
         let digest_alg = algorithm.0;
         let mut key = Self {
             inner: digest::BlockContext::new(digest_alg),
             outer: digest::BlockContext::new(digest_alg),
         };
 
+        let block_len = digest_alg.block_len();
+
         let key_hash;
-        let key_value = if key_value.len() <= digest_alg.block_len {
+        let key_value = if key_value.len() <= block_len {
             key_value
         } else {
-            key_hash = digest::digest(digest_alg, key_value);
+            key_hash = Digest::compute_from(digest_alg, key_value, cpu_features)?;
             key_hash.as_ref()
         };
 
         const IPAD: u8 = 0x36;
 
         let mut padded_key = [IPAD; digest::MAX_BLOCK_LEN];
-        let padded_key = &mut padded_key[..digest_alg.block_len];
+        let padded_key = &mut padded_key[..block_len];
 
         // If the key is shorter than one block then we're supposed to act like
         // it is padded with zero bytes up to the block length. `x ^ 0 == x` so
         // we can just leave the trailing bytes of `padded_key` untouched.
-        for (padded_key, key_value) in padded_key.iter_mut().zip(key_value.iter()) {
-            *padded_key ^= *key_value;
-        }
-        key.inner.update(&padded_key);
+        bb::xor_assign_at_start(&mut padded_key[..], key_value);
+
+        let leftover = key.inner.update(padded_key, cpu_features);
+        debug_assert_eq!(leftover.len(), 0);
 
         const OPAD: u8 = 0x5C;
 
         // Remove the `IPAD` masking, leaving the unmasked padded key, then
         // mask with `OPAD`, all in one step.
-        for b in padded_key.iter_mut() {
-            *b ^= IPAD ^ OPAD;
-        }
-        key.outer.update(&padded_key);
+        bb::xor_assign(&mut padded_key[..], IPAD ^ OPAD);
+        let leftover = key.outer.update(padded_key, cpu_features);
+        debug_assert_eq!(leftover.len(), 0);
 
-        key
+        Ok(key)
     }
 
     /// The digest algorithm for the key.
@@ -266,17 +269,31 @@ impl Key {
     pub fn algorithm(&self) -> Algorithm {
         Algorithm(self.inner.algorithm)
     }
+
+    pub(crate) fn sign(&self, data: &[u8], cpu: cpu::Features) -> Result<Tag, InputTooLongError> {
+        let mut ctx = Context::with_key(self);
+        ctx.update(data);
+        ctx.try_sign(cpu)
+    }
+
+    fn verify(&self, data: &[u8], tag: &[u8], cpu: cpu::Features) -> Result<(), VerifyError> {
+        let computed = self
+            .sign(data, cpu)
+            .map_err(VerifyError::InputTooLongError)?;
+        bb::verify_slices_are_equal(computed.as_ref(), tag)
+            .map_err(|_: error::Unspecified| VerifyError::Mismatch)
+    }
 }
 
 impl hkdf::KeyType for Algorithm {
     fn len(&self) -> usize {
-        self.digest_algorithm().output_len
+        self.digest_algorithm().output_len()
     }
 }
 
 impl From<hkdf::Okm<'_, Algorithm>> for Key {
     fn from(okm: hkdf::Okm<Algorithm>) -> Self {
-        Key::construct(*okm.len(), |buf| okm.fill(buf)).unwrap()
+        Self::construct(*okm.len(), |buf| okm.fill(buf), cpu::features()).unwrap()
     }
 }
 
@@ -288,10 +305,6 @@ pub struct Context {
     inner: digest::Context,
     outer: digest::BlockContext,
 }
-
-/// `hmac::SigningContext` was renamed to `hmac::Context`.
-#[deprecated(note = "Renamed to `hmac::Context`.")]
-pub type SigningContext = Context;
 
 impl core::fmt::Debug for Context {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> Result<(), core::fmt::Error> {
@@ -325,12 +338,41 @@ impl Context {
     /// the return value of `sign` to a tag. Use `verify` for verification
     /// instead.
     pub fn sign(self) -> Tag {
-        let algorithm = self.inner.algorithm();
-        let mut pending = [0u8; digest::MAX_BLOCK_LEN];
-        let pending = &mut pending[..algorithm.block_len];
-        let num_pending = algorithm.output_len;
-        pending[..num_pending].copy_from_slice(self.inner.finish().as_ref());
-        Tag(self.outer.finish(pending, num_pending))
+        self.try_sign(cpu::features())
+            .map_err(error::erase::<InputTooLongError>)
+            .unwrap()
+    }
+
+    pub(crate) fn try_sign(self, cpu_features: cpu::Features) -> Result<Tag, InputTooLongError> {
+        // Consequently, `num_pending` is valid.
+        debug_assert_eq!(self.inner.algorithm(), self.outer.algorithm);
+        debug_assert!(self.inner.algorithm().output_len() < self.outer.algorithm.block_len());
+
+        let inner = self.inner.try_finish(cpu_features)?;
+        let inner = inner.as_ref();
+        let num_pending = inner.len();
+        let buffer = &mut [0u8; digest::MAX_BLOCK_LEN];
+        const _BUFFER_IS_LARGE_ENOUGH_TO_HOLD_INNER: () =
+            assert!(digest::MAX_OUTPUT_LEN < digest::MAX_BLOCK_LEN);
+        buffer[..num_pending].copy_from_slice(inner);
+
+        self.outer
+            .try_finish(buffer, num_pending, cpu_features)
+            .map(Tag)
+            .map_err(|err| match err {
+                FinishError::InputTooLong(i) => {
+                    // Unreachable, as we gave the inner context exactly the
+                    // same input we gave the outer context, and
+                    // `inner.try_finish` already succeeded. However, it is
+                    // quite difficult to prove this, and we already return
+                    // `InputTooLongError`, so just forward it along.
+                    i
+                }
+                FinishError::PendingNotAPartialBlock(_) => {
+                    // Follows from the assertions above.
+                    unreachable!()
+                }
+            })
     }
 }
 
@@ -341,9 +383,9 @@ impl Context {
 /// It is generally not safe to implement HMAC verification by comparing the
 /// return value of `sign` to a tag. Use `verify` for verification instead.
 pub fn sign(key: &Key, data: &[u8]) -> Tag {
-    let mut ctx = Context::with_key(key);
-    ctx.update(data);
-    ctx.sign()
+    key.sign(data, cpu::features())
+        .map_err(error::erase::<InputTooLongError>)
+        .unwrap()
 }
 
 /// Calculates the HMAC of `data` using the signing key `key`, and verifies
@@ -354,7 +396,20 @@ pub fn sign(key: &Key, data: &[u8]) -> Tag {
 ///
 /// The verification will be done in constant time to prevent timing attacks.
 pub fn verify(key: &Key, data: &[u8], tag: &[u8]) -> Result<(), error::Unspecified> {
-    constant_time::verify_slices_are_equal(sign(key, data).as_ref(), tag)
+    key.verify(data, tag, cpu::features())
+        .map_err(|_: VerifyError| error::Unspecified)
+}
+
+enum VerifyError {
+    // Theoretically somebody could have calculated a valid tag with a gigantic
+    // input that we do not support. If we were to support every theoretically
+    // valid input length, for *every* digest algorithm, then we could argue
+    // that hitting the input length limit implies a mismatch since nobody
+    // could have calculated such a tag with the given input.
+    #[allow(dead_code)]
+    InputTooLongError(InputTooLongError),
+
+    Mismatch,
 }
 
 #[cfg(test)]

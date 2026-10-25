@@ -19,7 +19,7 @@ const FormItemName = (props: IProps) => {
   const { value, errors, size, className, register, onChange, labelRender } = props;
 
   useEffect(() => {
-    register('name', { 
+    register('name', {
       required: intl.formatMessage({id: 'common.name.required'}),
     });
   }, [intl, register]);
@@ -41,7 +41,7 @@ const FormItemName = (props: IProps) => {
           onChange={onChange}
         />
       </Form.Field>
-      { errors.name && <div className={styles['error-text']}>{ errors.name.message }</div> }
+      { errors.name && <div className={styles['error-text']}>{String(errors.name?.message ?? '')}</div> }
     </div>
   );
 };

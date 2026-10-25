@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, PaginationProps, Table } from 'semantic-ui-react';
 import SettingLayout from 'layout/settingLayout';
@@ -30,7 +30,7 @@ const ApiToken = () => {
     setModalOpen(true);
   }, []);
 
-  const handlePageChange = useCallback((e, data: PaginationProps) => {
+  const handlePageChange = useCallback((e: SyntheticEvent, data: PaginationProps) => {
     setPage((data.activePage as number) - 1);
   }, []);
 

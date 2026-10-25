@@ -10,6 +10,7 @@ import { getUrlMatchOptions } from '../option';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   metricUrl: string;
   metricMatcher: string;
   popupOpen: boolean;
@@ -42,8 +43,8 @@ const CheckURL = (props: IProps) => {
       position='bottom right'
       className={styles['test-url-popup']}
       trigger={
-        <div 
-          className={styles['test-url-text']} 
+        <div
+          className={styles['test-url-text']}
           onClick={(e: SyntheticEvent) => {
             document.body.click();
             e.stopPropagation();

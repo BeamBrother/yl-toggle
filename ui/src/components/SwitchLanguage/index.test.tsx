@@ -1,25 +1,24 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import SwitchLanguage from '.';
 import I18nWrapper from 'components/utils/containerWrapper';
 import sleep from 'utils/sleep';
 import { act } from 'react-dom/test-utils';
 
-it('Switch language snapshot', (done) => {
-  (async () => {
+it('Switch language snapshot', async () => {
+  await (async () => {
     const { asFragment } = render(
       <SwitchLanguage />, { wrapper: I18nWrapper}
     );
 
     expect(asFragment()).toMatchSnapshot();
-    done();
   })();
 });
 
 
-test('click language', (done) => {
-  (async () => {
+it('click language', async () => {
+  await (async () => {
     const { baseElement } = render(
       <SwitchLanguage />, {  wrapper: I18nWrapper, }
     );
@@ -31,12 +30,11 @@ test('click language', (done) => {
     });
 
     expect(baseElement).toMatchSnapshot();
-    done();
   })();
 });
 
-test('select language', (done) => {
-  (async () => {
+it('select language', async () => {
+  await (async () => {
     const { baseElement } = render(
       <SwitchLanguage />, {  wrapper: I18nWrapper, }
     );
@@ -51,6 +49,5 @@ test('select language', (done) => {
     });
 
     expect(baseElement).toMatchSnapshot();
-    done();
   })();
 });

@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 class WebHookServiceSpec extends Specification {
 
@@ -159,4 +159,3 @@ class WebHookServiceSpec extends Specification {
         1 == names.size()
     }
 }
-

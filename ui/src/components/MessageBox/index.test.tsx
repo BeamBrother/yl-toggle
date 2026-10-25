@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import message from '.';
 import { IntlWrapper } from 'components/utils/wrapper';
 import sleep from 'utils/sleep';
 
-jest.setTimeout(20000);
+vi.setConfig({ testTimeout: 20000 });
 
-test('message', (done) => {
-  (async () => {
+it('message', async () => {
+  await (async () => {
     const { baseElement } = render(<div></div>, { wrapper: IntlWrapper });
     message.info('test text');
     message.success('test text');
@@ -15,6 +15,5 @@ test('message', (done) => {
     message.error('test text');
     await sleep(5000);
     expect(baseElement).toMatchSnapshot();
-    done();
   })();
 });

@@ -5,6 +5,7 @@ import DiffSection, { DiffSectionProps } from './DiffSection';
 import styles from './index.module.scss';
 
 interface DiffProps {
+  children?: import('react').ReactNode;
   sections: DiffSectionProps[];
   height?: number;
   maxHeight?: number;

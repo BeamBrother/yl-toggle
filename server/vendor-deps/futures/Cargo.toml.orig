@@ -1,8 +1,9 @@
 [package]
 name = "futures"
-version = "0.3.28"
+version = "0.3.34"
 edition = "2018"
-rust-version = "1.56"
+# NB: Sync with "Usage" section in README.md and util-msrv job in .github/workflows/ci.yml
+rust-version = "1.71"
 license = "MIT OR Apache-2.0"
 readme = "../README.md"
 keywords = ["futures", "async", "future"]
@@ -15,20 +16,19 @@ composability, and iterator-like interfaces.
 categories = ["asynchronous"]
 
 [dependencies]
-futures-core = { path = "../futures-core", version = "0.3.28", default-features = false }
-futures-task = { path = "../futures-task", version = "0.3.28", default-features = false }
-futures-channel = { path = "../futures-channel", version = "0.3.28", default-features = false, features = ["sink"] }
-futures-executor = { path = "../futures-executor", version = "0.3.28", default-features = false, optional = true }
-futures-io = { path = "../futures-io", version = "0.3.28", default-features = false }
-futures-sink = { path = "../futures-sink", version = "0.3.28", default-features = false }
-futures-util = { path = "../futures-util", version = "0.3.28", default-features = false, features = ["sink"] }
+futures-core = { path = "../futures-core", version = "0.3.34", default-features = false }
+futures-task = { path = "../futures-task", version = "0.3.34", default-features = false }
+futures-channel = { path = "../futures-channel", version = "0.3.34", default-features = false, features = ["sink"] }
+futures-executor = { path = "../futures-executor", version = "0.3.34", default-features = false, optional = true }
+futures-io = { path = "../futures-io", version = "0.3.34", default-features = false }
+futures-sink = { path = "../futures-sink", version = "0.3.34", default-features = false }
+futures-util = { path = "../futures-util", version = "0.3.34", default-features = false, features = ["sink"] }
 
 [dev-dependencies]
 futures-executor = { path = "../futures-executor", features = ["thread-pool"] }
 futures-test = { path = "../futures-test" }
 assert_matches = "1.3.0"
 pin-project = "1.0.11"
-pin-utils = "0.1.0"
 static_assertions = "1"
 tokio = "0.1.11"
 
@@ -41,6 +41,7 @@ compat = ["std", "futures-util/compat"]
 io-compat = ["compat", "futures-util/io-compat"]
 executor = ["std", "futures-executor/std"]
 thread-pool = ["executor", "futures-executor/thread-pool"]
+spin = ["futures-util/spin"]
 
 # Unstable features
 # These features are outside of the normal semver guarantees and require the
@@ -59,3 +60,6 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [package.metadata.playground]
 features = ["std", "async-await", "compat", "io-compat", "executor", "thread-pool"]
+
+[lints]
+workspace = true

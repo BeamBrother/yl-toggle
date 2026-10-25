@@ -3,12 +3,14 @@ package io.yltoggle.api.component;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.yltoggle.api.dao.entity.Traffic;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 import org.springframework.transaction.TransactionStatus;
@@ -28,7 +30,8 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class TrafficIngestBufferTest {
 
     @Mock
@@ -39,7 +42,7 @@ public class TrafficIngestBufferTest {
 
     private MeterRegistry meterRegistry;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         meterRegistry = new SimpleMeterRegistry();
         doAnswer(invocation -> {
@@ -149,7 +152,3 @@ public class TrafficIngestBufferTest {
         return events;
     }
 }
-
-
-
-

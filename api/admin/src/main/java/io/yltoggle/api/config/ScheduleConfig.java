@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Configuration
 @EnableScheduling
 @ComponentScan(basePackageClasses = {
-        SdkVersionScheduler.class,
+    SdkVersionScheduler.class,
 })
 public class ScheduleConfig {
 }

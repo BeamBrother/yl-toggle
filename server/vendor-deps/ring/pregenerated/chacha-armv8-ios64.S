@@ -1,19 +1,9 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if !defined(__has_feature)
-#define __has_feature(x) 0
-#endif
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
+#include <ring-core/asm_base.h>
 
-#if !defined(OPENSSL_NO_ASM)
-#include <GFp/arm_arch.h>
-
-
-.private_extern	_GFp_armcap_P
-
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_AARCH64) && defined(__APPLE__)
 .section	__TEXT,__const
 
 .align	5
@@ -26,25 +16,11 @@ Lone:
 
 .text
 
-.globl	_GFp_ChaCha20_ctr32
-.private_extern	_GFp_ChaCha20_ctr32
+.globl	_ChaCha20_ctr32_nohw
+.private_extern	_ChaCha20_ctr32_nohw
 
 .align	5
-_GFp_ChaCha20_ctr32:
-	AARCH64_VALID_CALL_TARGET
-	cbz	x2,Labort
-#if __has_feature(hwaddress_sanitizer) && __clang_major__ >= 10
-	adrp	x5,:pg_hi21_nc:_GFp_armcap_P
-#else
-	adrp	x5,_GFp_armcap_P@PAGE
-#endif
-	cmp	x2,#192
-	b.lo	Lshort
-	ldr	w17,[x5,_GFp_armcap_P@PAGEOFF]
-	tst	w17,#ARMV7_NEON
-	b.ne	ChaCha20_neon
-
-Lshort:
+_ChaCha20_ctr32_nohw:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-96]!
 	add	x29,sp,#0
@@ -62,7 +38,7 @@ Lshort:
 	ldp	x24,x25,[x3]		// load key
 	ldp	x26,x27,[x3,#16]
 	ldp	x28,x30,[x4]		// load counter
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	ror	x24,x24,#32
 	ror	x25,x25,#32
 	ror	x26,x26,#32
@@ -223,7 +199,7 @@ Loop:
 	add	x20,x20,x21,lsl#32
 	ldp	x19,x21,[x1,#48]
 	add	x1,x1,#64
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	rev	x5,x5
 	rev	x7,x7
 	rev	x9,x9
@@ -259,7 +235,6 @@ Loop:
 	ldp	x27,x28,[x29,#80]
 	ldp	x29,x30,[sp],#96
 	AARCH64_VALIDATE_LINK_REGISTER
-Labort:
 	ret
 
 .align	4
@@ -280,7 +255,7 @@ Less_than_64:
 	add	x15,x15,x16,lsl#32
 	add	x17,x17,x19,lsl#32
 	add	x20,x20,x21,lsl#32
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	rev	x5,x5
 	rev	x7,x7
 	rev	x9,x9
@@ -319,9 +294,11 @@ Loop_tail:
 	ret
 
 
+.globl	_ChaCha20_ctr32_neon
+.private_extern	_ChaCha20_ctr32_neon
 
 .align	5
-ChaCha20_neon:
+_ChaCha20_ctr32_neon:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-96]!
 	add	x29,sp,#0
@@ -346,7 +323,7 @@ ChaCha20_neon:
 	ldp	x28,x30,[x4]		// load counter
 	ld1	{v27.4s},[x4]
 	ld1	{v31.4s},[x5]
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	rev64	v24.4s,v24.4s
 	ror	x24,x24,#32
 	ror	x25,x25,#32
@@ -644,7 +621,7 @@ Loop_neon:
 	add	x20,x20,x21,lsl#32
 	ldp	x19,x21,[x1,#48]
 	add	x1,x1,#64
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	rev	x5,x5
 	rev	x7,x7
 	rev	x9,x9
@@ -724,7 +701,7 @@ Ltail_neon:
 	add	x20,x20,x21,lsl#32
 	ldp	x19,x21,[x1,#48]
 	add	x1,x1,#64
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	rev	x5,x5
 	rev	x7,x7
 	rev	x9,x9
@@ -842,7 +819,7 @@ L512_or_more_neon:
 	ldp	x28,x30,[x4]		// load counter
 	ld1	{v27.4s},[x4]
 	ld1	{v31.4s},[x5]
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	rev64	v24.4s,v24.4s
 	ror	x24,x24,#32
 	ror	x25,x25,#32
@@ -1355,7 +1332,7 @@ Loop_upper_neon:
 	add	x20,x20,x21,lsl#32
 	ldp	x19,x21,[x1,#48]
 	add	x1,x1,#64
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	rev	x5,x5
 	rev	x7,x7
 	rev	x9,x9
@@ -1869,7 +1846,7 @@ Loop_lower_neon:
 	add	x1,x1,#64
 	add	v21.4s,v21.4s,v25.4s
 
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	rev	x5,x5
 	rev	x7,x7
 	rev	x9,x9
@@ -1986,4 +1963,4 @@ Ldone_512_neon:
 	AARCH64_VALIDATE_LINK_REGISTER
 	ret
 
-#endif  // !OPENSSL_NO_ASM
+#endif  // !OPENSSL_NO_ASM && defined(OPENSSL_AARCH64) && defined(__APPLE__)

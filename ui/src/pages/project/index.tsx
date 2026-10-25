@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Joyride, { CallBackProps, EVENTS, ACTIONS, Step } from 'react-joyride';
+import { Joyride, EventData, EVENTS, ACTIONS, Step } from 'react-joyride';
 import { getProjectList } from 'services/project';
 import Button from 'components/Button';
 import message from 'components/MessageBox';
@@ -14,7 +14,7 @@ import { IProject } from 'interfaces/project';
 import { OWNER } from 'constants/auth';
 import { getFromDictionary, saveDictionary } from 'services/dictionary';
 import EventTracker from 'components/EventTracker';
-import { commonConfig, floaterStyle, tourStyle } from 'constants/tourConfig';
+import { commonConfig, tourStyle } from 'constants/tourConfig';
 import { USER_GUIDE_PROJECT } from 'constants/dictionaryKeys';
 import { IDictionary } from 'interfaces/targeting';
 
@@ -125,7 +125,7 @@ const Project = () => {
     setProjectKey(projectKey);
   }, []);
 
-  const handleJoyrideCallback = useCallback((data: CallBackProps) => {
+  const handleJoyrideCallback = useCallback((data: EventData) => {
     const { action, index, type } = data;
 
     if (([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND] as string[]).includes(type)) {
@@ -182,7 +182,7 @@ const Project = () => {
               )
             }
           </div>
-          <ProjectDrawer 
+          <ProjectDrawer
             isAdd={isAdd}
             visible={visible}
             projectKey={projectKey}
@@ -191,22 +191,22 @@ const Project = () => {
           />
           <Joyride
             run={run}
-            callback={handleJoyrideCallback}
+            onEvent={handleJoyrideCallback}
             stepIndex={stepIndex}
-            continuous
-            hideCloseButton
             scrollToFirstStep
-            showProgress={false}
-            showSkipButton
-            scrollOffset={1000}
-            disableCloseOnEsc={true}
+options={{
+          ...commonConfig,
+          buttons: ['back', 'skip', 'primary'] as const,
+          showProgress: false,
+          dismissKeyAction: false,
+          scrollOffset: 1000,
+        }}
             steps={STEPS}
             locale={{
               back: intl.formatMessage({ id: 'guide.last' }),
               next: intl.formatMessage({ id: 'guide.next' }),
               last: intl.formatMessage({ id: 'guide.done' }),
             }}
-            floaterProps={{ ...floaterStyle }}
             styles={{ ...tourStyle }}
           />
         </>

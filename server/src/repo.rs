@@ -334,18 +334,18 @@ mod tests {
 
     use super::*;
     use crate::YTServerError::{NotFound, NotReady};
-    use axum::{routing::get, Json, Router, TypedHeader};
+    use axum::{routing::get, Json, Router};
+    use axum_extra::TypedHeader;
     #[cfg(feature = "unstable")]
     use serde_json::json;
-    use std::{fs, net::SocketAddr, path::PathBuf, time::Duration};
+    use std::{fs, path::PathBuf, time::Duration};
     #[cfg(feature = "unstable")]
     use yl_toggle_server_sdk::YTUser;
     use yl_toggle_server_sdk::{Repository, SdkAuthorization};
 
     #[tokio::test]
     async fn test_repo_sync() {
-        let port = 9590;
-        setup_mock_api(port);
+        let port = setup_mock_api().await;
         let client_sdk_key = "client-sdk-key".to_owned();
         let server_sdk_key = "server-sdk-key".to_owned();
         let client_sdk_key2 = "client-sdk-key2".to_owned();
@@ -386,8 +386,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_repo_sync2() {
-        let port = 9591;
-        setup_mock_api(port);
+        let port = setup_mock_api().await;
         let client_sdk_key = "client-sdk-key".to_owned();
         let server_sdk_key = "server-sdk-key".to_owned();
         let non_sdk_key = "non-exist-sdk-key".to_owned();
@@ -410,8 +409,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_not_ready_repo_sync() {
-        let port = 9592;
-        setup_mock_api(port);
+        let port = setup_mock_api().await;
         let client_sdk_key = "client-sdk-key".to_owned();
         let server_sdk_key = "server-sdk-key".to_owned();
         let repository = setup_not_ready_repository(port, &client_sdk_key, &server_sdk_key).await;
@@ -423,8 +421,7 @@ mod tests {
     #[cfg(feature = "unstable")]
     #[tokio::test]
     async fn test_update_toggles() {
-        let port = 9592;
-        setup_mock_api(port);
+        let port = setup_mock_api().await;
 
         let server_sdk_key = "sdk-key1".to_owned();
         let client_sdk_key = "client-sdk-key".to_owned();
@@ -567,16 +564,18 @@ mod tests {
         r#" { "version": 1, "mapping": { "client-sdk-key": "server-sdk-key" } }"#.to_owned()
     }
 
-    fn setup_mock_api(port: u16) {
+    async fn setup_mock_api() -> u16 {
         let app = Router::new()
             .route("/api/secret-keys", get(secret_keys))
             .route("/api/server-sdk/toggles", get(server_sdk_toggles));
-        let addr = SocketAddr::from(([0, 0, 0, 0], port));
+        let listener = tokio::net::TcpListener::bind((std::net::Ipv4Addr::LOCALHOST, 0))
+            .await
+            .unwrap();
+        let port = listener.local_addr().unwrap().port();
         tokio::spawn(async move {
-            let _ = axum::Server::bind(&addr)
-                .serve(app.into_make_service())
-                .await;
+            let _ = axum::serve(listener, app).await;
         });
+        port
     }
 
     fn repo_from_test_file() -> Repository {

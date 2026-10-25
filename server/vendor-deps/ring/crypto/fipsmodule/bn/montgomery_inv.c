@@ -46,7 +46,7 @@ OPENSSL_STATIC_ASSERT(sizeof(BN_ULONG) * BN_MONT_CTX_N0_LIMBS == sizeof(uint64_t
 // caller would have to negate the resultant |v| for the purpose of Montgomery
 // multiplication. This implementation does the negation implicitly by doing
 // the computations as a difference instead of a sum.
-uint64_t GFp_bn_neg_inv_mod_r_u64(uint64_t n) {
+uint64_t bn_neg_inv_mod_r_u64(uint64_t n) {
   dev_assert_secret(n % 2 == 1);
 
   // alpha == 2**(lg r - 1) == r / 2.
@@ -98,7 +98,7 @@ uint64_t GFp_bn_neg_inv_mod_r_u64(uint64_t n) {
 
   // The invariant now shows that u*r - v*n == 1 since r == 2 * alpha.
 #if BN_BITS2 == 64 && defined(BN_ULLONG)
-  dev_assert_secret(1 == ((BN_ULLONG)u * 2 * alpha) - ((BN_ULLONG)v * beta));
+  declassify_assert(1 == ((BN_ULLONG)u * 2 * alpha) - ((BN_ULLONG)v * beta));
 #endif
 
   return v;

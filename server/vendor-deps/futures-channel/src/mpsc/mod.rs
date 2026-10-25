@@ -78,9 +78,11 @@
 // happens-before semantics required for the acquire / release semantics used
 // by the queue structure.
 
+use core::future::Future;
 use futures_core::stream::{FusedStream, Stream};
 use futures_core::task::__internal::AtomicWaker;
 use futures_core::task::{Context, Poll, Waker};
+use futures_core::FusedFuture;
 use std::fmt;
 use std::pin::Pin;
 use std::sync::atomic::AtomicUsize;
@@ -119,27 +121,28 @@ impl<T> Unpin for BoundedSenderInner<T> {}
 
 /// The transmission end of a bounded mpsc channel.
 ///
-/// This value is created by the [`channel`](channel) function.
+/// This value is created by the [`channel`] function.
 pub struct Sender<T>(Option<BoundedSenderInner<T>>);
 
 /// The transmission end of an unbounded mpsc channel.
 ///
-/// This value is created by the [`unbounded`](unbounded) function.
+/// This value is created by the [`unbounded`] function.
 pub struct UnboundedSender<T>(Option<UnboundedSenderInner<T>>);
 
+#[allow(dead_code)]
 trait AssertKinds: Send + Sync + Clone {}
 impl AssertKinds for UnboundedSender<u32> {}
 
 /// The receiving end of a bounded mpsc channel.
 ///
-/// This value is created by the [`channel`](channel) function.
+/// This value is created by the [`channel`] function.
 pub struct Receiver<T> {
     inner: Option<Arc<BoundedInner<T>>>,
 }
 
 /// The receiving end of an unbounded mpsc channel.
 ///
-/// This value is created by the [`unbounded`](unbounded) function.
+/// This value is created by the [`unbounded`] function.
 pub struct UnboundedReceiver<T> {
     inner: Option<Arc<UnboundedInner<T>>>,
 }
@@ -166,9 +169,26 @@ enum SendErrorKind {
     Disconnected,
 }
 
-/// The error type returned from [`try_next`](Receiver::try_next).
-pub struct TryRecvError {
-    _priv: (),
+/// Error returned by [`Receiver::try_recv`] or [`UnboundedReceiver::try_recv`].
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
+pub enum TryRecvError {
+    /// The channel is empty but not closed.
+    Empty,
+
+    /// The channel is empty and closed.
+    Closed,
+}
+
+/// Error returned by the future returned by [`Receiver::recv()`] or [`UnboundedReceiver::recv()`].
+/// Received when the channel is empty and closed.
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
+pub struct RecvError;
+
+/// Future returned by [`Receiver::recv()`] or [`UnboundedReceiver::recv()`].
+#[derive(Debug)]
+#[must_use = "futures do nothing unless you `.await` or poll them"]
+pub struct Recv<'a, St: ?Sized> {
+    stream: &'a mut St,
 }
 
 impl fmt::Display for SendError {
@@ -182,6 +202,14 @@ impl fmt::Display for SendError {
 }
 
 impl std::error::Error for SendError {}
+
+impl fmt::Display for RecvError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "receive failed because channel is empty and closed")
+    }
+}
+
+impl std::error::Error for RecvError {}
 
 impl SendError {
     /// Returns `true` if this error is a result of the channel being full.
@@ -198,6 +226,18 @@ impl SendError {
             SendErrorKind::Disconnected => true,
             _ => false,
         }
+    }
+}
+
+impl TryRecvError {
+    /// Returns `true` if the channel is empty but not closed.
+    pub fn is_empty(&self) -> bool {
+        matches!(self, TryRecvError::Empty)
+    }
+
+    /// Returns `true` if the channel is empty and closed.
+    pub fn is_closed(&self) -> bool {
+        matches!(self, TryRecvError::Closed)
     }
 }
 
@@ -241,15 +281,12 @@ impl<T> TrySendError<T> {
     }
 }
 
-impl fmt::Debug for TryRecvError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_tuple("TryRecvError").finish()
-    }
-}
-
 impl fmt::Display for TryRecvError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "receiver channel is empty")
+        match self {
+            TryRecvError::Empty => write!(f, "receive failed because channel is empty"),
+            TryRecvError::Closed => write!(f, "receive failed because channel is closed"),
+        }
     }
 }
 
@@ -302,13 +339,13 @@ struct State {
 }
 
 // The `is_open` flag is stored in the left-most bit of `Inner::state`
-const OPEN_MASK: usize = usize::max_value() - (usize::max_value() >> 1);
+const OPEN_MASK: usize = usize::MAX - (usize::MAX >> 1);
 
 // When a new channel is created, it is created in the open state with no
 // pending messages.
 const INIT_STATE: usize = OPEN_MASK;
 
-// The maximum number of messages that a channel can track is `usize::max_value() >> 1`
+// The maximum number of messages that a channel can track is `usize::MAX >> 1`
 const MAX_CAPACITY: usize = !(OPEN_MASK);
 
 // The maximum requested buffer size must be less than the maximum capacity of
@@ -343,9 +380,8 @@ impl SenderTask {
 /// guaranteed slot in the channel capacity, and on top of that there are
 /// `buffer` "first come, first serve" slots available to all senders.
 ///
-/// The [`Receiver`](Receiver) returned implements the
-/// [`Stream`](futures_core::stream::Stream) trait, while [`Sender`](Sender) implements
-/// `Sink`.
+/// The [`Receiver`] returned implements the [`Stream`] trait, while [`Sender`]
+/// implements `Sink`.
 pub fn channel<T>(buffer: usize) -> (Sender<T>, Receiver<T>) {
     // Check that the requested buffer size does not exceed the maximum buffer
     // size permitted by the system.
@@ -842,6 +878,20 @@ impl<T> UnboundedSender<T> {
         let ptr = self.0.as_ref().map(|inner| inner.ptr());
         ptr.hash(hasher);
     }
+
+    /// Return the number of messages in the queue or 0 if channel is disconnected.
+    pub fn len(&self) -> usize {
+        if let Some(sender) = &self.0 {
+            decode_state(sender.inner.state.load(SeqCst)).num_messages
+        } else {
+            0
+        }
+    }
+
+    /// Return false is channel has no queued messages, true otherwise.
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
 impl<T> Clone for Sender<T> {
@@ -957,6 +1007,12 @@ impl<T> fmt::Debug for UnboundedSender<T> {
  */
 
 impl<T> Receiver<T> {
+    /// Waits for a message from the channel.
+    /// If the channel is empty and closed, returns [`RecvError`].
+    pub fn recv(&mut self) -> Recv<'_, Self> {
+        Recv::new(self)
+    }
+
     /// Closes the receiving half of a channel, without dropping it.
     ///
     /// This prevents any further messages from being sent on the channel while
@@ -983,10 +1039,21 @@ impl<T> Receiver<T> {
     /// * `Ok(Some(t))` when message is fetched
     /// * `Ok(None)` when channel is closed and no messages left in the queue
     /// * `Err(e)` when there are no messages available, but channel is not yet closed
+    #[deprecated(note = "please use `try_recv` instead")]
     pub fn try_next(&mut self) -> Result<Option<T>, TryRecvError> {
         match self.next_message() {
             Poll::Ready(msg) => Ok(msg),
-            Poll::Pending => Err(TryRecvError { _priv: () }),
+            Poll::Pending => Err(TryRecvError::Empty),
+        }
+    }
+
+    /// Tries to receive a message from the channel without blocking.
+    /// If the channel is empty, or empty and closed, this method returns an error.
+    pub fn try_recv(&mut self) -> Result<T, TryRecvError> {
+        match self.next_message() {
+            Poll::Ready(Some(msg)) => Ok(msg),
+            Poll::Ready(None) => Err(TryRecvError::Closed),
+            Poll::Pending => Err(TryRecvError::Empty),
         }
     }
 
@@ -1088,6 +1155,31 @@ impl<T> Stream for Receiver<T> {
     }
 }
 
+impl<St: ?Sized + Unpin> Unpin for Recv<'_, St> {}
+impl<'a, St: ?Sized + Stream + Unpin> Recv<'a, St> {
+    fn new(stream: &'a mut St) -> Self {
+        Self { stream }
+    }
+}
+
+impl<St: ?Sized + FusedStream + Unpin> FusedFuture for Recv<'_, St> {
+    fn is_terminated(&self) -> bool {
+        self.stream.is_terminated()
+    }
+}
+
+impl<St: ?Sized + Stream + Unpin> Future for Recv<'_, St> {
+    type Output = Result<St::Item, RecvError>;
+
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        match Pin::new(&mut self.stream).poll_next(cx) {
+            Poll::Ready(Some(msg)) => Poll::Ready(Ok(msg)),
+            Poll::Ready(None) => Poll::Ready(Err(RecvError)),
+            Poll::Pending => Poll::Pending,
+        }
+    }
+}
+
 impl<T> Drop for Receiver<T> {
     fn drop(&mut self) {
         // Drain the channel of all pending messages
@@ -1131,6 +1223,12 @@ impl<T> fmt::Debug for Receiver<T> {
 }
 
 impl<T> UnboundedReceiver<T> {
+    /// Waits for a message from the channel.
+    /// If the channel is empty and closed, returns [`RecvError`].
+    pub fn recv(&mut self) -> Recv<'_, Self> {
+        Recv::new(self)
+    }
+
     /// Closes the receiving half of a channel, without dropping it.
     ///
     /// This prevents any further messages from being sent on the channel while
@@ -1151,10 +1249,21 @@ impl<T> UnboundedReceiver<T> {
     /// * `Ok(Some(t))` when message is fetched
     /// * `Ok(None)` when channel is closed and no messages left in the queue
     /// * `Err(e)` when there are no messages available, but channel is not yet closed
+    #[deprecated(note = "please use `try_recv` instead")]
     pub fn try_next(&mut self) -> Result<Option<T>, TryRecvError> {
         match self.next_message() {
             Poll::Ready(msg) => Ok(msg),
-            Poll::Pending => Err(TryRecvError { _priv: () }),
+            Poll::Pending => Err(TryRecvError::Empty),
+        }
+    }
+
+    /// Tries to receive a message from the channel without blocking.
+    /// If the channel is empty, or empty and closed, this method returns an error.
+    pub fn try_recv(&mut self) -> Result<T, TryRecvError> {
+        match self.next_message() {
+            Poll::Ready(Some(msg)) => Ok(msg),
+            Poll::Ready(None) => Err(TryRecvError::Closed),
+            Poll::Pending => Err(TryRecvError::Empty),
         }
     }
 

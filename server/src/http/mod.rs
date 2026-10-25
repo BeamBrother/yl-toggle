@@ -2,16 +2,17 @@ mod handler;
 
 use axum::{
     extract::{Extension, Query},
-    handler::Handler,
-    headers::HeaderName,
     http::StatusCode,
     response::{Html, IntoResponse, Response},
     routing::{get, post},
-    Json, Router, TypedHeader,
+    Json, Router,
 };
+use axum_extra::TypedHeader;
+use headers::HeaderName;
 use reqwest::header;
 
 use crate::{events_buffer::EventsStats, YTServerError};
+#[allow(unused_imports)]
 pub use handler::{FpHttpHandler, HttpHandler, LocalFileHttpHandlerForTest};
 use serde::Deserialize;
 use serde_json::json;
@@ -43,7 +44,7 @@ where
         .route("/internal/events/stats", get(events_stats::<T>))
         .route("/internal/update_toggles", post(update_toggles::<T>))
         .layer(Extension(handler))
-        .fallback(handler_404.into_service());
+        .fallback(handler_404);
 
     #[cfg(feature = "unstable")]
     let app = app
@@ -51,10 +52,8 @@ where
         .route("/intelnal/server/check_secrets", post(check_secrets::<T>));
 
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 }
 
 async fn client_cors() -> Response {
@@ -69,7 +68,7 @@ async fn client_sdk_toggles<T>(
 where
     T: HttpHandler + Clone + Send + Sync + 'static,
 {
-    handler.client_sdk_toggles(params, sdk_key).await
+    handler.client_sdk_toggles(params.0, sdk_key.0 .0).await
 }
 
 async fn client_sdk_events<T>(
@@ -79,7 +78,7 @@ async fn client_sdk_events<T>(
 where
     T: HttpHandler + Clone + Send + Sync + 'static,
 {
-    handler.client_sdk_events(sdk_key).await
+    handler.client_sdk_events(sdk_key.0 .0).await
 }
 
 async fn server_sdk_toggles<T>(
@@ -89,39 +88,39 @@ async fn server_sdk_toggles<T>(
 where
     T: HttpHandler + Clone + Send + Sync + 'static,
 {
-    handler.server_sdk_toggles(sdk_key).await
+    handler.server_sdk_toggles(sdk_key.0 .0).await
 }
 
 async fn update_toggles<T>(
-    params: Json<ToggleUpdateParams>,
     Extension(handler): Extension<T>,
+    params: Json<ToggleUpdateParams>,
 ) -> Result<Response, YTServerError>
 where
     T: HttpHandler + Clone + Send + Sync + 'static,
 {
-    handler.update_toggles(params).await
+    handler.update_toggles(params.0).await
 }
 
 #[cfg(feature = "unstable")]
 async fn update_segments<T>(
-    params: Json<SegmentUpdateParams>,
     Extension(handler): Extension<T>,
+    params: Json<SegmentUpdateParams>,
 ) -> Result<Response, YTServerError>
 where
     T: HttpHandler + Clone + Send + Sync + 'static,
 {
-    handler.update_segments(params).await
+    handler.update_segments(params.0).await
 }
 
 #[cfg(feature = "unstable")]
 async fn check_secrets<T>(
-    params: Json<SecretsParams>,
     Extension(handler): Extension<T>,
+    params: Json<SecretsParams>,
 ) -> Result<Json<HashMap<String, String>>, YTServerError>
 where
     T: HttpHandler + Clone + Send + Sync + 'static,
 {
-    handler.check_secrets(params).await
+    handler.check_secrets(params.0).await
 }
 
 async fn events_stats<T>(
@@ -211,6 +210,7 @@ mod tests {
     #[cfg(feature = "realtime")]
     use crate::realtime::RealtimeSocket;
     use crate::{base::ServerConfig, repo::SdkRepository};
+    use base64::{engine::general_purpose::STANDARD, Engine as _};
     use reqwest::header::CONTENT_TYPE;
     use reqwest::{header::AUTHORIZATION, Client, Error, Method, Url};
     use serde_json::Value;
@@ -330,7 +330,7 @@ mod tests {
 
         let user = YTUser::new().with("city", "1");
         let user_json = serde_json::to_string(&user).unwrap();
-        let user_base64 = base64::encode(&user_json);
+        let user_base64 = STANDARD.encode(&user_json);
         let resp = http_get(
             format!(
                 "http://127.0.0.1:{}/api/client-sdk/toggles?user={}",

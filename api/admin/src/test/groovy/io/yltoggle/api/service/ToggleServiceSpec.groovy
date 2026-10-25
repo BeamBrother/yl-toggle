@@ -44,7 +44,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import spock.lang.Specification
 import spock.lang.Title
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 @Title("Toggle Unit Test")
 class ToggleServiceSpec extends Specification {

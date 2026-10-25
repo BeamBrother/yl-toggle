@@ -1,8 +1,11 @@
-use http::{HeaderMap, Method};
-use js_sys::{Promise, JSON};
+use http::header::USER_AGENT;
+use http::{HeaderMap, HeaderValue, Method};
+use js_sys::Promise;
+use std::convert::TryInto;
 use std::{fmt, future::Future, sync::Arc};
 use url::Url;
 use wasm_bindgen::prelude::{wasm_bindgen, UnwrapThrowExt as _};
+use wasm_bindgen::JsCast;
 
 use super::{AbortGuard, Request, RequestBuilder, Response};
 use crate::IntoUrl;
@@ -28,24 +31,30 @@ fn js_fetch(req: &web_sys::Request) -> Promise {
     }
 }
 
-/// dox
+/// An HTTP Client for WebAssembly.
+///
+/// Uses the browser's Fetch API to make requests. The `Client` holds
+/// configuration that applies to all requests. To configure a `Client`,
+/// use `Client::builder()`.
 #[derive(Clone)]
 pub struct Client {
     config: Arc<Config>,
 }
 
-/// dox
+/// A `ClientBuilder` can be used to create a `Client` with custom configuration.
 pub struct ClientBuilder {
     config: Config,
 }
 
 impl Client {
-    /// dox
+    /// Constructs a new `Client`.
     pub fn new() -> Self {
         Client::builder().build().unwrap_throw()
     }
 
-    /// dox
+    /// Creates a `ClientBuilder` to configure a `Client`.
+    ///
+    /// This is the same as `ClientBuilder::new()`.
     pub fn builder() -> ClientBuilder {
         ClientBuilder::new()
     }
@@ -180,10 +189,35 @@ impl fmt::Debug for ClientBuilder {
     }
 }
 
+// Can use new methods in web-sys when requiring v0.2.93.
+// > `init.method(m)` to `init.set_method(m)`
+// For now, ignore their deprecation.
+#[allow(deprecated)]
 async fn fetch(req: Request) -> crate::Result<Response> {
     // Build the js Request
     let mut init = web_sys::RequestInit::new();
     init.method(req.method().as_str());
+
+    if let Some(referrer) = &req.referrer {
+        init.set_referrer(referrer);
+    }
+
+    if let Some(policy) = &req.referrer_policy {
+        let policy = match policy.as_str() {
+            "no-referrer" => web_sys::ReferrerPolicy::NoReferrer,
+            "no-referrer-when-downgrade" => web_sys::ReferrerPolicy::NoReferrerWhenDowngrade,
+            "origin" => web_sys::ReferrerPolicy::Origin,
+            "origin-when-cross-origin" => web_sys::ReferrerPolicy::OriginWhenCrossOrigin,
+            "same-origin" => web_sys::ReferrerPolicy::SameOrigin,
+            "strict-origin" => web_sys::ReferrerPolicy::StrictOrigin,
+            "strict-origin-when-cross-origin" => {
+                web_sys::ReferrerPolicy::StrictOriginWhenCrossOrigin
+            }
+            "unsafe-url" => web_sys::ReferrerPolicy::UnsafeUrl,
+            _ => web_sys::ReferrerPolicy::None,
+        };
+        init.set_referrer_policy(policy);
+    }
 
     // convert HeaderMap to Headers
     let js_headers = web_sys::Headers::new()
@@ -210,13 +244,20 @@ async fn fetch(req: Request) -> crate::Result<Response> {
         init.credentials(creds);
     }
 
+    if let Some(cache) = req.cache {
+        init.set_cache(cache);
+    }
+
     if let Some(body) = req.body() {
         if !body.is_empty() {
             init.body(Some(body.to_js_value()?.as_ref()));
         }
     }
 
-    let abort = AbortGuard::new()?;
+    let mut abort = AbortGuard::new()?;
+    if let Some(timeout) = req.timeout() {
+        abort.timeout(*timeout);
+    }
     init.signal(Some(&abort.signal()));
 
     let js_req = web_sys::Request::new_with_str_and_init(req.url().as_str(), &init)
@@ -227,6 +268,13 @@ async fn fetch(req: Request) -> crate::Result<Response> {
     let p = js_fetch(&js_req);
     let js_resp = super::promise::<web_sys::Response>(p)
         .await
+        .map_err(|error| {
+            if error.to_string() == "JsValue(\"reqwest::errors::TimedOut\")" {
+                crate::error::TimedOut.into()
+            } else {
+                error
+            }
+        })
         .map_err(crate::error::request)?;
 
     // Convert from the js Response
@@ -235,17 +283,20 @@ async fn fetch(req: Request) -> crate::Result<Response> {
     let url = Url::parse(&js_resp.url()).expect_throw("url parse");
 
     let js_headers = js_resp.headers();
-    let js_iter = js_sys::try_iter(&js_headers)
-        .expect_throw("headers try_iter")
-        .expect_throw("headers have an iterator");
-
-    for item in js_iter {
+    for item in js_headers.entries() {
         let item = item.expect_throw("headers iterator doesn't throw");
-        let serialized_headers: String = JSON::stringify(&item)
-            .expect_throw("serialized headers")
-            .into();
-        let [name, value]: [String; 2] = serde_json::from_str(&serialized_headers)
-            .expect_throw("deserializable serialized headers");
+        let item: js_sys::Array = item.dyn_into().expect_throw("header item is an array");
+
+        let name = item
+            .get(0)
+            .as_string()
+            .expect_throw("header name is a string");
+
+        let value = item
+            .get(1)
+            .as_string()
+            .expect_throw("header value is a string");
+
         resp = resp.header(&name, &value);
     }
 
@@ -257,7 +308,9 @@ async fn fetch(req: Request) -> crate::Result<Response> {
 // ===== impl ClientBuilder =====
 
 impl ClientBuilder {
-    /// dox
+    /// Constructs a new `ClientBuilder`.
+    ///
+    /// This is the same as `Client::builder()`.
     pub fn new() -> Self {
         ClientBuilder {
             config: Config::default(),
@@ -266,10 +319,31 @@ impl ClientBuilder {
 
     /// Returns a 'Client' that uses this ClientBuilder configuration
     pub fn build(mut self) -> Result<Client, crate::Error> {
+        if let Some(err) = self.config.error {
+            return Err(err);
+        }
+
         let config = std::mem::take(&mut self.config);
         Ok(Client {
             config: Arc::new(config),
         })
+    }
+
+    /// Sets the `User-Agent` header to be used by this client.
+    pub fn user_agent<V>(mut self, value: V) -> ClientBuilder
+    where
+        V: TryInto<HeaderValue>,
+        V::Error: Into<http::Error>,
+    {
+        match value.try_into() {
+            Ok(value) => {
+                self.config.headers.insert(USER_AGENT, value);
+            }
+            Err(e) => {
+                self.config.error = Some(crate::error::builder(e.into()));
+            }
+        }
+        self
     }
 
     /// Sets the default headers for every request
@@ -287,15 +361,17 @@ impl Default for ClientBuilder {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 struct Config {
     headers: HeaderMap,
+    error: Option<crate::Error>,
 }
 
 impl Default for Config {
     fn default() -> Config {
         Config {
             headers: HeaderMap::new(),
+            error: None,
         }
     }
 }
@@ -374,6 +450,49 @@ mod tests {
             headers2.get(CONTENT_TYPE).unwrap(),
             "application/json",
             "request headers don't change client defaults"
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn user_agent_header() {
+        use crate::header::USER_AGENT;
+
+        let client = crate::Client::builder()
+            .user_agent("FooBar/1.2.3")
+            .build()
+            .expect("client");
+
+        let mut req = client
+            .get("https://www.example.com")
+            .build()
+            .expect("request");
+
+        // Merge the client headers with the request's one.
+        client.merge_headers(&mut req);
+        let headers1 = req.headers();
+
+        // Confirm that we have the `User-Agent` header set
+        assert_eq!(
+            headers1.get(USER_AGENT).unwrap(),
+            "FooBar/1.2.3",
+            "The user-agent header was not set: {req:#?}"
+        );
+
+        // Now we try to overwrite the `User-Agent` value
+
+        let mut req2 = client
+            .get("https://www.example.com")
+            .header(USER_AGENT, "Another-User-Agent/42")
+            .build()
+            .expect("request 2");
+
+        client.merge_headers(&mut req2);
+        let headers2 = req2.headers();
+
+        assert_eq!(
+            headers2.get(USER_AGENT).expect("headers2 user agent"),
+            "Another-User-Agent/42",
+            "Was not able to overwrite the User-Agent value on the request-builder"
         );
     }
 }

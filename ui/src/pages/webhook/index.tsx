@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, Dimmer, Form, InputOnChangeData, Loader, PaginationProps, Table } from 'semantic-ui-react';
 import Icon from 'components/Icon';
@@ -42,7 +42,7 @@ const WebHook = () => {
     setDrawerVisible(true);
   }, []);
 
-  const handlePageChange = useCallback((e, data: PaginationProps) => {
+  const handlePageChange = useCallback((e: SyntheticEvent, data: PaginationProps) => {
     setPagination((pagination) => {
       pagination.pageIndex = typeof data.activePage == 'number' ? data.activePage - 1 : 0;
       return cloneDeep(pagination);

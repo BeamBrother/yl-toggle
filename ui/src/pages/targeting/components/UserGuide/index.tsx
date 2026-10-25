@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import Joyride, { CallBackProps, EVENTS, ACTIONS, Step } from 'react-joyride';
+import { Joyride, EventData, EVENTS, ACTIONS, Step } from 'react-joyride';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { commonConfig, floaterStyle, tourStyle } from 'constants/tourConfig';
+import { commonConfig, tourStyle } from 'constants/tourConfig';
 import { getFromDictionary, saveDictionary } from 'services/dictionary';
 import { USER_GUIDE_LAYOUT, USER_GUIDE_TARGETING } from 'constants/dictionaryKeys';
 import { IDictionary } from 'interfaces/targeting';
@@ -80,7 +80,7 @@ const UserGuide = () => {
     });
   }, []);
 
-  const handleJoyrideCallback = useCallback((data: CallBackProps) => {
+  const handleJoyrideCallback = useCallback((data: EventData) => {
     const { action, index, type } = data;
 
     if (([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND] as string[]).includes(type)) {
@@ -93,22 +93,15 @@ const UserGuide = () => {
   return (
     <Joyride
       run={run}
-      callback={handleJoyrideCallback}
+      onEvent={handleJoyrideCallback}
       stepIndex={stepIndex}
-      continuous
-      hideCloseButton
       scrollToFirstStep
-      showProgress={false}
-      showSkipButton
-      scrollOffset={100}
-      disableCloseOnEsc={true}
       steps={STEPS}
       locale={{
         back: intl.formatMessage({ id: 'guide.last' }),
         next: intl.formatMessage({ id: 'guide.next' }),
         last: intl.formatMessage({ id: 'guide.done' }),
       }}
-      floaterProps={{ ...floaterStyle }}
       styles={{ ...tourStyle }}
     />
   );

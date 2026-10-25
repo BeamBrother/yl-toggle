@@ -10,6 +10,7 @@ interface IPagination {
 }
 
 interface IProps {
+  children?: import('react').ReactNode;
   text?: string;
   total?: number;
   hideTotal?: boolean;
@@ -32,9 +33,9 @@ const CustomPagination = (props: IProps) => {
       }
       {
         pagination.totalPages > 1 && (
-          <Pagination 
-            activePage={pagination.pageIndex} 
-            totalPages={pagination.totalPages} 
+          <Pagination
+            activePage={pagination.pageIndex}
+            totalPages={pagination.totalPages}
             onPageChange={handlePageChange}
             firstItem={null}
             lastItem={null}

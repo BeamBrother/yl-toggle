@@ -36,6 +36,11 @@ impl<RW: AsyncRead + AsyncWrite> BufStream<RW> {
     /// capacity.
     ///
     /// See the documentation for those types and [`BufStream`] for details.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `reader_capacity` is zero.
+    #[track_caller]
     pub fn with_capacity(
         reader_capacity: usize,
         writer_capacity: usize,
@@ -192,7 +197,7 @@ impl<RW: AsyncRead + AsyncWrite> AsyncBufRead for BufStream<RW> {
     }
 
     fn consume(self: Pin<&mut Self>, amt: usize) {
-        self.project().inner.consume(amt)
+        self.project().inner.consume(amt);
     }
 }
 

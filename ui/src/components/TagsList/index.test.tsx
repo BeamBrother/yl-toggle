@@ -1,19 +1,18 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import TagsList from '.';
 import sleep from 'utils/sleep';
 
-it('TagsList snapshot', (done) => {
-  (async () => {
+it('TagsList snapshot', async () => {
+  await (async () => {
     const { asFragment } = render(<TagsList tags={['test1', 'test2']} />);
     expect(asFragment()).toMatchSnapshot();
-    done();
   })();
 });
 
-it('click TagsList more', (done) => {
-    (async () => {
+it('click TagsList more', async () => {
+    await (async () => {
       const { baseElement } = render(<TagsList tags={['test1', 'test2']} showCount={1} />);
       expect(baseElement).toMatchSnapshot();
 
@@ -21,6 +20,5 @@ it('click TagsList more', (done) => {
       await sleep(1000);
 
       expect(baseElement).toMatchSnapshot();
-      done();
     })();
   });

@@ -5,6 +5,7 @@ import { UseFormRegister, FieldValues, FieldErrors } from 'react-hook-form';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   errors: FieldErrors;
   register: UseFormRegister<FieldValues>;
   onChange(e: SyntheticEvent, detail: InputOnChangeData): void;
@@ -15,7 +16,7 @@ const FormItemPassword = (props: IProps) => {
   const { errors, register, onChange } = props;
 
   useEffect(() => {
-    register('password', { 
+    register('password', {
       required: intl.formatMessage({id: 'login.password.required'}),
       minLength: {
         value: 4,
@@ -44,12 +45,12 @@ const FormItemPassword = (props: IProps) => {
           name='password'
           className={styles.input}
           type='password'
-          placeholder={intl.formatMessage({id: 'login.password.required'})} 
+          placeholder={intl.formatMessage({id: 'login.password.required'})}
           error={ errors.password ? true : false }
           onChange={onChange}
         />
       </Form.Field>
-      { errors.password && <div className={styles['error-text']}>{ errors.password.message }</div> }
+      { errors.password && <div className={styles['error-text']}>{String(errors.password?.message ?? '')}</div> }
       <div className={styles['tip-text']}>
         <FormattedMessage id='login.password.tips' />
       </div>

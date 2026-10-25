@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useParams } from 'react-router-dom';
 import ProjectLayout from 'layout/projectLayout';
 import Loading from 'components/Loading';
 import SelectSDK from './components/SelectSDK';
@@ -15,6 +14,7 @@ import { IDictionary, IToggleInfo } from 'interfaces/targeting';
 import { IProject, IEnvironment, IRouterParams } from 'interfaces/project';
 
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IStep {
   [x: string]: {
@@ -73,7 +73,7 @@ const AccessToggle = () => {
     const key = PREFIX + projectKey + '_' + environmentKey + '_' + toggleKey;
 
     Promise.all([
-      getFromDictionary<IDictionary>(key), 
+      getFromDictionary<IDictionary>(key),
       getToggleAttributes<string[]>(projectKey, environmentKey, toggleKey),
     ]).then(res => {
       saveIsStepLoading(false);
@@ -100,12 +100,12 @@ const AccessToggle = () => {
     });
 
     Promise.all([
-      getProjectInfo<IProject>(projectKey), 
-      getEnvironment<IEnvironment>(projectKey, environmentKey), 
+      getProjectInfo<IProject>(projectKey),
+      getEnvironment<IEnvironment>(projectKey, environmentKey),
       getToggleInfo<IToggleInfo>(projectKey, environmentKey, toggleKey)
     ]).then(res => {
       saveIsInfoLoading(false);
-      
+
       if (res[0].success && res[0].data) {
         saveProjectName(res[0].data.name);
       }

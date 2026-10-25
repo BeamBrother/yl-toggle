@@ -42,12 +42,13 @@ impl EventRecorder {
     pub fn flush(&self) {
         #[cfg(feature = "use_std")]
         self.inner.do_flush();
-        #[cfg(fature = "use_tokio")]
+        #[cfg(feature = "use_tokio")]
         {
             let (tx, rx) = std::sync::mpsc::sync_channel(1);
+            let inner = self.inner.clone();
             tokio::spawn(async move {
                 let client = reqwest::Client::new();
-                self.inner.do_async_flush(&client).await;
+                inner.do_async_flush(&client).await;
                 let _ = tx.send(());
             });
             let _ = rx.recv();
@@ -285,3 +286,5 @@ pub fn unix_timestamp() -> u128 {
         .expect("Time went backwards!")
         .as_millis()
 }
+
+

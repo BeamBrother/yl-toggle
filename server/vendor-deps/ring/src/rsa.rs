@@ -4,9 +4,9 @@
 // purpose with or without fee is hereby granted, provided that the above
 // copyright notice and this permission notice appear in all copies.
 //
-// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHORS DISCLAIM ALL WARRANTIES
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
 // WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
 // SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
 // OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
@@ -17,27 +17,22 @@
 // naming conventions. Also the standard camelCase names are used for `KeyPair`
 // components.
 
-/// RSA signatures.
+//! RSA.
+
 use crate::{
     arithmetic::bigint,
     bits, error,
     io::{self, der},
-    limb,
 };
 
-mod padding;
-
-// `RSA_PKCS1_SHA1` is intentionally not exposed.
-pub use self::padding::{
-    RsaEncoding, RSA_PKCS1_SHA256, RSA_PKCS1_SHA384, RSA_PKCS1_SHA512, RSA_PSS_SHA256,
-    RSA_PSS_SHA384, RSA_PSS_SHA512,
-};
+pub(crate) mod padding;
 
 // Maximum RSA modulus size supported for signature verification (in bytes).
-const PUBLIC_KEY_PUBLIC_MODULUS_MAX_LEN: usize = bigint::MODULUS_MAX_LIMBS * limb::LIMB_BYTES;
+const PUBLIC_KEY_PUBLIC_MODULUS_MAX_LEN: usize =
+    bits::BitLength::from_bits(8192).as_usize_bytes_rounded_up();
 
 // Keep in sync with the documentation comment for `KeyPair`.
-const PRIVATE_KEY_PUBLIC_MODULUS_MAX_BITS: bits::BitLength = bits::BitLength::from_usize_bits(4096);
+const PRIVATE_KEY_PUBLIC_MODULUS_MAX_BITS: bits::BitLength = bits::BitLength::from_bits(4096);
 
 /// Parameters for RSA verification.
 #[derive(Debug)]
@@ -60,11 +55,22 @@ fn parse_public_key(
 
 // Type-level representation of an RSA public modulus *n*. See
 // `super::bigint`'s modulue-level documentation.
-#[derive(Copy, Clone)]
-pub enum N {}
+enum N {}
 
-unsafe impl bigint::PublicModulus for N {}
+impl bigint::PublicModulus for N {}
 
-pub mod verification;
+mod keypair;
+mod keypair_components;
+mod public_exponent;
+mod public_key;
+mod public_key_components;
+mod public_modulus;
 
-pub mod signing;
+pub(crate) mod verification;
+
+use self::{public_exponent::PublicExponent, public_modulus::PublicModulus};
+
+pub use self::{
+    keypair::KeyPair, keypair_components::KeyPairComponents, public_key::PublicKey,
+    public_key_components::PublicKeyComponents,
+};

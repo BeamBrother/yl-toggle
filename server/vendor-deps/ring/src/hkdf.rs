@@ -4,9 +4,9 @@
 // purpose with or without fee is hereby granted, provided that the above
 // copyright notice and this permission notice appear in all copies.
 //
-// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHORS DISCLAIM ALL WARRANTIES
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
 // WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
 // SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
 // OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
@@ -47,7 +47,7 @@ pub static HKDF_SHA512: Algorithm = Algorithm(hmac::HMAC_SHA512);
 
 impl KeyType for Algorithm {
     fn len(&self) -> usize {
-        self.0.digest_algorithm().output_len
+        self.0.digest_algorithm().output_len()
     }
 }
 
@@ -62,7 +62,7 @@ impl Salt {
     /// Constructing a `Salt` is relatively expensive so it is good to reuse a
     /// `Salt` object instead of re-constructing `Salt`s with the same value.
     pub fn new(algorithm: Algorithm, value: &[u8]) -> Self {
-        Salt(hmac::Key::new(algorithm.0, value))
+        Self(hmac::Key::new(algorithm.0, value))
     }
 
     /// The [HKDF-Extract] operation.
@@ -130,7 +130,7 @@ impl Prk {
         len: L,
     ) -> Result<Okm<'a, L>, error::Unspecified> {
         let len_cached = len.len();
-        if len_cached > 255 * self.0.algorithm().digest_algorithm().output_len {
+        if len_cached > 255 * self.0.algorithm().digest_algorithm().output_len() {
             return Err(error::Unspecified);
         }
         Ok(Okm {
@@ -196,7 +196,7 @@ fn fill_okm(
     }
 
     let digest_alg = prk.0.algorithm().digest_algorithm();
-    assert!(digest_alg.block_len >= digest_alg.output_len);
+    assert!(digest_alg.block_len() >= digest_alg.output_len());
 
     let mut ctx = hmac::Context::with_key(&prk.0);
 
@@ -212,12 +212,12 @@ fn fill_okm(
         let t = t.as_ref();
 
         // Append `t` to the output.
-        out = if out.len() < digest_alg.output_len {
+        out = if out.len() < digest_alg.output_len() {
             let len = out.len();
             out.copy_from_slice(&t[..len]);
             &mut []
         } else {
-            let (this_chunk, rest) = out.split_at_mut(digest_alg.output_len);
+            let (this_chunk, rest) = out.split_at_mut(digest_alg.output_len());
             this_chunk.copy_from_slice(t);
             rest
         };

@@ -14,14 +14,14 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -35,9 +35,9 @@ import java.util.Date;
 @ToString(callSuper = true)
 @DynamicInsert
 @EntityListeners(TenantEntityListener.class)
-@FilterDef(name = "tenantFilter", parameters = {@ParamDef(name = "organizationId", type = "long")})
+@FilterDef(name = "tenantFilter", parameters = {@ParamDef(name = "organizationId", type = Long.class)})
 @Filter(name = "tenantFilter", condition = "organization_id = :organizationId")
-@FilterDef(name = "deletedFilter", parameters = {@ParamDef(name = "deleted", type = "boolean")})
+@FilterDef(name = "deletedFilter", parameters = {@ParamDef(name = "deleted", type = Boolean.class)})
 @Filter(name = "deletedFilter", condition = "deleted = :deleted")
 public class AccessToken extends AbstractAuditEntity implements TenantSupport, Serializable {
 

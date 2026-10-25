@@ -11,14 +11,14 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,11 +30,11 @@ import java.util.Set;
 @Table(name = "toggle")
 @DynamicInsert
 @EntityListeners(TenantEntityListener.class)
-@FilterDef(name = "tenantFilter", parameters = {@ParamDef(name = "organizationId", type = "long")})
+@FilterDef(name = "tenantFilter", parameters = {@ParamDef(name = "organizationId", type = Long.class)})
 @Filter(name = "tenantFilter", condition = "organization_id = :organizationId")
-@FilterDef(name = "deletedFilter", parameters = {@ParamDef(name = "deleted", type = "boolean")})
+@FilterDef(name = "deletedFilter", parameters = {@ParamDef(name = "deleted", type = Boolean.class)})
 @Filter(name = "deletedFilter", condition = "deleted = :deleted")
-@FilterDef(name = "archivedFilter", parameters = {@ParamDef(name = "archived", type = "boolean")})
+@FilterDef(name = "archivedFilter", parameters = {@ParamDef(name = "archived", type = Boolean.class)})
 @Filter(name = "archivedFilter", condition = "archived = :archived")
 public class Toggle extends AbstractAuditEntity implements TenantSupport {
 

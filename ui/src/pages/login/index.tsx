@@ -1,8 +1,9 @@
+import asset_play_png from 'images/play.png';
 import { useCallback, SyntheticEvent, useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Form, InputOnChangeData, Modal } from 'semantic-ui-react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useForm } from 'react-hook-form';
+import { FieldValues, useForm } from 'react-hook-form';
 import Button from 'components/Button';
 import Icon from 'components/Icon';
 import message from 'components/MessageBox';
@@ -20,7 +21,7 @@ const Login = () => {
   const [ left, saveLeft ] = useState<number>((document.body.clientWidth - 655) / 2);
   const [ videoOpen, setVideoOpen ] = useState<boolean>(false);
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const intl = useIntl();
   const location = useLocation();
 
@@ -49,7 +50,7 @@ const Login = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    register('account', { 
+    register('account', {
       required: {
         value: true,
         message: intl.formatMessage({id: 'login.account.required'})
@@ -60,7 +61,7 @@ const Login = () => {
       },
     });
 
-    register('password', { 
+    register('password', {
       required: {
         value: true,
         message: intl.formatMessage({id: 'login.password.required'})
@@ -82,13 +83,14 @@ const Login = () => {
 
   const gotoHome = useCallback(async () => {
     const redirectUrl = await getRedirectUrl('/notfound');
-    history.push(redirectUrl);
-  }, [history]);
+    navigate(redirectUrl);
+  }, [navigate]);
 
-  const onSubmit = useCallback(async (params) => {
+  const onSubmit = useCallback(async (params: FieldValues) => {
     const res = await login<IUserInfo>({
       source: 'platform',
-      ...params
+      account: String(params.account),
+      password: String(params.password)
     });
     const { success, data } = res;
     if (success && data) {
@@ -96,7 +98,7 @@ const Login = () => {
       localStorage.setItem('organizeId', String(data.organizeId));
       localStorage.setItem('account', String(data.account));
       gotoHome();
-    } 
+    }
     else if (res.code === FORBIDDEN) {
       message.error(intl.formatMessage({id: 'login.error.text'}));
     }
@@ -125,7 +127,7 @@ const Login = () => {
           <div className={styles['player']} style={{left: left}}>
             <EventTracker category='login' action='play-video'>
               <div className={styles['player-box']}>
-                <img src={require('images/play.png')} alt='play' className={styles['player-image']} />
+                <img src={asset_play_png} alt='play' className={styles['player-image']} />
               </div>
             </EventTracker>
           </div>
@@ -136,9 +138,9 @@ const Login = () => {
             width={'100%'}
             height={'100%'}
             title='yl-toggle'
-            src="//player.bilibili.com/player.html?bvid=BV1GG4y1R7oH&page=1" 
-            scrolling="no" 
-            frameBorder="no" 
+            src="//player.bilibili.com/player.html?bvid=BV1GG4y1R7oH&page=1"
+            scrolling="no"
+            frameBorder="no"
             allowFullScreen={true}
           />
         </div>
@@ -148,9 +150,9 @@ const Login = () => {
           <img className={styles.logo} src={logo} alt='logo' />
         </div>
         <div className={styles.form}>
-          <Form 
+          <Form
             autoComplete='off'
-            onSubmit={handleSubmit(onSubmit)} 
+            onSubmit={handleSubmit(onSubmit)}
           >
             <Form.Field className={styles.field}>
               <label className={styles.label}>
@@ -168,7 +170,7 @@ const Login = () => {
                   await trigger('account');
                 }}
               />
-              { errors.account && <div className={styles['error-text']}>{ errors.account.message }</div> }
+              { errors.account && <div className={styles['error-text']}>{String(errors.account?.message ?? '')}</div> }
             </Form.Field>
 
             <Form.Field className={styles.field}>
@@ -188,7 +190,7 @@ const Login = () => {
                   await trigger('password');
                 }}
               />
-              { errors.password && <div className={styles['error-text']}>{ errors.password.message }</div> }
+              { errors.password && <div className={styles['error-text']}>{String(errors.password?.message ?? '')}</div> }
               <div className={styles['tip-text']}>
                 <FormattedMessage id='login.password.tips' />
               </div>

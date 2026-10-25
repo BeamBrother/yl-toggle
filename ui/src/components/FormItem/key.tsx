@@ -6,6 +6,7 @@ import Icon from 'components/Icon';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   value: string;
   disabled: boolean;
   errors: FieldErrors;
@@ -22,7 +23,7 @@ const FormItemKey = (props: IProps) => {
   const { value, errors, disabled, showPopup, popupText, size, className, register, onChange } = props;
 
   useEffect(() => {
-    register('key', { 
+    register('key', {
       required: intl.formatMessage({id: 'common.key.required'}),
       minLength: {
         value: 2,
@@ -71,7 +72,7 @@ const FormItemKey = (props: IProps) => {
           onChange={onChange}
         />
       </Form.Field>
-      { errors.key && <div className={styles['error-text']}>{ errors.key.message }</div> }
+      { errors.key && <div className={styles['error-text']}>{String(errors.key?.message ?? '')}</div> }
       <div className={styles['tip-text']}>
         <FormattedMessage id='common.key.tips' />
       </div>

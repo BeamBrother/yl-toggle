@@ -13,6 +13,7 @@ interface IAttr {
   [key: string]: string;
 }
 interface IProps {
+  children?: import('react').ReactNode;
   index?: number;
   id?: string;
   disabled?: boolean;
@@ -63,11 +64,11 @@ const Serve = (props: IProps) => {
 
   useEffect(() => {
     if (id) {
-      register(`rule_${id}_serve`, { 
+      register(`rule_${id}_serve`, {
         required: true,
       });
     } else {
-      register('defaultServe', { 
+      register('defaultServe', {
         required: true,
       });
     }
@@ -238,7 +239,7 @@ const Serve = (props: IProps) => {
             error={ errors[id ? `rule_${id}_serve`: 'defaultServe'] ? true : false }
             name={id ? `rule_${id}_serve`: 'defaultServe'}
             // {
-            //   ...register(id ? `rule_${id}_serve`: 'defaultServe', { 
+            //   ...register(id ? `rule_${id}_serve`: 'defaultServe', {
             //     required: true,
             //   })
             // }
@@ -261,9 +262,9 @@ const Serve = (props: IProps) => {
               {
                 variationsInUse.map((item: IVariation, index: number) => {
                   return (
-                    <span 
+                    <span
                       key={item.value + '_' + index}
-                      style={{width: item.percentage, background: VariationColors[index % 20]}} 
+                      style={{width: item.percentage, background: VariationColors[index % 20]}}
                       className={styles['percentage-item']}
                     />
                   );
@@ -289,7 +290,7 @@ const Serve = (props: IProps) => {
                 variationsInUse?.map((item: IVariation, index: number) => {
                   return (
                     <div key={item.id} className={styles['variation-item']}>
-                      <Input 
+                      <Input
                         size='mini'
                         className={styles['variation-item-input']}
                         value={item.inputValue ?? ''}

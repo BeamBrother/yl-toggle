@@ -34,8 +34,8 @@ import org.springframework.data.domain.Pageable
 import spock.lang.Specification
 import spock.lang.Title
 
-import javax.persistence.EntityManager
-import javax.persistence.OptimisticLockException
+import jakarta.persistence.EntityManager
+import jakarta.persistence.OptimisticLockException
 
 @Title("Segment Unit Test")
 class SegmentServiceSpec extends Specification {
@@ -284,4 +284,3 @@ class SegmentServiceSpec extends Specification {
     }
 
 }
-

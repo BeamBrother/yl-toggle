@@ -9,6 +9,7 @@ import { deleteToken } from 'services/tokens';
 import message from 'components/MessageBox';
 import styles from './index.module.scss';
 interface IProps {
+  children?: import('react').ReactNode;
   token: ITokenListItem;
   refresh?: () => unknown;
 }

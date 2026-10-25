@@ -16,7 +16,7 @@ const CopyToClipboardPopup = (props: IProps) => {
   const [ isCopySuccess, setSuccess ] = useState<boolean>(false);
   const [ open, setOpen ] = useState<boolean>(false);
 
-  const timer = useRef<NodeJS.Timeout>();
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const handleCopy = () => {
     clearTimeout(timer.current);
@@ -42,7 +42,7 @@ const CopyToClipboardPopup = (props: IProps) => {
   };
 
   return (
-    <Popup 
+    <Popup
       open={open}
       position='top center'
       onUnmount={handelUnmount}
@@ -60,16 +60,16 @@ const CopyToClipboardPopup = (props: IProps) => {
       }
       trigger={
         <span onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <CopyToClipboard 
+          <CopyToClipboard
             text={text}
             onCopy={handleCopy}
           >
             { children }
           </CopyToClipboard>
         </span>
-      } 
+      }
     />
   );
 };
-  
+
 export default CopyToClipboardPopup;

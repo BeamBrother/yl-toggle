@@ -1,32 +1,27 @@
-import React, { ReactElement, SyntheticEvent } from 'react';
+import React, { ReactElement, ReactNode, SyntheticEvent } from 'react';
 import { EventTrack } from 'utils/track';
+
+interface ChildProps {
+  onClick?: (event: SyntheticEvent) => void;
+  children?: ReactNode;
+}
 
 interface IProps {
   category: string;
   action: string;
-  children: ReactElement;
+  children: ReactElement<ChildProps>;
 }
 
 const EventTracker = (props: IProps) => {
   const { category, action, children } = props;
-  const onClick = (e: SyntheticEvent) => {
-    EventTrack.track(category, action);
+  const child = React.Children.only(children) as ReactElement<ChildProps>;
 
-    if (typeof children.props.onClick === 'function') {
-      children.props.onClick(e);
-    }
+  const onClick = (event: SyntheticEvent) => {
+    EventTrack.track(category, action);
+    child.props.onClick?.(event);
   };
 
-  const onlychildren = React.Children.only(children);
-  
-  return React.cloneElement(
-    onlychildren,
-    {
-      ...props,
-      onClick: onClick,
-    },
-    children.props.children
-  );
+  return React.cloneElement<ChildProps>(child, { ...child.props, onClick }, child.props.children);
 };
 
 export default EventTracker;

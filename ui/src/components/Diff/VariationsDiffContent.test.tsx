@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import VariationsDiffContent from './VariationsDiffContent';
 import { IntlWrapper } from 'components/utils/wrapper';
 import idiff from './diff';
@@ -58,8 +58,8 @@ const content_b = idiff(
   ]
 );
 
-it('DiffVariations snapshot', (done) => {
-  (async () => {
+it('DiffVariations snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(<VariationsDiffContent content={content_a} />, {
       wrapper: IntlWrapper,
     });
@@ -67,7 +67,5 @@ it('DiffVariations snapshot', (done) => {
 
     rerender(<VariationsDiffContent content={content_b} />);
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });

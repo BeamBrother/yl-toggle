@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Key snapshot 1`] = `
 <DocumentFragment>
@@ -29,7 +29,9 @@ exports[`Key snapshot 2`] = `
     <div
       class="error-text"
       style="color: pink;"
-    />
+    >
+      error message
+    </div>
   </div>
 </DocumentFragment>
 `;

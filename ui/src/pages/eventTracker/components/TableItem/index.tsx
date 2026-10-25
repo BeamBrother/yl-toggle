@@ -9,6 +9,7 @@ import { IEvent } from 'interfaces/eventTracker';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   type: string;
   event: IEvent;
 }
@@ -45,8 +46,8 @@ const TableItem = (props: IProps) => {
       <Table.Cell>
         <div className={styles['event-time']}>
           {
-            event.kind === 'summary' 
-              ? dayjs(event.startDate).format('YYYY-MM-DD HH:mm:ss') 
+            event.kind === 'summary'
+              ? dayjs(event.startDate).format('YYYY-MM-DD HH:mm:ss')
               : dayjs(event.time).format('YYYY-MM-DD HH:mm:ss')
           }
         </div>
@@ -61,9 +62,9 @@ const TableItem = (props: IProps) => {
               {
                 intl.locale === 'zh-CN' ? (
                   <>
-                    <FormattedMessage id='event.tracker.evaluated.user' /> 
+                    <FormattedMessage id='event.tracker.evaluated.user' />
                     <span className={styles['toggle-user']}>{event.user}</span>
-                    <FormattedMessage id='event.tracker.evaluated.left' /> 
+                    <FormattedMessage id='event.tracker.evaluated.left' />
                     {
                       event.key && (
                         <CopyToClipboardPopup text={event.key}>
@@ -77,11 +78,11 @@ const TableItem = (props: IProps) => {
                   </>
                 ) : (
                   <>
-                    <FormattedMessage id='event.tracker.evaluated.user' /> 
+                    <FormattedMessage id='event.tracker.evaluated.user' />
                     <span className={styles['toggle-user']}>{event.user}</span>
-                    <FormattedMessage id='event.tracker.evaluated.left' /> 
+                    <FormattedMessage id='event.tracker.evaluated.left' />
                     <span className={styles['toggle-value']}>{event.value}</span>
-                    <FormattedMessage id='event.tracker.evaluated.middle' /> 
+                    <FormattedMessage id='event.tracker.evaluated.middle' />
                     {
                       event.key && (
                         <CopyToClipboardPopup text={event.key}>
@@ -101,7 +102,7 @@ const TableItem = (props: IProps) => {
               {
                 intl.locale === 'zh-CN' ? (
                   <>
-                    <FormattedMessage id='event.tracker.evaluated.left' /> 
+                    <FormattedMessage id='event.tracker.evaluated.left' />
                     {
                       event.toggleKey && (
                         <CopyToClipboardPopup text={event.toggleKey}>
@@ -117,9 +118,9 @@ const TableItem = (props: IProps) => {
                   </>
                 ) : (
                   <>
-                    <FormattedMessage id='event.tracker.evaluated' /> 
+                    <FormattedMessage id='event.tracker.evaluated' />
                     <span className={styles['toggle-value']}>{event.value}</span>
-                    <FormattedMessage id='event.tracker.evaluated.middle' /> 
+                    <FormattedMessage id='event.tracker.evaluated.middle' />
                     {
                       event.toggleKey && (
                         <CopyToClipboardPopup text={event.toggleKey}>
@@ -141,9 +142,9 @@ const TableItem = (props: IProps) => {
               {
                 intl.locale === 'zh-CN' ? (
                   <>
-                    <FormattedMessage id='event.tracker.evaluated.user' /> 
+                    <FormattedMessage id='event.tracker.evaluated.user' />
                     <span className={styles['toggle-user']}>{event.userKey}</span>
-                    <FormattedMessage id='event.tracker.evaluated.left' /> 
+                    <FormattedMessage id='event.tracker.evaluated.left' />
                     {
                       event.toggleKey && (
                         <CopyToClipboardPopup text={event.toggleKey}>
@@ -151,17 +152,17 @@ const TableItem = (props: IProps) => {
                         </CopyToClipboardPopup>
                       )
                     }
-                    <FormattedMessage id='event.tracker.evaluated.middle' /> 
+                    <FormattedMessage id='event.tracker.evaluated.middle' />
                     <span className={styles['toggle-value']}>{event.value}</span>
                     <FormattedMessage id='event.tracker.evaluated.right' />
                   </>
                 ) : (
                   <>
-                    <FormattedMessage id='event.tracker.evaluated.user' /> 
+                    <FormattedMessage id='event.tracker.evaluated.user' />
                     <span className={styles['toggle-user']}>{event.userKey}</span>
-                    <FormattedMessage id='event.tracker.evaluated.left' /> 
+                    <FormattedMessage id='event.tracker.evaluated.left' />
                     <span className={styles['toggle-value']}>{event.value}</span>
-                    <FormattedMessage id='event.tracker.evaluated.middle' /> 
+                    <FormattedMessage id='event.tracker.evaluated.middle' />
                     {
                       event.toggleKey && (
                         <CopyToClipboardPopup text={event.toggleKey}>
@@ -181,14 +182,14 @@ const TableItem = (props: IProps) => {
               {
                 intl.locale === 'zh-CN' ? (
                   <>
-                    <FormattedMessage id='event.tracker.tracked' /> 
+                    <FormattedMessage id='event.tracker.tracked' />
                     <span className={styles['toggle-user']}>{event.user}</span>
                     <FormattedMessage id='event.tracker.of' />
                     <FormattedMessage id='analysis.event.pageview' />
                   </>
                 ) : (
                   <>
-                    <FormattedMessage id='event.tracker.tracked' /> 
+                    <FormattedMessage id='event.tracker.tracked' />
                     <FormattedMessage id='getstarted.track.pageview' />
                     <FormattedMessage id='event.tracker.tracked.middle' />
                     <span className={styles['toggle-user']}>{event.user}</span>
@@ -204,21 +205,21 @@ const TableItem = (props: IProps) => {
               {
                 intl.locale === 'zh-CN' ? (
                   <>
-                    <FormattedMessage id='event.tracker.tracked' /> 
+                    <FormattedMessage id='event.tracker.tracked' />
                     <span className={styles['toggle-user']}>{event.user}</span>
                     <FormattedMessage id='event.tracker.of' />
                     <FormattedMessage id='analysis.event.click' />
                   </>
                 ) : (
                   <>
-                    <FormattedMessage id='event.tracker.tracked' /> 
+                    <FormattedMessage id='event.tracker.tracked' />
                     <FormattedMessage id='getstarted.track.click' />
                     <FormattedMessage id='event.tracker.tracked.middle' />
                     <span className={styles['toggle-user']}>{event.user}</span>
                   </>
                 )
               }
-              
+
             </div>
           )
         }
@@ -271,7 +272,7 @@ const TableItem = (props: IProps) => {
                   </>
                 )
               }
-              
+
             </div>
           )
         }
@@ -304,13 +305,13 @@ const TableItem = (props: IProps) => {
             {
               event.sdkType && (
                 <div className={styles['modal-description']}>
-                  <FormattedMessage id='event.tracker.source' /> 
+                  <FormattedMessage id='event.tracker.source' />
                   {event.sdkType}
                 </div>
               )
             }
             <div className={styles['modal-content']}>
-              <JsonEditor 
+              <JsonEditor
                 value={JSON.stringify(event, null, 2)}
                 disabled={true}
               />

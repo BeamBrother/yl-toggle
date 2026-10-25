@@ -9,3 +9,10 @@ ui/build
 docs
 pictures
 *.log
+.tools
+analysis/target
+api/*/target
+docs/.docusaurus
+docs/build
+docs/node_modules
+server/yl-toggle-server-linux

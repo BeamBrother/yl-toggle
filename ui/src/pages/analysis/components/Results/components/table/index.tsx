@@ -5,13 +5,14 @@ import { IEvent, ITableData } from 'interfaces/analysis';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   data?: ITableData[];
   eventInfo?: IEvent;
 }
 
 const ResultTable = (props: IProps) => {
   const { data, eventInfo } = props;
-  
+
   return (
     <div>
       <Table basic="very" unstackable>
@@ -57,7 +58,7 @@ const ResultTable = (props: IProps) => {
                   </Table.Cell>
                   <Table.Cell>
                     [
-                      {item.credibleInterval?.lower}, 
+                      {item.credibleInterval?.lower},
                       {item.credibleInterval?.upper}
                     ]
                   </Table.Cell>
@@ -65,7 +66,7 @@ const ResultTable = (props: IProps) => {
                     { item.mean }
                     { eventInfo?.unit && <span>
                         ({ eventInfo?.unit })
-                      </span> 
+                      </span>
                     }
                   </Table.Cell>
                 </Table.Row>

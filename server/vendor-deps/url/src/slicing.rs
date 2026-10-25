@@ -6,8 +6,9 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use core::ops::{Index, Range, RangeFrom, RangeFull, RangeTo};
+
 use crate::Url;
-use std::ops::{Index, Range, RangeFrom, RangeFull, RangeTo};
 
 impl Index<RangeFull> for Url {
     type Output = str;
@@ -93,7 +94,7 @@ fn test_count_digits() {
 ///
 /// The end of a component and the start of the next are either the same or separate
 /// by a delimiter.
-/// (Not that the initial `/` of a path is considered part of the path here, not a delimiter.)
+/// (Note that the initial `/` of a path is considered part of the path here, not a delimiter.)
 /// For example, `&url[..BeforeFragment]` would include a `#` delimiter (if present in `url`),
 /// so `&url[..AfterQuery]` might be desired instead.
 ///

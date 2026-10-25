@@ -46,10 +46,10 @@ features = ["sink"]
 default-features = false
 
 [dependencies.headers]
-version = "0.3"
+version = "0.4"
 
 [dependencies.http]
-version = "0.2"
+version = "1"
 
 [dependencies.lazy_static]
 version = "1.4"
@@ -58,7 +58,7 @@ version = "1.4"
 version = "0.1"
 
 [dependencies.parking_lot]
-version = "0.12"
+version = "0.13"
 features = ["serde"]
 
 [dependencies.rand]
@@ -68,10 +68,11 @@ version = "0.8"
 version = "1.7.3"
 
 [dependencies.reqwest]
-version = "0.11"
+version = "0.13"
 features = [
-    "rustls-tls",
+    "rustls",
     "json",
+    "query",
 ]
 default-features = false
 
@@ -95,7 +96,7 @@ optional = true
 default-features = false
 
 [dependencies.thiserror]
-version = "1.0"
+version = "2.0"
 
 [dependencies.tokio]
 version = "1"
@@ -143,3 +144,8 @@ version = "0.3"
 default = ["realtime"]
 internal = []
 realtime = ["socketio-rs"]
+
+
+
+
+

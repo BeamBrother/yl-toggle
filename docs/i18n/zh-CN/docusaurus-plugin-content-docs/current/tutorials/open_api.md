@@ -13,7 +13,7 @@ sidebar_position: 6
 
 ## 创建 Access Token
 
-所有 REST API 资源访问使用 Access Token 进行身份验证，不支持其他身份验证机制。 
+所有 REST API 资源访问使用 Access Token 进行身份验证，不支持其他身份验证机制。
 
 1、登录我们提供的yl-toggle[演示平台](https://yl-toggle.io)，如果是第一次登录，请输入邮箱。后续可以继续使用你的邮箱访问到属于你的数据。
 
@@ -35,13 +35,13 @@ yl-toggle  默认会创建一个 My_Project 的项目以及在该项目下一个
 我们将演示在该项目下创建一个New Feature的开关
 
 :::tip
-将下面命令中的 ${API_ACCESS_TOKEN}替换为上面保存的TOKEN
+将下面命令中的 $API_ACCESS_TOKEN替换为上面保存的TOKEN
 :::
 
 ```bash
 curl -i 'https://yl-toggle.io/api/projects/My_Project/toggles' \
   -X 'POST' \
-  -H 'Authorization: ${API_ACCESS_TOKEN}' \
+  -H 'Authorization: $API_ACCESS_TOKEN' \
   -H 'Content-Type: application/json' \
   --data-raw '{
       "name": "New Feature",
@@ -73,13 +73,13 @@ curl -i 'https://yl-toggle.io/api/projects/My_Project/toggles' \
 默认创建开关会在环境下初始化一个没有任何规则的禁用开关，下面我们通过REST API来打开这个开关。
 
 :::tip
-将下面命令中的 ${API_ACCESS_TOKEN}替换为上面保存的TOKEN
+将下面命令中的 $API_ACCESS_TOKEN替换为上面保存的TOKEN
 :::
 
 ```bash
 curl -i 'https://yl-toggle.io/api/projects/My_Project/environments/online/toggles/new_feature/targeting' \
   -X 'PATCH' \
-  -H 'Authorization: ${API_ACCESS_TOKEN}' \
+  -H 'Authorization: $API_ACCESS_TOKEN' \
   -H 'Content-Type: application/json' \
   --data-raw '{
 	"comment": "打开开关",

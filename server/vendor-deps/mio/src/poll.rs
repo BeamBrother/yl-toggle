@@ -1,8 +1,29 @@
-use crate::{event, sys, Events, Interest, Token};
-#[cfg(unix)]
-use std::os::unix::io::{AsRawFd, RawFd};
+#[cfg(all(
+    unix,
+    not(mio_unsupported_force_poll_poll),
+    not(any(
+        target_os = "aix",
+        target_os = "espidf",
+        target_os = "nuttx",
+        target_os = "fuchsia",
+        target_os = "haiku",
+        target_os = "hermit",
+        target_os = "hurd",
+        target_os = "nto",
+        target_os = "vita",
+        target_os = "cygwin",
+        target_os = "horizon"
+    )),
+))]
+use std::os::fd::{AsFd, AsRawFd, BorrowedFd, RawFd};
+#[cfg(all(debug_assertions, not(any(target_os = "wasi", target_os = "horizon"))))]
+use std::sync::atomic::{AtomicBool, Ordering};
+#[cfg(all(debug_assertions, not(any(target_os = "wasi", target_os = "horizon"))))]
+use std::sync::Arc;
 use std::time::Duration;
 use std::{fmt, io};
+
+use crate::{event, sys, Events, Interest, Token};
 
 /// Polls for readiness events on all registered values.
 ///
@@ -52,7 +73,7 @@ use std::{fmt, io};
 /// // Register the stream with `Poll`
 /// poll.registry().register(&mut stream, Token(0), Interest::READABLE | Interest::WRITABLE)?;
 ///
-/// // Wait for the socket to become ready. This has to happens in a loop to
+/// // Wait for the socket to become ready. This has to happen in a loop to
 /// // handle spurious wakeups.
 /// loop {
 ///     poll.poll(&mut events, None)?;
@@ -222,6 +243,7 @@ use std::{fmt, io};
 /// | Linux         | [epoll]   |
 /// | NetBSD        | [kqueue]  |
 /// | OpenBSD       | [kqueue]  |
+/// | Solaris       | [event ports] |
 /// | Windows       | [IOCP]    |
 /// | macOS         | [kqueue]  |
 ///
@@ -240,6 +262,7 @@ use std::{fmt, io};
 /// kernel.
 ///
 /// [epoll]: https://man7.org/linux/man-pages/man7/epoll.7.html
+/// [event ports]: https://docs.oracle.com/cd/E88353_01/html/E37843/port-create-3c.html
 /// [kqueue]: https://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
 /// [IOCP]: https://docs.microsoft.com/en-us/windows/win32/fileio/i-o-completion-ports
 /// [`signalfd`]: https://man7.org/linux/man-pages/man2/signalfd.2.html
@@ -252,6 +275,9 @@ pub struct Poll {
 /// Registers I/O resources.
 pub struct Registry {
     selector: sys::Selector,
+    /// Whether this selector currently has an associated waker.
+    #[cfg(all(debug_assertions, not(any(target_os = "wasi", target_os = "horizon"))))]
+    has_waker: Arc<AtomicBool>,
 }
 
 impl Poll {
@@ -263,11 +289,7 @@ impl Poll {
         /// with the error.
         ///
         /// close-on-exec flag is set on the file descriptors used by the selector to prevent
-        /// leaking it to executed processes. However, on some systems such as
-        /// old Linux systems that don't support `epoll_create1` syscall it is done
-        /// non-atomically, so a separate thread executing in parallel to this
-        /// function may accidentally leak the file descriptor if it executes a
-        /// new process before this function returns.
+        /// leaking it to executed processes.
         ///
         /// See [struct] level docs for more details.
         ///
@@ -298,12 +320,16 @@ impl Poll {
         /// ```
         pub fn new() -> io::Result<Poll> {
             sys::Selector::new().map(|selector| Poll {
-                registry: Registry { selector },
+                registry: Registry {
+                    selector,
+                    #[cfg(all(debug_assertions, not(any(target_os = "wasi", target_os = "horizon"))))]
+                    has_waker: Arc::new(AtomicBool::new(false)),
+                },
             })
         }
     }
 
-    /// Create a separate `Registry` which can be used to register
+    /// Returns a `Registry` which can be used to register
     /// `event::Source`s.
     pub fn registry(&self) -> &Registry {
         &self.registry
@@ -331,7 +357,8 @@ impl Poll {
     ///
     /// Note that the `timeout` will be rounded up to the system clock
     /// granularity (usually 1ms), and kernel scheduling delays mean that
-    /// the blocking interval may be overrun by a small amount.
+    /// the blocking interval may be overrun by a small amount. A timeout
+    /// of [`Duration::ZERO`] is not affected by this rounding.
     ///
     /// See the [struct] level documentation for a higher level discussion of
     /// polling.
@@ -360,6 +387,8 @@ impl Poll {
     #[cfg_attr(not(all(feature = "os-poll", feature = "net")), doc = "```ignore")]
     /// # use std::error::Error;
     /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// # // WASI does not yet support multithreading:
+    /// # if cfg!(target_os = "wasi") { return Ok(()) }
     /// use mio::{Events, Poll, Interest, Token};
     /// use mio::net::TcpStream;
     ///
@@ -389,7 +418,7 @@ impl Poll {
     ///     Token(0),
     ///     Interest::READABLE | Interest::WRITABLE)?;
     ///
-    /// // Wait for the socket to become ready. This has to happens in a loop to
+    /// // Wait for the socket to become ready. This has to happen in a loop to
     /// // handle spurious wakeups.
     /// loop {
     ///     poll.poll(&mut events, None)?;
@@ -411,7 +440,23 @@ impl Poll {
     }
 }
 
-#[cfg(unix)]
+#[cfg(all(
+    unix,
+    not(mio_unsupported_force_poll_poll),
+    not(any(
+        target_os = "aix",
+        target_os = "espidf",
+        target_os = "nuttx",
+        target_os = "fuchsia",
+        target_os = "haiku",
+        target_os = "hermit",
+        target_os = "hurd",
+        target_os = "nto",
+        target_os = "vita",
+        target_os = "cygwin",
+        target_os = "horizon"
+    )),
+))]
 impl AsRawFd for Poll {
     fn as_raw_fd(&self) -> RawFd {
         self.registry.as_raw_fd()
@@ -668,23 +713,26 @@ impl Registry {
     /// Event sources registered with this `Registry` will be registered with
     /// the original `Registry` and `Poll` instance.
     pub fn try_clone(&self) -> io::Result<Registry> {
-        self.selector
-            .try_clone()
-            .map(|selector| Registry { selector })
+        self.selector.try_clone().map(|selector| Registry {
+            selector,
+            #[cfg(all(debug_assertions, not(any(target_os = "wasi", target_os = "horizon"))))]
+            has_waker: Arc::clone(&self.has_waker),
+        })
     }
 
     /// Internal check to ensure only a single `Waker` is active per [`Poll`]
     /// instance.
-    #[cfg(all(debug_assertions, not(target_os = "wasi")))]
+    #[cfg(all(debug_assertions, not(any(target_os = "wasi", target_os = "horizon"))))]
     pub(crate) fn register_waker(&self) {
         assert!(
-            !self.selector.register_waker(),
+            !self.has_waker.swap(true, Ordering::AcqRel),
             "Only a single `Waker` can be active per `Poll` instance"
         );
     }
 
     /// Get access to the `sys::Selector`.
     #[cfg(any(not(target_os = "wasi"), feature = "net"))]
+    #[cfg_attr(target_os = "horizon", allow(dead_code))]
     pub(crate) fn selector(&self) -> &sys::Selector {
         &self.selector
     }
@@ -696,7 +744,46 @@ impl fmt::Debug for Registry {
     }
 }
 
-#[cfg(unix)]
+#[cfg(all(
+    unix,
+    not(mio_unsupported_force_poll_poll),
+    not(any(
+        target_os = "aix",
+        target_os = "espidf",
+        target_os = "nuttx",
+        target_os = "haiku",
+        target_os = "fuchsia",
+        target_os = "hermit",
+        target_os = "hurd",
+        target_os = "nto",
+        target_os = "vita",
+        target_os = "cygwin",
+        target_os = "horizon"
+    )),
+))]
+impl AsFd for Registry {
+    fn as_fd(&self) -> BorrowedFd<'_> {
+        self.selector.as_fd()
+    }
+}
+
+#[cfg(all(
+    unix,
+    not(mio_unsupported_force_poll_poll),
+    not(any(
+        target_os = "aix",
+        target_os = "espidf",
+        target_os = "nuttx",
+        target_os = "haiku",
+        target_os = "fuchsia",
+        target_os = "hermit",
+        target_os = "hurd",
+        target_os = "nto",
+        target_os = "vita",
+        target_os = "cygwin",
+        target_os = "horizon"
+    )),
+))]
 impl AsRawFd for Registry {
     fn as_raw_fd(&self) -> RawFd {
         self.selector.as_raw_fd()
@@ -704,7 +791,21 @@ impl AsRawFd for Registry {
 }
 
 cfg_os_poll! {
-    #[cfg(unix)]
+    #[cfg(all(
+        unix,
+        not(mio_unsupported_force_poll_poll),
+        not(any(
+            target_os = "aix",
+            target_os = "espidf",
+            target_os = "nuttx",
+            target_os = "hermit",
+            target_os = "hurd",
+            target_os = "nto",
+            target_os = "vita",
+            target_os = "cygwin",
+            target_os = "horizon"
+        )),
+    ))]
     #[test]
     pub fn as_raw_fd() {
         let poll = Poll::new().unwrap();

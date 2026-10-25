@@ -1,22 +1,44 @@
 use std::fmt;
 
+use http::HeaderValue;
+
+use crate::Error;
+
 /// Reads a comma-delimited raw header into a Vec.
-pub(crate) fn from_comma_delimited<'i, I, T, E>(values: &mut I) -> Result<E, ::Error>
+pub(crate) fn from_comma_delimited<'i, I, T, E>(values: &mut I) -> Result<E, Error>
 where
-    I: Iterator<Item = &'i ::HeaderValue>,
+    I: Iterator<Item = &'i HeaderValue>,
     T: ::std::str::FromStr,
     E: ::std::iter::FromIterator<T>,
 {
     values
         .flat_map(|value| {
             value.to_str().into_iter().flat_map(|string| {
+                let mut in_quotes = false;
                 string
-                    .split(',')
+                    .split(move |c| {
+                        #[allow(clippy::collapsible_else_if)]
+                        if in_quotes {
+                            if c == '"' {
+                                in_quotes = false;
+                            }
+                            false // dont split
+                        } else {
+                            if c == ',' {
+                                true // split
+                            } else {
+                                if c == '"' {
+                                    in_quotes = true;
+                                }
+                                false // dont split
+                            }
+                        }
+                    })
                     .filter_map(|x| match x.trim() {
                         "" => None,
                         y => Some(y),
                     })
-                    .map(|x| x.parse().map_err(|_| ::Error::invalid()))
+                    .map(|x| x.parse().map_err(|_| Error::invalid()))
             })
         })
         .collect()

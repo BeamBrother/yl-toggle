@@ -12,7 +12,7 @@ import {
   PaginationProps,
 } from 'semantic-ui-react';
 import { useForm } from 'react-hook-form';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Icon from 'components/Icon';
 import Modal from 'components/Modal';
 import Diff from 'components/Diff';
@@ -38,8 +38,10 @@ import {
 
 import styles from './index.module.scss';
 import ToggleList from './ToggleList';
+import { useParams } from 'utils/useParams';
 
 interface IProps {
+  children?: import('react').ReactNode;
   open: boolean;
   approvalInfo?: IApprovalInfo;
   trackEvents: boolean;
@@ -88,7 +90,7 @@ const PublishModal = (props: IProps) => {
   });
   const [ toggles, saveToggles ] = useState<IPrerequisiteToggle[]>([]);
   const intl = useIntl();
-  const history = useHistory();
+  const navigate = useNavigate();
   const {
     formState,
     trigger,
@@ -110,7 +112,7 @@ const PublishModal = (props: IProps) => {
           });
           saveTotal(totalElements || 0);
           return;
-        } 
+        }
       });
     }
   }, [environmentKey, open, projectKey, searchParams, toggleKey]);
@@ -229,8 +231,8 @@ const PublishModal = (props: IProps) => {
   }, []);
 
   const handleGotoSetting = useCallback(() => {
-    history.push(`/${projectKey}/${environmentKey}/settings`);
-  }, [history, projectKey, environmentKey]);
+    navigate(`/${projectKey}/${environmentKey}/settings`);
+  }, [navigate, projectKey, environmentKey]);
 
   const preDiffServe = useCallback((serve?: IServe, variations?: IVariation[]) => {
     if (!serve || !variations) {
@@ -252,22 +254,22 @@ const PublishModal = (props: IProps) => {
   }, []);
 
   const beforeServeDiff = useCallback(
-    (before, after) => {
+    (before: unknown, after: unknown) => {
       const left = before;
       const right = after;
 
       return [
-        preDiffServe(left, initialTargeting?.content.variations),
-        preDiffServe(right, publishTargeting?.content.variations),
+        preDiffServe(left as IServe, initialTargeting?.content.variations),
+        preDiffServe(right as IServe, publishTargeting?.content.variations),
       ];
     },
     [preDiffServe, initialTargeting?.content.variations, publishTargeting?.content.variations]
   );
 
   const beforeRuleDiff = useCallback(
-    (before, after) => {
-      const left = I18NRules(before, intl);
-      const right = I18NRules(after, intl);
+    (before: unknown, after: unknown) => {
+      const left = I18NRules(before as IRule[], intl);
+      const right = I18NRules(after as IRule[], intl);
       return [
         left.map((item: IRule) => {
           return {
@@ -382,7 +384,7 @@ const PublishModal = (props: IProps) => {
                 {
                   isToggleShow && (
                     <div className={styles['prerequisite-toggles']}>
-                      <ToggleList 
+                      <ToggleList
                         total={total}
                         pagination={pagination}
                         toggleList={toggles}
@@ -491,7 +493,7 @@ const PublishModal = (props: IProps) => {
                   </div>
                 </div>
               )}
-              
+
               {
                 !approvalInfo?.enableApproval && allowEnableTrackEvents && (
                   <div className={styles.collect}>

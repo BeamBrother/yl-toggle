@@ -8,7 +8,7 @@ use std::marker::PhantomPinned;
 use std::mem;
 use std::pin::Pin;
 use std::string::FromUtf8Error;
-use std::task::{Context, Poll};
+use std::task::{ready, Context, Poll};
 
 pin_project! {
     /// Future for the [`read_line`](crate::io::AsyncBufReadExt::read_line) method.
@@ -51,7 +51,7 @@ fn put_back_original_data(output: &mut String, mut vector: Vec<u8>, num_bytes_re
 
 /// This handles the various failure cases and puts the string back into `output`.
 ///
-/// The `truncate_on_io_error` bool is necessary because `read_to_string` and `read_line`
+/// The `truncate_on_io_error` `bool` is necessary because `read_to_string` and `read_line`
 /// disagree on what should happen when an IO error occurs.
 pub(super) fn finish_string_read(
     io_res: io::Result<usize>,
@@ -76,12 +76,10 @@ pub(super) fn finish_string_read(
         }
         (Ok(num_bytes), Err(utf8_err)) => {
             debug_assert_eq!(read, 0);
+            let utf8_error = utf8_err.utf8_error();
             put_back_original_data(output, utf8_err.into_bytes(), num_bytes);
 
-            Poll::Ready(Err(io::Error::new(
-                io::ErrorKind::InvalidData,
-                "stream did not contain valid UTF-8",
-            )))
+            Poll::Ready(Err(io::Error::new(io::ErrorKind::InvalidData, utf8_error)))
         }
         (Err(io_err), Err(utf8_err)) => {
             put_back_original_data(output, utf8_err.into_bytes(), read);
@@ -91,7 +89,7 @@ pub(super) fn finish_string_read(
     }
 }
 
-pub(super) fn read_line_internal<R: AsyncBufRead + ?Sized>(
+fn read_line_internal<R: AsyncBufRead + ?Sized>(
     reader: Pin<&mut R>,
     cx: &mut Context<'_>,
     output: &mut String,

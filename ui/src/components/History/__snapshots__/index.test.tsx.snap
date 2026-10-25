@@ -1,43 +1,43 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`History render segment data 1`] = `
 <DocumentFragment>
   <div
-    class="history"
+    class="_history_1e7fa9"
   >
     <div
-      class="history-title"
+      class="_history-title_1e7fa9"
     >
       <span>
         History
       </span>
     </div>
     <div
-      class="lists"
+      class="_lists_1e7fa9"
       id="scrollableDiv"
     >
       <div
         class="infinite-scroll-component__outerdiv"
       >
         <div
-          class="infinite-scroll-component "
+          class="infinite-scroll-component"
           style="height: auto; overflow: auto;"
         >
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -45,21 +45,21 @@ exports[`History render segment data 1`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   12
                 </span>
                 <span
-                  class="current"
+                  class="_current_1e7fa9"
                 >
                   (Current version)
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -71,20 +71,20 @@ exports[`History render segment data 1`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -92,16 +92,16 @@ exports[`History render segment data 1`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   11
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -113,20 +113,20 @@ exports[`History render segment data 1`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -134,16 +134,16 @@ exports[`History render segment data 1`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   10
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -155,20 +155,20 @@ exports[`History render segment data 1`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -176,16 +176,16 @@ exports[`History render segment data 1`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   9
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -197,20 +197,20 @@ exports[`History render segment data 1`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -218,16 +218,16 @@ exports[`History render segment data 1`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   8
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -239,20 +239,20 @@ exports[`History render segment data 1`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -260,16 +260,16 @@ exports[`History render segment data 1`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   7
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -281,20 +281,20 @@ exports[`History render segment data 1`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -302,16 +302,16 @@ exports[`History render segment data 1`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   6
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -323,20 +323,20 @@ exports[`History render segment data 1`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -344,16 +344,16 @@ exports[`History render segment data 1`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   5
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -365,20 +365,20 @@ exports[`History render segment data 1`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -386,16 +386,16 @@ exports[`History render segment data 1`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   4
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -407,20 +407,20 @@ exports[`History render segment data 1`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -428,16 +428,16 @@ exports[`History render segment data 1`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   3
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -449,10 +449,13 @@ exports[`History render segment data 1`] = `
             </div>
           </div>
           <div
-            class="hasMore"
+            class="_hasMore_1e7fa9"
           >
             Load more
           </div>
+          <div
+            style="height: 1px;"
+          />
         </div>
       </div>
     </div>
@@ -463,41 +466,41 @@ exports[`History render segment data 1`] = `
 exports[`History render segment data 2`] = `
 <DocumentFragment>
   <div
-    class="history"
+    class="_history_1e7fa9"
   >
     <div
-      class="history-title"
+      class="_history-title_1e7fa9"
     >
       <span>
         History
       </span>
     </div>
     <div
-      class="lists"
+      class="_lists_1e7fa9"
       id="scrollableDiv"
     >
       <div
         class="infinite-scroll-component__outerdiv"
       >
         <div
-          class="infinite-scroll-component "
+          class="infinite-scroll-component"
           style="height: auto; overflow: auto;"
         >
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -505,21 +508,21 @@ exports[`History render segment data 2`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   12
                 </span>
                 <span
-                  class="current"
+                  class="_current_1e7fa9"
                 >
                   (Current version)
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -531,20 +534,20 @@ exports[`History render segment data 2`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -552,16 +555,16 @@ exports[`History render segment data 2`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   11
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -573,20 +576,20 @@ exports[`History render segment data 2`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -594,16 +597,16 @@ exports[`History render segment data 2`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   10
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -615,20 +618,20 @@ exports[`History render segment data 2`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -636,16 +639,16 @@ exports[`History render segment data 2`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   9
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -657,20 +660,20 @@ exports[`History render segment data 2`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -678,16 +681,16 @@ exports[`History render segment data 2`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   8
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -699,20 +702,20 @@ exports[`History render segment data 2`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -720,16 +723,16 @@ exports[`History render segment data 2`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   7
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -741,20 +744,20 @@ exports[`History render segment data 2`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -762,16 +765,16 @@ exports[`History render segment data 2`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   6
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -783,20 +786,20 @@ exports[`History render segment data 2`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -804,16 +807,16 @@ exports[`History render segment data 2`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   5
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -825,20 +828,20 @@ exports[`History render segment data 2`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -846,16 +849,16 @@ exports[`History render segment data 2`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   4
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -867,20 +870,20 @@ exports[`History render segment data 2`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -888,16 +891,16 @@ exports[`History render segment data 2`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   3
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -909,10 +912,13 @@ exports[`History render segment data 2`] = `
             </div>
           </div>
           <div
-            class="hasMore"
+            class="_hasMore_1e7fa9"
           >
             Load more
           </div>
+          <div
+            style="height: 1px;"
+          />
         </div>
       </div>
     </div>
@@ -923,41 +929,41 @@ exports[`History render segment data 2`] = `
 exports[`History render target data 1`] = `
 <DocumentFragment>
   <div
-    class="history"
+    class="_history_1e7fa9"
   >
     <div
-      class="history-title"
+      class="_history-title_1e7fa9"
     >
       <span>
         History
       </span>
     </div>
     <div
-      class="lists"
+      class="_lists_1e7fa9"
       id="scrollableDiv"
     >
       <div
         class="infinite-scroll-component__outerdiv"
       >
         <div
-          class="infinite-scroll-component "
+          class="infinite-scroll-component"
           style="height: auto; overflow: auto;"
         >
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -965,21 +971,21 @@ exports[`History render target data 1`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   2
                 </span>
                 <span
-                  class="current"
+                  class="_current_1e7fa9"
                 >
                   (Current version)
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -989,10 +995,10 @@ exports[`History render target data 1`] = `
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Reviewed by
                 </span>
@@ -1002,19 +1008,19 @@ exports[`History render target data 1`] = `
                 </span>
               </div>
               <div
-                class="comment"
+                class="_comment_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Changes description
                 </span>
                 :
                 <span
-                  class="tooltip-text"
+                  class="_tooltip-text_1e7fa9"
                 >
                   <span
-                    class="limit-str-container-w"
+                    class="_limit-str-container-w_64332b"
                     style="max-width: 100%;"
                   >
                     test
@@ -1024,20 +1030,20 @@ exports[`History render target data 1`] = `
             </div>
           </div>
           <div
-            class="version"
+            class="_version_1e7fa9"
           >
             <div
-              class="version-left"
+              class="_version-left_1e7fa9"
             >
               <div
-                class="circle"
+                class="_circle_1e7fa9"
               />
             </div>
             <div
-              class="version-right"
+              class="_version-right_1e7fa9"
             >
               <div
-                class="title"
+                class="_title_1e7fa9"
               >
                 <span
                   class=""
@@ -1045,16 +1051,16 @@ exports[`History render target data 1`] = `
                   Version:
                 </span>
                 <span
-                  class="version-text"
+                  class="_version-text_1e7fa9"
                 >
                   1
                 </span>
               </div>
               <div
-                class="modifyBy"
+                class="_modifyBy_1e7fa9"
               >
                 <span
-                  class="version-title"
+                  class="_version-title_1e7fa9"
                 >
                   Published by
                 </span>
@@ -1066,10 +1072,13 @@ exports[`History render target data 1`] = `
             </div>
           </div>
           <div
-            class="hasMore"
+            class="_hasMore_1e7fa9"
           >
             Load more
           </div>
+          <div
+            style="height: 1px;"
+          />
         </div>
       </div>
     </div>
@@ -1080,36 +1089,39 @@ exports[`History render target data 1`] = `
 exports[`History snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="history"
+    class="_history_1e7fa9"
   >
     <div
-      class="history-title"
+      class="_history-title_1e7fa9"
     >
       <span>
         History
       </span>
     </div>
     <div
-      class="lists"
+      class="_lists_1e7fa9"
       id="scrollableDiv"
     >
       <div
         class="infinite-scroll-component__outerdiv"
       >
         <div
-          class="infinite-scroll-component "
+          class="infinite-scroll-component"
           style="height: auto; overflow: auto;"
         >
           <div
-            class="no-data"
+            class="_no-data_1e7fa9"
           >
             <img
               alt="no-data"
-              class="no-data-image"
-              src="no-data.png"
+              class="_no-data-image_1e7fa9"
+              src="/src/images/no-data.png"
             />
             No Data
           </div>
+          <div
+            style="height: 1px;"
+          />
         </div>
       </div>
     </div>
@@ -1120,22 +1132,22 @@ exports[`History snapshot 1`] = `
 exports[`History snapshot 2`] = `
 <DocumentFragment>
   <div
-    class="history"
+    class="_history_1e7fa9"
   >
     <div
-      class="history-title"
+      class="_history-title_1e7fa9"
     >
       <span>
         History
       </span>
     </div>
     <div
-      class="lists"
+      class="_lists_1e7fa9"
       id="scrollableDiv"
     >
       <div
         class="ui active transition visible inverted dimmer"
-        style="display: flex;"
+        style="display: flex !important;"
       >
         <div
           class="content"

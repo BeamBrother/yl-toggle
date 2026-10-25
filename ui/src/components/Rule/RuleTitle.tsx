@@ -1,13 +1,14 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Form, InputOnChangeData } from 'semantic-ui-react';
 import { useIntl } from 'react-intl';
-import PopConfirm from 'components/PopupConfirm'; 
+import PopConfirm from 'components/PopupConfirm';
 import Icon from 'components/Icon';
 import { IRule } from 'interfaces/targeting';
 import { IContainer } from 'interfaces/provider';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   rule: IRule;
   index: number;
   disabled?: boolean;
@@ -17,8 +18,8 @@ interface IProps {
 }
 
 const RuleTitle = (props: IProps) => {
-  const { 
-    rule, 
+  const {
+    rule,
     index,
     disabled,
     isHover,
@@ -46,7 +47,7 @@ const RuleTitle = (props: IProps) => {
       setOpen(false);
     }
   }, [isHover]);
-  
+
   const handleDelete = useCallback((e: SyntheticEvent, index: number, ruleId?: string) => {
     e.stopPropagation();
 
@@ -79,8 +80,8 @@ const RuleTitle = (props: IProps) => {
         <Form.Field>
           <Form.Input
             className={styles['rule-input']}
-            onClick={handleInputClick} 
-            value={rule.name} 
+            onClick={handleInputClick}
+            value={rule.name}
             disabled={disabled}
             placeholder={`${intl.formatMessage({id: 'common.rule.text'})}${index + 1}`}
             onChange={async (e: SyntheticEvent, detail: InputOnChangeData) => {
@@ -107,9 +108,9 @@ const RuleTitle = (props: IProps) => {
               }}
               text={intl.formatMessage({id: 'targeting.rule.delete.text'})}
             >
-              <Icon 
-                type='archive' 
-                customclass={styles['icon-archive']} 
+              <Icon
+                type='archive'
+                customclass={styles['icon-archive']}
                 onClick={(e: SyntheticEvent) => {
                   setOpen(true);
                   e.stopPropagation();

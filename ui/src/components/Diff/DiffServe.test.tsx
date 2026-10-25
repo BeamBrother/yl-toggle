@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import { DiffServe } from './DiffServe';
 import idiff from './diff';
 import { IntlWrapper } from 'components/utils/wrapper';
@@ -57,8 +57,8 @@ const content_g = idiff(
   }
 );
 
-it('DiffServe snapshot', (done) => {
-  (async () => {
+it('DiffServe snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(<DiffServe content={content_a} />, {
       wrapper: IntlWrapper,
     });
@@ -72,7 +72,7 @@ it('DiffServe snapshot', (done) => {
 
     rerender(<DiffServe content={content_d} />);
     expect(asFragment()).toMatchSnapshot();
-    
+
     rerender(<DiffServe content={content_e} />);
     expect(asFragment()).toMatchSnapshot();
 
@@ -81,7 +81,5 @@ it('DiffServe snapshot', (done) => {
 
     rerender(<DiffServe content={content_g} />);
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });

@@ -24,7 +24,7 @@ export const useLocalStorage = (key: string, initialValue: boolean | string) => 
       if (typeof window !== 'undefined') {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
       }
-      
+
     } catch (error) {
       console.log(error);
     }

@@ -5,17 +5,15 @@
     <parent>
         <artifactId>api</artifactId>
         <groupId>io.yltoggle</groupId>
-        <version>1.0.0</version>
+        <version>3.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.yltoggle</groupId>
     <artifactId>base</artifactId>
-    <version>1.0.0</version>
+    <version>3.0.0</version>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -24,14 +22,23 @@
             <groupId>com.yl-toggle</groupId>
             <artifactId>server-sdk-java</artifactId>
             <version>2.3.0</version>
+            <classifier>thin</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>org.codehaus.groovy</groupId>
                     <artifactId>groovy</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.codehaus.groovy</groupId>
                     <artifactId>groovy-sql</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

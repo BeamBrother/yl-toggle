@@ -2,7 +2,6 @@ use crate::loom::sync::atomic::AtomicUsize;
 
 use std::fmt;
 use std::sync::atomic::Ordering::{AcqRel, Acquire, Release};
-use std::usize;
 
 pub(super) struct State {
     val: AtomicUsize,
@@ -29,15 +28,12 @@ const LIFECYCLE_MASK: usize = 0b11;
 const NOTIFIED: usize = 0b100;
 
 /// The join handle is still around.
-#[allow(clippy::unusual_byte_groupings)] // https://github.com/rust-lang/rust-clippy/issues/6556
 const JOIN_INTEREST: usize = 0b1_000;
 
 /// A join handle waker has been set.
-#[allow(clippy::unusual_byte_groupings)] // https://github.com/rust-lang/rust-clippy/issues/6556
 const JOIN_WAKER: usize = 0b10_000;
 
 /// The task has been forcibly cancelled.
-#[allow(clippy::unusual_byte_groupings)] // https://github.com/rust-lang/rust-clippy/issues/6556
 const CANCELLED: usize = 0b100_000;
 
 /// All bits.
@@ -56,9 +52,9 @@ const REF_ONE: usize = 1 << REF_COUNT_SHIFT;
 ///
 /// A task is initialized with three references:
 ///
-///  * A reference that will be stored in an OwnedTasks or LocalOwnedTasks.
+///  * A reference that will be stored in an `OwnedTasks` or `LocalOwnedTasks`.
 ///  * A reference that will be sent to the scheduler as an ordinary notification.
-///  * A reference for the JoinHandle.
+///  * A reference for the `JoinHandle`.
 ///
 /// As the task starts with a `JoinHandle`, `JOIN_INTEREST` is set.
 /// As the task starts with a `Notified`, `NOTIFIED` is set.
@@ -91,6 +87,12 @@ pub(super) enum TransitionToNotifiedByVal {
 pub(crate) enum TransitionToNotifiedByRef {
     DoNothing,
     Submit,
+}
+
+#[must_use]
+pub(super) struct TransitionToJoinHandleDrop {
+    pub(super) drop_waker: bool,
+    pub(super) drop_output: bool,
 }
 
 /// All transitions are performed via RMW operations. This establishes an
@@ -144,7 +146,6 @@ impl State {
 
     /// Transitions the task from `Running` -> `Idle`.
     ///
-    /// Returns `true` if the transition to `Idle` is successful, `false` otherwise.
     /// The transition to `Idle` fails if the task has been flagged to be
     /// cancelled.
     pub(super) fn transition_to_idle(&self) -> TransitionToIdle {
@@ -251,9 +252,15 @@ impl State {
     /// Transitions the state to `NOTIFIED`.
     pub(super) fn transition_to_notified_by_ref(&self) -> TransitionToNotifiedByRef {
         self.fetch_update_action(|mut snapshot| {
-            if snapshot.is_complete() || snapshot.is_notified() {
-                // There is nothing to do in this case.
+            if snapshot.is_complete() {
+                // The complete state is final
                 (TransitionToNotifiedByRef::DoNothing, None)
+            } else if snapshot.is_notified() {
+                // Even hough we have nothing to do in this branch,
+                // wake_by_ref() should synchronize-with the task starting execution,
+                // therefore we must use an Release store (with the same value),
+                // to pair with the Acquire in transition_to_running.
+                (TransitionToNotifiedByRef::DoNothing, Some(snapshot))
             } else if snapshot.is_running() {
                 // If the task is running, we mark it as notified, but we should
                 // not submit as the thread currently running the future is
@@ -270,20 +277,23 @@ impl State {
         })
     }
 
-    /// Transitions the state to `NOTIFIED`, unconditionally increasing the ref count.
-    #[cfg(all(
-        tokio_unstable,
-        tokio_taskdump,
-        feature = "rt",
-        target_os = "linux",
-        any(target_arch = "aarch64", target_arch = "x86", target_arch = "x86_64")
-    ))]
-    pub(super) fn transition_to_notified_for_tracing(&self) {
-        self.fetch_update_action(|mut snapshot| {
-            snapshot.set_notified();
-            snapshot.ref_inc();
-            ((), Some(snapshot))
-        });
+    cfg_taskdump! {
+        /// Transitions the state to `NOTIFIED` if idle and not already
+        /// notified, increasing the ref count.
+        ///
+        /// Returns `true` if the notified bit was transitioned from `0` to `1`;
+        /// otherwise `false`.
+        pub(super) fn transition_to_notified_for_tracing(&self) -> bool {
+            self.fetch_update_action(|mut snapshot| {
+                if !snapshot.is_idle() || snapshot.is_notified() {
+                    (false, None)
+                } else {
+                    snapshot.set_notified();
+                    snapshot.ref_inc();
+                    (true, Some(snapshot))
+                }
+            })
+        }
     }
 
     /// Sets the cancelled bit and transitions the state to `NOTIFIED` if idle.
@@ -368,22 +378,45 @@ impl State {
             .map_err(|_| ())
     }
 
-    /// Tries to unset the JOIN_INTEREST flag.
-    ///
-    /// Returns `Ok` if the operation happens before the task transitions to a
-    /// completed state, `Err` otherwise.
-    pub(super) fn unset_join_interested(&self) -> UpdateResult {
-        self.fetch_update(|curr| {
-            assert!(curr.is_join_interested());
+    /// Unsets the `JOIN_INTEREST` flag. If `COMPLETE` is not set, the `JOIN_WAKER`
+    /// flag is also unset.
+    /// The returned `TransitionToJoinHandleDrop` indicates whether the `JoinHandle` should drop
+    /// the output of the future or the join waker after the transition.
+    pub(super) fn transition_to_join_handle_dropped(&self) -> TransitionToJoinHandleDrop {
+        self.fetch_update_action(|mut snapshot| {
+            assert!(snapshot.is_join_interested());
 
-            if curr.is_complete() {
-                return None;
+            let mut transition = TransitionToJoinHandleDrop {
+                drop_waker: false,
+                drop_output: false,
+            };
+
+            snapshot.unset_join_interested();
+
+            if !snapshot.is_complete() {
+                // If `COMPLETE` is unset we also unset `JOIN_WAKER` to give the
+                // `JoinHandle` exclusive access to the waker following rule 6 in task/mod.rs.
+                // The `JoinHandle` will drop the waker if it has exclusive access
+                // to drop it.
+                snapshot.unset_join_waker();
+            } else {
+                // If `COMPLETE` is set the task is completed so the `JoinHandle` is responsible
+                // for dropping the output.
+                transition.drop_output = true;
             }
 
-            let mut next = curr;
-            next.unset_join_interested();
+            if !snapshot.is_join_waker_set() {
+                // If the `JOIN_WAKER` bit is unset and the `JOIN_HANDLE` has exclusive access to
+                // the join waker and should drop it following this transition.
+                // This might happen in two situations:
+                //  1. The task is not completed and we just unset the `JOIN_WAKer` above in this
+                //     function.
+                //  2. The task is completed. In that case the `JOIN_WAKER` bit was already unset
+                //     by the runtime during completion.
+                transition.drop_waker = true;
+            }
 
-            Some(next)
+            (transition, Some(snapshot))
         })
     }
 
@@ -414,17 +447,30 @@ impl State {
     pub(super) fn unset_waker(&self) -> UpdateResult {
         self.fetch_update(|curr| {
             assert!(curr.is_join_interested());
-            assert!(curr.is_join_waker_set());
 
             if curr.is_complete() {
                 return None;
             }
+
+            // If the task is completed, this bit may have been unset by
+            // `unset_waker_after_complete`.
+            assert!(curr.is_join_waker_set());
 
             let mut next = curr;
             next.unset_join_waker();
 
             Some(next)
         })
+    }
+
+    /// Unsets the `JOIN_WAKER` bit unconditionally after task completion.
+    ///
+    /// This operation requires the task to be completed.
+    pub(super) fn unset_waker_after_complete(&self) -> Snapshot {
+        let prev = Snapshot(self.val.fetch_and(!JOIN_WAKER, AcqRel));
+        assert!(prev.is_complete());
+        assert!(prev.is_join_waker_set());
+        Snapshot(prev.0 & !JOIN_WAKER)
     }
 
     pub(super) fn ref_inc(&self) {
@@ -522,11 +568,11 @@ impl Snapshot {
     }
 
     fn unset_notified(&mut self) {
-        self.0 &= !NOTIFIED
+        self.0 &= !NOTIFIED;
     }
 
     fn set_notified(&mut self) {
-        self.0 |= NOTIFIED
+        self.0 |= NOTIFIED;
     }
 
     pub(super) fn is_running(self) -> bool {
@@ -559,7 +605,7 @@ impl Snapshot {
     }
 
     fn unset_join_interested(&mut self) {
-        self.0 &= !JOIN_INTEREST
+        self.0 &= !JOIN_INTEREST;
     }
 
     pub(super) fn is_join_waker_set(self) -> bool {
@@ -571,7 +617,7 @@ impl Snapshot {
     }
 
     fn unset_join_waker(&mut self) {
-        self.0 &= !JOIN_WAKER
+        self.0 &= !JOIN_WAKER;
     }
 
     pub(super) fn ref_count(self) -> usize {
@@ -585,7 +631,7 @@ impl Snapshot {
 
     pub(super) fn ref_dec(&mut self) {
         assert!(self.ref_count() > 0);
-        self.0 -= REF_ONE
+        self.0 -= REF_ONE;
     }
 }
 

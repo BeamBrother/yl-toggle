@@ -1,6 +1,6 @@
 import { SyntheticEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Form, InputOnChangeData, Popup } from 'semantic-ui-react';
-import { useParams } from 'react-router';
+import { useParams } from 'utils/useParams';
 import classNames from 'classnames';
 import { v4 as uuidv4 } from 'uuid';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -16,6 +16,7 @@ import styles from './index.module.scss';
 import dayjs from 'dayjs';
 
 interface IParams {
+  [key: string]: string | undefined;
   projectKey: string;
   environmentKey: string;
 }
@@ -78,7 +79,7 @@ const EventTracker = () => {
         saveDebugUntilTime(data.debugUntilTime);
         saveOpen(data.debuggerEnabled);
         saveEvents(data.events);
-        
+
         if (!data.debuggerEnabled) {
           clearInterval(timer.current as NodeJS.Timeout);
         }
@@ -101,7 +102,7 @@ const EventTracker = () => {
     }
     getData();
     timer.current = setInterval(getData, 5000);
-    
+
     return () => {
       clearInterval(timer.current as NodeJS.Timeout);
     };
@@ -163,7 +164,7 @@ const EventTracker = () => {
       return intl.formatMessage({ id: 'event.tracker.search.event' });
     }
   }, [selectedNav, intl]);
-  
+
   const handleEventTrackerEnabled = useCallback((enabled: boolean) => {
     saveDebugUntilTime(0);
     changeEventTrackerStatus(projectKey, environmentKey, {
@@ -190,7 +191,7 @@ const EventTracker = () => {
   }, []);
 
   // Change filter type
-  const handleChange = useCallback((status) => {
+  const handleChange = useCallback((status: string) => {
     if (typeList.includes(status)) {
       const index = typeList.indexOf(status);
       typeList.splice(index, 1);
@@ -256,9 +257,9 @@ const EventTracker = () => {
           </div>
           <div className={styles.operate}>
             <div className={styles.navs}>
-              <div 
-                className={allCls} 
-                onClick={() => { 
+              <div
+                className={allCls}
+                onClick={() => {
                   saveSelectedNav('all');
                 }}
               >
@@ -267,9 +268,9 @@ const EventTracker = () => {
                   ({allEvents.length})
                 </span>
               </div>
-              <div 
-                className={toggleCls} 
-                onClick={() => { 
+              <div
+                className={toggleCls}
+                onClick={() => {
                   saveSelectedNav('toggle');
                 }}
               >
@@ -278,9 +279,9 @@ const EventTracker = () => {
                   ({toggleEvents.length})
                 </span>
               </div>
-              <div 
-                className={metricCls} 
-                onClick={() => { 
+              <div
+                className={metricCls}
+                onClick={() => {
                   saveSelectedNav('metric');
                 }}
               >
@@ -295,7 +296,7 @@ const EventTracker = () => {
                 <Form.Field>
                   <Form.Input
                     className={styles.input}
-                    placeholder={getByPlaceholderText()} 
+                    placeholder={getByPlaceholderText()}
                     icon={<Icon customclass={styles['icon-search']} type='search' />}
                     onChange={handleSearch}
                   />
@@ -313,17 +314,17 @@ const EventTracker = () => {
           />
           {
             (selectedNav === 'all' ? allEvents : selectedNav === 'toggle' ? toggleEvents : metricEvents).length > 0 && (
-              <Popup 
+              <Popup
                 inverted
                 position='right center'
                 offset={[0, 20]}
-                content={intl.formatMessage({ id: 'event.tracker.goto.bottom' })} 
+                content={intl.formatMessage({ id: 'event.tracker.goto.bottom' })}
                 style={{opacity: 0.8}}
                 trigger={
                   <div className={styles.bottom} onClick={gotoBottom}>
                     <Icon type='bottom' customclass={styles['angle-down']} />
                   </div>
-                } 
+                }
               />
             )
           }

@@ -4,6 +4,7 @@ import { stringLimit } from '../../utils/tools';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   text: string;
   maxLength?: number;
   hidePopup?: boolean;

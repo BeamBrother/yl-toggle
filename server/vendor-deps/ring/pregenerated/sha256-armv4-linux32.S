@@ -1,30 +1,27 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if !defined(__has_feature)
-#define __has_feature(x) 0
-#endif
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
+#include <ring-core/asm_base.h>
 
-#if !defined(OPENSSL_NO_ASM)
-#if defined(__arm__)
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_ARM) && defined(__ELF__)
 @ Copyright 2007-2016 The OpenSSL Project Authors. All Rights Reserved.
 @
-@ Licensed under the OpenSSL license (the "License").  You may not use
-@ this file except in compliance with the License.  You can obtain a copy
-@ in the file LICENSE in the source distribution or at
-@ https://www.openssl.org/source/license.html
+@ Licensed under the Apache License, Version 2.0 (the "License");
+@ you may not use this file except in compliance with the License.
+@ You may obtain a copy of the License at
+@
+@     https://www.apache.org/licenses/LICENSE-2.0
+@
+@ Unless required by applicable law or agreed to in writing, software
+@ distributed under the License is distributed on an "AS IS" BASIS,
+@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@ See the License for the specific language governing permissions and
+@ limitations under the License.
 
 
 @ ====================================================================
 @ Written by Andy Polyakov <appro@openssl.org> for the OpenSSL
-@ project. The module is, however, dual licensed under OpenSSL and
-@ CRYPTOGAMS licenses depending on where you obtain it. For further
-@ details see http://www.openssl.org/~appro/cryptogams/.
-@
-@ Permission to use under GPL terms is granted.
+@ project.
 @ ====================================================================
 
 @ SHA256 block procedure for ARMv4. May 2007.
@@ -55,10 +52,8 @@
 @
 @ Add ARMv8 code path performing at 2.0 cpb on Apple A7.
 
-#ifndef __KERNEL__
-# include <GFp/arm_arch.h>
-#else
-# define __ARM_ARCH__ __LINUX_ARM_ARCH__
+#ifdef __KERNEL__
+# define __ARM_ARCH __LINUX_ARM_ARCH__
 # define __ARM_MAX_ARCH__ 7
 #endif
 
@@ -96,49 +91,26 @@ K256:
 .word	0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
 .size	K256,.-K256
 .word	0				@ terminator
-#if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
-
-.hidden	GFp_armcap_P
-.LOPENSSL_armcap:
-.word	GFp_armcap_P-.Lsha256_block_data_order
-#endif
 .align	5
 
-.globl	GFp_sha256_block_data_order
-.hidden	GFp_sha256_block_data_order
-.type	GFp_sha256_block_data_order,%function
-GFp_sha256_block_data_order:
-.Lsha256_block_data_order:
-#if __ARM_ARCH__<7 && !defined(__thumb2__)
-	sub	r3,pc,#8		@ GFp_sha256_block_data_order
-#else
-	adr	r3,.Lsha256_block_data_order
-#endif
-#if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
-	ldr	r12,.LOPENSSL_armcap
-	ldr	r12,[r3,r12]		@ GFp_armcap_P
-#ifdef	__APPLE__
-	ldr	r12,[r12]
-#endif
-	tst	r12,#ARMV8_SHA256
-	bne	.LARMv8
-	tst	r12,#ARMV7_NEON
-	bne	.LNEON
-#endif
+.globl	sha256_block_data_order_nohw
+.hidden	sha256_block_data_order_nohw
+.type	sha256_block_data_order_nohw,%function
+sha256_block_data_order_nohw:
 	add	r2,r1,r2,lsl#6	@ len to point at the end of inp
 	stmdb	sp!,{r0,r1,r2,r4-r11,lr}
 	ldmia	r0,{r4,r5,r6,r7,r8,r9,r10,r11}
-	sub	r14,r3,#256+32	@ K256
+	adr	r14,K256
 	sub	sp,sp,#16*4		@ alloca(X[16])
 .Loop:
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4
 # else
 	ldrb	r2,[r1,#3]
 # endif
 	eor	r3,r5,r6		@ magic
 	eor	r12,r12,r12
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 0
 # if 0==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -179,7 +151,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 0<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -196,7 +168,7 @@ GFp_sha256_block_data_order:
 	eor	r3,r3,r5			@ Maj(a,b,c)
 	add	r11,r11,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r11,r11,r3			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 1
 # if 1==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -237,7 +209,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 1<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -254,7 +226,7 @@ GFp_sha256_block_data_order:
 	eor	r12,r12,r4			@ Maj(a,b,c)
 	add	r10,r10,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r10,r10,r12			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 2
 # if 2==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -295,7 +267,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 2<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -312,7 +284,7 @@ GFp_sha256_block_data_order:
 	eor	r3,r3,r11			@ Maj(a,b,c)
 	add	r9,r9,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r9,r9,r3			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 3
 # if 3==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -353,7 +325,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 3<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -370,7 +342,7 @@ GFp_sha256_block_data_order:
 	eor	r12,r12,r10			@ Maj(a,b,c)
 	add	r8,r8,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r8,r8,r12			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 4
 # if 4==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -411,7 +383,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 4<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -428,7 +400,7 @@ GFp_sha256_block_data_order:
 	eor	r3,r3,r9			@ Maj(a,b,c)
 	add	r7,r7,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r7,r7,r3			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 5
 # if 5==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -469,7 +441,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 5<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -486,7 +458,7 @@ GFp_sha256_block_data_order:
 	eor	r12,r12,r8			@ Maj(a,b,c)
 	add	r6,r6,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r6,r6,r12			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 6
 # if 6==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -527,7 +499,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 6<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -544,7 +516,7 @@ GFp_sha256_block_data_order:
 	eor	r3,r3,r7			@ Maj(a,b,c)
 	add	r5,r5,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r5,r5,r3			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 7
 # if 7==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -585,7 +557,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 7<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -602,7 +574,7 @@ GFp_sha256_block_data_order:
 	eor	r12,r12,r6			@ Maj(a,b,c)
 	add	r4,r4,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r4,r4,r12			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 8
 # if 8==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -643,7 +615,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 8<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -660,7 +632,7 @@ GFp_sha256_block_data_order:
 	eor	r3,r3,r5			@ Maj(a,b,c)
 	add	r11,r11,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r11,r11,r3			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 9
 # if 9==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -701,7 +673,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 9<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -718,7 +690,7 @@ GFp_sha256_block_data_order:
 	eor	r12,r12,r4			@ Maj(a,b,c)
 	add	r10,r10,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r10,r10,r12			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 10
 # if 10==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -759,7 +731,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 10<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -776,7 +748,7 @@ GFp_sha256_block_data_order:
 	eor	r3,r3,r11			@ Maj(a,b,c)
 	add	r9,r9,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r9,r9,r3			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 11
 # if 11==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -817,7 +789,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 11<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -834,7 +806,7 @@ GFp_sha256_block_data_order:
 	eor	r12,r12,r10			@ Maj(a,b,c)
 	add	r8,r8,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r8,r8,r12			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 12
 # if 12==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -875,7 +847,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 12<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -892,7 +864,7 @@ GFp_sha256_block_data_order:
 	eor	r3,r3,r9			@ Maj(a,b,c)
 	add	r7,r7,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r7,r7,r3			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 13
 # if 13==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -933,7 +905,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 13<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -950,7 +922,7 @@ GFp_sha256_block_data_order:
 	eor	r12,r12,r8			@ Maj(a,b,c)
 	add	r6,r6,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r6,r6,r12			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 14
 # if 14==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -991,7 +963,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 14<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1008,7 +980,7 @@ GFp_sha256_block_data_order:
 	eor	r3,r3,r7			@ Maj(a,b,c)
 	add	r5,r5,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r5,r5,r3			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	@ ldr	r2,[r1],#4			@ 15
 # if 15==15
 	str	r1,[sp,#17*4]			@ make room for r1
@@ -1049,7 +1021,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 15<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1099,7 +1071,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 16<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1148,7 +1120,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 17<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1197,7 +1169,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 18<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1246,7 +1218,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 19<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1295,7 +1267,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 20<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1344,7 +1316,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 21<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1393,7 +1365,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 22<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1442,7 +1414,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 23<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1491,7 +1463,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 24<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1540,7 +1512,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 25<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1589,7 +1561,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 26<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1638,7 +1610,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 27<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1687,7 +1659,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 28<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1736,7 +1708,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 29<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1785,7 +1757,7 @@ GFp_sha256_block_data_order:
 	cmp	r12,#0xf2			@ done?
 #endif
 #if 30<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1834,7 +1806,7 @@ GFp_sha256_block_data_order:
 	cmp	r3,#0xf2			@ done?
 #endif
 #if 31<15
-# if __ARM_ARCH__>=7
+# if __ARM_ARCH>=7
 	ldr	r2,[r1],#4			@ prefetch
 # else
 	ldrb	r2,[r1,#3]
@@ -1851,7 +1823,7 @@ GFp_sha256_block_data_order:
 	eor	r12,r12,r6			@ Maj(a,b,c)
 	add	r4,r4,r0,ror#2	@ h+=Sigma0(a)
 	@ add	r4,r4,r12			@ h+=Maj(a,b,c)
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	ite	eq			@ Thumb2 thing, sanity check in ARM
 #endif
 	ldreq	r3,[sp,#16*4]		@ pull ctx
@@ -1882,7 +1854,7 @@ GFp_sha256_block_data_order:
 	bne	.Loop
 
 	add	sp,sp,#19*4	@ destroy frame
-#if __ARM_ARCH__>=5
+#if __ARM_ARCH>=5
 	ldmia	sp!,{r4,r5,r6,r7,r8,r9,r10,r11,pc}
 #else
 	ldmia	sp!,{r4,r5,r6,r7,r8,r9,r10,r11,lr}
@@ -1890,20 +1862,43 @@ GFp_sha256_block_data_order:
 	moveq	pc,lr			@ be binary compatible with V4, yet
 .word	0xe12fff1e			@ interoperable with Thumb ISA:-)
 #endif
-.size	GFp_sha256_block_data_order,.-GFp_sha256_block_data_order
+.size	sha256_block_data_order_nohw,.-sha256_block_data_order_nohw
 #if __ARM_MAX_ARCH__>=7
 .arch	armv7-a
 .fpu	neon
 
+.LK256_shortcut_neon:
+@ PC is 8 bytes ahead in Arm mode and 4 bytes ahead in Thumb mode.
+#if defined(__thumb2__)
+.word	K256-(.LK256_add_neon+4)
+#else
+.word	K256-(.LK256_add_neon+8)
+#endif
+
+.globl	sha256_block_data_order_neon
+.hidden	sha256_block_data_order_neon
 .type	sha256_block_data_order_neon,%function
 .align	5
 .skip	16
 sha256_block_data_order_neon:
-.LNEON:
 	stmdb	sp!,{r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
 
 	sub	r11,sp,#16*4+16
-	adr	r14,K256
+
+	@ K256 is just at the boundary of being easily referenced by an ADR from
+	@ this function. In Arm mode, when building with __ARM_ARCH=6, it does
+	@ not fit. By moving code around, we could make it fit, but this is too
+	@ fragile. For simplicity, just load the offset from
+	@ .LK256_shortcut_neon.
+	@
+	@ TODO(davidben): adrl would avoid a load, but clang-assembler does not
+	@ support it. We might be able to emulate it with a macro, but Android's
+	@ did not work when I tried it.
+	@ https://android.googlesource.com/platform/ndk/+/refs/heads/main/docs/ClangMigration.md#arm
+	ldr	r14,.LK256_shortcut_neon
+.LK256_add_neon:
+	add	r14,pc,r14
+
 	bic	r11,r11,#15		@ align for 128-bit stores
 	mov	r12,sp
 	mov	sp,r11			@ alloca
@@ -2677,155 +2672,7 @@ sha256_block_data_order_neon:
 	ldmia	sp!,{r4,r5,r6,r7,r8,r9,r10,r11,r12,pc}
 .size	sha256_block_data_order_neon,.-sha256_block_data_order_neon
 #endif
-#if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
-
-# if defined(__thumb2__)
-#  define INST(a,b,c,d)	.byte	c,d|0xc,a,b
-# else
-#  define INST(a,b,c,d)	.byte	a,b,c,d
-# endif
-
-.type	sha256_block_data_order_armv8,%function
-.align	5
-sha256_block_data_order_armv8:
-.LARMv8:
-	vld1.32	{q0,q1},[r0]
-	sub	r3,r3,#256+32
-	add	r2,r1,r2,lsl#6	@ len to point at the end of inp
-	b	.Loop_v8
-
-.align	4
-.Loop_v8:
-	vld1.8	{q8,q9},[r1]!
-	vld1.8	{q10,q11},[r1]!
-	vld1.32	{q12},[r3]!
-	vrev32.8	q8,q8
-	vrev32.8	q9,q9
-	vrev32.8	q10,q10
-	vrev32.8	q11,q11
-	vmov	q14,q0	@ offload
-	vmov	q15,q1
-	teq	r1,r2
-	vld1.32	{q13},[r3]!
-	vadd.i32	q12,q12,q8
-	INST(0xe2,0x03,0xfa,0xf3)	@ sha256su0 q8,q9
-	vmov	q2,q0
-	INST(0x68,0x0c,0x02,0xf3)	@ sha256h q0,q1,q12
-	INST(0x68,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q12
-	INST(0xe6,0x0c,0x64,0xf3)	@ sha256su1 q8,q10,q11
-	vld1.32	{q12},[r3]!
-	vadd.i32	q13,q13,q9
-	INST(0xe4,0x23,0xfa,0xf3)	@ sha256su0 q9,q10
-	vmov	q2,q0
-	INST(0x6a,0x0c,0x02,0xf3)	@ sha256h q0,q1,q13
-	INST(0x6a,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q13
-	INST(0xe0,0x2c,0x66,0xf3)	@ sha256su1 q9,q11,q8
-	vld1.32	{q13},[r3]!
-	vadd.i32	q12,q12,q10
-	INST(0xe6,0x43,0xfa,0xf3)	@ sha256su0 q10,q11
-	vmov	q2,q0
-	INST(0x68,0x0c,0x02,0xf3)	@ sha256h q0,q1,q12
-	INST(0x68,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q12
-	INST(0xe2,0x4c,0x60,0xf3)	@ sha256su1 q10,q8,q9
-	vld1.32	{q12},[r3]!
-	vadd.i32	q13,q13,q11
-	INST(0xe0,0x63,0xfa,0xf3)	@ sha256su0 q11,q8
-	vmov	q2,q0
-	INST(0x6a,0x0c,0x02,0xf3)	@ sha256h q0,q1,q13
-	INST(0x6a,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q13
-	INST(0xe4,0x6c,0x62,0xf3)	@ sha256su1 q11,q9,q10
-	vld1.32	{q13},[r3]!
-	vadd.i32	q12,q12,q8
-	INST(0xe2,0x03,0xfa,0xf3)	@ sha256su0 q8,q9
-	vmov	q2,q0
-	INST(0x68,0x0c,0x02,0xf3)	@ sha256h q0,q1,q12
-	INST(0x68,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q12
-	INST(0xe6,0x0c,0x64,0xf3)	@ sha256su1 q8,q10,q11
-	vld1.32	{q12},[r3]!
-	vadd.i32	q13,q13,q9
-	INST(0xe4,0x23,0xfa,0xf3)	@ sha256su0 q9,q10
-	vmov	q2,q0
-	INST(0x6a,0x0c,0x02,0xf3)	@ sha256h q0,q1,q13
-	INST(0x6a,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q13
-	INST(0xe0,0x2c,0x66,0xf3)	@ sha256su1 q9,q11,q8
-	vld1.32	{q13},[r3]!
-	vadd.i32	q12,q12,q10
-	INST(0xe6,0x43,0xfa,0xf3)	@ sha256su0 q10,q11
-	vmov	q2,q0
-	INST(0x68,0x0c,0x02,0xf3)	@ sha256h q0,q1,q12
-	INST(0x68,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q12
-	INST(0xe2,0x4c,0x60,0xf3)	@ sha256su1 q10,q8,q9
-	vld1.32	{q12},[r3]!
-	vadd.i32	q13,q13,q11
-	INST(0xe0,0x63,0xfa,0xf3)	@ sha256su0 q11,q8
-	vmov	q2,q0
-	INST(0x6a,0x0c,0x02,0xf3)	@ sha256h q0,q1,q13
-	INST(0x6a,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q13
-	INST(0xe4,0x6c,0x62,0xf3)	@ sha256su1 q11,q9,q10
-	vld1.32	{q13},[r3]!
-	vadd.i32	q12,q12,q8
-	INST(0xe2,0x03,0xfa,0xf3)	@ sha256su0 q8,q9
-	vmov	q2,q0
-	INST(0x68,0x0c,0x02,0xf3)	@ sha256h q0,q1,q12
-	INST(0x68,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q12
-	INST(0xe6,0x0c,0x64,0xf3)	@ sha256su1 q8,q10,q11
-	vld1.32	{q12},[r3]!
-	vadd.i32	q13,q13,q9
-	INST(0xe4,0x23,0xfa,0xf3)	@ sha256su0 q9,q10
-	vmov	q2,q0
-	INST(0x6a,0x0c,0x02,0xf3)	@ sha256h q0,q1,q13
-	INST(0x6a,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q13
-	INST(0xe0,0x2c,0x66,0xf3)	@ sha256su1 q9,q11,q8
-	vld1.32	{q13},[r3]!
-	vadd.i32	q12,q12,q10
-	INST(0xe6,0x43,0xfa,0xf3)	@ sha256su0 q10,q11
-	vmov	q2,q0
-	INST(0x68,0x0c,0x02,0xf3)	@ sha256h q0,q1,q12
-	INST(0x68,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q12
-	INST(0xe2,0x4c,0x60,0xf3)	@ sha256su1 q10,q8,q9
-	vld1.32	{q12},[r3]!
-	vadd.i32	q13,q13,q11
-	INST(0xe0,0x63,0xfa,0xf3)	@ sha256su0 q11,q8
-	vmov	q2,q0
-	INST(0x6a,0x0c,0x02,0xf3)	@ sha256h q0,q1,q13
-	INST(0x6a,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q13
-	INST(0xe4,0x6c,0x62,0xf3)	@ sha256su1 q11,q9,q10
-	vld1.32	{q13},[r3]!
-	vadd.i32	q12,q12,q8
-	vmov	q2,q0
-	INST(0x68,0x0c,0x02,0xf3)	@ sha256h q0,q1,q12
-	INST(0x68,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q12
-
-	vld1.32	{q12},[r3]!
-	vadd.i32	q13,q13,q9
-	vmov	q2,q0
-	INST(0x6a,0x0c,0x02,0xf3)	@ sha256h q0,q1,q13
-	INST(0x6a,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q13
-
-	vld1.32	{q13},[r3]
-	vadd.i32	q12,q12,q10
-	sub	r3,r3,#256-16	@ rewind
-	vmov	q2,q0
-	INST(0x68,0x0c,0x02,0xf3)	@ sha256h q0,q1,q12
-	INST(0x68,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q12
-
-	vadd.i32	q13,q13,q11
-	vmov	q2,q0
-	INST(0x6a,0x0c,0x02,0xf3)	@ sha256h q0,q1,q13
-	INST(0x6a,0x2c,0x14,0xf3)	@ sha256h2 q1,q2,q13
-
-	vadd.i32	q0,q0,q14
-	vadd.i32	q1,q1,q15
-	it	ne
-	bne	.Loop_v8
-
-	vst1.32	{q0,q1},[r0]
-
-	bx	lr		@ bx lr
-.size	sha256_block_data_order_armv8,.-sha256_block_data_order_armv8
-#endif
 .byte	83,72,65,50,53,54,32,98,108,111,99,107,32,116,114,97,110,115,102,111,114,109,32,102,111,114,32,65,82,77,118,52,47,78,69,79,78,47,65,82,77,118,56,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	2
-#endif
-#endif  // !OPENSSL_NO_ASM
-.section	.note.GNU-stack,"",%progbits
+.align	2
+#endif  // !OPENSSL_NO_ASM && defined(OPENSSL_ARM) && defined(__ELF__)

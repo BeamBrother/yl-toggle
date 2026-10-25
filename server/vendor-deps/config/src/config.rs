@@ -1,9 +1,9 @@
 use std::fmt::Debug;
 
-use crate::builder::{ConfigBuilder, DefaultState};
-use serde::de::Deserialize;
-use serde::ser::Serialize;
+use serde_core::de::Deserialize;
+use serde_core::ser::Serialize;
 
+use crate::builder::{ConfigBuilder, DefaultState};
 use crate::error::{ConfigError, Result};
 use crate::map::Map;
 use crate::path;
@@ -11,8 +11,9 @@ use crate::ser::ConfigSerializer;
 use crate::source::Source;
 use crate::value::{Table, Value};
 
-/// A prioritized configuration repository. It maintains a set of
-/// configuration sources, fetches values to populate those, and provides
+/// A prioritized configuration repository.
+///
+/// It maintains a set of configuration sources, fetches values to populate those, and provides
 /// them according to the source's priority.
 #[derive(Clone, Debug)]
 pub struct Config {
@@ -48,40 +49,12 @@ impl Config {
         ConfigBuilder::<DefaultState>::default()
     }
 
-    /// Merge in a configuration property source.
-    #[deprecated(since = "0.12.0", note = "please use 'ConfigBuilder' instead")]
-    pub fn merge<T>(&mut self, source: T) -> Result<&mut Self>
-    where
-        T: 'static,
-        T: Source + Send + Sync,
-    {
-        self.sources.push(Box::new(source));
-
-        #[allow(deprecated)]
-        self.refresh()
-    }
-
-    /// Merge in a configuration property source.
-    #[deprecated(since = "0.12.0", note = "please use 'ConfigBuilder' instead")]
-    pub fn with_merged<T>(mut self, source: T) -> Result<Self>
-    where
-        T: 'static,
-        T: Source + Send + Sync,
-    {
-        self.sources.push(Box::new(source));
-
-        #[allow(deprecated)]
-        self.refresh()?;
-        Ok(self)
-    }
-
     /// Refresh the configuration cache with fresh
     /// data from added sources.
     ///
     /// Configuration is automatically refreshed after a mutation
     /// operation (`set`, `merge`, `set_default`, etc.).
-    #[deprecated(since = "0.12.0", note = "please use 'ConfigBuilder' instead")]
-    pub fn refresh(&mut self) -> Result<&mut Self> {
+    fn refresh(&mut self) -> Result<&mut Self> {
         self.cache = {
             let mut cache: Value = Map::<String, Value>::new().into();
 
@@ -104,18 +77,6 @@ impl Config {
         Ok(self)
     }
 
-    /// Set a default `value` at `key`
-    #[deprecated(since = "0.12.0", note = "please use 'ConfigBuilder' instead")]
-    pub fn set_default<T>(&mut self, key: &str, value: T) -> Result<&mut Self>
-    where
-        T: Into<Value>,
-    {
-        self.defaults.insert(key.parse()?, value.into());
-
-        #[allow(deprecated)]
-        self.refresh()
-    }
-
     /// Set an overwrite
     ///
     /// This function sets an overwrite value.
@@ -124,69 +85,60 @@ impl Config {
     /// # Warning
     ///
     /// Errors if config is frozen
-    #[deprecated(since = "0.12.0", note = "please use 'ConfigBuilder' instead")]
-    pub fn set<T>(&mut self, key: &str, value: T) -> Result<&mut Self>
+    pub(crate) fn set<T>(&mut self, key: &str, value: T) -> Result<&mut Self>
     where
         T: Into<Value>,
     {
         self.overrides.insert(key.parse()?, value.into());
 
-        #[allow(deprecated)]
         self.refresh()
     }
 
-    #[deprecated(since = "0.12.0", note = "please use 'ConfigBuilder' instead")]
-    pub fn set_once(&mut self, key: &str, value: Value) -> Result<()> {
-        let expr: path::Expression = key.parse()?;
-
-        // Traverse the cache using the path to (possibly) retrieve a value
-        if let Some(ref mut val) = expr.get_mut(&mut self.cache) {
-            **val = value;
-        } else {
-            expr.set(&mut self.cache, value);
-        }
-        Ok(())
-    }
-
-    pub fn get<'de, T: Deserialize<'de>>(&self, key: &str) -> Result<T> {
+    fn get_value(&self, key: &str) -> Result<Value> {
         // Parse the key into a path expression
         let expr: path::Expression = key.parse()?;
 
         // Traverse the cache using the path to (possibly) retrieve a value
         let value = expr.get(&self.cache).cloned();
 
-        match value {
-            Some(value) => {
-                // Deserialize the received value into the requested type
-                T::deserialize(value).map_err(|e| e.extend_with_key(key))
-            }
+        value.ok_or_else(|| ConfigError::NotFound(key.into()))
+    }
 
-            None => Err(ConfigError::NotFound(key.into())),
-        }
+    pub fn get<'de, T: Deserialize<'de>>(&self, key: &str) -> Result<T> {
+        self.get_value(key).and_then(|value| {
+            // Deserialize the received value into the requested type
+            T::deserialize(value).map_err(|e| e.extend_with_key(key))
+        })
     }
 
     pub fn get_string(&self, key: &str) -> Result<String> {
-        self.get(key).and_then(Value::into_string)
+        self.get_value(key)
+            .and_then(|value| value.into_string().map_err(|e| e.extend_with_key(key)))
     }
 
     pub fn get_int(&self, key: &str) -> Result<i64> {
-        self.get(key).and_then(Value::into_int)
+        self.get_value(key)
+            .and_then(|value| value.into_int().map_err(|e| e.extend_with_key(key)))
     }
 
     pub fn get_float(&self, key: &str) -> Result<f64> {
-        self.get(key).and_then(Value::into_float)
+        self.get_value(key)
+            .and_then(|value| value.into_float().map_err(|e| e.extend_with_key(key)))
     }
 
     pub fn get_bool(&self, key: &str) -> Result<bool> {
-        self.get(key).and_then(Value::into_bool)
+        self.get_value(key)
+            .and_then(|value| value.into_bool().map_err(|e| e.extend_with_key(key)))
     }
 
     pub fn get_table(&self, key: &str) -> Result<Map<String, Value>> {
-        self.get(key).and_then(Value::into_table)
+        self.get_value(key)
+            .and_then(|value| value.into_table().map_err(|e| e.extend_with_key(key)))
     }
 
     pub fn get_array(&self, key: &str) -> Result<Vec<Value>> {
-        self.get(key).and_then(Value::into_array)
+        self.get_value(key)
+            .and_then(|value| value.into_array().map_err(|e| e.extend_with_key(key)))
     }
 
     /// Attempt to deserialize the entire configuration into the requested type.
@@ -199,11 +151,6 @@ impl Config {
         let mut serializer = ConfigSerializer::default();
         from.serialize(&mut serializer)?;
         Ok(serializer.output)
-    }
-
-    #[deprecated(since = "0.7.0", note = "please use 'try_deserialize' instead")]
-    pub fn deserialize<'de, T: Deserialize<'de>>(self) -> Result<T> {
-        self.try_deserialize()
     }
 }
 

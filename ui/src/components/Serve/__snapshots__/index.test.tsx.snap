@@ -1,29 +1,29 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Serve select 1`] = `
 <DocumentFragment>
   <div
-    class="serve"
+    class="_serve_2e8c38"
   >
     <div
-      class="serve-select"
+      class="_serve-select_2e8c38"
     >
       <span
-        class="serve-text"
+        class="_serve-text_2e8c38"
       >
         <span
-          class="label-required"
+          class="_label-required_2e8c38"
         >
           *
         </span>
         Serve
       </span>
       <div
-        class="field serve-form-field"
+        class="field _serve-form-field_2e8c38"
       >
         <div
           aria-expanded="false"
-          class="ui floating selection dropdown serve-dropdown"
+          class="ui floating selection dropdown _serve-dropdown_2e8c38"
           name="defaultServe"
           role="listbox"
           tabindex="0"
@@ -37,8 +37,8 @@ exports[`Serve select 1`] = `
             a percentage rollout
           </div>
           <span
-            class="iconfont icon-angle-down angle-down"
-            customclass="angle-down"
+            class="iconfont icon-angle-down _angle-down_2e8c38"
+            customclass="_angle-down_2e8c38"
             type="angle-down"
           />
           <div
@@ -52,14 +52,14 @@ exports[`Serve select 1`] = `
               style="pointer-events: all;"
             >
               <div
-                class="text dropdown-variation"
+                class="text _dropdown-variation_2e8c38"
               >
                 <span
-                  class="dropdown-variation-color"
+                  class="_dropdown-variation-color_2e8c38"
                   style="background: rgb(85, 110, 230);"
                 />
                 <span
-                  class="dropdown-variation-text"
+                  class="_dropdown-variation-text_2e8c38"
                 >
                   Variation 1
                 </span>
@@ -73,14 +73,14 @@ exports[`Serve select 1`] = `
               style="pointer-events: all;"
             >
               <div
-                class="text dropdown-variation"
+                class="text _dropdown-variation_2e8c38"
               >
                 <span
-                  class="dropdown-variation-color"
+                  class="_dropdown-variation-color_2e8c38"
                   style="background: rgb(255, 156, 27);"
                 />
                 <span
-                  class="dropdown-variation-text"
+                  class="_dropdown-variation-text_2e8c38"
                 >
                   Variation 2
                 </span>
@@ -104,39 +104,39 @@ exports[`Serve select 1`] = `
       </div>
     </div>
     <div
-      class="percentage-content"
+      class="_percentage-content_2e8c38"
     >
       <div
-        class="percentage"
+        class="_percentage_2e8c38"
       >
         <span
-          class="percentage-item"
+          class="_percentage-item_2e8c38"
           style="background: rgb(85, 110, 230);"
         />
         <span
-          class="percentage-item"
+          class="_percentage-item_2e8c38"
           style="background: rgb(255, 156, 27);"
         />
       </div>
       <div
-        class="message"
+        class="_message_2e8c38"
         name="defaultServe_total"
       >
         <span
-          class="iconfont icon-remove-circle message-iconfont"
-          customclass="message-iconfont"
+          class="iconfont icon-remove-circle _message-iconfont_2e8c38"
+          customclass="_message-iconfont_2e8c38"
           type="remove-circle"
         />
         100% needs to be assigned to a variation
       </div>
       <div
-        class="variation"
+        class="_variation_2e8c38"
       >
         <div
-          class="variation-item"
+          class="_variation-item_2e8c38"
         >
           <div
-            class="ui mini icon input variation-item-input"
+            class="ui mini icon input _variation-item-input_2e8c38"
           >
             <input
               type="text"
@@ -144,45 +144,45 @@ exports[`Serve select 1`] = `
             />
             <div>
               <span
-                class="input-percentage"
+                class="_input-percentage_2e8c38"
               >
                 %
               </span>
               <span
-                class="input-operation"
+                class="_input-operation_2e8c38"
               >
                 <span
-                  class="iconfont icon-angle-up iconfont"
-                  customclass="iconfont"
+                  class="iconfont icon-angle-up _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
                   type="angle-up"
                 />
                 <span
-                  class="iconfont icon-angle-down iconfont"
-                  customclass="iconfont"
+                  class="iconfont icon-angle-down _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
                   type="angle-down"
                 />
               </span>
             </div>
           </div>
           <div
-            class="variation-name"
+            class="_variation-name_2e8c38"
           >
             <span
-              class="variation-name-color"
+              class="_variation-name-color_2e8c38"
               style="background: rgb(85, 110, 230);"
             />
             <span
-              class="variation-name-text"
+              class="_variation-name-text_2e8c38"
             >
               Variation 1
             </span>
           </div>
         </div>
         <div
-          class="variation-item"
+          class="_variation-item_2e8c38"
         >
           <div
-            class="ui mini icon input variation-item-input"
+            class="ui mini icon input _variation-item-input_2e8c38"
           >
             <input
               type="text"
@@ -190,35 +190,35 @@ exports[`Serve select 1`] = `
             />
             <div>
               <span
-                class="input-percentage"
+                class="_input-percentage_2e8c38"
               >
                 %
               </span>
               <span
-                class="input-operation"
+                class="_input-operation_2e8c38"
               >
                 <span
-                  class="iconfont icon-angle-up iconfont"
-                  customclass="iconfont"
+                  class="iconfont icon-angle-up _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
                   type="angle-up"
                 />
                 <span
-                  class="iconfont icon-angle-down iconfont"
-                  customclass="iconfont"
+                  class="iconfont icon-angle-down _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
                   type="angle-down"
                 />
               </span>
             </div>
           </div>
           <div
-            class="variation-name"
+            class="_variation-name_2e8c38"
           >
             <span
-              class="variation-name-color"
+              class="_variation-name-color_2e8c38"
               style="background: rgb(255, 156, 27);"
             />
             <span
-              class="variation-name-text"
+              class="_variation-name-text_2e8c38"
             >
               Variation 2
             </span>
@@ -233,27 +233,27 @@ exports[`Serve select 1`] = `
 exports[`Serve snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="serve"
+    class="_serve_2e8c38"
   >
     <div
-      class="serve-select"
+      class="_serve-select_2e8c38"
     >
       <span
-        class="serve-text"
+        class="_serve-text_2e8c38"
       >
         <span
-          class="label-required"
+          class="_label-required_2e8c38"
         >
           *
         </span>
         Serve
       </span>
       <div
-        class="field serve-form-field"
+        class="field _serve-form-field_2e8c38"
       >
         <div
           aria-expanded="false"
-          class="ui floating selection dropdown serve-dropdown"
+          class="ui floating selection dropdown _serve-dropdown_2e8c38"
           name="defaultServe"
           role="listbox"
           tabindex="0"
@@ -267,8 +267,8 @@ exports[`Serve snapshot 1`] = `
             Please select serve
           </div>
           <span
-            class="iconfont icon-angle-down angle-down"
-            customclass="angle-down"
+            class="iconfont icon-angle-down _angle-down_2e8c38"
+            customclass="_angle-down_2e8c38"
             type="angle-down"
           />
           <div
@@ -298,27 +298,27 @@ exports[`Serve snapshot 1`] = `
 exports[`Serve snapshot 2`] = `
 <DocumentFragment>
   <div
-    class="serve"
+    class="_serve_2e8c38"
   >
     <div
-      class="serve-select"
+      class="_serve-select_2e8c38"
     >
       <span
-        class="serve-text"
+        class="_serve-text_2e8c38"
       >
         <span
-          class="label-required"
+          class="_label-required_2e8c38"
         >
           *
         </span>
         Serve
       </span>
       <div
-        class="field serve-form-field"
+        class="field _serve-form-field_2e8c38"
       >
         <div
           aria-expanded="false"
-          class="ui floating selection dropdown serve-dropdown"
+          class="ui floating selection dropdown _serve-dropdown_2e8c38"
           name="defaultServe"
           role="listbox"
           tabindex="0"
@@ -332,8 +332,8 @@ exports[`Serve snapshot 2`] = `
             Please select serve
           </div>
           <span
-            class="iconfont icon-angle-down angle-down"
-            customclass="angle-down"
+            class="iconfont icon-angle-down _angle-down_2e8c38"
+            customclass="_angle-down_2e8c38"
             type="angle-down"
           />
           <div
@@ -347,14 +347,14 @@ exports[`Serve snapshot 2`] = `
               style="pointer-events: all;"
             >
               <div
-                class="text dropdown-variation"
+                class="text _dropdown-variation_2e8c38"
               >
                 <span
-                  class="dropdown-variation-color"
+                  class="_dropdown-variation-color_2e8c38"
                   style="background: rgb(85, 110, 230);"
                 />
                 <span
-                  class="dropdown-variation-text"
+                  class="_dropdown-variation-text_2e8c38"
                 >
                   Variation 1
                 </span>
@@ -368,14 +368,14 @@ exports[`Serve snapshot 2`] = `
               style="pointer-events: all;"
             >
               <div
-                class="text dropdown-variation"
+                class="text _dropdown-variation_2e8c38"
               >
                 <span
-                  class="dropdown-variation-color"
+                  class="_dropdown-variation-color_2e8c38"
                   style="background: rgb(255, 156, 27);"
                 />
                 <span
-                  class="dropdown-variation-text"
+                  class="_dropdown-variation-text_2e8c38"
                 >
                   Variation 2
                 </span>
@@ -405,28 +405,28 @@ exports[`Serve snapshot 2`] = `
 exports[`Serve snapshot 3`] = `
 <DocumentFragment>
   <div
-    class="serve"
+    class="_serve_2e8c38"
   >
     <div
-      class="serve-select"
+      class="_serve-select_2e8c38"
     >
       <span
-        class="serve-text"
+        class="_serve-text_2e8c38"
       >
         <span
-          class="label-required"
+          class="_label-required_2e8c38"
         >
           *
         </span>
         Serve
       </span>
       <div
-        class="field serve-form-field"
+        class="field _serve-form-field_2e8c38"
       >
         <div
           aria-disabled="true"
           aria-expanded="false"
-          class="ui disabled floating selection dropdown serve-dropdown"
+          class="ui disabled floating selection dropdown _serve-dropdown_2e8c38"
           name="defaultServe"
           role="listbox"
           tabindex="-1"
@@ -440,8 +440,8 @@ exports[`Serve snapshot 3`] = `
             a percentage rollout
           </div>
           <span
-            class="iconfont icon-angle-down angle-down"
-            customclass="angle-down"
+            class="iconfont icon-angle-down _angle-down_2e8c38"
+            customclass="_angle-down_2e8c38"
             type="angle-down"
           />
           <div
@@ -455,14 +455,14 @@ exports[`Serve snapshot 3`] = `
               style="pointer-events: all;"
             >
               <div
-                class="text dropdown-variation"
+                class="text _dropdown-variation_2e8c38"
               >
                 <span
-                  class="dropdown-variation-color"
+                  class="_dropdown-variation-color_2e8c38"
                   style="background: rgb(85, 110, 230);"
                 />
                 <span
-                  class="dropdown-variation-text"
+                  class="_dropdown-variation-text_2e8c38"
                 >
                   Variation 1
                 </span>
@@ -476,14 +476,14 @@ exports[`Serve snapshot 3`] = `
               style="pointer-events: all;"
             >
               <div
-                class="text dropdown-variation"
+                class="text _dropdown-variation_2e8c38"
               >
                 <span
-                  class="dropdown-variation-color"
+                  class="_dropdown-variation-color_2e8c38"
                   style="background: rgb(255, 156, 27);"
                 />
                 <span
-                  class="dropdown-variation-text"
+                  class="_dropdown-variation-text_2e8c38"
                 >
                   Variation 2
                 </span>
@@ -507,39 +507,39 @@ exports[`Serve snapshot 3`] = `
       </div>
     </div>
     <div
-      class="percentage-content"
+      class="_percentage-content_2e8c38"
     >
       <div
-        class="percentage"
+        class="_percentage_2e8c38"
       >
         <span
-          class="percentage-item"
+          class="_percentage-item_2e8c38"
           style="width: 0%; background: rgb(85, 110, 230);"
         />
         <span
-          class="percentage-item"
+          class="_percentage-item_2e8c38"
           style="width: 0%; background: rgb(255, 156, 27);"
         />
       </div>
       <div
-        class="message"
+        class="_message_2e8c38"
         name="defaultServe_total"
       >
         <span
-          class="iconfont icon-remove-circle message-iconfont"
-          customclass="message-iconfont"
+          class="iconfont icon-remove-circle _message-iconfont_2e8c38"
+          customclass="_message-iconfont_2e8c38"
           type="remove-circle"
         />
         100% needs to be assigned to a variation
       </div>
       <div
-        class="variation"
+        class="_variation_2e8c38"
       >
         <div
-          class="variation-item"
+          class="_variation-item_2e8c38"
         >
           <div
-            class="ui mini disabled icon input variation-item-input"
+            class="ui mini disabled icon input _variation-item-input_2e8c38"
           >
             <input
               disabled=""
@@ -549,45 +549,45 @@ exports[`Serve snapshot 3`] = `
             />
             <div>
               <span
-                class="input-percentage"
+                class="_input-percentage_2e8c38"
               >
                 %
               </span>
               <span
-                class="input-operation"
+                class="_input-operation_2e8c38"
               >
                 <span
-                  class="iconfont icon-angle-up iconfont"
-                  customclass="iconfont"
+                  class="iconfont icon-angle-up _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
                   type="angle-up"
                 />
                 <span
-                  class="iconfont icon-angle-down iconfont"
-                  customclass="iconfont"
+                  class="iconfont icon-angle-down _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
                   type="angle-down"
                 />
               </span>
             </div>
           </div>
           <div
-            class="variation-name"
+            class="_variation-name_2e8c38"
           >
             <span
-              class="variation-name-color"
+              class="_variation-name-color_2e8c38"
               style="background: rgb(85, 110, 230);"
             />
             <span
-              class="variation-name-text"
+              class="_variation-name-text_2e8c38"
             >
               Variation 1
             </span>
           </div>
         </div>
         <div
-          class="variation-item"
+          class="_variation-item_2e8c38"
         >
           <div
-            class="ui mini disabled icon input variation-item-input"
+            class="ui mini disabled icon input _variation-item-input_2e8c38"
           >
             <input
               disabled=""
@@ -597,35 +597,35 @@ exports[`Serve snapshot 3`] = `
             />
             <div>
               <span
-                class="input-percentage"
+                class="_input-percentage_2e8c38"
               >
                 %
               </span>
               <span
-                class="input-operation"
+                class="_input-operation_2e8c38"
               >
                 <span
-                  class="iconfont icon-angle-up iconfont"
-                  customclass="iconfont"
+                  class="iconfont icon-angle-up _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
                   type="angle-up"
                 />
                 <span
-                  class="iconfont icon-angle-down iconfont"
-                  customclass="iconfont"
+                  class="iconfont icon-angle-down _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
                   type="angle-down"
                 />
               </span>
             </div>
           </div>
           <div
-            class="variation-name"
+            class="_variation-name_2e8c38"
           >
             <span
-              class="variation-name-color"
+              class="_variation-name-color_2e8c38"
               style="background: rgb(255, 156, 27);"
             />
             <span
-              class="variation-name-text"
+              class="_variation-name-text_2e8c38"
             >
               Variation 2
             </span>
@@ -640,28 +640,28 @@ exports[`Serve snapshot 3`] = `
 exports[`Serve snapshot 4`] = `
 <DocumentFragment>
   <div
-    class="serve"
+    class="_serve_2e8c38"
   >
     <div
-      class="serve-select"
+      class="_serve-select_2e8c38"
     >
       <span
-        class="serve-text"
+        class="_serve-text_2e8c38"
       >
         <span
-          class="label-required"
+          class="_label-required_2e8c38"
         >
           *
         </span>
         Serve
       </span>
       <div
-        class="field serve-form-field"
+        class="field _serve-form-field_2e8c38"
       >
         <div
           aria-disabled="false"
           aria-expanded="false"
-          class="ui floating selection dropdown serve-dropdown"
+          class="ui floating selection dropdown _serve-dropdown_2e8c38"
           name="defaultServe"
           role="listbox"
           tabindex="0"
@@ -675,8 +675,8 @@ exports[`Serve snapshot 4`] = `
             Variation 1
           </div>
           <span
-            class="iconfont icon-angle-down angle-down"
-            customclass="angle-down"
+            class="iconfont icon-angle-down _angle-down_2e8c38"
+            customclass="_angle-down_2e8c38"
             type="angle-down"
           />
           <div
@@ -690,14 +690,14 @@ exports[`Serve snapshot 4`] = `
               style="pointer-events: all;"
             >
               <div
-                class="text dropdown-variation"
+                class="text _dropdown-variation_2e8c38"
               >
                 <span
-                  class="dropdown-variation-color"
+                  class="_dropdown-variation-color_2e8c38"
                   style="background: rgb(85, 110, 230);"
                 />
                 <span
-                  class="dropdown-variation-text"
+                  class="_dropdown-variation-text_2e8c38"
                 >
                   Variation 1
                 </span>
@@ -711,14 +711,14 @@ exports[`Serve snapshot 4`] = `
               style="pointer-events: all;"
             >
               <div
-                class="text dropdown-variation"
+                class="text _dropdown-variation_2e8c38"
               >
                 <span
-                  class="dropdown-variation-color"
+                  class="_dropdown-variation-color_2e8c38"
                   style="background: rgb(255, 156, 27);"
                 />
                 <span
-                  class="dropdown-variation-text"
+                  class="_dropdown-variation-text_2e8c38"
                 >
                   Variation 2
                 </span>

@@ -4,9 +4,9 @@
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
  *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHORS DISCLAIM ALL WARRANTIES
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
  * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
@@ -23,15 +23,19 @@
  * but we haven't verified that assumption. TODO: Fix it so we don't need to
  * make that assumption. */
 
+/* Returns 0xfff..f if |a| is zero, and zero otherwise. */
+Limb LIMB_is_zero(const Limb a) {
+  return constant_time_is_zero_w(a);
+}
+
 /* Returns 0xfff..f if |a| is all zero limbs, and zero otherwise. |num_limbs|
  * may be zero. */
 Limb LIMBS_are_zero(const Limb a[], size_t num_limbs) {
-  Limb is_zero = CONSTTIME_TRUE_W;
+  Limb all = 0;
   for (size_t i = 0; i < num_limbs; ++i) {
-    is_zero = constant_time_select_w(is_zero, constant_time_is_zero_w(a[i]),
-                                     is_zero);
+    all |= a[i];
   }
-  return is_zero;
+  return LIMB_is_zero(all);
 }
 
 /* Returns 0xffff..f if |a == b|, and zero otherwise. |num_limbs| may be zero. */
@@ -41,29 +45,6 @@ Limb LIMBS_equal(const Limb a[], const Limb b[], size_t num_limbs) {
     eq = constant_time_select_w(eq, constant_time_eq_w(a[i], b[i]), eq);
   }
   return eq;
-}
-
-/* Returns 0xffff..f if |a == b|, and zero otherwise. |num_limbs| may be zero. */
-Limb LIMBS_equal_limb(const Limb a[], Limb b, size_t num_limbs) {
-  if (num_limbs == 0) {
-    return constant_time_is_zero_w(b);
-  }
-  debug_assert_nonsecret(num_limbs >= 1);
-  Limb lo_equal = constant_time_eq_w(a[0], b);
-  Limb hi_zero = LIMBS_are_zero(&a[1], num_limbs - 1);
-  return constant_time_select_w(lo_equal, hi_zero, 0);
-}
-
-/* Returns 0xfff..f if |a| is all zero limbs, and zero otherwise.
- * |num_limbs| may be zero. */
-Limb LIMBS_are_even(const Limb a[], size_t num_limbs) {
-  Limb lo;
-  if (num_limbs == 0) {
-    lo = 0;
-  } else {
-    lo = a[0];
-  }
-  return constant_time_is_zero_w(lo & 1);
 }
 
 /* Returns 0xffff...f if |a| is less than |b|, and zero otherwise. */
@@ -78,15 +59,6 @@ Limb LIMBS_less_than(const Limb a[], const Limb b[], size_t num_limbs) {
     borrow = limb_sbb(&dummy, a[i], b[i], borrow);
   }
   return constant_time_is_nonzero_w(borrow);
-}
-
-Limb LIMBS_less_than_limb(const Limb a[], Limb b, size_t num_limbs) {
-  debug_assert_nonsecret(num_limbs >= 1);
-
-  Limb dummy;
-  Limb lo = constant_time_is_nonzero_w(limb_sub(&dummy, a[0], b));
-  Limb hi = LIMBS_are_zero(&a[1], num_limbs - 1);
-  return constant_time_select_w(lo, hi, lo);
 }
 
 /* if (r >= m) { r -= m; } */
@@ -151,7 +123,7 @@ void LIMBS_shl_mod(Limb r[], const Limb a[], const Limb m[], size_t num_limbs) {
 }
 
 int LIMBS_select_512_32(Limb r[], const Limb table[], size_t num_limbs,
-                        crypto_word index) {
+                        crypto_word_t index) {
   if (num_limbs % (512 / LIMB_BITS) != 0) {
     return 0;
   }
@@ -161,7 +133,7 @@ int LIMBS_select_512_32(Limb r[], const Limb table[], size_t num_limbs,
 
 static const Limb FIVE_BITS_MASK = 0x1f;
 
-crypto_word LIMBS_window5_split_window(Limb lower_limb, Limb higher_limb, size_t index_within_word) {
+crypto_word_t LIMBS_window5_split_window(Limb lower_limb, Limb higher_limb, size_t index_within_word) {
   Limb high_bits = (higher_limb << (LIMB_BITS - index_within_word))
     & FIVE_BITS_MASK;
   // There are no bits outside the window above |index_within_word| (if there
@@ -171,7 +143,7 @@ crypto_word LIMBS_window5_split_window(Limb lower_limb, Limb higher_limb, size_t
   return low_bits | high_bits;
 }
 
-crypto_word LIMBS_window5_unsplit_window(Limb limb, size_t index_within_word) {
+crypto_word_t LIMBS_window5_unsplit_window(Limb limb, size_t index_within_word) {
   return (limb >> index_within_word) & FIVE_BITS_MASK;
 }
 
@@ -179,7 +151,7 @@ Limb LIMB_shr(Limb a, size_t shift) {
   return a >> shift;
 }
 
-Limb GFp_limbs_mul_add_limb(Limb r[], const Limb a[], Limb b, size_t num_limbs) {
+Limb limbs_mul_add_limb(Limb r[], const Limb a[], Limb b, size_t num_limbs) {
   Limb carried = 0;
   for (size_t i = 0; i < num_limbs; ++i) {
     Limb lo;

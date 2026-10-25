@@ -1,5 +1,7 @@
+import asset_archived_en_png from 'images/archived-en.png';
+import asset_archived_zh_png from 'images/archived-zh.png';
 import { SyntheticEvent, useCallback, useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Popup } from 'semantic-ui-react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { EnvironmentColors } from 'constants/colors';
@@ -16,6 +18,7 @@ import { environmentContainer } from '../../provider';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   item: IEnvironment;
   total: number;
   index: number;
@@ -27,13 +30,13 @@ interface IProps {
 
 const EnvironmentCard = (props: IProps) => {
   const { item, index, projectKey, total, isArchived, handleEditEnvironment, refreshEnvironmentList } = props;
-  const history = useHistory();
+  const navigate = useNavigate();
   const [ open, setMenuOpen ] = useState<boolean>(false);
   const [ archiveOpen, setArchiveOpen] = useState<boolean>(false);
   const [ restoreOpen, setRestoreOpen] = useState<boolean>(false);
   const intl = useIntl();
 
-  const { 
+  const {
     saveEnvironmentInfo,
     saveOriginEnvironmentInfo,
   } = environmentContainer.useContainer();
@@ -56,8 +59,8 @@ const EnvironmentCard = (props: IProps) => {
     if (isArchived) {
       return;
     }
-    history.push(`/${projectKey}/${environmentKey}/toggles`);
-  }, [isArchived, history, projectKey]);
+    navigate(`/${projectKey}/${environmentKey}/toggles`);
+  }, [isArchived, navigate, projectKey]);
 
   const confirmArchiveEnv = useCallback(async () => {
     const res = await offlineEnvironment(projectKey, item.key);
@@ -82,9 +85,9 @@ const EnvironmentCard = (props: IProps) => {
   }, [item.key, projectKey, intl, refreshEnvironmentList]);
 
 	return (
-    <div 
-      className={styles.environment} 
-      onClick={() => handleGotoToggle(item.key)} 
+    <div
+      className={styles.environment}
+      onClick={() => handleGotoToggle(item.key)}
     >
       <div style={{background: EnvironmentColors[index % 5]}} className={styles['environment-line']}></div>
       <div className={styles.content}>
@@ -92,9 +95,9 @@ const EnvironmentCard = (props: IProps) => {
           isArchived && (
             <div>
               {
-                i18n === 'en-US' 
-                  ? <img className={styles['archived-img']} src={require('images/archived-en.png')} alt='archived' />
-                  : <img className={styles['archived-img']} src={require('images/archived-zh.png')} alt='archived' />
+                i18n === 'en-US'
+                  ? <img className={styles['archived-img']} src={asset_archived_en_png} alt='archived' />
+                  : <img className={styles['archived-img']} src={asset_archived_zh_png} alt='archived' />
               }
               <div className={styles['archived-bg']}></div>
             </div>
@@ -113,7 +116,7 @@ const EnvironmentCard = (props: IProps) => {
                 className={styles.popup}
                 onUnmount={() => setMenuOpen(false)}
                 trigger={
-                  <div 
+                  <div
                     onClick={(e: SyntheticEvent) => {
                       document.body.click();
                       e.stopPropagation();
@@ -153,10 +156,10 @@ const EnvironmentCard = (props: IProps) => {
                       </div>
                     ) : (
                       total > 1 && (
-                        <div 
-                          className={styles['menu-item']} 
-                          onClick={() => { 
-                            setArchiveOpen(true); 
+                        <div
+                          className={styles['menu-item']}
+                          onClick={() => {
+                            setArchiveOpen(true);
                           }}
                         >
                           <FormattedMessage id='projects.menu.archive.environment' />
@@ -195,7 +198,7 @@ const EnvironmentCard = (props: IProps) => {
         </div>
       </div>
 
-      <Modal 
+      <Modal
         open={archiveOpen}
         width={400}
         handleCancel={(e: SyntheticEvent) => {
@@ -221,7 +224,7 @@ const EnvironmentCard = (props: IProps) => {
         </div>
       </Modal>
 
-      <Modal 
+      <Modal
         open={restoreOpen}
         width={400}
         handleCancel={(e: SyntheticEvent) => {

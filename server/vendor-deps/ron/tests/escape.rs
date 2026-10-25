@@ -1,6 +1,7 @@
+use std::{char::from_u32, fmt::Debug};
+
 use ron::{de::from_str, ser::to_string};
 use serde::{Deserialize, Serialize};
-use std::{char::from_u32, fmt::Debug};
 
 #[test]
 fn test_escape_basic() {
@@ -8,6 +9,31 @@ fn test_escape_basic() {
 
     assert_eq!(from_str::<String>("\"\\x07\"").unwrap(), "\x07");
     assert_eq!(from_str::<String>("\"\\u{7}\"").unwrap(), "\x07");
+
+    assert_eq!(from_str::<char>("\'\\x07\'").unwrap(), '\x07');
+    assert_eq!(from_str::<char>("\'\\u{7}\'").unwrap(), '\x07');
+
+    assert_eq!(
+        from_str::<char>("\'\\u{}\'").unwrap_err(),
+        ron::error::SpannedError {
+            code: ron::Error::InvalidEscape("Expected 1-6 digits, got 0 digits in Unicode escape"),
+            span: ron::error::Span {
+                start: ron::error::Position { line: 1, col: 4 },
+                end: ron::error::Position { line: 1, col: 5 },
+            }
+        }
+    );
+
+    assert_eq!(
+        from_str::<char>("\'\\q\'").unwrap_err(),
+        ron::error::SpannedError {
+            code: ron::Error::InvalidEscape("Unknown escape character"),
+            span: ron::error::Span {
+                start: ron::error::Position { line: 1, col: 1 },
+                end: ron::error::Position { line: 1, col: 4 },
+            }
+        }
+    )
 }
 
 fn check_same<T>(t: T)
@@ -28,12 +54,12 @@ fn test_ascii_10() {
 
 #[test]
 fn test_ascii_chars() {
-    (1..128).into_iter().flat_map(from_u32).for_each(check_same)
+    (1..128).flat_map(from_u32).for_each(check_same)
 }
 
 #[test]
 fn test_ascii_string() {
-    let s: String = (1..128).into_iter().flat_map(from_u32).collect();
+    let s: String = (1..128).flat_map(from_u32).collect();
 
     check_same(s);
 }

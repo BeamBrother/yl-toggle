@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import styles from './settingCard.module.scss';
 
 interface SettingCardProps {
+  children?: import('react').ReactNode;
   title: ReactNode;
 }
 

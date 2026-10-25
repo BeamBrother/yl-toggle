@@ -1,7 +1,6 @@
-use core::arch::asm;
-use core::marker::PhantomData;
+use core::{arch::asm, marker::PhantomData};
 
-use super::io::Io;
+use super::Io;
 
 /// Generic PIO
 #[derive(Copy, Clone)]

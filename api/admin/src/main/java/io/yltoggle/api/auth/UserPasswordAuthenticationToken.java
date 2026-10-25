@@ -21,7 +21,7 @@ public class UserPasswordAuthenticationToken extends AbstractAuthenticationToken
 
     public UserPasswordAuthenticationToken(String account, String source, String password,
                                            String organizationId, Boolean initializeOrganization) {
-        super(null);
+        super(java.util.List.of());
         this.account = account;
         this.source = source;
         this.password = password;

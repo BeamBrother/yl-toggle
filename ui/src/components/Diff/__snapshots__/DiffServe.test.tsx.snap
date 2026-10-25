@@ -1,9 +1,9 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`DiffServe snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="serve-diff"
+    class="_serve-diff_12dcfb"
   >
     <div>
       <table
@@ -13,7 +13,7 @@ exports[`DiffServe snapshot 1`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -25,7 +25,7 @@ exports[`DiffServe snapshot 1`] = `
               colspan="5"
             >
               <div
-                class="diff-field-value field-value-remove"
+                class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
               >
                 name 1
               </div>
@@ -42,7 +42,7 @@ exports[`DiffServe snapshot 1`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -54,7 +54,7 @@ exports[`DiffServe snapshot 1`] = `
               colspan="5"
             >
               <div
-                class="diff-field-value field-value-add"
+                class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
               >
                 name 2
               </div>
@@ -70,7 +70,7 @@ exports[`DiffServe snapshot 1`] = `
 exports[`DiffServe snapshot 2`] = `
 <DocumentFragment>
   <div
-    class="serve-diff"
+    class="_serve-diff_12dcfb"
   >
     <div>
       <table
@@ -80,7 +80,7 @@ exports[`DiffServe snapshot 2`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -92,7 +92,7 @@ exports[`DiffServe snapshot 2`] = `
               colspan="5"
             >
               <div
-                class="diff-field-value field-value-remove"
+                class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
               >
                 name 1
               </div>
@@ -109,7 +109,7 @@ exports[`DiffServe snapshot 2`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -122,12 +122,12 @@ exports[`DiffServe snapshot 2`] = `
             >
               <div>
                 <div
-                  class="diff-field-value field-value-add"
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
                 >
                   50
                 </div>
                 <div
-                  class="diff-field-value field-value-add"
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
                 >
                   20
                 </div>
@@ -144,7 +144,7 @@ exports[`DiffServe snapshot 2`] = `
 exports[`DiffServe snapshot 3`] = `
 <DocumentFragment>
   <div
-    class="serve-diff"
+    class="_serve-diff_12dcfb"
   >
     <div>
       <table
@@ -154,7 +154,7 @@ exports[`DiffServe snapshot 3`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -166,7 +166,7 @@ exports[`DiffServe snapshot 3`] = `
               colspan="5"
             >
               <div
-                class="diff-field-value field-value-same"
+                class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
               >
                 name 1
               </div>
@@ -183,7 +183,7 @@ exports[`DiffServe snapshot 3`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -195,7 +195,7 @@ exports[`DiffServe snapshot 3`] = `
               colspan="5"
             >
               <div
-                class="diff-field-value field-value-same"
+                class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
               >
                 name 1
               </div>
@@ -211,7 +211,7 @@ exports[`DiffServe snapshot 3`] = `
 exports[`DiffServe snapshot 4`] = `
 <DocumentFragment>
   <div
-    class="serve-diff"
+    class="_serve-diff_12dcfb"
   >
     <div>
       <table
@@ -221,7 +221,7 @@ exports[`DiffServe snapshot 4`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -233,12 +233,12 @@ exports[`DiffServe snapshot 4`] = `
               colspan="5"
             >
               <div
-                class="diff-field-value field-value-remove"
+                class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
               >
                 50
               </div>
               <div
-                class="diff-field-value field-value-remove"
+                class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
               >
                 50
               </div>
@@ -255,7 +255,7 @@ exports[`DiffServe snapshot 4`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -267,12 +267,12 @@ exports[`DiffServe snapshot 4`] = `
               colspan="5"
             >
               <div
-                class="diff-field-value field-value-add"
+                class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
               >
                 40
               </div>
               <div
-                class="diff-field-value field-value-add"
+                class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
               >
                 60
               </div>
@@ -288,7 +288,7 @@ exports[`DiffServe snapshot 4`] = `
 exports[`DiffServe snapshot 5`] = `
 <DocumentFragment>
   <div
-    class="serve-diff"
+    class="_serve-diff_12dcfb"
   >
     <div>
       <table
@@ -298,7 +298,7 @@ exports[`DiffServe snapshot 5`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -311,12 +311,12 @@ exports[`DiffServe snapshot 5`] = `
             >
               <div>
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   10
                 </div>
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   90
                 </div>
@@ -334,7 +334,7 @@ exports[`DiffServe snapshot 5`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -347,12 +347,12 @@ exports[`DiffServe snapshot 5`] = `
             >
               <div>
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   10
                 </div>
                 <div
-                  class="diff-field-value field-value-undefined"
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
                 >
                   90
                 </div>
@@ -369,7 +369,7 @@ exports[`DiffServe snapshot 5`] = `
 exports[`DiffServe snapshot 6`] = `
 <DocumentFragment>
   <div
-    class="serve-diff"
+    class="_serve-diff_12dcfb"
   >
     <div>
       <table
@@ -379,7 +379,7 @@ exports[`DiffServe snapshot 6`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -391,7 +391,7 @@ exports[`DiffServe snapshot 6`] = `
               colspan="5"
             >
               <div
-                class="diff-field-value field-value-undefined"
+                class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
               >
                 name 1
               </div>
@@ -408,7 +408,7 @@ exports[`DiffServe snapshot 6`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -420,7 +420,7 @@ exports[`DiffServe snapshot 6`] = `
               colspan="5"
             >
               <div
-                class="diff-field-value field-value-undefined"
+                class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
               >
                 name 1
               </div>
@@ -436,7 +436,7 @@ exports[`DiffServe snapshot 6`] = `
 exports[`DiffServe snapshot 7`] = `
 <DocumentFragment>
   <div
-    class="serve-diff"
+    class="_serve-diff_12dcfb"
   >
     <div>
       <table
@@ -446,7 +446,7 @@ exports[`DiffServe snapshot 7`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -458,13 +458,13 @@ exports[`DiffServe snapshot 7`] = `
               colspan="5"
             >
               <div
-                class="diff-field-value field-value-same"
+                class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
                 style="background: rgba(33, 37, 41, 0.08);"
               >
                 50
               </div>
               <div
-                class="diff-field-value field-value-remove"
+                class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
               >
                 50
               </div>
@@ -481,7 +481,7 @@ exports[`DiffServe snapshot 7`] = `
           class=""
         >
           <tr
-            class="diff-item-modify condition-diff-item"
+            class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
           >
             <td
               class=""
@@ -493,13 +493,13 @@ exports[`DiffServe snapshot 7`] = `
               colspan="5"
             >
               <div
-                class="diff-field-value field-value-same"
+                class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
                 style="background: rgba(33, 37, 41, 0.08);"
               >
                 50
               </div>
               <div
-                class="diff-field-value field-value-add"
+                class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
               >
                 60
               </div>

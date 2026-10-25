@@ -1,9 +1,5 @@
 import { diffArrays, ArrayChange } from 'diff';
 
-const diff = {
-  diffArrays,
-};
-
 export interface DiffObj {
   [x: string]: unknown;
 }
@@ -50,21 +46,21 @@ const compared = (obj1: DiffObj | ArrayObj, obj2: DiffObj | ArrayObj) => {
 //diff any object or array
 function diffObj(left: unknown, right: unknown): ArrayChange<ArrayObj | DiffObj>[] {
   if (left instanceof Array && right instanceof Array) {
-    return diff.diffArrays<ArrayObj, ArrayObj>(left as ArrayObj[], right as ArrayObj[], {
+    return diffArrays<ArrayObj | DiffObj>(left as ArrayObj[], right as ArrayObj[], {
       comparator: compared,
     });
   } else {
     const leftArr = Object.keys(left as object)
       .map((key) => {
         if (key === 'objects' && (left as DiffObj)['leftPredicate'] ) {
-          return { 
-            __key: key, 
-            __value: 
-              '' + 
-              displayMap.get((left as DiffObj)['leftPredicate'] as string) + 
-              (left as DiffObj)['objects'] + 
-              ', ' + 
-              (left as DiffObj)['rightObjects'] + 
+          return {
+            __key: key,
+            __value:
+              '' +
+              displayMap.get((left as DiffObj)['leftPredicate'] as string) +
+              (left as DiffObj)['objects'] +
+              ', ' +
+              (left as DiffObj)['rightObjects'] +
               displayMap.get((left as DiffObj)['rightPredicate'] as string)
             };
         } else {
@@ -80,14 +76,14 @@ function diffObj(left: unknown, right: unknown): ArrayChange<ArrayObj | DiffObj>
     const rightArr = Object.keys(right as object)
       .map((key) => {
         if (key === 'objects' && (right as DiffObj)['leftPredicate']) {
-          return { 
-            __key: key, 
-            __value: 
-              '' + 
-              displayMap.get((right as DiffObj)['leftPredicate'] as string) + 
-              (right as DiffObj)['objects'] + 
-              ', ' + 
-              (right as DiffObj)['rightObjects'] + 
+          return {
+            __key: key,
+            __value:
+              '' +
+              displayMap.get((right as DiffObj)['leftPredicate'] as string) +
+              (right as DiffObj)['objects'] +
+              ', ' +
+              (right as DiffObj)['rightObjects'] +
               displayMap.get((right as DiffObj)['rightPredicate'] as string)
             };
         } else {
@@ -101,7 +97,7 @@ function diffObj(left: unknown, right: unknown): ArrayChange<ArrayObj | DiffObj>
         return a.__key > b.__key ? 1 : -1;
       });
 
-    return diff.diffArrays(leftArr, rightArr, {
+    return diffArrays<ArrayObj | DiffObj>(leftArr, rightArr, {
       comparator: compared,
     });
   }

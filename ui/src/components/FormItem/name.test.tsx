@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import { FieldErrorsImpl, useForm } from 'react-hook-form';
 import { IntlWrapper } from 'components/utils/wrapper';
 import FormItemName from './name';
@@ -19,8 +19,8 @@ const SnapshotTest = (props: { errors?: Partial<FieldErrorsImpl<{
   />;
 };
 
-it('Name snapshot', () => {
-  (async () => {
+it('Name snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(
       <SnapshotTest />,
       {

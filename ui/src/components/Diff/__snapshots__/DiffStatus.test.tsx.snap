@@ -1,31 +1,31 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`DiffStatus snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="diff-status-content"
+    class="_diff-status-content_0dfc2b"
   >
     <div
-      class="diff-status-item"
+      class="_diff-status-item_0dfc2b"
     >
       <div
-        class="diff-status-field"
+        class="_diff-status-field_0dfc2b"
       >
         <div
-          class="diff-field-value field-value-remove"
+          class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
         >
           disabled
         </div>
       </div>
     </div>
     <div
-      class="diff-status-item"
+      class="_diff-status-item_0dfc2b"
     >
       <div
-        class="diff-status-field"
+        class="_diff-status-field_0dfc2b"
       >
         <div
-          class="diff-field-value field-value-add"
+          class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
         >
           enabled
         </div>
@@ -38,20 +38,20 @@ exports[`DiffStatus snapshot 1`] = `
 exports[`DiffStatus snapshot 2`] = `
 <DocumentFragment>
   <div
-    class="diff-status-content"
+    class="_diff-status-content_0dfc2b"
   >
     <div
-      class="diff-status-item"
+      class="_diff-status-item_0dfc2b"
     >
       <div
-        class="diff-status-field"
+        class="_diff-status-field_0dfc2b"
       />
     </div>
     <div
-      class="diff-status-item"
+      class="_diff-status-item_0dfc2b"
     >
       <div
-        class="diff-status-field"
+        class="_diff-status-field_0dfc2b"
       />
     </div>
   </div>
@@ -61,29 +61,29 @@ exports[`DiffStatus snapshot 2`] = `
 exports[`DiffStatus snapshot 3`] = `
 <DocumentFragment>
   <div
-    class="diff-status-content"
+    class="_diff-status-content_0dfc2b"
   >
     <div
-      class="diff-status-item"
+      class="_diff-status-item_0dfc2b"
     >
       <div
-        class="diff-status-field"
+        class="_diff-status-field_0dfc2b"
       >
         <div
-          class="diff-field-value field-value-remove"
+          class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
         >
           enabled
         </div>
       </div>
     </div>
     <div
-      class="diff-status-item"
+      class="_diff-status-item_0dfc2b"
     >
       <div
-        class="diff-status-field"
+        class="_diff-status-field_0dfc2b"
       >
         <div
-          class="diff-field-value field-value-add"
+          class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
         >
           disabled
         </div>

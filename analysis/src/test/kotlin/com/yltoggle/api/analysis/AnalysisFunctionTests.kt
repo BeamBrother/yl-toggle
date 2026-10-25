@@ -3,8 +3,8 @@ package com.yltoggle.api.analysis
 import org.apache.commons.math3.distribution.BetaDistribution
 import org.apache.commons.math3.distribution.ConstantRealDistribution
 import org.apache.commons.math3.distribution.NormalDistribution
-import org.junit.Assert.*
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 class AnalysisFunctionKtTests{
 

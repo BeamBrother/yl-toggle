@@ -1,15 +1,20 @@
 use crate::task::{waker_ref, ArcWake};
+use alloc::sync::{Arc, Weak};
+use core::cell::UnsafeCell;
+use core::fmt;
+use core::hash::Hasher;
+use core::pin::Pin;
+use core::ptr;
+use core::sync::atomic::AtomicUsize;
+use core::sync::atomic::Ordering::{Acquire, SeqCst};
 use futures_core::future::{FusedFuture, Future};
 use futures_core::task::{Context, Poll, Waker};
 use slab::Slab;
-use std::cell::UnsafeCell;
-use std::fmt;
-use std::hash::Hasher;
-use std::pin::Pin;
-use std::ptr;
-use std::sync::atomic::AtomicUsize;
-use std::sync::atomic::Ordering::{Acquire, SeqCst};
-use std::sync::{Arc, Mutex, Weak};
+
+#[cfg(feature = "std")]
+type Mutex<T> = std::sync::Mutex<T>;
+#[cfg(not(feature = "std"))]
+type Mutex<T> = spin::Mutex<T>;
 
 /// Future for the [`shared`](super::FutureExt::shared) method.
 #[must_use = "futures do nothing unless you `.await` or poll them"]
@@ -36,10 +41,6 @@ impl<Fut: Future> Clone for WeakShared<Fut> {
         Self(self.0.clone())
     }
 }
-
-// The future itself is polled behind the `Arc`, so it won't be moved
-// when `Shared` is moved.
-impl<Fut: Future> Unpin for Shared<Fut> {}
 
 impl<Fut: Future> fmt::Debug for Shared<Fut> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -86,7 +87,7 @@ const POLLING: usize = 1;
 const COMPLETE: usize = 2;
 const POISONED: usize = 3;
 
-const NULL_WAKER_KEY: usize = usize::max_value();
+const NULL_WAKER_KEY: usize = usize::MAX;
 
 impl<Fut: Future> Shared<Fut> {
     pub(super) fn new(future: Fut) -> Self {
@@ -196,8 +197,8 @@ where
     /// Safety: callers must first ensure that `self.inner.state`
     /// is `COMPLETE`
     unsafe fn output(&self) -> &Fut::Output {
-        match &*self.future_or_output.get() {
-            FutureOrOutput::Output(ref item) => item,
+        match unsafe { &*self.future_or_output.get() } {
+            FutureOrOutput::Output(item) => item,
             FutureOrOutput::Future(_) => unreachable!(),
         }
     }
@@ -210,7 +211,10 @@ where
 {
     /// Registers the current task to receive a wakeup when we are awoken.
     fn record_waker(&self, waker_key: &mut usize, cx: &mut Context<'_>) {
+        #[cfg(feature = "std")]
         let mut wakers_guard = self.notifier.wakers.lock().unwrap();
+        #[cfg(not(feature = "std"))]
+        let mut wakers_guard = self.notifier.wakers.lock();
 
         let wakers = match wakers_guard.as_mut() {
             Some(wakers) => wakers,
@@ -239,7 +243,7 @@ where
                 FutureOrOutput::Output(item) => item,
                 FutureOrOutput::Future(_) => unreachable!(),
             },
-            Err(inner) => inner.output().clone(),
+            Err(inner) => unsafe { inner.output().clone() },
         }
     }
 }
@@ -349,7 +353,11 @@ where
         inner.notifier.state.store(COMPLETE, SeqCst);
 
         // Wake all tasks and drop the slab
+        #[cfg(feature = "std")]
         let mut wakers_guard = inner.notifier.wakers.lock().unwrap();
+        #[cfg(not(feature = "std"))]
+        let mut wakers_guard = inner.notifier.wakers.lock();
+
         let mut wakers = wakers_guard.take().unwrap();
         for waker in wakers.drain().flatten() {
             waker.wake();
@@ -379,10 +387,15 @@ where
     fn drop(&mut self) {
         if self.waker_key != NULL_WAKER_KEY {
             if let Some(ref inner) = self.inner {
+                #[cfg(feature = "std")]
                 if let Ok(mut wakers) = inner.notifier.wakers.lock() {
                     if let Some(wakers) = wakers.as_mut() {
                         wakers.remove(self.waker_key);
                     }
+                }
+                #[cfg(not(feature = "std"))]
+                if let Some(wakers) = inner.notifier.wakers.lock().as_mut() {
+                    wakers.remove(self.waker_key);
                 }
             }
         }
@@ -391,7 +404,11 @@ where
 
 impl ArcWake for Notifier {
     fn wake_by_ref(arc_self: &Arc<Self>) {
+        #[cfg(feature = "std")]
         let wakers = &mut *arc_self.wakers.lock().unwrap();
+        #[cfg(not(feature = "std"))]
+        let wakers = &mut *arc_self.wakers.lock();
+
         if let Some(wakers) = wakers.as_mut() {
             for (_key, opt_waker) in wakers {
                 if let Some(waker) = opt_waker.take() {

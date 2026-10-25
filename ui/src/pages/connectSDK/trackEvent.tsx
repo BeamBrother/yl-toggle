@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useParams } from 'react-router-dom';
 import ProjectLayout from 'layout/projectLayout';
 import Loading from 'components/Loading';
 import SelectSDK from './components/SelectSDK';
@@ -18,6 +17,7 @@ import { IEvent } from 'interfaces/analysis';
 import { CLICK, CUSTOM, PAGE_VIEW } from 'pages/analysis/constants';
 
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IStep {
   [x: string]: {
@@ -77,7 +77,7 @@ const AccessEvent = () => {
 
   const init = useCallback(async() => {
     Promise.all([
-      getFromDictionary<IDictionary>(KEY), 
+      getFromDictionary<IDictionary>(KEY),
       getToggleAttributes<string[]>(projectKey, environmentKey, toggleKey),
       getEventDetail<IEvent>(projectKey, environmentKey, toggleKey)
     ]).then(res => {
@@ -109,12 +109,12 @@ const AccessEvent = () => {
     });
 
     Promise.all([
-      getProjectInfo<IProject>(projectKey), 
-      getEnvironment<IEnvironment>(projectKey, environmentKey), 
+      getProjectInfo<IProject>(projectKey),
+      getEnvironment<IEnvironment>(projectKey, environmentKey),
       getToggleInfo<IToggleInfo>(projectKey, environmentKey, toggleKey)
     ]).then(res => {
       saveIsInfoLoading(false);
-      
+
       if (res[0].success && res[0].data) {
         saveProjectName(res[0].data.name);
       }
@@ -273,7 +273,7 @@ const AccessEvent = () => {
           {
             isStepLoading ? <Loading /> : (
               <>
-                <SelectSDK 
+                <SelectSDK
                   currentStep={currentStep}
                   currentSDK={currentSDK}
                   clientAvailability={clientAvailability}
@@ -284,7 +284,7 @@ const AccessEvent = () => {
                   goBackToStep={goBackToStep}
                 />
 
-                <TrackEvent 
+                <TrackEvent
                   attributes={attributes}
                   currentStep={currentStep}
                   currentSDK={currentSDK}
@@ -296,8 +296,8 @@ const AccessEvent = () => {
                   saveStep={saveSecondStep}
                   goBackToStep={goBackToStep}
                 />
-                  
-                <TestConnection 
+
+                <TestConnection
                  isLoading={isTrackLoading}
                  projectKey={projectKey}
                  currentSDK={currentSDK}

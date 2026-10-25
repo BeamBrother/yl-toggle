@@ -1,35 +1,9 @@
 //! Rejection response types.
 
-use crate::{
-    response::{IntoResponse, Response},
-    BoxError,
-};
-use http::StatusCode;
-use std::fmt;
+use crate::__composite_rejection as composite_rejection;
+use crate::__define_rejection as define_rejection;
 
-/// Rejection type used if you try and extract the request body more than
-/// once.
-#[derive(Debug, Default)]
-#[non_exhaustive]
-pub struct BodyAlreadyExtracted;
-
-impl BodyAlreadyExtracted {
-    const BODY: &'static str = "Cannot have two request body extractors for a single handler";
-}
-
-impl IntoResponse for BodyAlreadyExtracted {
-    fn into_response(self) -> Response {
-        (StatusCode::INTERNAL_SERVER_ERROR, Self::BODY).into_response()
-    }
-}
-
-impl fmt::Display for BodyAlreadyExtracted {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", Self::BODY)
-    }
-}
-
-impl std::error::Error for BodyAlreadyExtracted {}
+use crate::{BoxError, Error};
 
 composite_rejection! {
     /// Rejection type for extractors that buffer the request body. Used if the
@@ -45,7 +19,18 @@ impl FailedToBufferBody {
     where
         E: Into<BoxError>,
     {
-        match err.into().downcast::<http_body::LengthLimitError>() {
+        // two layers of boxes here because `with_limited_body`
+        // wraps the `http_body_util::Limited` in a `axum_core::Body`
+        // which also wraps the error type
+        let box_error = match err.into().downcast::<Error>() {
+            Ok(err) => err.into_inner(),
+            Err(err) => err,
+        };
+        let box_error = match box_error.downcast::<Error>() {
+            Ok(err) => err.into_inner(),
+            Err(err) => err,
+        };
+        match box_error.downcast::<http_body_util::LengthLimitError>() {
             Ok(err) => Self::LengthLimitError(LengthLimitError::from_err(err)),
             Err(err) => Self::UnknownBodyError(UnknownBodyError::from_err(err)),
         }
@@ -57,10 +42,8 @@ define_rejection! {
     #[body = "Failed to buffer the request body"]
     /// Encountered some other error when buffering the body.
     ///
-    /// This can  _only_ happen when you're using [`tower_http::limit::RequestBodyLimitLayer`] or
-    /// otherwise wrapping request bodies in [`http_body::Limited`].
-    ///
-    /// [`tower_http::limit::RequestBodyLimitLayer`]: https://docs.rs/tower-http/0.3/tower_http/limit/struct.RequestBodyLimitLayer.html
+    /// This can _only_ happen when you're using [`tower_http::limit::RequestBodyLimitLayer`] or
+    /// otherwise wrapping request bodies in [`http_body_util::Limited`].
     pub struct LengthLimitError(Error);
 }
 
@@ -85,7 +68,6 @@ composite_rejection! {
     /// Contains one variant for each way the [`Bytes`](bytes::Bytes) extractor
     /// can fail.
     pub enum BytesRejection {
-        BodyAlreadyExtracted,
         FailedToBufferBody,
     }
 }
@@ -95,7 +77,6 @@ composite_rejection! {
     ///
     /// Contains one variant for each way the [`String`] extractor can fail.
     pub enum StringRejection {
-        BodyAlreadyExtracted,
         FailedToBufferBody,
         InvalidUtf8,
     }

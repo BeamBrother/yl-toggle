@@ -22,20 +22,19 @@ name = "yl_toggle_event"
 path = "src/lib.rs"
 
 [dependencies.axum]
-version = "0.5"
-features = ["headers"]
+version = "0.8.9"
 optional = true
 
 [dependencies.headers]
-version = "0.3"
+version = "0.4"
 
 [dependencies.parking_lot]
-version = "0.12"
+version = "0.13"
 
 [dependencies.reqwest]
-version = "0.11"
+version = "0.13"
 features = [
-    "rustls-tls",
+    "rustls",
     "json",
 ]
 optional = true
@@ -49,7 +48,7 @@ features = ["derive"]
 version = "1.0"
 
 [dependencies.thiserror]
-version = "1.0"
+version = "2.0"
 
 [dependencies.tokio]
 version = "1"
@@ -79,7 +78,7 @@ version = "1.4"
 
 [dev-dependencies.reqwest]
 version = "0.11"
-features = ["rustls-tls"]
+features = ["rustls"]
 default-features = false
 
 [dev-dependencies.rusty-hook]
@@ -95,11 +94,23 @@ version = "0.1"
 [dev-dependencies.tracing-subscriber]
 version = "0.3"
 
+[dependencies.async-trait]
+version = "0.1"
+
+[dependencies.axum-extra]
+version = "0.12.6"
+features = ["typed-header"]
+optional = true
 [features]
-collector = ["axum"]
+collector = ["axum", "axum-extra"]
 default = ["use_std"]
 use_std = ["ureq"]
 use_tokio = [
     "reqwest",
     "tokio",
 ]
+
+
+
+
+

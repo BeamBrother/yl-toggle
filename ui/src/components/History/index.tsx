@@ -1,3 +1,4 @@
+import asset_no_data_png from 'images/no-data.png';
 import { SyntheticEvent } from 'react';
 import { Popup } from 'semantic-ui-react';
 import { FormattedMessage } from 'react-intl';
@@ -10,6 +11,7 @@ import { IVersion } from 'interfaces/targeting';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   versions: IVersion[];
   hasMore: boolean;
   latestVersion: number;
@@ -73,9 +75,9 @@ const History = (props: IProps) => {
                   );
 
                   return (
-                    <div 
-                      key={item.version} 
-                      className={styles.version} 
+                    <div
+                      key={item.version}
+                      className={styles.version}
                       onClick={(e: SyntheticEvent) => {
                         e.stopPropagation();
                         if (item?.version === Number(selectedVersion)) {
@@ -193,7 +195,7 @@ const History = (props: IProps) => {
               {
                 versions.length === 0 && (
                   <div className={styles['no-data']}>
-                    <img className={styles['no-data-image']} src={require('images/no-data.png')} alt='no-data' />
+                    <img className={styles['no-data-image']} src={asset_no_data_png} alt='no-data' />
                     <FormattedMessage id='common.nodata.text' />
                   </div>
                 )

@@ -1,5 +1,5 @@
 use crate::loom::thread::AccessError;
-use crate::runtime::coop;
+use crate::task::coop;
 
 use std::cell::Cell;
 
@@ -61,15 +61,20 @@ struct Context {
     rng: Cell<Option<FastRand>>,
 
     /// Tracks the amount of "work" a task may still do before yielding back to
-    /// the sheduler
+    /// the scheduler
     budget: Cell<coop::Budget>,
 
     #[cfg(all(
         tokio_unstable,
-        tokio_taskdump,
+        feature = "taskdump",
         feature = "rt",
         target_os = "linux",
-        any(target_arch = "aarch64", target_arch = "x86", target_arch = "x86_64")
+        any(
+            target_arch = "aarch64",
+            target_arch = "x86",
+            target_arch = "x86_64",
+            target_arch = "s390x"
+        )
     ))]
     trace: trace::Context,
 }
@@ -80,23 +85,23 @@ tokio_thread_local! {
             #[cfg(feature = "rt")]
             thread_id: Cell::new(None),
 
-            /// Tracks the current runtime handle to use when spawning,
-            /// accessing drivers, etc...
+            // Tracks the current runtime handle to use when spawning,
+            // accessing drivers, etc...
             #[cfg(feature = "rt")]
             current: current::HandleCell::new(),
 
-            /// Tracks the current scheduler internal context
+            // Tracks the current scheduler internal context
             #[cfg(feature = "rt")]
             scheduler: Scoped::new(),
 
             #[cfg(feature = "rt")]
             current_task_id: Cell::new(None),
 
-            /// Tracks if the current thread is currently driving a runtime.
-            /// Note, that if this is set to "entered", the current scheduler
-            /// handle may not reference the runtime currently executing. This
-            /// is because other runtime handles may be set to current from
-            /// within a runtime.
+            // Tracks if the current thread is currently driving a runtime.
+            // Note, that if this is set to "entered", the current scheduler
+            // handle may not reference the runtime currently executing. This
+            // is because other runtime handles may be set to current from
+            // within a runtime.
             #[cfg(feature = "rt")]
             runtime: Cell::new(EnterRuntime::NotEntered),
 
@@ -107,13 +112,14 @@ tokio_thread_local! {
 
             #[cfg(all(
                 tokio_unstable,
-                tokio_taskdump,
+                feature = "taskdump",
                 feature = "rt",
                 target_os = "linux",
                 any(
                     target_arch = "aarch64",
                     target_arch = "x86",
-                    target_arch = "x86_64"
+                    target_arch = "x86_64",
+                    target_arch = "s390x"
                 )
             ))]
             trace: trace::Context::new(),
@@ -121,7 +127,7 @@ tokio_thread_local! {
     }
 }
 
-#[cfg(any(feature = "macros", all(feature = "sync", feature = "rt")))]
+#[cfg(any(feature = "macros", feature = "rt"))]
 pub(crate) fn thread_rng_n(n: u32) -> u32 {
     CONTEXT.with(|ctx| {
         let mut rng = ctx.rng.get().unwrap_or_else(FastRand::new);
@@ -131,7 +137,7 @@ pub(crate) fn thread_rng_n(n: u32) -> u32 {
     })
 }
 
-pub(super) fn budget<R>(f: impl FnOnce(&Cell<coop::Budget>) -> R) -> Result<R, AccessError> {
+pub(crate) fn budget<R>(f: impl FnOnce(&Cell<coop::Budget>) -> R) -> Result<R, AccessError> {
     CONTEXT.try_with(|ctx| f(&ctx.budget))
 }
 
@@ -152,11 +158,15 @@ cfg_rt! {
     }
 
     pub(crate) fn set_current_task_id(id: Option<Id>) -> Option<Id> {
-        CONTEXT.try_with(|ctx| ctx.current_task_id.replace(id)).unwrap_or(None)
+        CONTEXT.try_with(|ctx| ctx.current_task_id.replace(id)).unwrap_or_default()
     }
 
     pub(crate) fn current_task_id() -> Option<Id> {
-        CONTEXT.try_with(|ctx| ctx.current_task_id.get()).unwrap_or(None)
+        CONTEXT.try_with(|ctx| ctx.current_task_id.get()).unwrap_or_default()
+    }
+
+    pub(crate) fn worker_index() -> Option<usize> {
+        with_scheduler(|ctx| ctx.and_then(|c| c.worker_index()))
     }
 
     #[track_caller]
@@ -176,9 +186,34 @@ cfg_rt! {
         CONTEXT.with(|c| c.scheduler.set(v, f))
     }
 
+    #[cfg(all(target_os = "emscripten", not(target_feature = "atomics")))]
+    pub(crate) struct ClearSchedulerGuard(*const scheduler::Context);
+
+    #[cfg(all(target_os = "emscripten", not(target_feature = "atomics")))]
+    impl Drop for ClearSchedulerGuard {
+        fn drop(&mut self) {
+            CONTEXT.with(|c| c.scheduler.inner.set(self.0));
+        }
+    }
+
+    /// Unsets the scheduler context until the guard drops, on unwind too.
+    #[cfg(all(target_os = "emscripten", not(target_feature = "atomics")))]
+    pub(crate) fn clear_scheduler() -> ClearSchedulerGuard {
+        CONTEXT.with(|c| ClearSchedulerGuard(c.scheduler.inner.replace(std::ptr::null())))
+    }
+
     #[track_caller]
     pub(super) fn with_scheduler<R>(f: impl FnOnce(Option<&scheduler::Context>) -> R) -> R {
-        CONTEXT.with(|c| c.scheduler.with(f))
+        let mut f = Some(f);
+        CONTEXT.try_with(|c| {
+            let f = f.take().unwrap();
+            if matches!(c.runtime.get(), EnterRuntime::Entered { .. }) {
+                c.scheduler.with(f)
+            } else {
+                f(None)
+            }
+        })
+            .unwrap_or_else(|_| (f.take().unwrap())(None))
     }
 
     cfg_taskdump! {

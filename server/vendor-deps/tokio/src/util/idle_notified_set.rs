@@ -13,11 +13,8 @@ use std::task::{Context, Waker};
 
 use crate::loom::cell::UnsafeCell;
 use crate::loom::sync::{Arc, Mutex};
-use crate::util::linked_list::{self, Link};
+use crate::util::linked_list::{self, Link, LinkedList};
 use crate::util::{waker_ref, Wake};
-
-type LinkedList<T> =
-    linked_list::LinkedList<ListEntry<T>, <ListEntry<T> as linked_list::Link>::Target>;
 
 /// This is the main handle to the collection.
 pub(crate) struct IdleNotifiedSet<T> {
@@ -42,13 +39,13 @@ pub(crate) struct EntryInOneOfTheLists<'a, T> {
 
 type Lists<T> = Mutex<ListsInner<T>>;
 
-/// The linked lists hold strong references to the ListEntry items, and the
-/// ListEntry items also hold a strong reference back to the Lists object, but
+/// The linked lists hold strong references to the `ListEntry` items, and the
+/// `ListEntry` items also hold a strong reference back to the Lists object, but
 /// the destructor of the `IdleNotifiedSet` will clear the two lists, so once
 /// that object is destroyed, no ref-cycles will remain.
 struct ListsInner<T> {
-    notified: LinkedList<T>,
-    idle: LinkedList<T>,
+    notified: LinkedList<ListEntry<T>>,
+    idle: LinkedList<ListEntry<T>>,
     /// Whenever an element in the `notified` list is woken, this waker will be
     /// notified and consumed, if it exists.
     waker: Option<Waker>,
@@ -124,7 +121,7 @@ unsafe impl<T> Send for ListEntry<T> {}
 unsafe impl<T> Sync for ListEntry<T> {}
 
 impl<T> IdleNotifiedSet<T> {
-    /// Create a new IdleNotifiedSet.
+    /// Create a new `IdleNotifiedSet`.
     pub(crate) fn new() -> Self {
         let lists = Mutex::new(ListsInner {
             notified: LinkedList::new(),
@@ -177,6 +174,9 @@ impl<T> IdleNotifiedSet<T> {
             return None;
         }
 
+        // Declare `_old_waker` before `lock` so that it is dropped after `lock`
+        // is released, including when returning early via `?`.
+        let _old_waker;
         let mut lock = self.lists.lock();
 
         let should_update_waker = match lock.waker.as_mut() {
@@ -184,8 +184,36 @@ impl<T> IdleNotifiedSet<T> {
             None => true,
         };
         if should_update_waker {
-            lock.waker = Some(waker.clone());
+            _old_waker = lock.waker.replace(waker.clone());
         }
+
+        // Pop the entry, returning None if empty.
+        let entry = lock.notified.pop_back()?;
+
+        lock.idle.push_front(entry.clone());
+
+        // Safety: We are holding the lock.
+        entry.my_list.with_mut(|ptr| unsafe {
+            *ptr = List::Idle;
+        });
+
+        drop(lock);
+
+        // Safety: We just put the entry in the idle list, so it is in one of the lists.
+        Some(EntryInOneOfTheLists { entry, set: self })
+    }
+
+    /// Tries to pop an entry from the notified list to poll it. The entry is moved to
+    /// the idle list atomically.
+    pub(crate) fn try_pop_notified(&mut self) -> Option<EntryInOneOfTheLists<'_, T>> {
+        // We don't decrement the length because this call moves the entry to
+        // the idle list rather than removing it.
+        if self.length == 0 {
+            // Fast path.
+            return None;
+        }
+
+        let mut lock = self.lists.lock();
 
         // Pop the entry, returning None if empty.
         let entry = lock.notified.pop_back()?;
@@ -205,7 +233,7 @@ impl<T> IdleNotifiedSet<T> {
 
     /// Call a function on every element in this list.
     pub(crate) fn for_each<F: FnMut(&mut T)>(&mut self, mut func: F) {
-        fn get_ptrs<T>(list: &mut LinkedList<T>, ptrs: &mut Vec<*mut T>) {
+        fn get_ptrs<T>(list: &mut LinkedList<ListEntry<T>>, ptrs: &mut Vec<*mut T>) {
             let mut node = list.last();
 
             while let Some(entry) = node {
@@ -263,7 +291,7 @@ impl<T> IdleNotifiedSet<T> {
         // has `my_list` set to `Neither` and that the value has not yet been
         // dropped.
         struct AllEntries<T, F: FnMut(T)> {
-            all_entries: LinkedList<T>,
+            all_entries: LinkedList<ListEntry<T>>,
             func: F,
         }
 
@@ -318,10 +346,16 @@ impl<T> IdleNotifiedSet<T> {
 ///
 /// The mutex for the entries must be held, and the target list must be such
 /// that setting `my_list` to `Neither` is ok.
-unsafe fn move_to_new_list<T>(from: &mut LinkedList<T>, to: &mut LinkedList<T>) {
+unsafe fn move_to_new_list<T>(
+    from: &mut LinkedList<ListEntry<T>>,
+    to: &mut LinkedList<ListEntry<T>>,
+) {
     while let Some(entry) = from.pop_back() {
         entry.my_list.with_mut(|ptr| {
-            *ptr = List::Neither;
+            // Safety: pointer is accessed while holding the mutex.
+            unsafe {
+                *ptr = List::Neither;
+            }
         });
         to.push_front(entry);
     }
@@ -433,7 +467,7 @@ impl<T: 'static> Wake for ListEntry<T> {
     }
 
     fn wake(me: Arc<Self>) {
-        Self::wake_by_ref(&me)
+        Self::wake_by_ref(&me);
     }
 }
 
@@ -451,17 +485,17 @@ unsafe impl<T> linked_list::Link for ListEntry<T> {
     }
 
     unsafe fn from_raw(ptr: NonNull<ListEntry<T>>) -> Arc<ListEntry<T>> {
-        Arc::from_raw(ptr.as_ptr())
+        unsafe { Arc::from_raw(ptr.as_ptr()) }
     }
 
     unsafe fn pointers(
         target: NonNull<ListEntry<T>>,
     ) -> NonNull<linked_list::Pointers<ListEntry<T>>> {
-        ListEntry::addr_of_pointers(target)
+        unsafe { ListEntry::addr_of_pointers(target) }
     }
 }
 
-#[cfg(all(test, not(loom)))]
+#[cfg(all(test, not(loom), not(target_os = "emscripten")))]
 mod tests {
     use crate::runtime::Builder;
     use crate::task::JoinSet;

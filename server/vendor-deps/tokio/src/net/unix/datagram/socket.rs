@@ -1,5 +1,6 @@
 use crate::io::{Interest, PollEvented, ReadBuf, Ready};
 use crate::net::unix::SocketAddr;
+use crate::util::check_socket_for_blocking;
 
 use std::fmt;
 use std::io;
@@ -7,7 +8,7 @@ use std::net::Shutdown;
 use std::os::unix::io::{AsFd, AsRawFd, BorrowedFd, FromRawFd, IntoRawFd, RawFd};
 use std::os::unix::net;
 use std::path::Path;
-use std::task::{Context, Poll};
+use std::task::{ready, Context, Poll};
 
 cfg_io_util! {
     use bytes::BufMut;
@@ -38,6 +39,7 @@ cfg_net_unix! {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
     /// use tokio::net::UnixDatagram;
     /// use tempfile::tempdir;
     ///
@@ -70,6 +72,7 @@ cfg_net_unix! {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No SOCK_DGRAM for `socketpair` in miri.
     /// use tokio::net::UnixDatagram;
     ///
     /// // Create the pair of sockets
@@ -96,10 +99,20 @@ cfg_net_unix! {
 }
 
 impl UnixDatagram {
+    pub(crate) fn from_mio(sys: mio::net::UnixDatagram) -> io::Result<UnixDatagram> {
+        let datagram = UnixDatagram::new(sys)?;
+
+        if let Some(e) = datagram.io.take_error()? {
+            return Err(e);
+        }
+
+        Ok(datagram)
+    }
+
     /// Waits for any of the requested ready states.
     ///
     /// This function is usually paired with `try_recv()` or `try_send()`. It
-    /// can be used to concurrently recv / send to the same socket on a single
+    /// can be used to concurrently `recv` / `send` to the same socket on a single
     /// task without splitting the socket.
     ///
     /// The function may complete without the socket being ready. This is a
@@ -364,6 +377,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
     /// use tokio::net::UnixDatagram;
     /// use tempfile::tempdir;
     ///
@@ -396,6 +410,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No SOCK_DGRAM for `socketpair` in miri.
     /// use tokio::net::UnixDatagram;
     ///
     /// // Create the pair of sockets
@@ -419,21 +434,29 @@ impl UnixDatagram {
         let (a, b) = mio::net::UnixDatagram::pair()?;
         let a = UnixDatagram::new(a)?;
         let b = UnixDatagram::new(b)?;
+        // A fresh pair has empty buffers: writable now, readable only once
+        // the peer sends.
+        a.io.registration().assume_ready(Ready::WRITABLE);
+        b.io.registration().assume_ready(Ready::WRITABLE);
 
         Ok((a, b))
     }
 
-    /// Creates new `UnixDatagram` from a `std::os::unix::net::UnixDatagram`.
+    /// Creates new [`UnixDatagram`] from a [`std::os::unix::net::UnixDatagram`].
     ///
-    /// This function is intended to be used to wrap a UnixDatagram from the
+    /// This function is intended to be used to wrap a `UnixDatagram` from the
     /// standard library in the Tokio equivalent.
     ///
     /// # Notes
     ///
-    /// The caller is responsible for ensuring that the socker is in
+    /// The caller is responsible for ensuring that the socket is in
     /// non-blocking mode. Otherwise all I/O operations on the socket
     /// will block the thread, which will cause unexpected behavior.
     /// Non-blocking mode can be set using [`set_nonblocking`].
+    ///
+    /// Passing a listener in blocking mode is always erroneous,
+    /// and the behavior in that case may change in the future.
+    /// For example, it could panic.
     ///
     /// [`set_nonblocking`]: std::os::unix::net::UnixDatagram::set_nonblocking
     ///
@@ -450,6 +473,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
     /// use tokio::net::UnixDatagram;
     /// use std::os::unix::net::UnixDatagram as StdUDS;
     /// use tempfile::tempdir;
@@ -469,6 +493,8 @@ impl UnixDatagram {
     /// ```
     #[track_caller]
     pub fn from_std(datagram: net::UnixDatagram) -> io::Result<UnixDatagram> {
+        check_socket_for_blocking(&datagram)?;
+
         let socket = mio::net::UnixDatagram::from_std(datagram);
         let io = PollEvented::new(socket)?;
         Ok(UnixDatagram { io })
@@ -498,7 +524,7 @@ impl UnixDatagram {
     pub fn into_std(self) -> io::Result<std::os::unix::net::UnixDatagram> {
         self.io
             .into_inner()
-            .map(|io| io.into_raw_fd())
+            .map(IntoRawFd::into_raw_fd)
             .map(|raw_fd| unsafe { std::os::unix::net::UnixDatagram::from_raw_fd(raw_fd) })
     }
 
@@ -514,6 +540,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
     /// use tokio::net::UnixDatagram;
     /// use tempfile::tempdir;
     ///
@@ -553,6 +580,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
     /// use tokio::net::UnixDatagram;
     /// use tempfile::tempdir;
     ///
@@ -588,8 +616,8 @@ impl UnixDatagram {
     ///
     /// # Cancel safety
     ///
-    /// This method is cancel safe. If `send` is used as the event in a
-    /// [`tokio::select!`](crate::select) statement and some other branch
+    /// This method is cancel safe. If `send` is used as a branch in
+    /// [`tokio::select!`](crate::select) and another branch
     /// completes first, then it is guaranteed that the message was not sent.
     ///
     /// # Examples
@@ -597,6 +625,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No SOCK_DGRAM for `socketpair` in miri.
     /// use tokio::net::UnixDatagram;
     ///
     /// // Create the pair of sockets
@@ -717,8 +746,8 @@ impl UnixDatagram {
     ///
     /// # Cancel safety
     ///
-    /// This method is cancel safe. If `recv` is used as the event in a
-    /// [`tokio::select!`](crate::select) statement and some other branch
+    /// This method is cancel safe. If `recv` is used as a branch in
+    /// [`tokio::select!`](crate::select) and another branch
     /// completes first, it is guaranteed that no messages were received on this
     /// socket.
     ///
@@ -727,6 +756,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No SOCK_DGRAM for `socketpair` in miri.
     /// use tokio::net::UnixDatagram;
     ///
     /// // Create the pair of sockets
@@ -877,6 +907,7 @@ impl UnixDatagram {
         /// # use std::error::Error;
         /// # #[tokio::main]
         /// # async fn main() -> Result<(), Box<dyn Error>> {
+        /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
         /// use tokio::net::UnixDatagram;
         /// use tempfile::tempdir;
         ///
@@ -993,6 +1024,7 @@ impl UnixDatagram {
         /// # use std::error::Error;
         /// # #[tokio::main]
         /// # async fn main() -> Result<(), Box<dyn Error>> {
+        /// # if cfg!(miri) { return Ok(()); } // No SOCK_DGRAM for `socketpair` in miri.
         /// use tokio::net::UnixDatagram;
         ///
         /// // Create the pair of sockets
@@ -1034,8 +1066,8 @@ impl UnixDatagram {
     ///
     /// # Cancel safety
     ///
-    /// This method is cancel safe. If `send_to` is used as the event in a
-    /// [`tokio::select!`](crate::select) statement and some other branch
+    /// This method is cancel safe. If `send_to` is used as a branch in
+    /// [`tokio::select!`](crate::select) and another branch
     /// completes first, then it is guaranteed that the message was not sent.
     ///
     /// # Examples
@@ -1043,6 +1075,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
     /// use tokio::net::UnixDatagram;
     /// use tempfile::tempdir;
     ///
@@ -1083,8 +1116,8 @@ impl UnixDatagram {
     ///
     /// # Cancel safety
     ///
-    /// This method is cancel safe. If `recv_from` is used as the event in a
-    /// [`tokio::select!`](crate::select) statement and some other branch
+    /// This method is cancel safe. If `recv_from` is used as a branch in
+    /// [`tokio::select!`](crate::select) and another branch
     /// completes first, it is guaranteed that no messages were received on this
     /// socket.
     ///
@@ -1093,6 +1126,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
     /// use tokio::net::UnixDatagram;
     /// use tempfile::tempdir;
     ///
@@ -1131,7 +1165,7 @@ impl UnixDatagram {
 
     /// Attempts to receive a single datagram on the specified address.
     ///
-    /// Note that on multiple calls to a `poll_*` method in the recv direction, only the
+    /// Note that on multiple calls to a `poll_*` method in the `recv` direction, only the
     /// `Waker` from the `Context` passed to the most recent call will be scheduled to
     /// receive a wakeup.
     ///
@@ -1151,6 +1185,7 @@ impl UnixDatagram {
         cx: &mut Context<'_>,
         buf: &mut ReadBuf<'_>,
     ) -> Poll<io::Result<SocketAddr>> {
+        #[allow(clippy::blocks_in_conditions)]
         let (n, addr) = ready!(self.io.registration().poll_read_io(cx, || {
             // Safety: will not read the maybe uninitialized bytes.
             let b = unsafe {
@@ -1234,7 +1269,7 @@ impl UnixDatagram {
     /// The [`connect`] method will connect this socket to a remote address. This method
     /// resolves to an error if the socket is not connected.
     ///
-    /// Note that on multiple calls to a `poll_*` method in the recv direction, only the
+    /// Note that on multiple calls to a `poll_*` method in the `recv` direction, only the
     /// `Waker` from the `Context` passed to the most recent call will be scheduled to
     /// receive a wakeup.
     ///
@@ -1252,6 +1287,7 @@ impl UnixDatagram {
     ///
     /// [`connect`]: method@Self::connect
     pub fn poll_recv(&self, cx: &mut Context<'_>, buf: &mut ReadBuf<'_>) -> Poll<io::Result<()>> {
+        #[allow(clippy::blocks_in_conditions)]
         let n = ready!(self.io.registration().poll_read_io(cx, || {
             // Safety: will not read the maybe uninitialized bytes.
             let b = unsafe {
@@ -1407,6 +1443,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
     /// use tokio::net::UnixDatagram;
     /// use tempfile::tempdir;
     ///
@@ -1429,6 +1466,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
     /// use tokio::net::UnixDatagram;
     ///
     /// // Create an unbound socket
@@ -1453,6 +1491,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
     /// use tokio::net::UnixDatagram;
     /// use tempfile::tempdir;
     ///
@@ -1478,6 +1517,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No SOCK_DGRAM for `socketpair` in miri.
     /// use tokio::net::UnixDatagram;
     ///
     /// // Create the pair of sockets
@@ -1499,6 +1539,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No Unix domain sockets in miri.
     /// use tokio::net::UnixDatagram;
     ///
     /// // Create an unbound socket
@@ -1526,6 +1567,7 @@ impl UnixDatagram {
     /// # use std::error::Error;
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn Error>> {
+    /// # if cfg!(miri) { return Ok(()); } // No SOCK_DGRAM for `socketpair` in miri.
     /// use tokio::net::UnixDatagram;
     /// use std::net::Shutdown;
     ///
@@ -1566,7 +1608,7 @@ impl TryFrom<std::os::unix::net::UnixDatagram> for UnixDatagram {
 
 impl fmt::Debug for UnixDatagram {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.io.fmt(f)
+        (*self.io).fmt(f)
     }
 }
 

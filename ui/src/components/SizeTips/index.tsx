@@ -4,6 +4,7 @@ import { Button } from 'semantic-ui-react';
 import styles from './index.module.scss';
 
 interface SizeTipsProps {
+  children?: import('react').ReactNode;
   hide: boolean;
   onConfirm: () => void;
   size: number;

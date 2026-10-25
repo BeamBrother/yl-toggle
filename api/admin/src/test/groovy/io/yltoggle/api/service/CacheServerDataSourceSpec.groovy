@@ -31,7 +31,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 
 class CacheServerDataSourceSpec extends Specification {
@@ -195,4 +195,3 @@ class CacheServerDataSourceSpec extends Specification {
         1 * cache.invalidate("server-555")
     }
 }
-

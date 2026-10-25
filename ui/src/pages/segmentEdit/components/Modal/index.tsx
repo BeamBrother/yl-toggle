@@ -1,16 +1,17 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { PaginationProps, Button, Form, TextAreaProps } from 'semantic-ui-react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
 import Modal from 'components/Modal';
 import Icon from 'components/Icon';
 import Diff from 'components/Diff';
 import { IToggle } from 'interfaces/segment';
+import { IRule } from 'interfaces/targeting';
 import { I18NRules, RulesDiffContent } from 'components/Diff/RulesDiffContent';
 import { hooksFormContainer } from 'pages/segmentEdit/provider';
 import ToggleList from '../ToggleList';
 
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IPagination {
   pageIndex: number;
@@ -18,6 +19,7 @@ interface IPagination {
 }
 
 interface IProps {
+  children?: import('react').ReactNode;
   open: boolean;
   total: number;
   diff: {
@@ -33,6 +35,7 @@ interface IProps {
 }
 
 interface IParams {
+  [key: string]: string | undefined;
   projectKey: string;
   environmentKey: string;
 }
@@ -123,9 +126,9 @@ const ConfirmModal = (props: IProps) => {
   };
 
   const beforeRuleDiff = useCallback(
-    (before, after) => {
-      const left = I18NRules(before, intl);
-      const right = I18NRules(after, intl);
+    (before: unknown, after: unknown) => {
+      const left = I18NRules(before as IRule[], intl);
+      const right = I18NRules(after as IRule[], intl);
       return [left, right];
     },
     [intl]
@@ -155,7 +158,7 @@ const ConfirmModal = (props: IProps) => {
               {intl.formatMessage({ id: 'segments.modal.delete.tips'}, { count: total })}
             </div>
             <div className={styles['modal-content']}>
-              <ToggleList 
+              <ToggleList
                 total={total}
                 pagination={pagination}
                 toggleList={toggleList}

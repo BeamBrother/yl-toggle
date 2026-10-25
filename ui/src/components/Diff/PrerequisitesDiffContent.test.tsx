@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import PrerequisiteDiffContent from './PrerequisitesDiffContent';
 import { IntlWrapper } from 'components/utils/wrapper';
 import idiff from './diff';
@@ -58,8 +58,8 @@ const content_b = idiff(
   ]
 );
 
-it('DiffPrerequisites snapshot', (done) => {
-  (async () => {
+it('DiffPrerequisites snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(<PrerequisiteDiffContent content={content_a} />, {
       wrapper: IntlWrapper,
     });
@@ -67,7 +67,5 @@ it('DiffPrerequisites snapshot', (done) => {
 
     rerender(<PrerequisiteDiffContent content={content_b} />);
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });

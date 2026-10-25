@@ -1,5 +1,5 @@
 import { SyntheticEvent, useEffect, useState, useCallback } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Table, Form, PaginationProps, InputOnChangeData } from 'semantic-ui-react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import debounce from 'lodash/debounce';
@@ -20,8 +20,10 @@ import { NOT_FOUND } from 'constants/httpCode';
 import { LAST_SEEN } from 'constants/dictionaryKeys';
 import { Provider } from './provider';
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IParams {
+  [key: string]: string | undefined;
   projectKey: string;
   environmentKey: string;
 }
@@ -51,7 +53,7 @@ const Segment = () => {
   const [isAdd, setIsAdd] = useState<boolean>(true);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [segmentKey, setSegmentKey] = useState<string>('');
-  const history = useHistory();
+  const navigate = useNavigate();
   const intl = useIntl();
 
   const fetchSegmentLists = useCallback(() => {
@@ -70,7 +72,7 @@ const Segment = () => {
         return;
       } else if (!success && code === NOT_FOUND) {
         saveDictionary(LAST_SEEN, {});
-        history.push('/notfound');
+        navigate('/notfound');
         return;
       } else {
         if (res.success) setSegmentList([]);
@@ -82,7 +84,7 @@ const Segment = () => {
         message.error(intl.formatMessage({ id: 'segments.list.error.text' }));
       }
     });
-  }, [projectKey, searchParams, intl, history]);
+  }, [projectKey, searchParams, intl, navigate]);
 
   useEffect(() => {
     fetchSegmentLists();
@@ -124,9 +126,9 @@ const Segment = () => {
 
   const handleClickItem = useCallback(
     (segmentKey: string) => {
-      history.push(`/${projectKey}/${environmentKey}/segments/${segmentKey}/targeting`);
+      navigate(`/${projectKey}/${environmentKey}/segments/${segmentKey}/targeting`);
     },
-    [environmentKey, history, projectKey]
+    [environmentKey, navigate, projectKey]
   );
 
   return (

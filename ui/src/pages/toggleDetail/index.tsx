@@ -1,7 +1,10 @@
+import asset_archived_en_png from 'images/archived-en.png';
+import asset_archived_zh_png from 'images/archived-zh.png';
+import asset_collect_gif from 'images/collect.gif';
 import { SyntheticEvent, useEffect, useState, useCallback, useRef } from 'react';
-import { useHistory, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu, MenuItemProps, Popup } from 'semantic-ui-react';
-import useResizeObserver from 'use-resize-observer';
+import { useResizeObserver } from 'use-resize-observer';
 import { FormattedMessage, useIntl } from 'react-intl';
 import cloneDeep from 'lodash/cloneDeep';
 import findIndex from 'lodash/findIndex';
@@ -28,12 +31,13 @@ import { NOT_FOUND } from 'constants/httpCode';
 import { LAST_SEEN } from 'constants/dictionaryKeys';
 import { I18NContainer } from 'hooks';
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 const ToggleDetail = () => {
   const { search } = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const intl = useIntl();
-  const formRef = useRef();
+  const formRef = useRef<HTMLFormElement | null>(null);
   const currentVersion = Number(new URLSearchParams(search).get('currentVersion'));
 
   const { projectKey, environmentKey, toggleKey, navigation } = useParams<IRouterParams>();
@@ -92,13 +96,13 @@ const ToggleDetail = () => {
         }
       } else if (!success && code === NOT_FOUND) {
         saveDictionary(LAST_SEEN, {});
-        history.push('/notfound');
+        navigate('/notfound');
         return;
       } else {
         message.error(res.message || intl.formatMessage({id: 'toggles.info.error.text'}));
       }
     });
-  }, [intl, projectKey, environmentKey, toggleKey, history]);
+  }, [intl, projectKey, environmentKey, toggleKey, navigate]);
 
   // Get segment list
   const initSegmentList = useCallback(() => {
@@ -134,17 +138,17 @@ const ToggleDetail = () => {
       saveIsTargetingLoading(false);
       const { data, success } = res;
       if (success && data) {
-        const { 
-          version, 
-          content, 
-          disabled, 
-          modifiedBy, 
-          modifiedTime, 
-          enableApproval, 
-          reviewers, 
-          status, 
-          submitBy, 
-          approvalBy, 
+        const {
+          version,
+          content,
+          disabled,
+          modifiedBy,
+          modifiedTime,
+          enableApproval,
+          reviewers,
+          status,
+          submitBy,
+          approvalBy,
           approvalComment,
           locked,
           lockedTime,
@@ -189,9 +193,9 @@ const ToggleDetail = () => {
   const getVersionsByVersion = useCallback(async () => {
     saveIsHistoryLoading(true);
     const res = await getTargetingVersionsByVersion<ITargetingVersionsByVersion>(
-      projectKey, 
-      environmentKey, 
-      toggleKey, 
+      projectKey,
+      environmentKey,
+      toggleKey,
       currentVersion
     );
 
@@ -218,7 +222,7 @@ const ToggleDetail = () => {
         // current version === latest version
         if (index === 0) {
           saveTargetingDisabled(false);
-        } 
+        }
         else {
           saveTargetingDisabled(true);
         }
@@ -253,9 +257,9 @@ const ToggleDetail = () => {
       params.version = currentVersion;
     }
     getTargetingVersion<ITargetingVersions>(
-      projectKey, 
-      environmentKey, 
-      toggleKey, 
+      projectKey,
+      environmentKey,
+      toggleKey,
       params,
     ).then(res => {
       saveIsHistoryLoading(false);
@@ -300,7 +304,7 @@ const ToggleDetail = () => {
     initTargeting();
     saveTargetingDisabled(false);
   }, [initTargeting]);
-  
+
   const confirmReviewHistory = useCallback(() => {
     if (activeVersion) {
       saveSelectedVersion(activeVersion?.version || 0);
@@ -347,18 +351,18 @@ const ToggleDetail = () => {
     saveHistoryPageIndex(0);
     saveRememberVersion(false);
     getVersionsList();
-  // NOTICE: Do not add getVersionsList as dependency, or there will be a bug 
+  // NOTICE: Do not add getVersionsList as dependency, or there will be a bug
   // eslint-disable-next-line
   }, []);
 
   const handleItemClick = useCallback((e: SyntheticEvent, value: MenuItemProps) => {
-    history.push(`/${projectKey}/${environmentKey}/${toggleKey}/${value.name}`);
+    navigate(`/${projectKey}/${environmentKey}/${toggleKey}/${value.name}`);
     resetHistory();
-  }, [history, projectKey, environmentKey, toggleKey, resetHistory]);
+  }, [navigate, projectKey, environmentKey, toggleKey, resetHistory]);
 
   const gotoGetStarted = useCallback(() => {
-    history.push(`/${projectKey}/${environmentKey}/${toggleKey}/connect-sdk`);
-  }, [history, projectKey, environmentKey, toggleKey]);
+    navigate(`/${projectKey}/${environmentKey}/${toggleKey}/connect-sdk`);
+  }, [navigate, projectKey, environmentKey, toggleKey]);
 
 	return (
     <ProjectLayout>
@@ -378,9 +382,9 @@ const ToggleDetail = () => {
             toggleArchived && (
               <div>
                 {
-                  i18n === 'en-US' 
-                    ? <img className={styles['archived-img']} src={require('images/archived-en.png')} alt='archived' />
-                    : <img className={styles['archived-img']} src={require('images/archived-zh.png')} alt='archived' />
+                  i18n === 'en-US'
+                    ? <img className={styles['archived-img']} src={asset_archived_en_png} alt='archived' />
+                    : <img className={styles['archived-img']} src={asset_archived_zh_png} alt='archived' />
                 }
               </div>
             )
@@ -435,7 +439,7 @@ const ToggleDetail = () => {
                         inverted
                         className='popup-override'
                         trigger={
-                          <img src={require('images/collect.gif')} className={styles.analysis} alt='collect' />
+                          <img src={asset_collect_gif} className={styles.analysis} alt='collect' />
                         }
                         content={intl.formatMessage({id: 'analysis.ongoing'})}
                         position='top center'
@@ -448,7 +452,7 @@ const ToggleDetail = () => {
             {
               activeItem === 'targeting' && (
                 <div className={styles.history}>
-                  <Button 
+                  <Button
                     secondary
                     type='button'
                     onClick={() => {
@@ -460,9 +464,9 @@ const ToggleDetail = () => {
                     }}
                   >
                     {
-                      historyOpen 
-                        ? <Icon type='put-up' customclass={styles['put-away']} /> 
-                        : <Icon type='put-away' customclass={styles['put-away']} /> 
+                      historyOpen
+                        ? <Icon type='put-up' customclass={styles['put-away']} />
+                        : <Icon type='put-away' customclass={styles['put-away']} />
                     }
                     <FormattedMessage id='common.history.text' />
                   </Button>
@@ -527,7 +531,7 @@ const ToggleDetail = () => {
                     }
                     {
                       activeItem === 'analysis' && (
-                        <Analysis 
+                        <Analysis
                           trackEvents={originTrackEvents}
                           allowEnableTrackEvents={allowEnableTrackEvents}
                           targeting={targeting}
@@ -541,7 +545,7 @@ const ToggleDetail = () => {
                   {
                     historyOpen && (
                       <div className={styles['content-right']} style={{ height }}>
-                        <History 
+                        <History
                           versions={versions}
                           hasMore={historyHasMore}
                           isHistoryLoading={isHistoryLoading}
@@ -560,7 +564,7 @@ const ToggleDetail = () => {
             }
           </div>
           <FlowExplain />
-          <Modal 
+          <Modal
             open={open}
             width={400}
             handleCancel={() => {setPageLeaveOpen(false);}}

@@ -18,7 +18,7 @@ export function matchUrl(matcher: string, originUrl: string, targetUrl: string):
     href = fullUrl.href;
     hash = fullUrl.hash;
     search = fullUrl.search;
-  } catch (error) {
+  } catch {
     href = targetUrl;
   }
 

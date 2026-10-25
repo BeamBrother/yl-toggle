@@ -1,11 +1,16 @@
 #![warn(rust_2018_idioms)]
-#![allow(clippy::declare_interior_mutable_const)]
-#![cfg(all(feature = "full", not(target_os = "wasi")))]
+#![cfg(any(
+    all(feature = "full", not(target_os = "wasi")),
+    all(target_os = "emscripten", feature = "rt", feature = "macros")
+))]
+#![cfg(panic = "unwind")]
 
 use futures::future;
 use std::error::Error;
 use tokio::runtime::Builder;
-use tokio::task::{self, block_in_place};
+use tokio::task;
+#[cfg(feature = "rt-multi-thread")]
+use tokio::task::block_in_place;
 
 mod support {
     pub mod panic;
@@ -13,6 +18,7 @@ mod support {
 use support::panic::test_panic;
 
 #[test]
+#[cfg(feature = "rt-multi-thread")]
 fn block_in_place_panic_caller() -> Result<(), Box<dyn Error>> {
     let panic_location_file = test_panic(|| {
         let rt = Builder::new_current_thread().enable_all().build().unwrap();
@@ -32,7 +38,7 @@ fn local_set_spawn_local_panic_caller() -> Result<(), Box<dyn Error>> {
     let panic_location_file = test_panic(|| {
         let _local = task::LocalSet::new();
 
-        let _ = task::spawn_local(async {});
+        task::spawn_local(async {});
     });
 
     // The panic location should be in this file

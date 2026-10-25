@@ -8,6 +8,7 @@ import { IMetricIteration } from 'interfaces/analysis';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   item: IMetricIteration;
 }
 
@@ -35,8 +36,8 @@ const Record = (props: IProps) => {
       className={styles.popup}
       hideOnScroll={true}
       trigger={
-        <div 
-          className={styles['record-list']} 
+        <div
+          className={styles['record-list']}
           onClick={(e: SyntheticEvent) => {
             setMenuOpen(!menuOpen);
             e.stopPropagation();
@@ -61,8 +62,8 @@ const Record = (props: IProps) => {
                 </div>
                 <div className={styles['record-right']}>
                   <div className={styles['record-title']}>
-                    <TextLimit 
-                      text={record.releaseNote} 
+                    <TextLimit
+                      text={record.releaseNote}
                       maxWidth={110}
                     />
                   </div>

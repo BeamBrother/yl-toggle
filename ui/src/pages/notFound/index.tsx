@@ -1,5 +1,6 @@
+import asset_not_found_png from 'images/not-found.png';
 import { useCallback, useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import Button from 'components/Button';
 import SwitchLanguage from 'components/SwitchLanguage';
@@ -8,7 +9,7 @@ import { EventTrack } from 'utils/track';
 import styles from './index.module.scss';
 
 const NotFound = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [ redirectUrl, setRedirectUrl ] = useState<string>('');
   const location = useLocation();
 
@@ -17,14 +18,14 @@ const NotFound = () => {
   }, [location.pathname]);
 
   const handleGoHome = useCallback(() => {
-    history.push(redirectUrl);
-  }, [history, redirectUrl]);
+    navigate(redirectUrl);
+  }, [navigate, redirectUrl]);
 
   const init = useCallback(async() => {
     const redirectUrl = await getRedirectUrl('/notfound');
     setRedirectUrl(redirectUrl);
   }, []);
-  
+
   useEffect(() => {
     init();
   }, [init]);
@@ -36,7 +37,7 @@ const NotFound = () => {
       </div>
       <div className={styles.content}>
         <div className={styles.image}>
-          <img src={require('images/not-found.png')}  alt='404' />
+          <img src={asset_not_found_png}  alt='404' />
         </div>
         <div className={styles.description}>
           <div className={styles.title}>404</div>

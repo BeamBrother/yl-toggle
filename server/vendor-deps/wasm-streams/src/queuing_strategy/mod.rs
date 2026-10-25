@@ -1,21 +1,19 @@
-use wasm_bindgen::prelude::*;
+pub mod sys;
 
-#[wasm_bindgen]
 #[derive(Debug)]
 pub(crate) struct QueuingStrategy {
-    high_water_mark: f64,
+    raw: sys::QueuingStrategy,
 }
 
 impl QueuingStrategy {
     pub fn new(high_water_mark: f64) -> Self {
-        Self { high_water_mark }
+        let raw = sys::QueuingStrategy::new();
+        raw.set_high_water_mark(high_water_mark);
+        Self { raw }
     }
-}
 
-#[wasm_bindgen]
-impl QueuingStrategy {
-    #[wasm_bindgen(getter, js_name = highWaterMark)]
-    pub fn high_water_mark(&self) -> f64 {
-        self.high_water_mark
+    #[inline]
+    pub fn into_raw(self) -> web_sys::QueuingStrategy {
+        self.raw
     }
 }

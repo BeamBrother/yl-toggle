@@ -9,14 +9,12 @@ import conditionStyles from './RulesDiffContent.module.scss';
 import fieldStyles from './fields.module.scss';
 import styles from './DiffServe.module.scss';
 
+export type DiffServeValue = { split?: number[]; select?: string | number } | ChangeItem[];
+
 interface DiffServeContentProps {
+  children?: import('react').ReactNode;
   map?: Map<string, string>;
-  content:
-    | {
-        split?: number[];
-        select?: string;
-      }
-    | ChangeItem[];
+  content: DiffServeValue;
   type: positionType;
   diffType: diffType;
   rowStyle?: CSSProperties;
@@ -66,7 +64,7 @@ export const DiffServeContent: React.FC<DiffServeContentProps> = (props) => {
       });
     } else {
       if (content.select !== undefined) {
-        return <DiffFieldValue value={content.select} />;
+        return <DiffFieldValue value={String(content.select)} />;
       }
       if (content.split !== undefined) {
         return <DiffFieldValue value={content.split as unknown as string[]} />;
@@ -85,6 +83,7 @@ export const DiffServeContent: React.FC<DiffServeContentProps> = (props) => {
 };
 
 interface DiffServeProps {
+  children?: import('react').ReactNode;
   content:
     | {
         split?: number[];

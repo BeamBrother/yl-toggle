@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 import javax.sql.DataSource
 
 
@@ -148,6 +148,7 @@ class AnalysisService(
                 when (it) {
                     is AccessEvent -> batchAddVariation(variationPrepStmt, it, sdkKey, userAgent)
                     is AnalysisEvent -> batchAddEvent(eventPrepStmt, it, sdkKey, userAgent)
+                    is DebugEvent -> Unit
                 }
             }
 
@@ -357,5 +358,3 @@ class AnalysisService(
     }
 
 }
-
-

@@ -1,4 +1,5 @@
 export interface IRouterParams {
+  [key: string]: string | undefined;
   projectKey: string;
   environmentKey: string;
   toggleKey: string;

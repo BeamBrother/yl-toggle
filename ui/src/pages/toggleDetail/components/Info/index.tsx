@@ -1,7 +1,6 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Grid, Popup, Loader } from 'semantic-ui-react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 import cloneDeep from 'lodash/cloneDeep';
@@ -15,7 +14,7 @@ import Loading from 'components/Loading';
 import VariationsDiffContent from 'components/Diff/VariationsDiffContent';
 import { I18NRules, RulesDiffContent } from 'components/Diff/RulesDiffContent';
 import { DiffStatusContent } from 'components/Diff/DiffStatus';
-import PrerequisitesDiffContent from 'components/Diff/PrerequisitesDiffContent'; 
+import PrerequisitesDiffContent from 'components/Diff/PrerequisitesDiffContent';
 import { DiffServe } from 'components/Diff/DiffServe';
 import PopupConfirm from 'components/PopupConfirm';
 import ApprovalOperation from '../ApprovalOperation';
@@ -26,8 +25,10 @@ import { IToggleInfo, IModifyInfo, IApprovalInfo, ITargetingDiff, ITargeting, IT
 import { IRouterParams } from 'interfaces/project';
 
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IProps {
+  children?: import('react').ReactNode;
   toggleInfo?: IToggleInfo;
   modifyInfo?: IModifyInfo;
   approvalInfo?: IApprovalInfo;
@@ -180,9 +181,9 @@ const Info: React.FC<IProps> = (props) => {
   );
 
   const beforeServeDiff = useCallback(
-    (before, after) => {
-      const left: IServe = before;
-      const right: IServe = after;
+    (before: unknown, after: unknown) => {
+      const left = before as IServe;
+      const right = after as IServe;
 
       return [preDiffServe(left), preDiffServe(right)];
     },
@@ -190,9 +191,9 @@ const Info: React.FC<IProps> = (props) => {
   );
 
   const beforeRuleDiff = useCallback(
-    (before, after) => {
-      const left = I18NRules(before, intl);
-      const right = I18NRules(after, intl);
+    (before: unknown, after: unknown) => {
+      const left = I18NRules(before as IRule[], intl);
+      const right = I18NRules(after as IRule[], intl);
       return [
         left.map((item: IRule) => {
           return {
@@ -233,7 +234,7 @@ const Info: React.FC<IProps> = (props) => {
                           <div className={styles['popup-line']}><FormattedMessage id='common.lock.text' /></div>
                           <div className={styles['popup-line']}><FormattedMessage id='common.lock.by' />: { approvalInfo?.submitBy }</div>
                           <div className={styles['popup-line']}>
-                            <FormattedMessage id='common.lock.time' />: 
+                            <FormattedMessage id='common.lock.time' />:
                             { dayjs(approvalInfo?.lockedTime).format('YYYY-MM-DD HH:mm:ss') }
                           </div>
                         </div>
@@ -267,7 +268,7 @@ const Info: React.FC<IProps> = (props) => {
                 }
                 {
                   (
-                    enableApproval && 
+                    enableApproval &&
                     (toggleStatus === 'PASS' || toggleStatus === 'JUMP')
                   ) && (
                     <div className={`${styles['status-publish']} ${styles.status}`}>
@@ -332,8 +333,8 @@ const Info: React.FC<IProps> = (props) => {
                   {/* Button Edit */}
                   {
                     activeItem === 'targeting' &&
-                    trackEvents && 
-                    ((enableApproval && toggleStatus === 'RELEASE') || !enableApproval) && 
+                    trackEvents &&
+                    ((enableApproval && toggleStatus === 'RELEASE') || !enableApproval) &&
                     (
                       <PopupConfirm
                         open={popupOpen}
@@ -349,7 +350,7 @@ const Info: React.FC<IProps> = (props) => {
                         text={intl.formatMessage({id: 'targeting.edit.tips'})}
                         icon={<Icon type='warning-circle' customclass={styles['warinig-circle']} />}
                       >
-                        <Button 
+                        <Button
                           primary
                           className={styles.btn}
                           onClick={(e: SyntheticEvent) => {
@@ -424,7 +425,7 @@ const Info: React.FC<IProps> = (props) => {
           </>
         )
       }
-      <Modal 
+      <Modal
         open={diffOpen}
         width={800}
         handleCancel={() => { saveDiffOpen(false); }}

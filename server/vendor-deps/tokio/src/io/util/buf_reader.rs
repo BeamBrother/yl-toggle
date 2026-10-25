@@ -4,7 +4,7 @@ use crate::io::{AsyncBufRead, AsyncRead, AsyncSeek, AsyncWrite, ReadBuf};
 use pin_project_lite::pin_project;
 use std::io::{self, IoSlice, SeekFrom};
 use std::pin::Pin;
-use std::task::{Context, Poll};
+use std::task::{ready, Context, Poll};
 use std::{cmp, fmt, mem};
 
 pin_project! {
@@ -42,7 +42,13 @@ impl<R: AsyncRead> BufReader<R> {
     }
 
     /// Creates a new `BufReader` with the specified buffer capacity.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `capacity` is zero.
+    #[track_caller]
     pub fn with_capacity(capacity: usize, inner: R) -> Self {
+        assert!(capacity > 0, "capacity must be greater than zero");
         let buffer = vec![0; capacity];
         Self {
             inner,
@@ -145,13 +151,13 @@ impl<R: AsyncRead> AsyncBufRead for BufReader<R> {
 
 #[derive(Debug, Clone, Copy)]
 pub(super) enum SeekState {
-    /// start_seek has not been called.
+    /// `start_seek` has not been called.
     Init,
-    /// start_seek has been called, but poll_complete has not yet been called.
+    /// `start_seek` has been called, but `poll_complete` has not yet been called.
     Start(SeekFrom),
-    /// Waiting for completion of the first poll_complete in the `n.checked_sub(remainder).is_none()` branch.
+    /// Waiting for completion of the first `poll_complete` in the `n.checked_sub(remainder).is_none()` branch.
     PendingOverflowed(i64),
-    /// Waiting for completion of poll_complete.
+    /// Waiting for completion of `poll_complete`.
     Pending,
 }
 
@@ -187,11 +193,7 @@ impl<R: AsyncRead + AsyncSeek> AsyncSeek for BufReader<R> {
     fn poll_complete(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<io::Result<u64>> {
         let res = match mem::replace(self.as_mut().project().seek_state, SeekState::Init) {
             SeekState::Init => {
-                // 1.x AsyncSeek recommends calling poll_complete before start_seek.
-                // We don't have to guarantee that the value returned by
-                // poll_complete called without start_seek is correct,
-                // so we'll return 0.
-                return Poll::Ready(Ok(0));
+                return self.project().inner.poll_complete(cx);
             }
             SeekState::Start(SeekFrom::Current(n)) => {
                 let remainder = (self.cap - self.pos) as i64;

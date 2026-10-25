@@ -1,3 +1,5 @@
+import asset_flow_explain_zh_png from 'images/flow-explain-zh.png';
+import asset_flow_explain_en_png from 'images/flow-explain-en.png';
 import { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { saveDictionary, getFromDictionary } from 'services/dictionary';
@@ -47,7 +49,7 @@ const FlowExplain = () => {
           </div>
         )
       }
-      <Modal 
+      <Modal
         open={modalOpen}
         width={770}
         footer={<></>}
@@ -61,9 +63,9 @@ const FlowExplain = () => {
           </div>
           <div className={styles['modal-content']}>
             {
-              intl.locale === 'zh-CN' 
-              ? <img className={styles['modal-image']} src={require('images/flow-explain-zh.png')} alt='flow' /> 
-              : <img className={styles['modal-image']} src={require('images/flow-explain-en.png')} alt='flow' />
+              intl.locale === 'zh-CN'
+              ? <img className={styles['modal-image']} src={asset_flow_explain_zh_png} alt='flow' />
+              : <img className={styles['modal-image']} src={asset_flow_explain_en_png} alt='flow' />
             }
           </div>
           <div className={styles['modal-footer']}>

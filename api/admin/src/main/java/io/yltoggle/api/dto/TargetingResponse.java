@@ -11,7 +11,7 @@ import java.util.List;
 public class TargetingResponse {
 
     @Schema(description = "The built-in status of the targeting.", allowableValues = {"PENDING_APPROVAL",
-            "PENDING_RELEASE", "REJECT", "RELEASE"})
+        "PENDING_RELEASE", "REJECT", "RELEASE"})
     private String status;
 
     @Schema(description = "Is approval required.")

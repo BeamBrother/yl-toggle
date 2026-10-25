@@ -5,6 +5,7 @@ import { renderField } from './renderDiff';
 import styles from './DiffStatus.module.scss';
 
 interface DiffStatusContentProps {
+  children?: import('react').ReactNode;
   content: DiffResult;
 }
 

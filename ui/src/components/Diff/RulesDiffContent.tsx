@@ -5,7 +5,7 @@ import { ICondition, IRule } from '../../interfaces/targeting';
 import { ChangeItem, DiffResult } from './diff';
 import { DiffFieldValue } from './DiffFieldValue';
 import { renderField, renderFieldsItems } from './renderDiff';
-import { DiffServeContent } from './DiffServe';
+import { DiffServeContent, DiffServeValue } from './DiffServe';
 import { diffType, positionType, rulesI18NMap } from './constants';
 import fieldStyles from './fields.module.scss';
 import styles from './RulesDiffContent.module.scss';
@@ -33,6 +33,7 @@ interface FieldValue {
 }
 
 interface RowFieldsProps {
+  children?: import('react').ReactNode;
   values: FieldValue[];
   modified?: boolean;
   type: 'after' | 'before';
@@ -57,11 +58,11 @@ export const displayMap = new Map([
 const makeBetween = (value) => {
   if (value['leftPredicate']) {
     value.objects = [(
-      '' + 
-      displayMap.get(value['leftPredicate'] as string) + 
-      value['objects'] + 
-      ', ' + 
-      value['rightObjects'] + 
+      '' +
+      displayMap.get(value['leftPredicate'] as string) +
+      value['objects'] +
+      ', ' +
+      value['rightObjects'] +
       displayMap.get(value['rightPredicate'] as string)
     )];
     delete value['leftPredicate'];
@@ -128,6 +129,7 @@ export const RowFields: React.FC<RowFieldsProps> = (props) => {
 };
 
 interface RuleNameDiffProps {
+  children?: import('react').ReactNode;
   diffType: diffType;
   type: positionType;
   value: string;
@@ -144,6 +146,7 @@ const RuleNameDiff: React.FC<RuleNameDiffProps> = (props) => {
 };
 
 interface ConditiondiffRemoveItemProps {
+  children?: import('react').ReactNode;
   value: ICondition & { [key: string]: unknown };
   type: positionType;
   first?: boolean;
@@ -202,6 +205,7 @@ const ConditiondiffAddItem: React.FC<ConditiondiffRemoveItemProps> = (props) => 
 };
 
 interface ConditiondiffSameItemProps {
+  children?: import('react').ReactNode;
   value: ICondition & { [key: string]: unknown };
   first?: boolean;
 }
@@ -260,6 +264,7 @@ const ConditiondiffEmptyItem: React.FC<ConditiondiffSameItemProps> = (props) => 
 };
 
 interface ConditiondiffModifyItemProps {
+  children?: import('react').ReactNode;
   value: ChangeItem[];
   type: positionType;
   first?: boolean;
@@ -291,6 +296,7 @@ const ConditiondiffModifyItem: React.FC<ConditiondiffModifyItemProps> = (props) 
 };
 
 interface ConditionContentProps {
+  children?: import('react').ReactNode;
   diffContent: DiffResult;
   type: positionType;
   serve?: unknown;
@@ -357,7 +363,7 @@ const ConditionModifyContent: React.FC<ConditionContentProps> = (props) => {
         </Table.Header>
         <Table.Body>
           {diffContent && render()}
-          {serve && <DiffServeContent diffType="modify" content={serve} type={type} />}
+          {serve ? <DiffServeContent diffType="modify" content={serve as DiffServeValue} type={type} /> : null}
         </Table.Body>
       </Table>
     </div>
@@ -365,8 +371,9 @@ const ConditionModifyContent: React.FC<ConditionContentProps> = (props) => {
 };
 
 interface ConditionRemoveContentProps {
+  children?: import('react').ReactNode;
   content: ICondition[];
-  serve: unknown;
+  serve?: unknown;
   title?: ReactNode;
 }
 
@@ -394,7 +401,7 @@ const ConditionRemoveContent: React.FC<ConditionRemoveContentProps> = (props) =>
                 />
               );
             })}
-          {serve && <DiffServeContent diffType="remove" content={serve} type="before" />}
+          {serve ? <DiffServeContent diffType="remove" content={serve as DiffServeValue} type="before" /> : null}
         </Table.Body>
       </Table>
     </div>
@@ -425,7 +432,7 @@ const ConditionAddContent: React.FC<ConditionRemoveContentProps> = (props) => {
                 />
               );
             })}
-          {serve && <DiffServeContent diffType="add" content={serve} type="after" />}
+          {serve ? <DiffServeContent diffType="add" content={serve as DiffServeValue} type="after" /> : null}
         </Table.Body>
       </Table>
     </div>
@@ -453,7 +460,7 @@ const ConditionSameContent: React.FC<ConditionSameContentProps> = (props) => {
             newContent.map((item, index) => {
               return <ConditiondiffSameItem key={index} first={index === 0} value={makeBetween(item)} />;
             })}
-          {serve && <DiffServeContent diffType="same" type={type} content={serve} />}
+          {serve ? <DiffServeContent diffType="same" type={type} content={serve as DiffServeValue} /> : null}
         </Table.Body>
       </Table>
     </div>
@@ -477,7 +484,7 @@ const ConditionEmptyContent: React.FC<ConditionSameContentProps> = (props) => {
             newContent.map((item, index) => {
               return <ConditiondiffEmptyItem key={index} value={makeBetween(item)} />;
             })}
-          {serve && <DiffServeContent diffType="same" type={type} content={serve} />}
+          {serve ? <DiffServeContent diffType="same" type={type} content={serve as DiffServeValue} /> : null}
         </Table.Body>
       </Table>
     </div>
@@ -485,6 +492,7 @@ const ConditionEmptyContent: React.FC<ConditionSameContentProps> = (props) => {
 };
 
 interface RulesDiffContentProps {
+  children?: import('react').ReactNode;
   content: DiffResult;
 }
 
@@ -500,7 +508,7 @@ export const RulesDiffContent: React.FC<RulesDiffContentProps> = (props) => {
               <ConditionRemoveContent
                 key={index}
                 title={(value as IRule).name}
-                serve={(value as IRule).serve}
+                serve={(value as IRule).serve as DiffServeValue}
                 content={(value as IRule).conditions}
               />
             );
@@ -513,7 +521,7 @@ export const RulesDiffContent: React.FC<RulesDiffContentProps> = (props) => {
                 return (
                   <ConditionModifyContent
                     key={index}
-                    serve={serve?.value}
+                    serve={serve?.value as DiffServeValue}
                     diffContent={conditions.value as DiffResult}
                     type="before"
                     title={
@@ -537,7 +545,7 @@ export const RulesDiffContent: React.FC<RulesDiffContentProps> = (props) => {
                       />
                     }
                     type="before"
-                    serve={serve?.value}
+                    serve={serve?.value as DiffServeValue}
                     content={conditions.value as ICondition[]}
                   />
                 );
@@ -547,7 +555,7 @@ export const RulesDiffContent: React.FC<RulesDiffContentProps> = (props) => {
             return (
               <ConditionEmptyContent
                 key={index}
-                serve={(value as IRule).serve}
+                serve={(value as IRule).serve as DiffServeValue}
                 content={(value as IRule).conditions}
                 type={'before'}
               />
@@ -562,7 +570,7 @@ export const RulesDiffContent: React.FC<RulesDiffContentProps> = (props) => {
               <ConditionAddContent
                 key={index}
                 title={(value as IRule).name}
-                serve={(value as IRule).serve}
+                serve={(value as IRule).serve as DiffServeValue}
                 content={(value as IRule).conditions}
               />
             );
@@ -575,7 +583,7 @@ export const RulesDiffContent: React.FC<RulesDiffContentProps> = (props) => {
                 return (
                   <ConditionModifyContent
                     key={index}
-                    serve={serve?.value}
+                    serve={serve?.value as DiffServeValue}
                     diffContent={conditions.value as DiffResult}
                     type="after"
                     title={
@@ -599,7 +607,7 @@ export const RulesDiffContent: React.FC<RulesDiffContentProps> = (props) => {
                       />
                     }
                     type="after"
-                    serve={serve?.value}
+                    serve={serve?.value as DiffServeValue}
                     content={conditions.value as ICondition[]}
                   />
                 );
@@ -609,7 +617,7 @@ export const RulesDiffContent: React.FC<RulesDiffContentProps> = (props) => {
             return (
               <ConditionEmptyContent
                 key={index}
-                serve={(value as IRule).serve}
+                serve={(value as IRule).serve as DiffServeValue}
                 content={(value as IRule).conditions}
                 type={'before'}
               />

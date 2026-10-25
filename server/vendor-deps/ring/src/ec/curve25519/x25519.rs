@@ -4,9 +4,9 @@
 // purpose with or without fee is hereby granted, provided that the above
 // copyright notice and this permission notice appear in all copies.
 //
-// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHORS DISCLAIM ALL WARRANTIES
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
 // WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
 // SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
 // OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
@@ -15,8 +15,8 @@
 //! X25519 Key agreement.
 
 use super::{ops, scalar::SCALAR_LEN};
-use crate::{agreement, constant_time, cpu, ec, error, rand};
-use core::convert::TryInto;
+use crate::{agreement, bb, cpu, ec, error, rand};
+use core::ffi::c_int;
 
 static CURVE25519: ec::Curve = ec::Curve {
     public_key_len: PUBLIC_KEY_LEN,
@@ -40,7 +40,11 @@ pub static X25519: agreement::Algorithm = agreement::Algorithm {
     ecdh: x25519_ecdh,
 };
 
-fn x25519_check_private_key_bytes(bytes: &[u8]) -> Result<(), error::Unspecified> {
+#[allow(clippy::unnecessary_wraps)]
+fn x25519_check_private_key_bytes(
+    bytes: &[u8],
+    _: cpu::Features,
+) -> Result<(), error::Unspecified> {
     debug_assert_eq!(bytes.len(), PRIVATE_KEY_LEN);
     Ok(())
 }
@@ -48,6 +52,7 @@ fn x25519_check_private_key_bytes(bytes: &[u8]) -> Result<(), error::Unspecified
 fn x25519_generate_private_key(
     rng: &dyn rand::SecureRandom,
     out: &mut [u8],
+    _: cpu::Features,
 ) -> Result<(), error::Unspecified> {
     rng.fill(out)
 }
@@ -55,35 +60,39 @@ fn x25519_generate_private_key(
 fn x25519_public_from_private(
     public_out: &mut [u8],
     private_key: &ec::Seed,
+    cpu_features: cpu::Features,
 ) -> Result<(), error::Unspecified> {
     let public_out = public_out.try_into()?;
-
-    #[cfg(target_arch = "arm")]
-    let cpu_features = private_key.cpu_features;
 
     let private_key: &[u8; SCALAR_LEN] = private_key.bytes_less_safe().try_into()?;
     let private_key = ops::MaskedScalar::from_bytes_masked(*private_key);
 
-    #[cfg(all(not(target_os = "ios"), target_arch = "arm"))]
-    {
-        if cpu::arm::NEON.available(cpu_features) {
-            static MONTGOMERY_BASE_POINT: [u8; 32] = [
-                9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0,
-            ];
-            x25519_neon(public_out, &private_key, &MONTGOMERY_BASE_POINT);
-            return Ok(());
-        }
+    #[cfg(all(
+        all(target_arch = "arm", target_endian = "little"),
+        any(target_os = "android", target_os = "linux")
+    ))]
+    if let Some(cpu) = <cpu::Features as cpu::GetFeature<_>>::get_feature(&cpu_features) {
+        static MONTGOMERY_BASE_POINT: [u8; 32] = [
+            9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0,
+        ];
+        x25519_neon(public_out, &private_key, &MONTGOMERY_BASE_POINT, cpu);
+        return Ok(());
     }
 
-    extern "C" {
-        fn GFp_x25519_public_from_private_generic_masked(
+    prefixed_extern! {
+        fn x25519_public_from_private_generic_masked(
             public_key_out: &mut PublicKey,
             private_key: &PrivateKey,
+            use_adx: c_int,
         );
     }
     unsafe {
-        GFp_x25519_public_from_private_generic_masked(public_out, &private_key);
+        x25519_public_from_private_generic_masked(
+            public_out,
+            &private_key,
+            ops::has_fe25519_adx(cpu_features).into(),
+        );
     }
 
     Ok(())
@@ -93,38 +102,49 @@ fn x25519_ecdh(
     out: &mut [u8],
     my_private_key: &ec::Seed,
     peer_public_key: untrusted::Input,
+    cpu_features: cpu::Features,
 ) -> Result<(), error::Unspecified> {
-    let cpu_features = my_private_key.cpu_features;
     let my_private_key: &[u8; SCALAR_LEN] = my_private_key.bytes_less_safe().try_into()?;
     let my_private_key = ops::MaskedScalar::from_bytes_masked(*my_private_key);
     let peer_public_key: &[u8; PUBLIC_KEY_LEN] = peer_public_key.as_slice_less_safe().try_into()?;
 
-    #[cfg_attr(
-        not(all(not(target_os = "ios"), target_arch = "arm")),
-        allow(unused_variables)
-    )]
     fn scalar_mult(
         out: &mut ops::EncodedPoint,
         scalar: &ops::MaskedScalar,
         point: &ops::EncodedPoint,
-        cpu_features: cpu::Features,
+        #[allow(unused_variables)] cpu_features: cpu::Features,
     ) {
-        #[cfg(all(not(target_os = "ios"), target_arch = "arm"))]
+        #[cfg(all(
+            all(target_arch = "arm", target_endian = "little"),
+            any(target_os = "android", target_os = "linux")
+        ))]
+        if let Some(cpu) = <cpu::Features as cpu::GetFeature<_>>::get_feature(&cpu_features) {
+            return x25519_neon(out, scalar, point, cpu);
+        }
+
+        #[cfg(all(target_arch = "x86_64", not(target_os = "windows")))]
         {
-            if cpu::arm::NEON.available(cpu_features) {
-                return x25519_neon(out, scalar, point);
+            if ops::has_fe25519_adx(cpu_features) {
+                prefixed_extern! {
+                    fn x25519_scalar_mult_adx(
+                        out: &mut ops::EncodedPoint,
+                        scalar: &ops::MaskedScalar,
+                        point: &ops::EncodedPoint,
+                    );
+                }
+                return unsafe { x25519_scalar_mult_adx(out, scalar, point) };
             }
         }
 
-        extern "C" {
-            fn GFp_x25519_scalar_mult_generic_masked(
+        prefixed_extern! {
+            fn x25519_scalar_mult_generic_masked(
                 out: &mut ops::EncodedPoint,
                 scalar: &ops::MaskedScalar,
                 point: &ops::EncodedPoint,
             );
         }
         unsafe {
-            GFp_x25519_scalar_mult_generic_masked(out, scalar, point);
+            x25519_scalar_mult_generic_masked(out, scalar, point);
         }
     }
 
@@ -136,7 +156,7 @@ fn x25519_ecdh(
     );
 
     let zeros: SharedSecret = [0; SHARED_SECRET_LEN];
-    if constant_time::verify_slices_are_equal(out, &zeros).is_ok() {
+    if bb::verify_slices_are_equal(out, &zeros).is_ok() {
         // All-zero output results when the input is a point of small order.
         return Err(error::Unspecified);
     }
@@ -144,16 +164,25 @@ fn x25519_ecdh(
     Ok(())
 }
 
-#[cfg(all(not(target_os = "ios"), target_arch = "arm"))]
-fn x25519_neon(out: &mut ops::EncodedPoint, scalar: &ops::MaskedScalar, point: &ops::EncodedPoint) {
-    extern "C" {
-        fn GFp_x25519_NEON(
+// BoringSSL uses `!defined(OPENSSL_APPLE)`.
+#[cfg(all(
+    all(target_arch = "arm", target_endian = "little"),
+    any(target_os = "android", target_os = "linux")
+))]
+fn x25519_neon(
+    out: &mut ops::EncodedPoint,
+    scalar: &ops::MaskedScalar,
+    point: &ops::EncodedPoint,
+    _cpu: cpu::arm::Neon,
+) {
+    prefixed_extern! {
+        fn x25519_NEON(
             out: &mut ops::EncodedPoint,
             scalar: &ops::MaskedScalar,
             point: &ops::EncodedPoint,
         );
     }
-    unsafe { GFp_x25519_NEON(out, scalar, point) }
+    unsafe { x25519_NEON(out, scalar, point) }
 }
 
 const ELEM_AND_SCALAR_LEN: usize = ops::ELEM_LEN;
@@ -168,3 +197,53 @@ const PUBLIC_KEY_LEN: usize = ELEM_AND_SCALAR_LEN;
 // An X25519 shared secret as an encoded Curve25519 point.
 type SharedSecret = [u8; SHARED_SECRET_LEN];
 const SHARED_SECRET_LEN: usize = ELEM_AND_SCALAR_LEN;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ec;
+    use untrusted::Input;
+
+    #[test]
+    fn test_x25519_public_from_private() {
+        struct TestVector {
+            private: [u8; 32],
+            public: [u8; 32],
+        }
+        static TEST_CASES: &[TestVector] = &[
+            TestVector {
+                private: [
+                    0x77, 0x07, 0x6d, 0x0a, 0x73, 0x18, 0xa5, 0x7d, 0x3c, 0x16, 0xc1, 0x72, 0x51,
+                    0xb2, 0x66, 0x45, 0xdf, 0x4c, 0x2f, 0x87, 0xeb, 0xc0, 0x99, 0x2a, 0xb1, 0x77,
+                    0xfb, 0xa5, 0x1d, 0xb9, 0x2c, 0x2a,
+                ],
+                public: [
+                    0x85, 0x20, 0xf0, 0x09, 0x89, 0x30, 0xa7, 0x54, 0x74, 0x8b, 0x7d, 0xdc, 0xb4,
+                    0x3e, 0xf7, 0x5a, 0x0d, 0xbf, 0x3a, 0x0d, 0x26, 0x38, 0x1a, 0xf4, 0xeb, 0xa4,
+                    0xa9, 0x8e, 0xaa, 0x9b, 0x4e, 0x6a,
+                ],
+            },
+            TestVector {
+                private: [
+                    0x5d, 0xab, 0x08, 0x7e, 0x62, 0x4a, 0x8a, 0x4b, 0x79, 0xe1, 0x7f, 0x8b, 0x83,
+                    0x80, 0x0e, 0xe6, 0x6f, 0x3b, 0xb1, 0x29, 0x26, 0x18, 0xb6, 0xfd, 0x1c, 0x2f,
+                    0x8b, 0x27, 0xff, 0x88, 0xe0, 0xeb,
+                ],
+                public: [
+                    0xde, 0x9e, 0xdb, 0x7d, 0x7b, 0x7d, 0xc1, 0xb4, 0xd3, 0x5b, 0x61, 0xc2, 0xec,
+                    0xe4, 0x35, 0x37, 0x3f, 0x83, 0x43, 0xc8, 0x5b, 0x78, 0x67, 0x4d, 0xad, 0xfc,
+                    0x7e, 0x14, 0x6f, 0x88, 0x2b, 0x4f,
+                ],
+            },
+        ];
+        let cpu_features = cpu::features();
+        for test_case in TEST_CASES {
+            let seed =
+                ec::Seed::from_bytes(&CURVE25519, Input::from(&test_case.private), cpu_features)
+                    .unwrap();
+            let mut output = [0u8; 32];
+            x25519_public_from_private(&mut output, &seed, cpu_features).unwrap();
+            assert_eq!(output, test_case.public);
+        }
+    }
+}

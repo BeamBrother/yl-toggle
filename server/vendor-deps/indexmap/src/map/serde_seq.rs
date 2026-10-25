@@ -1,4 +1,4 @@
-//! Functions to serialize and deserialize an `IndexMap` as an ordered sequence.
+//! Functions to serialize and deserialize an [`IndexMap`] as an ordered sequence.
 //!
 //! The default `serde` implementation serializes `IndexMap` as a normal map,
 //! but there is no guarantee that serialization formats will preserve the order
@@ -9,7 +9,7 @@
 //!
 //! ```
 //! # use indexmap::IndexMap;
-//! # use serde_derive::{Deserialize, Serialize};
+//! # use serde::{Deserialize, Serialize};
 //! #[derive(Deserialize, Serialize)]
 //! struct Data {
 //!     #[serde(with = "indexmap::map::serde_seq")]
@@ -18,18 +18,19 @@
 //! }
 //! ```
 
-use serde::de::{Deserialize, Deserializer, SeqAccess, Visitor};
-use serde::ser::{Serialize, Serializer};
+use serde_core::de::{Deserialize, Deserializer, SeqAccess, Visitor};
+use serde_core::ser::{Serialize, Serializer};
 
 use core::fmt::{self, Formatter};
 use core::hash::{BuildHasher, Hash};
 use core::marker::PhantomData;
 
-use crate::map::Slice as MapSlice;
-use crate::set::Slice as SetSlice;
 use crate::IndexMap;
+use crate::map::Slice as MapSlice;
+use crate::serde::cautious_capacity;
+use crate::set::Slice as SetSlice;
 
-/// Serializes a `map::Slice` as an ordered sequence.
+/// Serializes a [`map::Slice`][MapSlice] as an ordered sequence.
 ///
 /// This behaves like [`crate::map::serde_seq`] for `IndexMap`, serializing a sequence
 /// of `(key, value)` pairs, rather than as a map that might not preserve order.
@@ -46,7 +47,7 @@ where
     }
 }
 
-/// Serializes a `set::Slice` as an ordered sequence.
+/// Serializes a [`set::Slice`][SetSlice] as an ordered sequence.
 impl<T> Serialize for SetSlice<T>
 where
     T: Serialize,
@@ -59,13 +60,13 @@ where
     }
 }
 
-/// Serializes an `IndexMap` as an ordered sequence.
+/// Serializes an [`IndexMap`] as an ordered sequence.
 ///
-/// This function may be used in a field attribute for deriving `Serialize`:
+/// This function may be used in a field attribute for deriving [`Serialize`]:
 ///
 /// ```
 /// # use indexmap::IndexMap;
-/// # use serde_derive::Serialize;
+/// # use serde::Serialize;
 /// #[derive(Serialize)]
 /// struct Data {
 ///     #[serde(serialize_with = "indexmap::map::serde_seq::serialize")]
@@ -75,9 +76,8 @@ where
 /// ```
 pub fn serialize<K, V, S, T>(map: &IndexMap<K, V, S>, serializer: T) -> Result<T::Ok, T::Error>
 where
-    K: Serialize + Hash + Eq,
+    K: Serialize,
     V: Serialize,
-    S: BuildHasher,
     T: Serializer,
 {
     serializer.collect_seq(map)
@@ -102,7 +102,7 @@ where
     where
         A: SeqAccess<'de>,
     {
-        let capacity = seq.size_hint().unwrap_or(0);
+        let capacity = cautious_capacity::<K, V>(seq.size_hint());
         let mut map = IndexMap::with_capacity_and_hasher(capacity, S::default());
 
         while let Some((key, value)) = seq.next_element()? {
@@ -113,13 +113,13 @@ where
     }
 }
 
-/// Deserializes an `IndexMap` from an ordered sequence.
+/// Deserializes an [`IndexMap`] from an ordered sequence.
 ///
-/// This function may be used in a field attribute for deriving `Deserialize`:
+/// This function may be used in a field attribute for deriving [`Deserialize`]:
 ///
 /// ```
 /// # use indexmap::IndexMap;
-/// # use serde_derive::Deserialize;
+/// # use serde::Deserialize;
 /// #[derive(Deserialize)]
 /// struct Data {
 ///     #[serde(deserialize_with = "indexmap::map::serde_seq::deserialize")]

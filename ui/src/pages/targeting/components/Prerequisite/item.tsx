@@ -8,6 +8,7 @@ import { prerequisiteContainer, hooksFormContainer } from '../../provider';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   item?: IPrerequisite;
   index: number;
   disabled?: boolean;
@@ -284,7 +285,7 @@ const PrerequisiteItem = (props: IProps) => {
     const existingPrerequite = findRecordsByField<IPrerequisite, 'key'>(prerequisites, 'key');
     existingPrerequite?.map((pre: IPrerequisite) => {
       setError(
-        `prerequisite_${pre.id}_toggle`, 
+        `prerequisite_${pre.id}_toggle`,
         {
           message: intl.formatMessage({id: 'prerequisite.toggle.duplicate'}),
         }
@@ -329,7 +330,7 @@ const PrerequisiteItem = (props: IProps) => {
     <div className={styles.title}>
       <div className={styles['title-left']}>
         <Dropdown
-          fluid 
+          fluid
           selection
           floating
           search
@@ -337,7 +338,7 @@ const PrerequisiteItem = (props: IProps) => {
           disabled={disabled}
           name={`prerequisite_${item?.id}_toggle`}
           value={item?.key}
-          placeholder={intl.formatMessage({id: 'prerequisite.toggle.placeholder'})} 
+          placeholder={intl.formatMessage({id: 'prerequisite.toggle.placeholder'})}
           options={getToggleOptions()}
           icon={<Icon customclass={'angle-down'} type='angle-down' />}
           error={ errors[`prerequisite_${item?.id}_toggle`] ? true : false }
@@ -370,7 +371,7 @@ const PrerequisiteItem = (props: IProps) => {
       </div>
       <div className={styles['title-right']}>
         <Dropdown
-          fluid 
+          fluid
           selection
           floating
           selectOnBlur={false}
@@ -378,7 +379,7 @@ const PrerequisiteItem = (props: IProps) => {
           disabled={disabled}
           name={`prerequisite_${item?.id}_returnValue`}
           placeholder={intl.formatMessage({id: 'prerequisite.return.value.placeholder'})}
-          options={getToggleValueOptions()} 
+          options={getToggleValueOptions()}
           icon={<Icon customclass={'angle-down'} type='angle-down' />}
           error={ errors[`prerequisite_${item?.id}_returnValue`] ? true : false }
           onChange={async (e: SyntheticEvent, detail: DropdownProps) => {

@@ -10,16 +10,26 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
+edition = "2021"
 name = "matchit"
-version = "0.5.0"
-authors = ["ibraheem <ibrah1440@gmail.com>"]
-description = "A blazing fast URL router."
+version = "0.8.4"
+authors = ["Ibraheem Ahmed <ibraheem@ibraheem.ca>"]
+description = "A high performance, zero-copy URL router."
 readme = "README.md"
-keywords = ["router", "path", "tree", "match", "url"]
-categories = ["network-programming", "algorithms"]
-license = "MIT"
+keywords = [
+    "router",
+    "path",
+    "tree",
+    "match",
+    "url",
+]
+categories = [
+    "network-programming",
+    "algorithms",
+]
+license = "MIT AND BSD-3-Clause"
 repository = "https://github.com/ibraheemdev/matchit"
+
 [profile.release]
 opt-level = 3
 lto = true
@@ -30,6 +40,7 @@ name = "bench"
 harness = false
 
 [dependencies]
+
 [dev-dependencies.actix-router]
 version = "0.2.7"
 
@@ -39,6 +50,10 @@ version = "0.3.4"
 [dev-dependencies.gonzales]
 version = "0.0.3-beta"
 
+[dev-dependencies.hyper]
+version = "0.14"
+features = ["full"]
+
 [dev-dependencies.path-tree]
 version = "0.2.2"
 
@@ -47,6 +62,20 @@ version = "1.5.4"
 
 [dev-dependencies.route-recognizer]
 version = "0.3.0"
+
+[dev-dependencies.routefinder]
+version = "0.5.2"
+
+[dev-dependencies.tokio]
+version = "1"
+features = ["full"]
+
+[dev-dependencies.tower]
+version = "0.4"
+features = [
+    "make",
+    "util",
+]
 
 [features]
 __test_helpers = []

@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import { DiffFieldValue } from './DiffFieldValue';
 import { IntlWrapper } from 'components/utils/wrapper';
 
-it('DiffFieldValue snapshot', (done) => {
-  (async () => {
+it('DiffFieldValue snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(<DiffFieldValue value="Test Text" type="same" />, {
       wrapper: IntlWrapper,
     });
@@ -18,7 +18,5 @@ it('DiffFieldValue snapshot', (done) => {
 
     rerender(<DiffFieldValue value={['Test Text1', 'Test text2']} type="remove" />);
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });

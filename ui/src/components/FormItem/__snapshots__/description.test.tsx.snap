@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Key snapshot 1`] = `
 <DocumentFragment>
@@ -10,7 +10,7 @@ exports[`Key snapshot 1`] = `
         Description
       </label>
       <div
-        class="field input"
+        class="field _input_063ad5"
       >
         <textarea
           placeholder="Please input description"
@@ -34,7 +34,7 @@ exports[`Key snapshot 2`] = `
         Description
       </label>
       <div
-        class="field input"
+        class="field _input_063ad5"
       >
         <textarea
           placeholder="Please input description"

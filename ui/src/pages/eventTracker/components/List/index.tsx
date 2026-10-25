@@ -9,6 +9,7 @@ import { IEvent } from 'interfaces/eventTracker';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   type: string;
   open: boolean;
   events: IEvent[];
@@ -69,7 +70,7 @@ const List = (props: IProps) => {
                     (type === 'all' || type === 'toggle') && (
                       <div>
                         <div className={styles['filter-menu-item']}>
-                          <Checkbox 
+                          <Checkbox
                             label={intl.formatMessage({id: 'event.tracker.type.access'})}
                             checked={typeList.includes('access')}
                             onChange={(e: SyntheticEvent) => {
@@ -79,7 +80,7 @@ const List = (props: IProps) => {
                           />
                         </div>
                         <div className={styles['filter-menu-item']}>
-                          <Checkbox 
+                          <Checkbox
                             label={intl.formatMessage({id: 'event.tracker.type.summary'})}
                             checked={typeList.includes('summary')}
                             onChange={(e: SyntheticEvent) => {
@@ -89,7 +90,7 @@ const List = (props: IProps) => {
                           />
                         </div>
                         <div className={styles['filter-menu-item']}>
-                          <Checkbox 
+                          <Checkbox
                             label={intl.formatMessage({id: 'event.tracker.type.debug'})}
                             checked={typeList.includes('debug')}
                             onChange={(e: SyntheticEvent) => {
@@ -105,7 +106,7 @@ const List = (props: IProps) => {
                     (type === 'all' || type === 'metric') && (
                       <div>
                         <div className={styles['filter-menu-item']}>
-                          <Checkbox 
+                          <Checkbox
                             label={intl.formatMessage({id: 'analysis.event.custom'})}
                             checked={typeList.includes('custom')}
                             onChange={(e: SyntheticEvent) => {
@@ -115,7 +116,7 @@ const List = (props: IProps) => {
                           />
                         </div>
                         <div className={styles['filter-menu-item']}>
-                          <Checkbox 
+                          <Checkbox
                             label={intl.formatMessage({id: 'analysis.event.pageview'})}
                             checked={typeList.includes('pageview')}
                             onChange={(e: SyntheticEvent) => {
@@ -125,7 +126,7 @@ const List = (props: IProps) => {
                           />
                         </div>
                         <div className={styles['filter-menu-item']}>
-                          <Checkbox 
+                          <Checkbox
                             label={intl.formatMessage({id: 'analysis.event.click'})}
                             checked={typeList.includes('click')}
                             onChange={(e: SyntheticEvent) => {

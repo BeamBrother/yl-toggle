@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`RuleTitle opt 1`] = `
 <DocumentFragment>
@@ -21,30 +21,30 @@ exports[`RuleTitle opt 1`] = `
           tabindex="0"
         >
           <div
-            class="rule"
+            class="_rule_b24de5"
           >
             <div
               class="accordion ui"
             >
               <div
-                class="title rule-accordion-title"
+                class="title _rule-accordion-title_b24de5"
               >
                 <span
-                  class="iconfont icon-angle-right icon-accordion"
-                  customclass="icon-accordion"
+                  class="iconfont icon-angle-right _icon-accordion_b24de5"
+                  customclass="_icon-accordion_b24de5"
                   type="angle-right"
                 />
                 <div
-                  class="rule-title"
+                  class="_rule-title_b24de5"
                 >
                   <div
-                    class="equal width fields rule-title-input"
+                    class="equal width fields _rule-title-input_b24de5"
                   >
                     <div
                       class="field"
                     >
                       <div
-                        class="field rule-input"
+                        class="field _rule-input_b24de5"
                       >
                         <div
                           class="ui input"
@@ -59,16 +59,16 @@ exports[`RuleTitle opt 1`] = `
                     </div>
                   </div>
                   <span
-                    class="rule-title-operation"
+                    class="_rule-title-operation_b24de5"
                   >
                     <span
-                      class="iconfont icon-drag icon-drag"
-                      customclass="icon-drag"
+                      class="iconfont icon-drag _icon-drag_b24de5"
+                      customclass="_icon-drag_b24de5"
                       type="drag"
                     />
                     <span
-                      class="iconfont icon-archive icon-archive"
-                      customclass="icon-archive"
+                      class="iconfont icon-archive _icon-archive_b24de5"
+                      customclass="_icon-archive_b24de5"
                       type="archive"
                     />
                   </span>
@@ -78,20 +78,20 @@ exports[`RuleTitle opt 1`] = `
                 class="content"
               >
                 <div
-                  class="rule-content"
+                  class="_rule-content_b24de5"
                 >
                   <div
-                    class="rule-add-one"
+                    class="_rule-add-one_b24de5"
                     name="rule_test_id_add"
                   >
                     <div>
                       <button
-                        class="ui secondary button rule-add-btn"
+                        class="ui secondary button _rule-add-btn_b24de5"
                         type="button"
                       >
                         <span
-                          class="iconfont icon-add iconfont"
-                          customclass="iconfont"
+                          class="iconfont icon-add _iconfont_b24de5"
+                          customclass="_iconfont_b24de5"
                           type="add"
                         />
                         Add
@@ -99,28 +99,28 @@ exports[`RuleTitle opt 1`] = `
                     </div>
                   </div>
                   <div
-                    class="serve"
+                    class="_serve_2e8c38"
                   >
                     <div
-                      class="serve-select"
+                      class="_serve-select_2e8c38"
                     >
                       <span
-                        class="serve-text"
+                        class="_serve-text_2e8c38"
                       >
                         <span
-                          class="label-required"
+                          class="_label-required_2e8c38"
                         >
                           *
                         </span>
                         Serve
                       </span>
                       <div
-                        class="field serve-form-field"
+                        class="field _serve-form-field_2e8c38"
                         style="width: 308px;"
                       >
                         <div
                           aria-expanded="false"
-                          class="ui floating selection dropdown serve-dropdown"
+                          class="ui floating selection dropdown _serve-dropdown_2e8c38"
                           name="rule_test_id_serve"
                           role="listbox"
                           style="width: 308px;"
@@ -135,8 +135,8 @@ exports[`RuleTitle opt 1`] = `
                             Please select serve
                           </div>
                           <span
-                            class="iconfont icon-angle-down angle-down"
-                            customclass="angle-down"
+                            class="iconfont icon-angle-down _angle-down_2e8c38"
+                            customclass="_angle-down_2e8c38"
                             type="angle-down"
                           />
                           <div
@@ -193,30 +193,30 @@ exports[`RuleTitle snapshot 1`] = `
           tabindex="0"
         >
           <div
-            class="rule"
+            class="_rule_b24de5"
           >
             <div
               class="accordion ui"
             >
               <div
-                class="title rule-accordion-title"
+                class="title _rule-accordion-title_b24de5"
               >
                 <span
-                  class="iconfont icon-angle-right icon-accordion"
-                  customclass="icon-accordion"
+                  class="iconfont icon-angle-right _icon-accordion_b24de5"
+                  customclass="_icon-accordion_b24de5"
                   type="angle-right"
                 />
                 <div
-                  class="rule-title"
+                  class="_rule-title_b24de5"
                 >
                   <div
-                    class="equal width fields rule-title-input"
+                    class="equal width fields _rule-title-input_b24de5"
                   >
                     <div
                       class="field"
                     >
                       <div
-                        class="field rule-input"
+                        class="field _rule-input_b24de5"
                       >
                         <div
                           class="ui input"
@@ -236,20 +236,20 @@ exports[`RuleTitle snapshot 1`] = `
                 class="content"
               >
                 <div
-                  class="rule-content"
+                  class="_rule-content_b24de5"
                 >
                   <div
-                    class="rule-add-one"
+                    class="_rule-add-one_b24de5"
                     name="rule_test_id_add"
                   >
                     <div>
                       <button
-                        class="ui secondary button rule-add-btn"
+                        class="ui secondary button _rule-add-btn_b24de5"
                         type="button"
                       >
                         <span
-                          class="iconfont icon-add iconfont"
-                          customclass="iconfont"
+                          class="iconfont icon-add _iconfont_b24de5"
+                          customclass="_iconfont_b24de5"
                           type="add"
                         />
                         Add

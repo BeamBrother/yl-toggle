@@ -1,39 +1,39 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Add Variations and delete 1`] = `
 <div>
   <div>
     <div
-      class="variation"
+      class="_variation_2ece17"
     >
       <div
-        class="line"
+        class="_line_9f8bc5"
       >
         <div
-          class="name"
+          class="_name_9f8bc5"
         >
           <span
-            class="name-color"
+            class="_name-color_9f8bc5"
             style="background: rgb(85, 110, 230);"
           />
         </div>
         <div
-          class="left"
+          class="_left_9f8bc5"
         >
           <div
             class="equal width fields"
           >
             <div
-              class="field drawer-variation-name"
+              class="field _drawer-variation-name_9f8bc5"
             >
               <div
                 class="field"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -45,7 +45,7 @@ exports[`Add Variations and delete 1`] = `
                   index="0"
                 >
                   <input
-                    name="test-name"
+                    name="variation_test_id_name"
                     placeholder="name"
                     type="text"
                     value="name"
@@ -54,16 +54,16 @@ exports[`Add Variations and delete 1`] = `
               </div>
             </div>
             <div
-              class="field drawer-variation-value"
+              class="field _drawer-variation-value_9f8bc5"
             >
               <div
-                class="field status-dropdown"
+                class="field _status-dropdown_9f8bc5"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -73,7 +73,7 @@ exports[`Add Variations and delete 1`] = `
                   aria-expanded="false"
                   class="ui fluid floating selection dropdown"
                   customname="value"
-                  name="test-name"
+                  name="variation_test_id_normal"
                   role="listbox"
                   tabindex="0"
                 >
@@ -86,8 +86,8 @@ exports[`Add Variations and delete 1`] = `
                     Please select
                   </div>
                   <span
-                    class="iconfont icon-angle-down angle-down"
-                    customclass="angle-down"
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
                     type="angle-down"
                   />
                   <div
@@ -130,7 +130,7 @@ exports[`Add Variations and delete 1`] = `
                 class="field"
               >
                 <span
-                  class="label"
+                  class="_label_9f8bc5"
                 >
                   description
                 </span>
@@ -151,37 +151,37 @@ exports[`Add Variations and delete 1`] = `
           </div>
         </div>
         <div
-          class="operation-holder"
+          class="_operation-holder_9f8bc5"
         />
       </div>
       <div
-        class="line"
+        class="_line_9f8bc5"
       >
         <div
-          class="name"
+          class="_name_9f8bc5"
         >
           <span
-            class="name-color"
+            class="_name-color_9f8bc5"
             style="background: rgb(255, 156, 27);"
           />
         </div>
         <div
-          class="left"
+          class="_left_9f8bc5"
         >
           <div
             class="equal width fields"
           >
             <div
-              class="field drawer-variation-name"
+              class="field _drawer-variation-name_9f8bc5"
             >
               <div
                 class="field"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -193,7 +193,7 @@ exports[`Add Variations and delete 1`] = `
                   index="1"
                 >
                   <input
-                    name="test-name"
+                    name="variation_test_name"
                     placeholder="name"
                     type="text"
                     value="variation1"
@@ -202,16 +202,16 @@ exports[`Add Variations and delete 1`] = `
               </div>
             </div>
             <div
-              class="field drawer-variation-value"
+              class="field _drawer-variation-value_9f8bc5"
             >
               <div
-                class="field status-dropdown"
+                class="field _status-dropdown_9f8bc5"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -221,7 +221,7 @@ exports[`Add Variations and delete 1`] = `
                   aria-expanded="false"
                   class="ui fluid floating selection dropdown"
                   customname="value"
-                  name="test-name"
+                  name="variation_test_normal"
                   role="listbox"
                   tabindex="0"
                 >
@@ -234,8 +234,8 @@ exports[`Add Variations and delete 1`] = `
                     Please select
                   </div>
                   <span
-                    class="iconfont icon-angle-down angle-down"
-                    customclass="angle-down"
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
                     type="angle-down"
                   />
                   <div
@@ -278,7 +278,7 @@ exports[`Add Variations and delete 1`] = `
                 class="field"
               >
                 <span
-                  class="label"
+                  class="_label_9f8bc5"
                 >
                   description
                 </span>
@@ -299,43 +299,43 @@ exports[`Add Variations and delete 1`] = `
           </div>
         </div>
         <div
-          class="operation"
+          class="_operation_9f8bc5"
         >
           <span
-            class="iconfont icon-minus iconfont"
-            customclass="iconfont"
+            class="iconfont icon-minus _iconfont_9f8bc5"
+            customclass="_iconfont_9f8bc5"
             type="minus"
           />
         </div>
       </div>
       <div
-        class="line"
+        class="_line_9f8bc5"
       >
         <div
-          class="name"
+          class="_name_9f8bc5"
         >
           <span
-            class="name-color"
+            class="_name-color_9f8bc5"
             style="background: rgb(42, 200, 228);"
           />
         </div>
         <div
-          class="left"
+          class="_left_9f8bc5"
         >
           <div
             class="equal width fields"
           >
             <div
-              class="field drawer-variation-name"
+              class="field _drawer-variation-name_9f8bc5"
             >
               <div
                 class="field"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -347,7 +347,7 @@ exports[`Add Variations and delete 1`] = `
                   index="2"
                 >
                   <input
-                    name="test-name"
+                    name="variation_test_name"
                     placeholder="name"
                     type="text"
                     value="variation2"
@@ -356,16 +356,16 @@ exports[`Add Variations and delete 1`] = `
               </div>
             </div>
             <div
-              class="field drawer-variation-value"
+              class="field _drawer-variation-value_9f8bc5"
             >
               <div
-                class="field status-dropdown"
+                class="field _status-dropdown_9f8bc5"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -375,7 +375,7 @@ exports[`Add Variations and delete 1`] = `
                   aria-expanded="false"
                   class="ui fluid floating selection dropdown"
                   customname="value"
-                  name="test-name"
+                  name="variation_test_normal"
                   role="listbox"
                   tabindex="0"
                 >
@@ -388,8 +388,8 @@ exports[`Add Variations and delete 1`] = `
                     Please select
                   </div>
                   <span
-                    class="iconfont icon-angle-down angle-down"
-                    customclass="angle-down"
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
                     type="angle-down"
                   />
                   <div
@@ -432,7 +432,7 @@ exports[`Add Variations and delete 1`] = `
                 class="field"
               >
                 <span
-                  class="label"
+                  class="_label_9f8bc5"
                 >
                   description
                 </span>
@@ -453,43 +453,43 @@ exports[`Add Variations and delete 1`] = `
           </div>
         </div>
         <div
-          class="operation"
+          class="_operation_9f8bc5"
         >
           <span
-            class="iconfont icon-minus iconfont"
-            customclass="iconfont"
+            class="iconfont icon-minus _iconfont_9f8bc5"
+            customclass="_iconfont_9f8bc5"
             type="minus"
           />
         </div>
       </div>
       <div
-        class="line"
+        class="_line_9f8bc5"
       >
         <div
-          class="name"
+          class="_name_9f8bc5"
         >
           <span
-            class="name-color"
+            class="_name-color_9f8bc5"
             style="background: rgb(167, 108, 236);"
           />
         </div>
         <div
-          class="left"
+          class="_left_9f8bc5"
         >
           <div
             class="equal width fields"
           >
             <div
-              class="field drawer-variation-name"
+              class="field _drawer-variation-name_9f8bc5"
             >
               <div
                 class="field"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -501,7 +501,7 @@ exports[`Add Variations and delete 1`] = `
                   index="3"
                 >
                   <input
-                    name="test-name"
+                    name="variation_test_name"
                     placeholder="name"
                     type="text"
                     value="variation3"
@@ -510,16 +510,16 @@ exports[`Add Variations and delete 1`] = `
               </div>
             </div>
             <div
-              class="field drawer-variation-value"
+              class="field _drawer-variation-value_9f8bc5"
             >
               <div
-                class="field status-dropdown"
+                class="field _status-dropdown_9f8bc5"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -529,7 +529,7 @@ exports[`Add Variations and delete 1`] = `
                   aria-expanded="false"
                   class="ui fluid floating selection dropdown"
                   customname="value"
-                  name="test-name"
+                  name="variation_test_normal"
                   role="listbox"
                   tabindex="0"
                 >
@@ -542,8 +542,8 @@ exports[`Add Variations and delete 1`] = `
                     Please select
                   </div>
                   <span
-                    class="iconfont icon-angle-down angle-down"
-                    customclass="angle-down"
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
                     type="angle-down"
                   />
                   <div
@@ -586,7 +586,7 @@ exports[`Add Variations and delete 1`] = `
                 class="field"
               >
                 <span
-                  class="label"
+                  class="_label_9f8bc5"
                 >
                   description
                 </span>
@@ -607,29 +607,29 @@ exports[`Add Variations and delete 1`] = `
           </div>
         </div>
         <div
-          class="operation"
+          class="_operation_9f8bc5"
         >
           <span
-            class="iconfont icon-minus iconfont"
-            customclass="iconfont"
+            class="iconfont icon-minus _iconfont_9f8bc5"
+            customclass="_iconfont_9f8bc5"
             type="minus"
           />
         </div>
       </div>
       <div
-        class="drawer-variation-add"
+        class="_drawer-variation-add_2ece17"
       >
         <button
-          class="ui primary button variation-add-btn"
+          class="ui primary button _variation-add-btn_2ece17"
           type="button"
         >
           <span
-            class="iconfont icon-add iconfont"
-            customclass="iconfont"
+            class="iconfont icon-add _iconfont_2ece17"
+            customclass="_iconfont_2ece17"
             type="add"
           />
           <span
-            class="variation-add-btn-text"
+            class="_variation-add-btn-text_2ece17"
           >
             Add Variation
           </span>
@@ -644,36 +644,36 @@ exports[`Add Variations and delete 2`] = `
 <div>
   <div>
     <div
-      class="variation"
+      class="_variation_2ece17"
     >
       <div
-        class="line"
+        class="_line_9f8bc5"
       >
         <div
-          class="name"
+          class="_name_9f8bc5"
         >
           <span
-            class="name-color"
+            class="_name-color_9f8bc5"
             style="background: rgb(85, 110, 230);"
           />
         </div>
         <div
-          class="left"
+          class="_left_9f8bc5"
         >
           <div
             class="equal width fields"
           >
             <div
-              class="field drawer-variation-name"
+              class="field _drawer-variation-name_9f8bc5"
             >
               <div
                 class="field"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -685,7 +685,7 @@ exports[`Add Variations and delete 2`] = `
                   index="0"
                 >
                   <input
-                    name="test-name"
+                    name="variation_test_id_name"
                     placeholder="name"
                     type="text"
                     value="name"
@@ -694,16 +694,16 @@ exports[`Add Variations and delete 2`] = `
               </div>
             </div>
             <div
-              class="field drawer-variation-value"
+              class="field _drawer-variation-value_9f8bc5"
             >
               <div
-                class="field status-dropdown"
+                class="field _status-dropdown_9f8bc5"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -713,7 +713,7 @@ exports[`Add Variations and delete 2`] = `
                   aria-expanded="false"
                   class="ui fluid floating selection dropdown"
                   customname="value"
-                  name="test-name"
+                  name="variation_test_id_normal"
                   role="listbox"
                   tabindex="0"
                 >
@@ -726,8 +726,8 @@ exports[`Add Variations and delete 2`] = `
                     Please select
                   </div>
                   <span
-                    class="iconfont icon-angle-down angle-down"
-                    customclass="angle-down"
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
                     type="angle-down"
                   />
                   <div
@@ -770,7 +770,7 @@ exports[`Add Variations and delete 2`] = `
                 class="field"
               >
                 <span
-                  class="label"
+                  class="_label_9f8bc5"
                 >
                   description
                 </span>
@@ -791,37 +791,37 @@ exports[`Add Variations and delete 2`] = `
           </div>
         </div>
         <div
-          class="operation-holder"
+          class="_operation-holder_9f8bc5"
         />
       </div>
       <div
-        class="line"
+        class="_line_9f8bc5"
       >
         <div
-          class="name"
+          class="_name_9f8bc5"
         >
           <span
-            class="name-color"
+            class="_name-color_9f8bc5"
             style="background: rgb(255, 156, 27);"
           />
         </div>
         <div
-          class="left"
+          class="_left_9f8bc5"
         >
           <div
             class="equal width fields"
           >
             <div
-              class="field drawer-variation-name"
+              class="field _drawer-variation-name_9f8bc5"
             >
               <div
                 class="field"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -833,7 +833,7 @@ exports[`Add Variations and delete 2`] = `
                   index="1"
                 >
                   <input
-                    name="test-name"
+                    name="variation_test_name"
                     placeholder="name"
                     type="text"
                     value="variation2"
@@ -842,16 +842,16 @@ exports[`Add Variations and delete 2`] = `
               </div>
             </div>
             <div
-              class="field drawer-variation-value"
+              class="field _drawer-variation-value_9f8bc5"
             >
               <div
-                class="field status-dropdown"
+                class="field _status-dropdown_9f8bc5"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -861,7 +861,7 @@ exports[`Add Variations and delete 2`] = `
                   aria-expanded="false"
                   class="ui fluid floating selection dropdown"
                   customname="value"
-                  name="test-name"
+                  name="variation_test_normal"
                   role="listbox"
                   tabindex="0"
                 >
@@ -874,8 +874,8 @@ exports[`Add Variations and delete 2`] = `
                     Please select
                   </div>
                   <span
-                    class="iconfont icon-angle-down angle-down"
-                    customclass="angle-down"
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
                     type="angle-down"
                   />
                   <div
@@ -918,7 +918,7 @@ exports[`Add Variations and delete 2`] = `
                 class="field"
               >
                 <span
-                  class="label"
+                  class="_label_9f8bc5"
                 >
                   description
                 </span>
@@ -939,43 +939,43 @@ exports[`Add Variations and delete 2`] = `
           </div>
         </div>
         <div
-          class="operation"
+          class="_operation_9f8bc5"
         >
           <span
-            class="iconfont icon-minus iconfont"
-            customclass="iconfont"
+            class="iconfont icon-minus _iconfont_9f8bc5"
+            customclass="_iconfont_9f8bc5"
             type="minus"
           />
         </div>
       </div>
       <div
-        class="line"
+        class="_line_9f8bc5"
       >
         <div
-          class="name"
+          class="_name_9f8bc5"
         >
           <span
-            class="name-color"
+            class="_name-color_9f8bc5"
             style="background: rgb(42, 200, 228);"
           />
         </div>
         <div
-          class="left"
+          class="_left_9f8bc5"
         >
           <div
             class="equal width fields"
           >
             <div
-              class="field drawer-variation-name"
+              class="field _drawer-variation-name_9f8bc5"
             >
               <div
                 class="field"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -987,7 +987,7 @@ exports[`Add Variations and delete 2`] = `
                   index="2"
                 >
                   <input
-                    name="test-name"
+                    name="variation_test_name"
                     placeholder="name"
                     type="text"
                     value="variation3"
@@ -996,16 +996,16 @@ exports[`Add Variations and delete 2`] = `
               </div>
             </div>
             <div
-              class="field drawer-variation-value"
+              class="field _drawer-variation-value_9f8bc5"
             >
               <div
-                class="field status-dropdown"
+                class="field _status-dropdown_9f8bc5"
               >
                 <span
-                  class="label-text"
+                  class="_label-text_9f8bc5"
                 >
                   <span
-                    class="label-required"
+                    class="_label-required_9f8bc5"
                   >
                     *
                   </span>
@@ -1015,7 +1015,7 @@ exports[`Add Variations and delete 2`] = `
                   aria-expanded="false"
                   class="ui fluid floating selection dropdown"
                   customname="value"
-                  name="test-name"
+                  name="variation_test_normal"
                   role="listbox"
                   tabindex="0"
                 >
@@ -1028,8 +1028,8 @@ exports[`Add Variations and delete 2`] = `
                     Please select
                   </div>
                   <span
-                    class="iconfont icon-angle-down angle-down"
-                    customclass="angle-down"
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
                     type="angle-down"
                   />
                   <div
@@ -1072,7 +1072,7 @@ exports[`Add Variations and delete 2`] = `
                 class="field"
               >
                 <span
-                  class="label"
+                  class="_label_9f8bc5"
                 >
                   description
                 </span>
@@ -1093,29 +1093,29 @@ exports[`Add Variations and delete 2`] = `
           </div>
         </div>
         <div
-          class="operation"
+          class="_operation_9f8bc5"
         >
           <span
-            class="iconfont icon-minus iconfont"
-            customclass="iconfont"
+            class="iconfont icon-minus _iconfont_9f8bc5"
+            customclass="_iconfont_9f8bc5"
             type="minus"
           />
         </div>
       </div>
       <div
-        class="drawer-variation-add"
+        class="_drawer-variation-add_2ece17"
       >
         <button
-          class="ui primary button variation-add-btn"
+          class="ui primary button _variation-add-btn_2ece17"
           type="button"
         >
           <span
-            class="iconfont icon-add iconfont"
-            customclass="iconfont"
+            class="iconfont icon-add _iconfont_2ece17"
+            customclass="_iconfont_2ece17"
             type="add"
           />
           <span
-            class="variation-add-btn-text"
+            class="_variation-add-btn-text_2ece17"
           >
             Add Variation
           </span>
@@ -1129,36 +1129,36 @@ exports[`Add Variations and delete 2`] = `
 exports[`Variations error name 1`] = `
 <DocumentFragment>
   <div
-    class="variation"
+    class="_variation_2ece17"
   >
     <div
-      class="line"
+      class="_line_9f8bc5"
     >
       <div
-        class="name"
+        class="_name_9f8bc5"
       >
         <span
-          class="name-color"
+          class="_name-color_9f8bc5"
           style="background: rgb(85, 110, 230);"
         />
       </div>
       <div
-        class="left"
+        class="_left_9f8bc5"
       >
         <div
           class="equal width fields"
         >
           <div
-            class="field drawer-variation-name"
+            class="field _drawer-variation-name_9f8bc5"
           >
             <div
               class="field"
             >
               <span
-                class="label-text"
+                class="_label-text_9f8bc5"
               >
                 <span
-                  class="label-required"
+                  class="_label-required_9f8bc5"
                 >
                   *
                 </span>
@@ -1179,16 +1179,16 @@ exports[`Variations error name 1`] = `
             </div>
           </div>
           <div
-            class="field drawer-variation-value"
+            class="field _drawer-variation-value_9f8bc5"
           >
             <div
-              class="field status-dropdown"
+              class="field _status-dropdown_9f8bc5"
             >
               <span
-                class="label-text"
+                class="_label-text_9f8bc5"
               >
                 <span
-                  class="label-required"
+                  class="_label-required_9f8bc5"
                 >
                   *
                 </span>
@@ -1211,8 +1211,8 @@ exports[`Variations error name 1`] = `
                   Please select
                 </div>
                 <span
-                  class="iconfont icon-angle-down angle-down"
-                  customclass="angle-down"
+                  class="iconfont icon-angle-down _angle-down_9f8bc5"
+                  customclass="_angle-down_9f8bc5"
                   type="angle-down"
                 />
                 <div
@@ -1255,7 +1255,7 @@ exports[`Variations error name 1`] = `
               class="field"
             >
               <span
-                class="label"
+                class="_label_9f8bc5"
               >
                 description
               </span>
@@ -1276,37 +1276,37 @@ exports[`Variations error name 1`] = `
         </div>
       </div>
       <div
-        class="operation-holder"
+        class="_operation-holder_9f8bc5"
       />
     </div>
     <div
-      class="line"
+      class="_line_9f8bc5"
     >
       <div
-        class="name"
+        class="_name_9f8bc5"
       >
         <span
-          class="name-color"
+          class="_name-color_9f8bc5"
           style="background: rgb(255, 156, 27);"
         />
       </div>
       <div
-        class="left"
+        class="_left_9f8bc5"
       >
         <div
           class="equal width fields"
         >
           <div
-            class="field drawer-variation-name"
+            class="field _drawer-variation-name_9f8bc5"
           >
             <div
               class="field"
             >
               <span
-                class="label-text"
+                class="_label-text_9f8bc5"
               >
                 <span
-                  class="label-required"
+                  class="_label-required_9f8bc5"
                 >
                   *
                 </span>
@@ -1327,16 +1327,16 @@ exports[`Variations error name 1`] = `
             </div>
           </div>
           <div
-            class="field drawer-variation-value"
+            class="field _drawer-variation-value_9f8bc5"
           >
             <div
-              class="field status-dropdown"
+              class="field _status-dropdown_9f8bc5"
             >
               <span
-                class="label-text"
+                class="_label-text_9f8bc5"
               >
                 <span
-                  class="label-required"
+                  class="_label-required_9f8bc5"
                 >
                   *
                 </span>
@@ -1359,8 +1359,8 @@ exports[`Variations error name 1`] = `
                   Please select
                 </div>
                 <span
-                  class="iconfont icon-angle-down angle-down"
-                  customclass="angle-down"
+                  class="iconfont icon-angle-down _angle-down_9f8bc5"
+                  customclass="_angle-down_9f8bc5"
                   type="angle-down"
                 />
                 <div
@@ -1403,7 +1403,7 @@ exports[`Variations error name 1`] = `
               class="field"
             >
               <span
-                class="label"
+                class="_label_9f8bc5"
               >
                 description
               </span>
@@ -1424,30 +1424,30 @@ exports[`Variations error name 1`] = `
         </div>
       </div>
       <div
-        class="operation-holder"
+        class="_operation-holder_9f8bc5"
       />
     </div>
     <div
-      class="drawer-variation-add"
+      class="_drawer-variation-add_2ece17"
     >
       <button
-        class="ui primary button variation-add-btn"
+        class="ui primary button _variation-add-btn_2ece17"
         type="button"
       >
         <span
-          class="iconfont icon-add iconfont"
-          customclass="iconfont"
+          class="iconfont icon-add _iconfont_2ece17"
+          customclass="_iconfont_2ece17"
           type="add"
         />
         <span
-          class="variation-add-btn-text"
+          class="_variation-add-btn-text_2ece17"
         >
           Add Variation
         </span>
       </button>
     </div>
     <div
-      class="error-text"
+      class="_error-text_2ece17"
       name="variations_duplicated"
     >
       Variation names are duplicated, please change!
@@ -1459,36 +1459,36 @@ exports[`Variations error name 1`] = `
 exports[`Variations snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="variation"
+    class="_variation_2ece17"
   >
     <div
-      class="line"
+      class="_line_9f8bc5"
     >
       <div
-        class="name"
+        class="_name_9f8bc5"
       >
         <span
-          class="name-color"
+          class="_name-color_9f8bc5"
           style="background: rgb(85, 110, 230);"
         />
       </div>
       <div
-        class="left"
+        class="_left_9f8bc5"
       >
         <div
           class="equal width fields"
         >
           <div
-            class="field drawer-variation-name"
+            class="field _drawer-variation-name_9f8bc5"
           >
             <div
               class="field"
             >
               <span
-                class="label-text"
+                class="_label-text_9f8bc5"
               >
                 <span
-                  class="label-required"
+                  class="_label-required_9f8bc5"
                 >
                   *
                 </span>
@@ -1509,16 +1509,16 @@ exports[`Variations snapshot 1`] = `
             </div>
           </div>
           <div
-            class="field drawer-variation-value"
+            class="field _drawer-variation-value_9f8bc5"
           >
             <div
-              class="field status-dropdown"
+              class="field _status-dropdown_9f8bc5"
             >
               <span
-                class="label-text"
+                class="_label-text_9f8bc5"
               >
                 <span
-                  class="label-required"
+                  class="_label-required_9f8bc5"
                 >
                   *
                 </span>
@@ -1541,8 +1541,8 @@ exports[`Variations snapshot 1`] = `
                   Please select
                 </div>
                 <span
-                  class="iconfont icon-angle-down angle-down"
-                  customclass="angle-down"
+                  class="iconfont icon-angle-down _angle-down_9f8bc5"
+                  customclass="_angle-down_9f8bc5"
                   type="angle-down"
                 />
                 <div
@@ -1585,7 +1585,7 @@ exports[`Variations snapshot 1`] = `
               class="field"
             >
               <span
-                class="label"
+                class="_label_9f8bc5"
               >
                 description
               </span>
@@ -1606,23 +1606,23 @@ exports[`Variations snapshot 1`] = `
         </div>
       </div>
       <div
-        class="operation-holder"
+        class="_operation-holder_9f8bc5"
       />
     </div>
     <div
-      class="drawer-variation-add"
+      class="_drawer-variation-add_2ece17"
     >
       <button
-        class="ui primary button variation-add-btn"
+        class="ui primary button _variation-add-btn_2ece17"
         type="button"
       >
         <span
-          class="iconfont icon-add iconfont"
-          customclass="iconfont"
+          class="iconfont icon-add _iconfont_2ece17"
+          customclass="_iconfont_2ece17"
           type="add"
         />
         <span
-          class="variation-add-btn-text"
+          class="_variation-add-btn-text_2ece17"
         >
           Add Variation
         </span>
@@ -1635,36 +1635,36 @@ exports[`Variations snapshot 1`] = `
 exports[`Variations snapshot 2`] = `
 <DocumentFragment>
   <div
-    class="variation"
+    class="_variation_2ece17"
   >
     <div
-      class="line"
+      class="_line_9f8bc5"
     >
       <div
-        class="name"
+        class="_name_9f8bc5"
       >
         <span
-          class="name-color"
+          class="_name-color_9f8bc5"
           style="background: rgb(85, 110, 230);"
         />
       </div>
       <div
-        class="left"
+        class="_left_9f8bc5"
       >
         <div
           class="equal width fields"
         >
           <div
-            class="field drawer-variation-name"
+            class="field _drawer-variation-name_9f8bc5"
           >
             <div
               class="field"
             >
               <span
-                class="label-text"
+                class="_label-text_9f8bc5"
               >
                 <span
-                  class="label-required"
+                  class="_label-required_9f8bc5"
                 >
                   *
                 </span>
@@ -1685,16 +1685,16 @@ exports[`Variations snapshot 2`] = `
             </div>
           </div>
           <div
-            class="field drawer-variation-value"
+            class="field _drawer-variation-value_9f8bc5"
           >
             <div
               class="field"
             >
               <span
-                class="label-text"
+                class="_label-text_9f8bc5"
               >
                 <span
-                  class="label-required"
+                  class="_label-required_9f8bc5"
                 >
                   *
                 </span>
@@ -1721,7 +1721,7 @@ exports[`Variations snapshot 2`] = `
               class="field"
             >
               <span
-                class="label"
+                class="_label_9f8bc5"
               >
                 description
               </span>
@@ -1742,23 +1742,23 @@ exports[`Variations snapshot 2`] = `
         </div>
       </div>
       <div
-        class="operation-holder"
+        class="_operation-holder_9f8bc5"
       />
     </div>
     <div
-      class="drawer-variation-add"
+      class="_drawer-variation-add_2ece17"
     >
       <button
-        class="ui primary button variation-add-btn"
+        class="ui primary button _variation-add-btn_2ece17"
         type="button"
       >
         <span
-          class="iconfont icon-add iconfont"
-          customclass="iconfont"
+          class="iconfont icon-add _iconfont_2ece17"
+          customclass="_iconfont_2ece17"
           type="add"
         />
         <span
-          class="variation-add-btn-text"
+          class="_variation-add-btn-text_2ece17"
         >
           Add Variation
         </span>
@@ -1771,36 +1771,36 @@ exports[`Variations snapshot 2`] = `
 exports[`Variations snapshot 3`] = `
 <DocumentFragment>
   <div
-    class="variation"
+    class="_variation_2ece17"
   >
     <div
-      class="line"
+      class="_line_9f8bc5"
     >
       <div
-        class="name"
+        class="_name_9f8bc5"
       >
         <span
-          class="name-color"
+          class="_name-color_9f8bc5"
           style="background: rgb(85, 110, 230);"
         />
       </div>
       <div
-        class="left"
+        class="_left_9f8bc5"
       >
         <div
           class="equal width fields"
         >
           <div
-            class="field drawer-variation-name"
+            class="field _drawer-variation-name_9f8bc5"
           >
             <div
               class="field"
             >
               <span
-                class="label-text"
+                class="_label-text_9f8bc5"
               >
                 <span
-                  class="label-required"
+                  class="_label-required_9f8bc5"
                 >
                   *
                 </span>
@@ -1821,16 +1821,16 @@ exports[`Variations snapshot 3`] = `
             </div>
           </div>
           <div
-            class="field drawer-variation-value"
+            class="field _drawer-variation-value_9f8bc5"
           >
             <div
               class="field"
             >
               <span
-                class="label-text"
+                class="_label-text_9f8bc5"
               >
                 <span
-                  class="label-required"
+                  class="_label-required_9f8bc5"
                 >
                   *
                 </span>
@@ -1857,7 +1857,7 @@ exports[`Variations snapshot 3`] = `
               class="field"
             >
               <span
-                class="label"
+                class="_label_9f8bc5"
               >
                 description
               </span>
@@ -1878,23 +1878,23 @@ exports[`Variations snapshot 3`] = `
         </div>
       </div>
       <div
-        class="operation-holder"
+        class="_operation-holder_9f8bc5"
       />
     </div>
     <div
-      class="drawer-variation-add"
+      class="_drawer-variation-add_2ece17"
     >
       <button
-        class="ui primary button variation-add-btn"
+        class="ui primary button _variation-add-btn_2ece17"
         type="button"
       >
         <span
-          class="iconfont icon-add iconfont"
-          customclass="iconfont"
+          class="iconfont icon-add _iconfont_2ece17"
+          customclass="_iconfont_2ece17"
           type="add"
         />
         <span
-          class="variation-add-btn-text"
+          class="_variation-add-btn-text_2ece17"
         >
           Add Variation
         </span>
@@ -1907,36 +1907,36 @@ exports[`Variations snapshot 3`] = `
 exports[`Variations snapshot 4`] = `
 <DocumentFragment>
   <div
-    class="variation"
+    class="_variation_2ece17"
   >
     <div
-      class="line"
+      class="_line_9f8bc5"
     >
       <div
-        class="name"
+        class="_name_9f8bc5"
       >
         <span
-          class="name-color"
+          class="_name-color_9f8bc5"
           style="background: rgb(85, 110, 230);"
         />
       </div>
       <div
-        class="left"
+        class="_left_9f8bc5"
       >
         <div
           class="equal width fields"
         >
           <div
-            class="field drawer-variation-name"
+            class="field _drawer-variation-name_9f8bc5"
           >
             <div
               class="field"
             >
               <span
-                class="label-text"
+                class="_label-text_9f8bc5"
               >
                 <span
-                  class="label-required"
+                  class="_label-required_9f8bc5"
                 >
                   *
                 </span>
@@ -1957,16 +1957,16 @@ exports[`Variations snapshot 4`] = `
             </div>
           </div>
           <div
-            class="field drawer-variation-value"
+            class="field _drawer-variation-value_9f8bc5"
           >
             <div
               class="field"
             >
               <span
-                class="label-text"
+                class="_label-text_9f8bc5"
               >
                 <span
-                  class="label-required"
+                  class="_label-required_9f8bc5"
                 >
                   *
                 </span>
@@ -1984,8 +1984,8 @@ exports[`Variations snapshot 4`] = `
                   value=""
                 />
                 <span
-                  class="iconfont icon-code icon-evaluate"
-                  customclass="icon-evaluate"
+                  class="iconfont icon-code _icon-evaluate_9f8bc5"
+                  customclass="_icon-evaluate_9f8bc5"
                   type="code"
                 />
               </div>
@@ -1998,7 +1998,7 @@ exports[`Variations snapshot 4`] = `
               class="field"
             >
               <span
-                class="label"
+                class="_label_9f8bc5"
               >
                 description
               </span>
@@ -2019,23 +2019,23 @@ exports[`Variations snapshot 4`] = `
         </div>
       </div>
       <div
-        class="operation-holder"
+        class="_operation-holder_9f8bc5"
       />
     </div>
     <div
-      class="drawer-variation-add"
+      class="_drawer-variation-add_2ece17"
     >
       <button
-        class="ui primary button variation-add-btn"
+        class="ui primary button _variation-add-btn_2ece17"
         type="button"
       >
         <span
-          class="iconfont icon-add iconfont"
-          customclass="iconfont"
+          class="iconfont icon-add _iconfont_2ece17"
+          customclass="_iconfont_2ece17"
           type="add"
         />
         <span
-          class="variation-add-btn-text"
+          class="_variation-add-btn-text_2ece17"
         >
           Add Variation
         </span>

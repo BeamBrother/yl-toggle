@@ -391,6 +391,7 @@ impl SegmentRule {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[allow(dead_code)]
 struct DefaultRule {
     pub serve: Serve,
 }
@@ -1473,3 +1474,4 @@ mod condition_tests {
         assert!(!condition.meet(&user, None));
     }
 }
+

@@ -4,8 +4,8 @@ import io.yltoggle.api.base.tenant.TenantContext;
 import io.yltoggle.api.dao.entity.TenantSupport;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 @Component
 public class TenantEntityListener {

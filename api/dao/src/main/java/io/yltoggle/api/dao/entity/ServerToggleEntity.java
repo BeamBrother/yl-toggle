@@ -1,6 +1,6 @@
 package io.yltoggle.api.dao.entity;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 import java.util.Date;
 
 public interface ServerToggleEntity {

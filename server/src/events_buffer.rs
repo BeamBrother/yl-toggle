@@ -168,10 +168,8 @@ impl EventsBuffer {
             .received
             .fetch_add(events.len() as u64, Ordering::Relaxed);
         for event in events {
-            if queue.len() >= self.inner.config.capacity {
-                if queue.pop_front().is_some() {
-                    self.inner.dropped_overflow.fetch_add(1, Ordering::Relaxed);
-                }
+            if queue.len() >= self.inner.config.capacity && queue.pop_front().is_some() {
+                self.inner.dropped_overflow.fetch_add(1, Ordering::Relaxed);
             }
             queue.push_back(BufferedEvent {
                 group_key: group_key.clone(),
@@ -234,7 +232,34 @@ async fn flush_once(inner: &BufferInner) {
             }
         };
         if let Some(analysis_url) = &inner.analysis_url {
-            post_with_retry(inner, analysis_url, &headers, &body, events.len()).await;
+            // SDKs submit backendAPI repository envelopes ({events, access}),
+            // while the Analysis API accepts envelopes containing only events.
+            // Preserve either shape by flattening nested event arrays.
+            let analysis_events: Vec<Value> = events
+                .iter()
+                .flat_map(|item| match item.get("events").and_then(Value::as_array) {
+                    Some(nested) => nested.clone(),
+                    None => Vec::from([item.clone()]),
+                })
+                .collect();
+            let analysis_body = match serde_json::to_string(&serde_json::json!([
+                { "events": analysis_events }
+            ])) {
+                Ok(body) => body,
+                Err(e) => {
+                    warn!(
+                        "events buffer analysis serialize error, dropped {} events: {}",
+                        events.len(),
+                        e
+                    );
+                    inner
+                        .dropped_send
+                        .fetch_add(events.len() as u64, Ordering::Relaxed);
+                    post_with_retry(inner, &inner.events_url, &headers, &body, events.len()).await;
+                    continue;
+                }
+            };
+            post_with_retry(inner, analysis_url, &headers, &analysis_body, events.len()).await;
         }
         post_with_retry(inner, &inner.events_url, &headers, &body, events.len()).await;
     }
@@ -457,10 +482,8 @@ mod tests {
         );
         let listener_addr = std::net::SocketAddr::from(([127, 0, 0, 1], 9410));
         tokio::spawn(async move {
-            axum::Server::bind(&listener_addr)
-                .serve(app.into_make_service())
-                .await
-                .unwrap();
+            let listener = tokio::net::TcpListener::bind(listener_addr).await.unwrap();
+            axum::serve(listener, app).await.unwrap();
         });
         tokio::time::sleep(Duration::from_millis(100)).await; // wait server listen
 

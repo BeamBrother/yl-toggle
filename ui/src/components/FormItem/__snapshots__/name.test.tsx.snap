@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Name snapshot 1`] = `
 <DocumentFragment>
@@ -8,14 +8,14 @@ exports[`Name snapshot 1`] = `
     >
       <label>
         <span
-          class="label-required"
+          class="_label-required_063ad5"
         >
           *
         </span>
         Name
       </label>
       <div
-        class="field input"
+        class="field _input_063ad5"
       >
         <div
           class="ui input"
@@ -41,14 +41,14 @@ exports[`Name snapshot 2`] = `
     >
       <label>
         <span
-          class="label-required"
+          class="_label-required_063ad5"
         >
           *
         </span>
         Name
       </label>
       <div
-        class="error field input"
+        class="error field _input_063ad5"
       >
         <div
           class="ui input"
@@ -64,7 +64,7 @@ exports[`Name snapshot 2`] = `
       </div>
     </div>
     <div
-      class="error-text"
+      class="_error-text_063ad5"
     >
       error message
     </div>

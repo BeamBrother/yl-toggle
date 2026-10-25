@@ -19,7 +19,7 @@
 //! The `tracing` crate provides the APIs necessary for instrumenting libraries
 //! and applications to emit trace data.
 //!
-//! *Compiler support: [requires `rustc` 1.49+][msrv]*
+//! *Compiler support: [requires `rustc` 1.65+][msrv]*
 //!
 //! [msrv]: #supported-rust-versions
 //! # Core Concepts
@@ -173,7 +173,7 @@
 //! For functions which don't have built-in tracing support and can't have
 //! the `#[instrument]` attribute applied (such as from an external crate),
 //! the [`Span` struct][`Span`] has a [`in_scope()` method][`in_scope`]
-//! which can be used to easily wrap synchonous code in a span.
+//! which can be used to easily wrap synchronous code in a span.
 //!
 //! For example:
 //! ```rust
@@ -192,8 +192,8 @@
 //!
 //! You can find more examples showing how to use this crate [here][examples].
 //!
-//! [RAII]: https://github.com/rust-unofficial/patterns/blob/master/patterns/behavioural/RAII.md
-//! [examples]: https://github.com/tokio-rs/tracing/tree/master/examples
+//! [RAII]: https://github.com/rust-unofficial/patterns/blob/main/src/patterns/behavioural/RAII.md
+//! [examples]: https://github.com/tokio-rs/tracing/tree/main/examples
 //!
 //! ### Events
 //!
@@ -214,7 +214,7 @@
 //! ### Configuring Attributes
 //!
 //! Both macros require a [`Level`] specifying the verbosity of the span or
-//! event. Optionally, the [target] and [parent span] may be overridden. If the
+//! event. Optionally, the, [target] and [parent span] may be overridden. If the
 //! target and parent span are not overridden, they will default to the
 //! module path where the macro was invoked and the current span (as determined
 //! by the subscriber), respectively.
@@ -237,7 +237,16 @@
 //! ```
 //!
 //! The span macros also take a string literal after the level, to set the name
-//! of the span.
+//! of the span (as above).  In the case of the event macros, the name of the event can
+//! be overridden (the default is `event file:line`) using the `name:` specifier.
+//!
+//! ```
+//! # use tracing::{span, event, Level};
+//! # fn main() {
+//! span!(Level::TRACE, "my span");
+//! event!(name: "some_info", Level::INFO, "something has happened!");
+//! # }
+//! ```
 //!
 //! ### Recording Fields
 //!
@@ -307,6 +316,19 @@
 //! //  - "guid:x-request-id", containing a `:`, with the value "abcdef"
 //! //  - "type", which is a reserved word, with the value "request"
 //! span!(Level::TRACE, "api", "guid:x-request-id" = "abcdef", "type" = "request");
+//! # }
+//!```
+//!
+//! Constant expressions can also be used as field names. Constants
+//! must be enclosed in curly braces (`{}`) to indicate that the *value*
+//! of the constant is to be used as the field name, rather than the
+//! constant's name. For example:
+//! ```
+//! # use tracing::{span, Level};
+//! # fn main() {
+//! const RESOURCE_NAME: &str = "foo";
+//! // this span will have the field `foo = "some_id"`
+//! span!(Level::TRACE, "get", { RESOURCE_NAME } = "some_id");
 //! # }
 //!```
 //!
@@ -384,22 +406,6 @@
 //!
 //! // Now, record a value for parting as well.
 //! span.record("parting", &"goodbye world!");
-//! ```
-//!
-//! Note that a span may have up to 32 fields. The following will not compile:
-//!
-//! ```rust,compile_fail
-//! # use tracing::Level;
-//! # fn main() {
-//! let bad_span = span!(
-//!     Level::TRACE,
-//!     "too many fields!",
-//!     a = 1, b = 2, c = 3, d = 4, e = 5, f = 6, g = 7, h = 8, i = 9,
-//!     j = 10, k = 11, l = 12, m = 13, n = 14, o = 15, p = 16, q = 17,
-//!     r = 18, s = 19, t = 20, u = 21, v = 22, w = 23, x = 24, y = 25,
-//!     z = 26, aa = 27, bb = 28, cc = 29, dd = 30, ee = 31, ff = 32, gg = 33
-//! );
-//! # }
 //! ```
 //!
 //! Finally, events may also include human-readable messages, in the form of a
@@ -664,7 +670,7 @@
 //! entered, exited, and closed. Since these additional span lifecycle logs have
 //! the potential to be very verbose, and don't include additional fields, they
 //! will always be emitted at the `Trace` level, rather than inheriting the
-//! level of the span that generated them. Furthermore, they are are categorized
+//! level of the span that generated them. Furthermore, they are categorized
 //! under a separate `log` target, "tracing::span" (and its sub-target,
 //! "tracing::span::active", for the logs on entering and exiting a span), which
 //! may be enabled or disabled separately from other `log` records emitted by
@@ -704,7 +710,7 @@
 //!    `tracing-subscriber`'s `FmtSubscriber`, you don't need to depend on
 //!    `tracing-log` directly.
 //!  - [`tracing-appender`] provides utilities for outputting tracing data,
-//!     including a file appender and non blocking writer.
+//!    including a file appender and non blocking writer.
 //!
 //! Additionally, there are also several third-party crates which are not
 //! maintained by the `tokio` project. These include:
@@ -719,6 +725,7 @@
 //!  - [`tracing-actix-web`] provides `tracing` integration for the `actix-web` web framework.
 //!  - [`tracing-actix`] provides `tracing` integration for the `actix` actor
 //!    framework.
+//!  - [`axum-insights`] provides `tracing` integration and Application insights export for the `axum` web framework.
 //!  - [`tracing-gelf`] implements a subscriber for exporting traces in Greylog
 //!    GELF format.
 //!  - [`tracing-coz`] provides integration with the [coz] causal profiler
@@ -747,6 +754,9 @@
 //!  - [`tracing-loki`] provides a layer for shipping logs to [Grafana Loki].
 //!  - [`tracing-logfmt`] provides a layer that formats events and spans into the logfmt format.
 //!  - [`reqwest-tracing`] provides a middleware to trace [`reqwest`] HTTP requests.
+//!  - [`tracing-cloudwatch`] provides a layer that sends events to AWS CloudWatch Logs.
+//!  - [`clippy-tracing`] provides a tool to add, remove and check for `tracing::instrument`.
+//!  - [`json-subscriber`] provides a subscriber for emitting JSON logs. The output can be customized much more than with [`tracing-subscriber`]'s JSON output.
 //!
 //! If you're the maintainer of a `tracing` ecosystem crate not listed above,
 //! please let us know! We'd love to add your project to the list!
@@ -758,6 +768,7 @@
 //! [honeycomb.io]: https://www.honeycomb.io/
 //! [`tracing-actix-web`]: https://crates.io/crates/tracing-actix-web
 //! [`tracing-actix`]: https://crates.io/crates/tracing-actix
+//! [`axum-insights`]: https://crates.io/crates/axum-insights
 //! [`tracing-gelf`]: https://crates.io/crates/tracing-gelf
 //! [`tracing-coz`]: https://crates.io/crates/tracing-coz
 //! [coz]: https://github.com/plasma-umass/coz
@@ -776,7 +787,7 @@
 //! [Tracy]: https://github.com/wolfpld/tracy
 //! [`tracing-elastic-apm`]: https://crates.io/crates/tracing-elastic-apm
 //! [Elastic APM]: https://www.elastic.co/apm
-//! [`tracing-etw`]: https://github.com/microsoft/tracing-etw
+//! [`tracing-etw`]: https://github.com/microsoft/rust_win_etw/tree/main/win_etw_tracing
 //! [ETW]: https://docs.microsoft.com/en-us/windows/win32/etw/about-event-tracing
 //! [`tracing-fluent-assertions`]: https://crates.io/crates/tracing-fluent-assertions
 //! [`sentry-tracing`]: https://crates.io/crates/sentry-tracing
@@ -787,6 +798,9 @@
 //! [`tracing-logfmt`]: https://crates.io/crates/tracing-logfmt
 //! [`reqwest-tracing`]: https://crates.io/crates/reqwest-tracing
 //! [`reqwest`]: https://crates.io/crates/reqwest
+//! [`tracing-cloudwatch`]: https://crates.io/crates/tracing-cloudwatch
+//! [`clippy-tracing`]: https://crates.io/crates/clippy-tracing
+//! [`json-subscriber`]: https://crates.io/crates/json-subscriber
 //!
 //! <pre class="ignore" style="white-space:normal;font:inherit;">
 //!     <strong>Note</strong>: Some of these ecosystem crates are currently
@@ -817,7 +831,7 @@
 //!
 //!   ```toml
 //!   [dependencies]
-//!   tracing = { version = "0.1.37", default-features = false }
+//!   tracing = { version = "0.1.38", default-features = false }
 //!   ```
 //!
 //! <pre class="ignore" style="white-space:normal;font:inherit;">
@@ -859,14 +873,14 @@
 //! ## Supported Rust Versions
 //!
 //! Tracing is built against the latest stable release. The minimum supported
-//! version is 1.49. The current Tracing version is not guaranteed to build on
+//! version is 1.65. The current Tracing version is not guaranteed to build on
 //! Rust versions earlier than the minimum supported version.
 //!
 //! Tracing follows the same compiler support policies as the rest of the Tokio
 //! project. The current stable Rust compiler and the three most recent minor
 //! versions before it will always be supported. For example, if the current
-//! stable compiler version is 1.45, the minimum supported version will not be
-//! increased past 1.42, three minor versions prior. Increasing the minimum
+//! stable compiler version is 1.69, the minimum supported version will not be
+//! increased past 1.66, three minor versions prior. Increasing the minimum
 //! supported compiler version is not considered a semver breaking change as
 //! long as doing so complies with this policy.
 //!
@@ -898,11 +912,12 @@
 //! [static verbosity level]: level_filters#compile-time-filters
 //! [instrument]: https://docs.rs/tracing-attributes/latest/tracing_attributes/attr.instrument.html
 //! [flags]: #crate-feature-flags
-#![cfg_attr(not(feature = "std"), no_std)]
+
+#![no_std]
 #![cfg_attr(docsrs, feature(doc_cfg), deny(rustdoc::broken_intra_doc_links))]
-#![doc(html_root_url = "https://docs.rs/tracing/0.1.37")]
 #![doc(
-    html_logo_url = "https://raw.githubusercontent.com/tokio-rs/tracing/master/assets/logo-type.png",
+    html_logo_url = "https://raw.githubusercontent.com/tokio-rs/tracing/main/assets/logo-type.png",
+    html_favicon_url = "https://raw.githubusercontent.com/tokio-rs/tracing/main/assets/favicon.ico",
     issue_tracker_base_url = "https://github.com/tokio-rs/tracing/issues/"
 )]
 #![warn(
@@ -911,7 +926,6 @@
     rust_2018_idioms,
     unreachable_pub,
     bad_style,
-    const_err,
     dead_code,
     improper_ctypes,
     non_shorthand_field_patterns,
@@ -919,7 +933,8 @@
     overflowing_literals,
     path_statements,
     patterns_in_fns_without_body,
-    private_in_public,
+    private_interfaces,
+    private_bounds,
     unconditional_recursion,
     unused,
     unused_allocation,
@@ -928,8 +943,8 @@
     while_true
 )]
 
-#[cfg(not(feature = "std"))]
-extern crate alloc;
+#[cfg(feature = "std")]
+extern crate std;
 
 // Somehow this `use` statement is necessary for us to re-export the `core`
 // macros on Rust 1.26.0. I'm not sure how this makes it work, but it does.
@@ -967,14 +982,17 @@ pub mod field;
 pub mod instrument;
 pub mod level_filters;
 pub mod span;
-pub(crate) mod stdlib;
 pub mod subscriber;
 
 #[doc(hidden)]
 pub mod __macro_support {
     pub use crate::callsite::Callsite;
     use crate::{subscriber::Interest, Metadata};
-    pub use core::concat;
+    use core::{fmt, str};
+    // Re-export the `core` functions that are used in macros. This allows
+    // a crate to be named `core` and avoid name clashes.
+    // See here: https://github.com/tokio-rs/tracing/issues/2761
+    pub use core::{concat, file, format_args, iter::Iterator, line, option::Option, stringify};
 
     /// Callsite implementation used by macro-generated code.
     ///
@@ -1049,6 +1067,78 @@ pub mod __macro_support {
                 .build(),
         );
     }
+
+    /// Implementation detail used for constructing FieldSet names from raw
+    /// identifiers. In `info!(..., r#type = "...")` the macro would end up
+    /// constructing a name equivalent to `FieldName(*b"type")`.
+    pub struct FieldName<const N: usize>([u8; N]);
+
+    impl<const N: usize> FieldName<N> {
+        /// Convert `"prefix.r#keyword.suffix"` to `b"prefix.keyword.suffix"`.
+        pub const fn new(input: &str) -> Self {
+            let input = input.as_bytes();
+            let mut output = [0u8; N];
+            let mut read = 0;
+            let mut write = 0;
+            while read < input.len() {
+                if read + 1 < input.len() && input[read] == b'r' && input[read + 1] == b'#' {
+                    read += 2;
+                }
+                output[write] = input[read];
+                read += 1;
+                write += 1;
+            }
+            assert!(write == N);
+            Self(output)
+        }
+
+        pub const fn as_str(&self) -> &str {
+            // SAFETY: Because of the private visibility of self.0, it must have
+            // been computed by Self::new. So these bytes are all of the bytes
+            // of some original valid UTF-8 string, but with "r#" substrings
+            // removed, which cannot have produced invalid UTF-8.
+            unsafe { str::from_utf8_unchecked(self.0.as_slice()) }
+        }
+    }
+
+    impl FieldName<0> {
+        /// For `"prefix.r#keyword.suffix"` compute `"prefix.keyword.suffix".len()`.
+        pub const fn len(input: &str) -> usize {
+            // Count occurrences of "r#"
+            let mut raw = 0;
+
+            let mut i = 0;
+            while i < input.len() {
+                if input.as_bytes()[i] == b'#' {
+                    raw += 1;
+                }
+                i += 1;
+            }
+
+            input.len() - 2 * raw
+        }
+    }
+
+    impl<const N: usize> fmt::Debug for FieldName<N> {
+        fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+            formatter
+                .debug_tuple("FieldName")
+                .field(&self.as_str())
+                .finish()
+        }
+    }
+
+    static CALLSITE: crate::callsite::DefaultCallsite =
+        crate::callsite::DefaultCallsite::new(&META);
+    static META: crate::Metadata<'static> = crate::metadata! {
+        name: "__fake_tracing_callsite",
+        target: module_path!(),
+        level: crate::Level::TRACE,
+        fields: crate::fieldset!(),
+        callsite: &CALLSITE,
+        kind: crate::metadata::Kind::SPAN,
+    };
+    pub static FAKE_FIELD: crate::field::Field = META.private_fake_field();
 }
 
 #[cfg(feature = "log")]

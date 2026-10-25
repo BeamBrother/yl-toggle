@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import { RulesDiffContent } from './RulesDiffContent';
 import { IntlWrapper } from 'components/utils/wrapper';
 import idiff from './diff';
@@ -211,8 +211,8 @@ const content_c = idiff(
   ]
 );
 
-it('RulesDiffContent snapshot', (done) => {
-  (async () => {
+it('RulesDiffContent snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(<RulesDiffContent content={content_a} />, {
       wrapper: IntlWrapper,
     });
@@ -223,8 +223,5 @@ it('RulesDiffContent snapshot', (done) => {
 
     rerender(<RulesDiffContent content={content_c} />);
     expect(asFragment()).toMatchSnapshot();
-
-
-    done();
   })();
 });

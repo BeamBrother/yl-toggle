@@ -3,7 +3,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import classNames from 'classnames';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { useParams } from 'react-router-dom';
 import Button from 'components/Button';
 import Icon from 'components/Icon';
 import CopyToClipboardPopup from 'components/CopyToClipboard';
@@ -29,8 +28,10 @@ import {
 } from '../../constants';
 
 import styles from '../../index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IProps {
+  children?: import('react').ReactNode;
   attributes: string[];
   currentStep: number;
   currentSDK: SdkLanguage;

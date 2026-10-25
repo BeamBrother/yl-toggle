@@ -15,7 +15,7 @@ public class AccessTokenAuthenticationToken extends AbstractAuthenticationToken 
     private String tenant;
 
     public AccessTokenAuthenticationToken(String token) {
-        super(null);
+        super(java.util.List.of());
         this.token = token;
         super.setAuthenticated(false);
     }

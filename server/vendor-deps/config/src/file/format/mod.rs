@@ -1,13 +1,7 @@
-// If no features are used, there is an "unused mut" warning in `ALL_EXTENSIONS`
-// BUG: ? For some reason this doesn't do anything if I try and function scope this
-#![allow(unused_mut)]
-
-use lazy_static::lazy_static;
-use std::collections::HashMap;
 use std::error::Error;
 
 use crate::map::Map;
-use crate::{file::FileStoredFormat, value::Value, Format};
+use crate::{Format, file::FileStoredFormat, value::Value};
 
 #[cfg(feature = "toml")]
 mod toml;
@@ -27,24 +21,28 @@ mod ron;
 #[cfg(feature = "json5")]
 mod json5;
 
+#[cfg(feature = "corn")]
+mod corn;
+
 /// File formats provided by the library.
 ///
-/// Although it is possible to define custom formats using [`Format`] trait it is recommended to use FileFormat if possible.
+/// Although it is possible to define custom formats using [`Format`] trait it is recommended to use `FileFormat` if possible.
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
+#[non_exhaustive]
 pub enum FileFormat {
     /// TOML (parsed with toml)
     #[cfg(feature = "toml")]
     Toml,
 
-    /// JSON (parsed with serde_json)
+    /// JSON (parsed with `serde_json`)
     #[cfg(feature = "json")]
     Json,
 
-    /// YAML (parsed with yaml_rust)
+    /// YAML (parsed with `yaml_rust2`)
     #[cfg(feature = "yaml")]
     Yaml,
 
-    /// INI (parsed with rust_ini)
+    /// INI (parsed with `rust_ini`)
     #[cfg(feature = "ini")]
     Ini,
 
@@ -55,42 +53,65 @@ pub enum FileFormat {
     /// JSON5 (parsed with json5)
     #[cfg(feature = "json5")]
     Json5,
-}
 
-lazy_static! {
-    #[doc(hidden)]
-    // #[allow(unused_mut)] ?
-    pub static ref ALL_EXTENSIONS: HashMap<FileFormat, Vec<&'static str>> = {
-        let mut formats: HashMap<FileFormat, Vec<_>> = HashMap::new();
-
-        #[cfg(feature = "toml")]
-        formats.insert(FileFormat::Toml, vec!["toml"]);
-
-        #[cfg(feature = "json")]
-        formats.insert(FileFormat::Json, vec!["json"]);
-
-        #[cfg(feature = "yaml")]
-        formats.insert(FileFormat::Yaml, vec!["yaml", "yml"]);
-
-        #[cfg(feature = "ini")]
-        formats.insert(FileFormat::Ini, vec!["ini"]);
-
-        #[cfg(feature = "ron")]
-        formats.insert(FileFormat::Ron, vec!["ron"]);
-
-        #[cfg(feature = "json5")]
-        formats.insert(FileFormat::Json5, vec!["json5"]);
-
-        formats
-    };
+    /// Corn (parsed with `libcorn`)
+    #[cfg(feature = "corn")]
+    Corn,
 }
 
 impl FileFormat {
+    pub(crate) fn all() -> &'static [Self] {
+        &[
+            #[cfg(feature = "toml")]
+            Self::Toml,
+            #[cfg(feature = "json")]
+            Self::Json,
+            #[cfg(feature = "yaml")]
+            Self::Yaml,
+            #[cfg(feature = "ini")]
+            Self::Ini,
+            #[cfg(feature = "ron")]
+            Self::Ron,
+            #[cfg(feature = "json5")]
+            Self::Json5,
+            #[cfg(feature = "corn")]
+            Self::Corn,
+        ]
+    }
+
     pub(crate) fn extensions(&self) -> &'static [&'static str] {
-        // It should not be possible for this to fail
-        // A FileFormat would need to be declared without being added to the
-        // ALL_EXTENSIONS map.
-        ALL_EXTENSIONS.get(self).unwrap()
+        match self {
+            #[cfg(feature = "toml")]
+            Self::Toml => &["toml"],
+
+            #[cfg(feature = "json")]
+            Self::Json => &["json"],
+
+            #[cfg(feature = "yaml")]
+            Self::Yaml => &["yaml", "yml"],
+
+            #[cfg(feature = "ini")]
+            Self::Ini => &["ini"],
+
+            #[cfg(feature = "ron")]
+            Self::Ron => &["ron"],
+
+            #[cfg(feature = "json5")]
+            Self::Json5 => &["json5"],
+
+            #[cfg(feature = "corn")]
+            Self::Corn => &["corn"],
+
+            #[cfg(all(
+                not(feature = "toml"),
+                not(feature = "json"),
+                not(feature = "yaml"),
+                not(feature = "ini"),
+                not(feature = "ron"),
+                not(feature = "json5"),
+            ))]
+            _ => unreachable!("No features are enabled, this library won't work without features"),
+        }
     }
 
     pub(crate) fn parse(
@@ -100,22 +121,25 @@ impl FileFormat {
     ) -> Result<Map<String, Value>, Box<dyn Error + Send + Sync>> {
         match self {
             #[cfg(feature = "toml")]
-            FileFormat::Toml => toml::parse(uri, text),
+            Self::Toml => toml::parse(uri, text),
 
             #[cfg(feature = "json")]
-            FileFormat::Json => json::parse(uri, text),
+            Self::Json => json::parse(uri, text),
 
             #[cfg(feature = "yaml")]
-            FileFormat::Yaml => yaml::parse(uri, text),
+            Self::Yaml => yaml::parse(uri, text),
 
             #[cfg(feature = "ini")]
-            FileFormat::Ini => ini::parse(uri, text),
+            Self::Ini => ini::parse(uri, text),
 
             #[cfg(feature = "ron")]
-            FileFormat::Ron => ron::parse(uri, text),
+            Self::Ron => ron::parse(uri, text),
 
             #[cfg(feature = "json5")]
-            FileFormat::Json5 => json5::parse(uri, text),
+            Self::Json5 => json5::parse(uri, text),
+
+            #[cfg(feature = "corn")]
+            Self::Corn => corn::parse(uri, text),
 
             #[cfg(all(
                 not(feature = "toml"),

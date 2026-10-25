@@ -1,31 +1,30 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if !defined(__has_feature)
-#define __has_feature(x) 0
-#endif
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
+#include <ring-core/asm_base.h>
 
-#if !defined(OPENSSL_NO_ASM)
-#if defined(__arm__)
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_ARM) && defined(__ELF__)
 @ Copyright 2012-2016 The OpenSSL Project Authors. All Rights Reserved.
 @
-@ Licensed under the OpenSSL license (the "License").  You may not use
-@ this file except in compliance with the License.  You can obtain a copy
-@ in the file LICENSE in the source distribution or at
-@ https://www.openssl.org/source/license.html
+@ Licensed under the Apache License, Version 2.0 (the "License");
+@ you may not use this file except in compliance with the License.
+@ You may obtain a copy of the License at
+@
+@     https://www.apache.org/licenses/LICENSE-2.0
+@
+@ Unless required by applicable law or agreed to in writing, software
+@ distributed under the License is distributed on an "AS IS" BASIS,
+@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@ See the License for the specific language governing permissions and
+@ limitations under the License.
 
 
 @ ====================================================================
 @ Written by Andy Polyakov <appro@openssl.org> for the OpenSSL
-@ project. The module is, however, dual licensed under OpenSSL and
-@ CRYPTOGAMS licenses depending on where you obtain it. For further
-@ details see http://www.openssl.org/~appro/cryptogams/.
+@ project.
 @
 @ Specific modes and adaptation for Linux kernel by Ard Biesheuvel
-@ of Linaro. Permission to use under GPL terms is granted.
+@ of Linaro.
 @ ====================================================================
 
 @ Bit-sliced AES for ARM NEON
@@ -62,8 +61,6 @@
 @ Add CBC, CTR and XTS subroutines and adapt for kernel use; courtesy of Ard.
 
 #ifndef __KERNEL__
-# include <GFp/arm_arch.h>
-
 # define VFP_ABI_PUSH	vstmdb	sp!,{d8-d15}
 # define VFP_ABI_POP	vldmia	sp!,{d8-d15}
 # define VFP_ABI_FRAME	0x40
@@ -72,7 +69,6 @@
 # define VFP_ABI_POP
 # define VFP_ABI_FRAME	0
 # define BSAES_ASM_EXTENDED_KEY
-# define __ARM_ARCH__ __LINUX_ARM_ARCH__
 # define __ARM_MAX_ARCH__ 7
 #endif
 
@@ -611,11 +607,11 @@ _bsaes_key_convert:
 	@ don't save last round key
 	bx	lr
 .size	_bsaes_key_convert,.-_bsaes_key_convert
-.globl	GFp_bsaes_ctr32_encrypt_blocks
-.hidden	GFp_bsaes_ctr32_encrypt_blocks
-.type	GFp_bsaes_ctr32_encrypt_blocks,%function
+.globl	bsaes_ctr32_encrypt_blocks
+.hidden	bsaes_ctr32_encrypt_blocks
+.type	bsaes_ctr32_encrypt_blocks,%function
 .align	5
-GFp_bsaes_ctr32_encrypt_blocks:
+bsaes_ctr32_encrypt_blocks:
 	@ In OpenSSL, short inputs fall back to aes_nohw_* here. We patch this
 	@ out to retain a constant-time implementation.
 	mov	ip, sp
@@ -795,8 +791,6 @@ GFp_bsaes_ctr32_encrypt_blocks:
 
 	@ OpenSSL contains aes_nohw_* fallback code here. We patch this
 	@ out to retain a constant-time implementation.
-.size	GFp_bsaes_ctr32_encrypt_blocks,.-GFp_bsaes_ctr32_encrypt_blocks
+.size	bsaes_ctr32_encrypt_blocks,.-bsaes_ctr32_encrypt_blocks
 #endif
-#endif
-#endif  // !OPENSSL_NO_ASM
-.section	.note.GNU-stack,"",%progbits
+#endif  // !OPENSSL_NO_ASM && defined(OPENSSL_ARM) && defined(__ELF__)

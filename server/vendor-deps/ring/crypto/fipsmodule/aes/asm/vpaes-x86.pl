@@ -1,10 +1,17 @@
 #! /usr/bin/env perl
 # Copyright 2011-2016 The OpenSSL Project Authors. All Rights Reserved.
 #
-# Licensed under the OpenSSL license (the "License").  You may not use
-# this file except in compliance with the License.  You can obtain a copy
-# in the file LICENSE in the source distribution or at
-# https://www.openssl.org/source/license.html
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 
 ######################################################################
@@ -62,13 +69,16 @@ $output = pop;
 open OUT,">$output";
 *STDOUT=*OUT;
 
-&asm_init($ARGV[0],$x86only = $ARGV[$#ARGV] eq "386");
+&asm_init($ARGV[0]);
 
 $PREFIX="vpaes";
 
 my  ($round, $base, $magic, $key, $const, $inp, $out)=
     ("eax",  "ebx", "ecx",  "edx","ebp",  "esi","edi");
 
+&preprocessor_ifdef("BORINGSSL_DISPATCH_TEST")
+&external_label("BORINGSSL_function_hit");
+&preprocessor_endif();
 &static_label("_vpaes_consts");
 &static_label("_vpaes_schedule_low_round");
 
@@ -555,7 +565,9 @@ $k_deskew=0x180;	# deskew tables: inverts the sbox's "skew"
 #
 # Interface to OpenSSL
 #
-&function_begin("GFp_${PREFIX}_set_encrypt_key");
+&function_begin("${PREFIX}_set_encrypt_key");
+	record_function_hit(5);
+
 	&mov	($inp,&wparam(0));		# inp
 	&lea	($base,&DWP(-56,"esp"));
 	&mov	($round,&wparam(1));		# bits
@@ -577,9 +589,11 @@ $k_deskew=0x180;	# deskew tables: inverts the sbox's "skew"
 
 	&mov	("esp",&DWP(48,"esp"));
 	&xor	("eax","eax");
-&function_end("GFp_${PREFIX}_set_encrypt_key");
+&function_end("${PREFIX}_set_encrypt_key");
 
-&function_begin("GFp_${PREFIX}_encrypt");
+&function_begin("${PREFIX}_encrypt");
+	record_function_hit(4);
+
 	&lea	($const,&DWP(&label("_vpaes_consts")."+0x30-".&label("pic_point")));
 	&call	("_vpaes_preheat");
 &set_label("pic_point");
@@ -596,8 +610,8 @@ $k_deskew=0x180;	# deskew tables: inverts the sbox's "skew"
 	&movdqu	(&QWP(0,$out),"xmm0");
 
 	&mov	("esp",&DWP(48,"esp"));
-&function_end("GFp_${PREFIX}_encrypt");
+&function_end("${PREFIX}_encrypt");
 
 &asm_finish();
 
-close STDOUT or die "error closing STDOUT";
+close STDOUT or die "error closing STDOUT: $!";

@@ -31,11 +31,15 @@
 //!
 //! *[See also the `Instant` type](crate::Instant).*
 
-mod coarse_now;
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
 mod instant;
 #[cfg(all(target_os = "linux", any(target_arch = "x86", target_arch = "x86_64")))]
 mod tsc_now;
 
+#[cfg(all(feature = "atomic", target_has_atomic = "64"))]
+#[cfg_attr(docsrs, doc(cfg(all(feature = "atomic", target_has_atomic = "64"))))]
+pub use instant::Atomic;
 pub use instant::{Anchor, Instant};
 
 /// Return `true` if the current platform supports [TSC](https://en.wikipedia.org/wiki/Time_Stamp_Counter),
@@ -57,15 +61,31 @@ pub fn is_tsc_available() -> bool {
 #[inline]
 pub(crate) fn current_cycle() -> u64 {
     #[cfg(all(target_os = "linux", any(target_arch = "x86", target_arch = "x86_64")))]
-    if is_tsc_available() {
-        tsc_now::current_cycle()
-    } else {
-        coarse_now::current_cycle()
+    {
+        if tsc_now::is_tsc_available() {
+            tsc_now::current_cycle()
+        } else {
+            current_cycle_fallback()
+        }
     }
     #[cfg(not(all(target_os = "linux", any(target_arch = "x86", target_arch = "x86_64"))))]
     {
-        coarse_now::current_cycle()
+        current_cycle_fallback()
     }
+}
+
+#[cfg(not(feature = "fallback-coarse"))]
+pub(crate) fn current_cycle_fallback() -> u64 {
+    web_time::SystemTime::now()
+        .duration_since(web_time::UNIX_EPOCH)
+        .map(|d| d.as_nanos() as u64)
+        .unwrap_or(0)
+}
+
+#[cfg(feature = "fallback-coarse")]
+pub(crate) fn current_cycle_fallback() -> u64 {
+    let coarse = coarsetime::Instant::now_without_cache_update();
+    coarsetime::Duration::from_ticks(coarse.as_ticks()).as_nanos()
 }
 
 #[inline]
@@ -85,13 +105,16 @@ mod tests {
     use super::*;
     use rand::Rng;
     use std::time::{Duration, Instant as StdInstant};
+    use wasm_bindgen_test::wasm_bindgen_test;
 
     #[test]
+    #[wasm_bindgen_test]
     fn test_is_tsc_available() {
         let _ = is_tsc_available();
     }
 
     #[test]
+    #[wasm_bindgen_test]
     fn test_monotonic() {
         let mut prev = 0;
         for _ in 0..10000 {
@@ -102,8 +125,18 @@ mod tests {
     }
 
     #[test]
+    #[wasm_bindgen_test]
     fn test_nanos_per_cycle() {
         let _ = nanos_per_cycle();
+    }
+
+    #[test]
+    #[wasm_bindgen_test]
+    fn test_unix_time() {
+        let now = Instant::now();
+        let anchor = Anchor::new();
+        let unix_nanos = now.as_unix_nanos(&anchor);
+        assert!(unix_nanos > 0);
     }
 
     #[test]
@@ -118,7 +151,7 @@ mod tests {
                 let duration_ns_std = std_instant.elapsed();
 
                 #[cfg(target_os = "windows")]
-                let expect_max_delta_ns = 20_000_000;
+                let expect_max_delta_ns = 40_000_000;
                 #[cfg(not(target_os = "windows"))]
                 let expect_max_delta_ns = 5_000_000;
 

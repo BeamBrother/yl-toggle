@@ -7,7 +7,7 @@ use std::io;
 use std::marker::PhantomPinned;
 use std::mem::{self, MaybeUninit};
 use std::pin::Pin;
-use std::task::{Context, Poll};
+use std::task::{ready, Context, Poll};
 
 pin_project! {
     #[derive(Debug)]
@@ -45,6 +45,7 @@ pub(super) fn read_to_end_internal<V: VecU8, R: AsyncRead + ?Sized>(
     loop {
         let ret = ready!(poll_read_to_end(buf, reader.as_mut(), cx));
         match ret {
+            Err(err) if err.kind() == io::ErrorKind::Interrupted => continue,
             Err(err) => return Poll::Ready(Err(err)),
             Ok(0) => return Poll::Ready(Ok(mem::replace(num_read, 0))),
             Ok(num) => {
@@ -54,7 +55,7 @@ pub(super) fn read_to_end_internal<V: VecU8, R: AsyncRead + ?Sized>(
     }
 }
 
-/// Tries to read from the provided AsyncRead.
+/// Tries to read from the provided [`AsyncRead`].
 ///
 /// The length of the buffer is increased by the number of bytes read.
 fn poll_read_to_end<V: VecU8, R: AsyncRead + ?Sized>(

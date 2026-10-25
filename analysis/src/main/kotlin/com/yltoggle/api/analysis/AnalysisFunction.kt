@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.util.JSONPObject
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.apache.commons.math3.distribution.AbstractRealDistribution
 import org.apache.tomcat.util.json.JSONParser
-import org.flywaydb.core.internal.util.JsonUtils
+
 import java.io.IOException
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -198,7 +198,7 @@ SELECT COUNT(*) as count FROM $UNIQ_VARIATION_TABLE;"""
 
 fun eventDiagnoseSql(sdkKey: String, metric: String, start: Long, end: Long) =
     """
-WITH 
+WITH
     $RAW_METRIC_TABLE AS (${userProvideMetricSql(sdkKey, metric)}),
     $METRIC_TABLE AS (${uniqMetricSql(start, end)})
 SELECT COUNT(*) as count FROM $METRIC_TABLE; """
@@ -220,26 +220,26 @@ WHERE s.variation = t.variation AND t.count > 1;"""
 
 fun userProvideVariationSql(sdkKey: String) =
     """
-SELECT 
-    user_key, time, toggle_key, variation_index AS variation 
+SELECT
+    user_key, time, toggle_key, variation_index AS variation
 FROM access
 WHERE sdk_key = '$sdkKey'"""
 
 fun uniqVariationSql(toggle: String, start: Long, end: Long) =
     """
-SELECT 
+SELECT
     v.user_key, v.variation
-FROM $RAW_VARIATION_TABLE v 
-WHERE 
+FROM $RAW_VARIATION_TABLE v
+WHERE
     v.toggle_key = '$toggle' and v.time > '$start' and v.time < '$end'
 GROUP BY v.user_key, v.variation"""
 
 fun uniqMetricSql(start: Long, end: Long) =
     """
-SELECT 
+SELECT
     user_key
-FROM $RAW_METRIC_TABLE v 
-WHERE 
+FROM $RAW_METRIC_TABLE v
+WHERE
     v.time > '$start' and v.time < '$end'
 GROUP BY user_key"""
 
@@ -251,10 +251,10 @@ fun numeratorMetricSql( start: Long, end: Long, fn: AggregateFn): String {
     }
 
     return """
-SELECT 
+SELECT
     user_key, $value AS value
-FROM $RAW_METRIC_TABLE v 
-WHERE 
+FROM $RAW_METRIC_TABLE v
+WHERE
     v.time > '$start' and v.time < '$end'
 GROUP BY user_key"""
 }

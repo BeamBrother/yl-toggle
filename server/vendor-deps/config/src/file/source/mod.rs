@@ -1,12 +1,12 @@
-pub mod file;
-pub mod string;
+pub(crate) mod file;
+pub(crate) mod string;
 
 use std::error::Error;
 use std::fmt::Debug;
 
-use crate::{file::FileStoredFormat, Format};
+use crate::{Format, file::FileStoredFormat};
 
-/// Describes where the file is sourced
+/// Describes where the [`File`][super::File] is sourced
 pub trait FileSource<T>: Debug + Clone
 where
     T: Format + FileStoredFormat,
@@ -17,6 +17,7 @@ where
     ) -> Result<FileSourceResult, Box<dyn Error + Send + Sync>>;
 }
 
+#[allow(unnameable_types)] // Unsure if/how to expose this
 pub struct FileSourceResult {
     pub(crate) uri: Option<String>,
     pub(crate) content: String,

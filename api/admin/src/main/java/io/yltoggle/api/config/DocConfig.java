@@ -4,7 +4,7 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import org.apache.commons.lang3.StringUtils;
-import org.springdoc.core.customizers.OpenApiCustomiser;
+import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class DocConfig {
 
     @Bean
-    public OpenApiCustomiser sortTagsAlphabetically() {
+    public OpenApiCustomizer sortTagsAlphabetically() {
         return openApi -> openApi.info(info())
                 .setTags(openApi.getTags()
                         .stream()
@@ -44,5 +44,3 @@ public class DocConfig {
     }
 
 }
-
-

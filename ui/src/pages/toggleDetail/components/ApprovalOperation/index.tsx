@@ -3,7 +3,6 @@ import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Form, TextAreaProps, RadioProps } from 'semantic-ui-react';
 import cloneDeep from 'lodash/cloneDeep';
-import { useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import Button from 'components/Button';
 import Modal from 'components/Modal';
@@ -17,8 +16,10 @@ import { IApprovalInfo, ITargeting, IContent } from 'interfaces/targeting';
 import { IRouterParams } from 'interfaces/project';
 
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IProps {
+  children?: import('react').ReactNode;
   approvalInfo?: IApprovalInfo;
   allowEnableTrackEvents: boolean;
   enableApproval: boolean;
@@ -29,7 +30,7 @@ interface IProps {
 }
 
 const ApprovalOperation = (props: IProps) => {
-  const { 
+  const {
     approvalInfo,
     allowEnableTrackEvents,
     enableApproval,
@@ -60,8 +61,8 @@ const ApprovalOperation = (props: IProps) => {
   } = useForm();
 
   useEffect(() => {
-    register('reason', { 
-      required: status === 'JUMP' || status === 'REJECT', 
+    register('reason', {
+      required: status === 'JUMP' || status === 'REJECT',
     });
     register('isTrackEvent', {
       required: (status === 'JUMP' || status === 'PUBLISH') && allowEnableTrackEvents,
@@ -145,14 +146,14 @@ const ApprovalOperation = (props: IProps) => {
     setValue('reason', '');
     setValue('isTrackEvent', '');
     saveOpen(false);
-    
+
     if (status === 'CANCEL') {  // Cancel publish
       const res = await cancelTargetingDraft(projectKey, environmentKey, toggleKey, {
         comment
       });
       if (res.success) {
         message.success(intl.formatMessage({id: 'targeting.approval.cancel.success'}));
-        
+
         if (isReEdit) {
           refreshInitialTargeting();
         } else {
@@ -212,7 +213,7 @@ const ApprovalOperation = (props: IProps) => {
     projectKey,
     environmentKey,
     toggleKey,
-    comment, 
+    comment,
     intl,
     isReEdit,
     isCollect,
@@ -269,10 +270,10 @@ const ApprovalOperation = (props: IProps) => {
             {/* Skip Approval and Publish */}
             {
               approvalInfo?.submitBy === userInfo.account && (
-                <Button 
-                  secondary 
-                  className={styles['dangerous-btn']} 
-                  onClick={() => { 
+                <Button
+                  secondary
+                  className={styles['dangerous-btn']}
+                  onClick={() => {
                     saveOpen(true);
                     saveStatus('JUMP');
                   }}
@@ -285,10 +286,10 @@ const ApprovalOperation = (props: IProps) => {
             {/* Withdraw */}
             {
               (approvalInfo?.submitBy === userInfo.account || OWNER.includes(userInfo.role)) && (
-                <Button 
-                  secondary 
+                <Button
+                  secondary
                   className={styles['dangerous-btn']}
-                  onClick={() => { 
+                  onClick={() => {
                     saveOpen(true);
                     saveStatus('REVOKE');
                   }}
@@ -302,20 +303,20 @@ const ApprovalOperation = (props: IProps) => {
             {
               approvalInfo?.reviewers?.includes(userInfo.account) && (
                 <>
-                  <Button 
-                    secondary 
+                  <Button
+                    secondary
                     className={styles['dangerous-btn']}
-                    onClick={() => { 
+                    onClick={() => {
                       saveOpen(true);
                       saveStatus('REJECT');
                     }}
                   >
                     <FormattedMessage id='targeting.approval.operation.decline' />
                   </Button>
-                  <Button 
-                    primary 
+                  <Button
+                    primary
                     className={styles.btn}
-                    onClick={() => { 
+                    onClick={() => {
                       saveOpen(true);
                       saveStatus('PASS');
                     }}
@@ -332,14 +333,14 @@ const ApprovalOperation = (props: IProps) => {
       {/* Abandon */}
       {
         (
-          enableApproval && 
-          (toggleStatus === 'PASS' || toggleStatus === 'JUMP') && 
+          enableApproval &&
+          (toggleStatus === 'PASS' || toggleStatus === 'JUMP') &&
           (approvalInfo?.submitBy === userInfo.account || OWNER.includes(userInfo.role))
         ) && (
-          <Button 
-            secondary 
+          <Button
+            secondary
             className={styles['dangerous-btn']}
-            onClick={() => { 
+            onClick={() => {
               saveOpen(true);
               saveStatus('CANCEL');
             }}
@@ -352,27 +353,27 @@ const ApprovalOperation = (props: IProps) => {
       {/* Publish */}
       {
         (
-          enableApproval && 
-          (toggleStatus === 'PASS' || toggleStatus === 'JUMP') && 
+          enableApproval &&
+          (toggleStatus === 'PASS' || toggleStatus === 'JUMP') &&
           (approvalInfo?.submitBy === userInfo.account)
         ) && (
-          <Button 
-            primary 
-            loading={approvePublishLoading} 
-            disabled={approvePublishLoading} 
-            className={styles.btn} 
+          <Button
+            primary
+            loading={approvePublishLoading}
+            disabled={approvePublishLoading}
+            className={styles.btn}
             onClick={handlePublish}
           >
             <FormattedMessage id='targeting.approval.operation.publish' />
           </Button>
         )
       }
-      
+
       {/* Abandon & Modify */}
       {
         (
-          enableApproval && 
-          toggleStatus === 'REJECT' && 
+          enableApproval &&
+          toggleStatus === 'REJECT' &&
           (approvalInfo?.submitBy === userInfo.account || OWNER.includes(userInfo.role))
         ) && (
           <>
@@ -393,10 +394,10 @@ const ApprovalOperation = (props: IProps) => {
               }}
               text={intl.formatMessage({id: 'targeting.approval.modal.modify.description'})}
             >
-              <Button 
+              <Button
                 primary
                 className={styles.btn}
-                onClick={() => { 
+                onClick={() => {
                   savePopupOpen(true);
                 }}
               >
@@ -413,10 +414,10 @@ const ApprovalOperation = (props: IProps) => {
             <span className={styles['modal-header-text']}>
               { renderModalHeader() }
             </span>
-            <Icon customclass={styles['modal-header-icon']} type='close' onClick={() => { 
+            <Icon customclass={styles['modal-header-icon']} type='close' onClick={() => {
               setValue('reason', '');
               setValue('isTrackEvent', '');
-              saveOpen(false); }} 
+              saveOpen(false); }}
             />
           </div>
           <div className={styles['modal-content']}>
@@ -436,7 +437,7 @@ const ApprovalOperation = (props: IProps) => {
                         checked={isReEdit}
                         onChange={() => { saveIsREdit(!isReEdit); }}
                       />
-                      <Form.Radio 
+                      <Form.Radio
                         name='no'
                         label={intl.formatMessage({id: 'common.no.text'})}
                         className={styles['radio-group-item']}
@@ -507,11 +508,11 @@ const ApprovalOperation = (props: IProps) => {
                         { (status !== 'PASS') && <span className={styles['label-required']}>*</span> }
                         { renderPlaceHolder() }:
                       </label>
-                      
+
                       <Form.TextArea
                         name='reason'
                         error={errors.reason ? true : false}
-                        value={comment} 
+                        value={comment}
                         placeholder={renderPlaceHolder()}
                         className={styles.input}
                         onChange={async (e: SyntheticEvent, detail: TextAreaProps) => {
@@ -526,10 +527,10 @@ const ApprovalOperation = (props: IProps) => {
                 )
               }
               <div className={styles['footer']} onClick={(e: SyntheticEvent) => { e.stopPropagation(); }}>
-                <Button size='mini' basic type='reset' onClick={() => { 
+                <Button size='mini' basic type='reset' onClick={() => {
                   setValue('reason', '');
                   setValue('isTrackEvent', '');
-                  saveOpen(false); 
+                  saveOpen(false);
                 }}>
                   <FormattedMessage id='common.cancel.text' />
                 </Button>

@@ -54,12 +54,12 @@ Rule calculation consists of the following steps:
 | is not in            | segment | The user does not belong to any segment                  |
 | after                | datetime | The user attribute value of the user is after or equal to the given date |
 | before               | datetime | The user attribute value of the user is before the given date          |
-| =                    | number/semver |    least equal to one of  |
-| !=                   | number/semver |    not equal to all           |
-| >                    | number/semver |    least greater than one of  |
-| >=                   | number/semver |    least greater than or equal to one of |
-| <                    | number/semver |    least less than one of  |
-| <=                   | number/semver |    least less than or equal to one of |
+| `=` | number/semver |    least equal to one of  |
+| `!=` | number/semver |    not equal to all           |
+| `>` | number/semver |    least greater than one of  |
+| `>=` | number/semver |    least greater than or equal to one of |
+| `<` | number/semver |    least less than one of  |
+| `<=` | number/semver |    least less than or equal to one of |
 
 When the value type of the rule condition is "segment", the value list is the unique key of that segment, and the corresponding segment rule can be obtained through this key. Similar to the feature flag rule matching calculation, as long as the current YTUser hits any rule in the population group, it is considered that the YTUser belongs to that population group. If the key does not exist, it is considered that the YTUser does not belong to that population group.
 

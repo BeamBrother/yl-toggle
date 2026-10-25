@@ -1,6 +1,7 @@
 use std::fmt::Debug;
 use std::str::FromStr;
 
+#[cfg(feature = "async")]
 use async_trait::async_trait;
 
 use crate::error::Result;
@@ -12,27 +13,27 @@ use crate::value::{Value, ValueKind};
 pub trait Source: Debug {
     fn clone_into_box(&self) -> Box<dyn Source + Send + Sync>;
 
-    /// Collect all configuration properties available from this source and return
-    /// a Map.
+    /// Collect all configuration properties available from this source into
+    /// a [`Map`].
     fn collect(&self) -> Result<Map<String, Value>>;
 
     /// Collects all configuration properties to a provided cache.
     fn collect_to(&self, cache: &mut Value) -> Result<()> {
         self.collect()?
-            .iter()
+            .into_iter()
             .for_each(|(key, val)| set_value(cache, key, val));
 
         Ok(())
     }
 }
 
-fn set_value(cache: &mut Value, key: &str, value: &Value) {
-    match path::Expression::from_str(key) {
+fn set_value(cache: &mut Value, key: String, value: Value) {
+    match path::Expression::from_str(key.as_str()) {
         // Set using the path
-        Ok(expr) => expr.set(cache, value.clone()),
+        Ok(expr) => expr.set(cache, value),
 
-        // Set diretly anyway
-        _ => path::Expression::Identifier(key.to_string()).set(cache, value.clone()),
+        // Set directly anyway
+        _ => path::Expression::root(key).set(cache, value),
     }
 }
 
@@ -50,6 +51,7 @@ fn set_value(cache: &mut Value, key: &str, value: &Value) {
 /// It is advised to use `async_trait` crate while implementing this trait.
 ///
 /// See examples for sample implementation.
+#[cfg(feature = "async")]
 #[async_trait]
 pub trait AsyncSource: Debug + Sync {
     // Sync is supertrait due to https://docs.rs/async-trait/0.1.50/async_trait/index.html#dyn-traits
@@ -62,13 +64,14 @@ pub trait AsyncSource: Debug + Sync {
     async fn collect_to(&self, cache: &mut Value) -> Result<()> {
         self.collect()
             .await?
-            .iter()
+            .into_iter()
             .for_each(|(key, val)| set_value(cache, key, val));
 
         Ok(())
     }
 }
 
+#[cfg(feature = "async")]
 impl Clone for Box<dyn AsyncSource + Send + Sync> {
     fn clone(&self) -> Self {
         self.to_owned()

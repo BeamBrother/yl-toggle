@@ -2,9 +2,10 @@ use std::error::Error;
 use std::fmt;
 use std::result;
 
-use serde::de;
-use serde::ser;
+use serde_core::de;
+use serde_core::ser;
 
+#[allow(unnameable_types)] // Unsure if/how to expose this
 #[derive(Debug)]
 pub enum Unexpected {
     Bool(bool),
@@ -20,24 +21,25 @@ pub enum Unexpected {
 }
 
 impl fmt::Display for Unexpected {
-    fn fmt(&self, f: &mut fmt::Formatter) -> result::Result<(), fmt::Error> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> result::Result<(), fmt::Error> {
         match *self {
-            Unexpected::Bool(b) => write!(f, "boolean `{}`", b),
-            Unexpected::I64(i) => write!(f, "integer 64 bit `{}`", i),
-            Unexpected::I128(i) => write!(f, "integer 128 bit `{}`", i),
-            Unexpected::U64(i) => write!(f, "unsigned integer 64 bit `{}`", i),
-            Unexpected::U128(i) => write!(f, "unsigned integer 128 bit `{}`", i),
-            Unexpected::Float(v) => write!(f, "floating point `{}`", v),
-            Unexpected::Str(ref s) => write!(f, "string {:?}", s),
-            Unexpected::Unit => write!(f, "unit value"),
-            Unexpected::Seq => write!(f, "sequence"),
-            Unexpected::Map => write!(f, "map"),
+            Self::Bool(b) => write!(f, "boolean `{b}`"),
+            Self::I64(i) => write!(f, "64-bit integer `{i}`"),
+            Self::I128(i) => write!(f, "128-bit integer `{i}`"),
+            Self::U64(i) => write!(f, "64-bit unsigned integer `{i}`"),
+            Self::U128(i) => write!(f, "128-bit unsigned integer `{i}`"),
+            Self::Float(v) => write!(f, "floating point `{v}`"),
+            Self::Str(ref s) => write!(f, "string {s:?}"),
+            Self::Unit => write!(f, "unit value"),
+            Self::Seq => write!(f, "sequence"),
+            Self::Map => write!(f, "map"),
         }
     }
 }
 
 /// Represents all possible errors that can occur when working with
 /// configuration.
+#[non_exhaustive]
 pub enum ConfigError {
     /// Configuration is frozen and no further mutations can be made.
     Frozen,
@@ -46,7 +48,7 @@ pub enum ConfigError {
     NotFound(String),
 
     /// Configuration path could not be parsed.
-    PathParse(nom::error::ErrorKind),
+    PathParse { cause: Box<dyn Error + Send + Sync> },
 
     /// Configuration could not be parsed from file.
     FileParse {
@@ -71,6 +73,21 @@ pub enum ConfigError {
 
         /// What was expected when parsing the value
         expected: &'static str,
+
+        /// The key in the configuration hash of this value (if available where the
+        /// error is generated).
+        key: Option<String>,
+    },
+
+    /// Custom message
+    At {
+        /// Error being extended with a path
+        error: Box<Self>,
+
+        /// The URI that references the source that the value came from.
+        /// Example: `/path/to/config.json` or `Environment` or `etcd://localhost`
+        // TODO: Why is this called Origin but FileParse has a uri field?
+        origin: Option<String>,
 
         /// The key in the configuration hash of this value (if available where the
         /// error is generated).
@@ -129,7 +146,17 @@ impl ConfigError {
                 key: Some(key.into()),
             },
 
-            _ => self,
+            Self::At { origin, error, .. } => Self::At {
+                error,
+                origin,
+                key: Some(key.into()),
+            },
+
+            other => Self::At {
+                error: Box::new(other),
+                origin: None,
+                key: Some(key.into()),
+            },
         }
     }
 
@@ -137,12 +164,12 @@ impl ConfigError {
     fn prepend(self, segment: &str, add_dot: bool) -> Self {
         let concat = |key: Option<String>| {
             let key = key.unwrap_or_default();
-            let dot = if add_dot && key.as_bytes().get(0).unwrap_or(&b'[') != &b'[' {
+            let dot = if add_dot && key.as_bytes().first().unwrap_or(&b'[') != &b'[' {
                 "."
             } else {
                 ""
             };
-            format!("{}{}{}", segment, dot, key)
+            format!("{segment}{dot}{key}")
         };
         match self {
             Self::Type {
@@ -156,8 +183,17 @@ impl ConfigError {
                 expected,
                 key: Some(concat(key)),
             },
+            Self::At { error, origin, key } => Self::At {
+                error,
+                origin,
+                key: Some(concat(key)),
+            },
             Self::NotFound(key) => Self::NotFound(concat(Some(key))),
-            _ => self,
+            other => Self::At {
+                error: Box::new(other),
+                origin: None,
+                key: Some(concat(None)),
+            },
         }
     }
 
@@ -168,59 +204,77 @@ impl ConfigError {
 
     #[must_use]
     pub(crate) fn prepend_index(self, idx: usize) -> Self {
-        self.prepend(&format!("[{}]", idx), false)
+        self.prepend(&format!("[{idx}]"), false)
     }
 }
 
 /// Alias for a `Result` with the error type set to `ConfigError`.
-pub type Result<T> = result::Result<T, ConfigError>;
+pub(crate) type Result<T, E = ConfigError> = result::Result<T, E>;
 
 // Forward Debug to Display for readable panic! messages
 impl fmt::Debug for ConfigError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", *self)
     }
 }
 
 impl fmt::Display for ConfigError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
-            ConfigError::Frozen => write!(f, "configuration is frozen"),
+            Self::Frozen => write!(f, "configuration is frozen"),
 
-            ConfigError::PathParse(ref kind) => write!(f, "{}", kind.description()),
+            Self::PathParse { ref cause } => write!(f, "{cause}"),
 
-            ConfigError::Message(ref s) => write!(f, "{}", s),
+            Self::Message(ref s) => write!(f, "{s}"),
 
-            ConfigError::Foreign(ref cause) => write!(f, "{}", cause),
+            Self::Foreign(ref cause) => write!(f, "{cause}"),
 
-            ConfigError::NotFound(ref key) => {
-                write!(f, "configuration property {:?} not found", key)
+            Self::NotFound(ref key) => {
+                write!(f, "missing configuration field {key:?}")
             }
 
-            ConfigError::Type {
+            Self::Type {
                 ref origin,
                 ref unexpected,
                 expected,
                 ref key,
             } => {
-                write!(f, "invalid type: {}, expected {}", unexpected, expected)?;
+                write!(f, "invalid type: {unexpected}, expected {expected}")?;
 
                 if let Some(ref key) = *key {
-                    write!(f, " for key `{}`", key)?;
+                    write!(f, " for key `{key}`")?;
                 }
 
                 if let Some(ref origin) = *origin {
-                    write!(f, " in {}", origin)?;
+                    write!(f, " in {origin}")?;
                 }
 
                 Ok(())
             }
 
-            ConfigError::FileParse { ref cause, ref uri } => {
-                write!(f, "{}", cause)?;
+            Self::At {
+                ref error,
+                ref origin,
+                ref key,
+            } => {
+                write!(f, "{error}")?;
+
+                if let Some(ref key) = *key {
+                    write!(f, " for key `{key}`")?;
+                }
+
+                if let Some(ref origin) = *origin {
+                    write!(f, " in {origin}")?;
+                }
+
+                Ok(())
+            }
+
+            Self::FileParse { ref cause, ref uri } => {
+                write!(f, "{cause}")?;
 
                 if let Some(ref uri) = *uri {
-                    write!(f, " in {}", uri)?;
+                    write!(f, " in {uri}")?;
                 }
 
                 Ok(())
@@ -234,6 +288,10 @@ impl Error for ConfigError {}
 impl de::Error for ConfigError {
     fn custom<T: fmt::Display>(msg: T) -> Self {
         Self::Message(msg.to_string())
+    }
+
+    fn missing_field(field: &'static str) -> Self {
+        Self::NotFound(field.into())
     }
 }
 

@@ -6,6 +6,7 @@ Chart.register(Filler);
 Chart.register(Tooltip);
 
 interface IChartProps {
+  children?: import('react').ReactNode;
   labels: unknown[];
   datasets: {
     label: string;
@@ -88,8 +89,8 @@ export const IChart: React.FC<IChartProps> = (props) => {
             },
             grid: {
               tickColor: 'rgba(0, 0, 0, 0)',
-              borderDash: [3, 3],
-              drawBorder: false,
+              tickBorderDash: [3, 3],
+
             },
           },
           x: {

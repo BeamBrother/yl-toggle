@@ -9,7 +9,8 @@ import {
   useRef,
 } from 'react';
 import { Form, Radio, CheckboxProps, Loader } from 'semantic-ui-react';
-import { Prompt } from 'react-router-dom';
+import { unstable_usePrompt } from 'react-router-dom';
+import { FieldErrors } from 'react-hook-form';
 import isEqual from 'lodash/isEqual';
 import cloneDeep from 'lodash/cloneDeep';
 import moment from 'moment';
@@ -56,6 +57,7 @@ import { getBytes, MAX_SIZE } from 'utils/bytes';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   disabled?: boolean;
   targeting?: ITarget;
   toggleInfo?: IToggleInfo;
@@ -100,7 +102,9 @@ const Targeting = forwardRef((props: IProps, ref: any) => {
   const [ size, saveSize ] = useState<number>(0);
   const [ sizeConfirm, setSizeConfirm ] = useState<boolean>(false);
   const intl = useIntl();
-  const formRef = useRef();
+  const leaveMessage = intl.formatMessage({ id: 'targeting.page.leave.text' });
+  unstable_usePrompt({ when: !publishDisabled, message: leaveMessage });
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   useBeforeUnload(!publishDisabled, intl.formatMessage({ id: 'targeting.page.leave.text' }));
   useImperativeHandle(ref, () => publishDisabled, [publishDisabled]);
@@ -249,7 +253,7 @@ const Targeting = forwardRef((props: IProps, ref: any) => {
         prerequisites: requestPrerequisites,
       },
     });
-   
+
   }, [toggleDisabled, rules, variations, defaultServe, disabledServe, prerequisites]);
 
   useEffect(() => {
@@ -321,7 +325,7 @@ const Targeting = forwardRef((props: IProps, ref: any) => {
     setOpen(true);
   }, [intl, size, sizeState, validateForm]);
 
-  const onError = useCallback((errors) => {
+  const onError = useCallback((errors: FieldErrors) => {
     console.log('errors--', errors);
     validateForm();
     scrollToError();
@@ -440,7 +444,6 @@ const Targeting = forwardRef((props: IProps, ref: any) => {
           setLoading={setLoading}
           initTargeting={initTargeting}
         />
-        <Prompt when={!publishDisabled} message={intl.formatMessage({ id: 'targeting.page.leave.text' })} />
         <UserGuide />
       </Form>
       <SizeTips

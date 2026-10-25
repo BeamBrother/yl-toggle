@@ -16,6 +16,7 @@ import { useRequestTimeCheck } from 'hooks';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   defaultValue?: IWebHook;
   isAdd: boolean;
   visible: boolean;
@@ -43,12 +44,12 @@ const WebHookDrawer = (props: IProps) => {
     clearErrors,
   } = hooksFormContainer.useContainer();
 
-  const { 
-    init, 
+  const {
+    init,
     webHookInfo,
     originWebHookInfo,
-    handleChange, 
-    saveWebHookInfo, 
+    handleChange,
+    saveWebHookInfo,
     saveOriginWebHookInfo,
     handleChangeStatus,
   } = webHookInfoContainer.useContainer();
@@ -113,7 +114,7 @@ const WebHookDrawer = (props: IProps) => {
                 : intl.formatMessage({ id: 'webhook.update.failed' }))
           );
         }
-      } catch (err) {
+      } catch {
         message.error(
           isAdd
             ? intl.formatMessage({ id: 'webhook.create.failed' })
@@ -251,9 +252,9 @@ const WebHookDrawer = (props: IProps) => {
               }}
             />
           </FormItem>
-          <FormItem 
+          <FormItem
             required
-            error={errors.secretKey} 
+            error={errors.secretKey}
             label={
               <>
                 <FormattedMessage id='common.secret.key.text' />
@@ -269,7 +270,7 @@ const WebHookDrawer = (props: IProps) => {
                   />
                 }
               </>
-            } 
+            }
           >
             <Form.Input
               className={styles.input}

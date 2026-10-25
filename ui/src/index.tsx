@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import dayjs from 'dayjs';
 import { ToastContainer } from 'react-toastify';
 import Router from './router';
@@ -18,12 +18,18 @@ import './global.scss';
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale);
 
-ReactDOM.render(
-  <I18NContainer.Provider>
-    <Intl>
-      <Router />
-    </Intl>
-    <ToastContainer theme='colored' />
-  </I18NContainer.Provider>,
-  document.getElementById('root')
+const container = document.getElementById('root');
+if (!container) {
+  throw new Error('Root container is missing');
+}
+
+createRoot(container).render(
+  <StrictMode>
+    <I18NContainer.Provider>
+      <Intl>
+        <Router />
+      </Intl>
+      <ToastContainer theme='colored' />
+    </I18NContainer.Provider>
+  </StrictMode>
 );

@@ -1,14 +1,6 @@
-// Copyright 2016 Amanieu d'Antras
-//
-// Licensed under the Apache License, Version 2.0, <LICENSE-APACHE or
-// http://apache.org/licenses/LICENSE-2.0> or the MIT license <LICENSE-MIT or
-// http://opensource.org/licenses/MIT>, at your option. This file may not be
-// copied, modified, or distributed except according to those terms.
-
 use crate::raw_mutex::RawMutex;
-use lock_api;
 
-/// A mutual exclusion primitive useful for protecting shared data
+/// A mutual exclusion primitive useful for protecting shared data.
 ///
 /// This mutex will block threads waiting for the lock to become available. The
 /// mutex can be statically initialized or created by the `new`
@@ -19,36 +11,21 @@ use lock_api;
 ///
 /// # Fairness
 ///
-/// A typical unfair lock can often end up in a situation where a single thread
-/// quickly acquires and releases the same mutex in succession, which can starve
-/// other threads waiting to acquire the mutex. While this improves throughput
-/// because it doesn't force a context switch when a thread tries to re-acquire
-/// a mutex it has just released, this can starve other threads.
+/// This mutex uses unfair unlocking by default, which allows the unlocking
+/// thread to re-acquire the mutex before a waiting thread and generally
+/// improves throughput. This can starve waiting threads.
 ///
-/// This mutex uses [eventual fairness](https://trac.webkit.org/changeset/203350)
-/// to ensure that the lock will be fair on average without sacrificing
-/// throughput. This is done by forcing a fair unlock on average every 0.5ms,
-/// which will force the lock to go to the next thread waiting for the mutex.
-///
-/// Additionally, any critical section longer than 1ms will always use a fair
-/// unlock, which has a negligible impact on throughput considering the length
-/// of the critical section.
-///
-/// You can also force a fair unlock by calling `MutexGuard::unlock_fair` when
-/// unlocking a mutex instead of simply dropping the `MutexGuard`.
+/// Fair unlocking can be requested explicitly by calling
+/// `MutexGuard::unlock_fair` instead of simply dropping the `MutexGuard`. A
+/// fair unlock hands the mutex directly to a waiting thread.
 ///
 /// # Differences from the standard library `Mutex`
 ///
 /// - No poisoning, the lock is released normally on panic.
-/// - Only requires 1 byte of space, whereas the standard library boxes the
-///   `Mutex` due to platform limitations.
-/// - Can be statically constructed.
-/// - Does not require any drop glue when dropped.
-/// - Inline fast path for the uncontended case.
-/// - Efficient handling of micro-contention using adaptive spinning.
+/// - Only requires 1 byte of lock state.
+/// - Supports locking with a timeout.
 /// - Allows raw locking & unlocking without a guard.
-/// - Supports eventual fairness so that the mutex is fair on average.
-/// - Optionally allows making the mutex fair by calling `MutexGuard::unlock_fair`.
+/// - Supports explicit fair unlocking through `MutexGuard::unlock_fair`.
 ///
 /// # Examples
 ///
@@ -67,7 +44,7 @@ use lock_api;
 /// let data = Arc::new(Mutex::new(0));
 ///
 /// let (tx, rx) = channel();
-/// for _ in 0..10 {
+/// for _ in 0..N {
 ///     let (data, tx) = (Arc::clone(&data), tx.clone());
 ///     thread::spawn(move || {
 ///         // The shared state can only be accessed once the lock is held.
@@ -86,21 +63,14 @@ use lock_api;
 /// ```
 pub type Mutex<T> = lock_api::Mutex<RawMutex, T>;
 
-/// Creates a new mutex in an unlocked state ready for use.
-///
-/// This allows creating a mutex in a constant context on stable Rust.
-pub const fn const_mutex<T>(val: T) -> Mutex<T> {
-    Mutex::const_new(<RawMutex as lock_api::RawMutex>::INIT, val)
-}
-
-/// An RAII implementation of a "scoped lock" of a mutex. When this structure is
-/// dropped (falls out of scope), the lock will be unlocked.
+/// An RAII guard which unlocks the mutex when dropped.
 ///
 /// The data protected by the mutex can be accessed through this guard via its
-/// `Deref` and `DerefMut` implementations.
+/// [`Deref`](core::ops::Deref) and [`DerefMut`](core::ops::DerefMut)
+/// implementations.
 pub type MutexGuard<'a, T> = lock_api::MutexGuard<'a, RawMutex, T>;
 
-/// An RAII mutex guard returned by `MutexGuard::map`, which can point to a
+/// An RAII mutex guard returned by [`MutexGuard::map`], which can point to a
 /// subfield of the protected data.
 ///
 /// The main difference between `MappedMutexGuard` and `MutexGuard` is that the
@@ -111,22 +81,21 @@ pub type MappedMutexGuard<'a, T> = lock_api::MappedMutexGuard<'a, RawMutex, T>;
 
 #[cfg(test)]
 mod tests {
-    use crate::{Condvar, Mutex};
+    use crate::{Condvar, MappedMutexGuard, Mutex, MutexGuard};
+    use std::collections::HashMap;
+    use std::ops::Deref;
+    use std::sync::Arc;
     use std::sync::atomic::{AtomicUsize, Ordering};
     use std::sync::mpsc::channel;
-    use std::sync::Arc;
     use std::thread;
 
     #[cfg(feature = "serde")]
-    use bincode::{deserialize, serialize};
+    use postcard::{from_bytes, to_stdvec};
 
     struct Packet<T>(Arc<(Mutex<T>, Condvar)>);
 
     #[derive(Eq, PartialEq, Debug)]
     struct NonCopy(i32);
-
-    unsafe impl<T: Send> Send for Packet<T> {}
-    unsafe impl<T> Sync for Packet<T> {}
 
     #[test]
     fn smoke() {
@@ -137,7 +106,7 @@ mod tests {
 
     #[test]
     fn lots_and_lots() {
-        const J: u32 = 1000;
+        const J: u32 = if cfg!(miri) { 200 } else { 1000 };
         const K: u32 = 3;
 
         let m = Arc::new(Mutex::new(0));
@@ -174,7 +143,10 @@ mod tests {
     #[test]
     fn try_lock() {
         let m = Mutex::new(());
-        *m.try_lock().unwrap() = ();
+        let guard = m.try_lock().unwrap();
+        assert!(m.try_lock().is_none());
+        drop(guard);
+        assert!(m.try_lock().is_some());
     }
 
     #[test]
@@ -216,13 +188,13 @@ mod tests {
         let _t = thread::spawn(move || {
             // wait until parent gets in
             rx.recv().unwrap();
-            let &(ref lock, ref cvar) = &*packet2.0;
+            let (lock, cvar) = &*packet2.0;
             let mut lock = lock.lock();
             *lock = true;
             cvar.notify_one();
         });
 
-        let &(ref lock, ref cvar) = &*packet.0;
+        let (lock, cvar) = &*packet.0;
         let mut lock = lock.lock();
         tx.send(()).unwrap();
         assert!(!*lock);
@@ -303,10 +275,82 @@ mod tests {
         let contents: Vec<u8> = vec![0, 1, 2];
         let mutex = Mutex::new(contents.clone());
 
-        let serialized = serialize(&mutex).unwrap();
-        let deserialized: Mutex<Vec<u8>> = deserialize(&serialized).unwrap();
+        let serialized = to_stdvec(&mutex).unwrap();
+        let deserialized: Mutex<Vec<u8>> = from_bytes(&serialized).unwrap();
 
         assert_eq!(*(mutex.lock()), *(deserialized.lock()));
         assert_eq!(contents, *(deserialized.lock()));
+    }
+
+    #[test]
+    fn test_map_or_err_not_mapped() {
+        let mut map = HashMap::new();
+        map.insert("hello".to_string(), "world".to_string());
+
+        let mutex = Mutex::new(map);
+        let guard = mutex.lock();
+        let guard = match MutexGuard::try_map_or_err(guard, |the_map| {
+            the_map.get_mut("hello2").ok_or(12345i32)
+        }) {
+            Ok(_) => unreachable!(),
+            Err((guard, data)) => {
+                assert_eq!(data, 12345i32);
+                assert_eq!(guard.get("hello"), Some(&"world".to_string()));
+                guard
+            }
+        };
+
+        // Lets try again
+        let mapped_guard = match MutexGuard::try_map_or_err(guard, |the_map| {
+            the_map.get_mut("hello").ok_or("unreachable")
+        }) {
+            Ok(mapped_guard) => mapped_guard,
+            Err((_, _)) => unreachable!(),
+        };
+
+        assert_eq!(mapped_guard.as_str(), "world");
+
+        match MappedMutexGuard::try_map_or_err(mapped_guard, |the_string| {
+            if the_string != "world" {
+                //unreachable
+                Ok(the_string.as_mut_str())
+            } else {
+                Err(45678i32)
+            }
+        }) {
+            Ok(_) => unreachable!(),
+            Err((guard, err)) => {
+                assert_eq!(guard.as_str(), "world");
+                assert_eq!(err, 45678i32);
+            }
+        };
+    }
+
+    #[test]
+    fn test_map_or_err_mapped() {
+        let mut map = HashMap::new();
+        map.insert("hello".to_string(), "world".to_string());
+
+        let mutex = Mutex::new(map);
+        let guard = mutex.lock();
+        let mapped_guard = match MutexGuard::try_map_or_err(guard, |the_map| {
+            the_map.get_mut("hello").ok_or("unreachable")
+        }) {
+            Ok(mapped_guard) => mapped_guard,
+            Err((_, _)) => unreachable!(),
+        };
+
+        assert_eq!(mapped_guard.as_str(), "world");
+
+        match MappedMutexGuard::try_map_or_err(mapped_guard, |the_string| {
+            if the_string == "world" {
+                Ok(the_string.as_mut_str())
+            } else {
+                Err("unreachable")
+            }
+        }) {
+            Ok(mapped_guard) => assert_eq!(mapped_guard.deref(), "world"),
+            Err((_, _)) => unreachable!(),
+        };
     }
 }

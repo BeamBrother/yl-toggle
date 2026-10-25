@@ -1,28 +1,26 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import { DOMRect } from '../utils/domRect';
 import JsonEditor from '.';
 
-Range.prototype.getBoundingClientRect = jest.fn().mockReturnValue(new DOMRect(0, 0, 0, 0));
-Range.prototype.getClientRects = jest.fn().mockReturnValue(new Set([new DOMRect(0, 0, 0, 0)]));
-Element.prototype.getClientRects = jest.fn().mockReturnValue(new Set([new DOMRect(0, 0, 0, 0)]));
+Range.prototype.getBoundingClientRect = vi.fn().mockReturnValue(new DOMRect(0, 0, 0, 0));
+Range.prototype.getClientRects = vi.fn().mockReturnValue(new Set([new DOMRect(0, 0, 0, 0)]));
+Element.prototype.getClientRects = vi.fn().mockReturnValue(new Set([new DOMRect(0, 0, 0, 0)]));
 
-it('JsonEditor snapshot', (done) => {
-  (async () => {
-    const { asFragment, rerender } = render(<JsonEditor value="error text{{" onChange={jest.fn()} />);
+it('JsonEditor snapshot', async () => {
+  await (async () => {
+    const { asFragment, rerender } = render(<JsonEditor value="error text{{" onChange={vi.fn()} />);
     expect(asFragment()).toMatchSnapshot();
 
-    rerender(<JsonEditor value="{}" onChange={jest.fn()} />);
+    rerender(<JsonEditor value="{}" onChange={vi.fn()} />);
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });
 
-test('JsonEditor input', (done) => {
-  (async () => {
-    const mockChange = jest.fn();
+it('JsonEditor input', async () => {
+  await (async () => {
+    const mockChange = vi.fn();
     render(<JsonEditor onChange={mockChange} />);
     const textbox = screen.getByRole('textbox');
     await userEvent.type(textbox, 'error text');
@@ -32,7 +30,5 @@ test('JsonEditor input', (done) => {
     await userEvent.clear(textbox);
     await userEvent.type(textbox, '{{}');
     expect(mockChange).toHaveBeenLastCalledWith('{}');
-
-    done();
   })();
 });

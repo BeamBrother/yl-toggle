@@ -1,14 +1,14 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Switch language snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="language-popup"
+    class="_language-popup_a2be13"
   >
     English
     <span
-      class="iconfont icon-angle-down angle-down"
-      customclass="angle-down"
+      class="iconfont icon-angle-down _angle-down_a2be13"
+      customclass="_angle-down_a2be13"
       type="angle-down"
     />
   </div>
@@ -19,35 +19,39 @@ exports[`click language 1`] = `
 <body>
   <div>
     <div
-      class="language-popup"
+      class="_language-popup_a2be13"
     >
       English
       <span
-        class="iconfont icon-angle-down angle-down"
-        customclass="angle-down"
+        class="iconfont icon-angle-down _angle-down_a2be13"
+        customclass="_angle-down_a2be13"
         type="angle-down"
       />
     </div>
   </div>
   <div
-    style="display: flex; position: absolute; left: 0px; top: 0px; right: 0px; transform: translate(0px, 0px);"
+    data-suir-portal="true"
   >
     <div
-      class="ui bottom right basic popup transition visible popup"
-      style="position: initial;"
+      style="display: flex; position: absolute; left: auto; top: 0px; z-index: auto; right: 0px; bottom: auto; transform: translate(0px, 0px);"
     >
       <div
-        class="menu"
+        class="ui bottom right basic popup transition visible _popup_a2be13"
+        style="left: auto; right: auto; position: initial;"
       >
         <div
-          class="menu-item"
+          class="_menu_a2be13"
         >
-          English
-        </div>
-        <div
-          class="menu-item"
-        >
-          中文
+          <div
+            class="_menu-item_a2be13"
+          >
+            English
+          </div>
+          <div
+            class="_menu-item_a2be13"
+          >
+            中文
+          </div>
         </div>
       </div>
     </div>
@@ -59,12 +63,12 @@ exports[`select language 1`] = `
 <body>
   <div>
     <div
-      class="language-popup"
+      class="_language-popup_a2be13"
     >
       中文
       <span
-        class="iconfont icon-angle-down angle-down"
-        customclass="angle-down"
+        class="iconfont icon-angle-down _angle-down_a2be13"
+        customclass="_angle-down_a2be13"
         type="angle-down"
       />
     </div>

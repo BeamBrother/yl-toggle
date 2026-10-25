@@ -1,17 +1,17 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import VariationItem from '.';
 import { defaultServeContainer, hooksFormContainer, ruleContainer, variationContainer } from 'pages/toggle/provider';
 import { IntlWrapper } from 'components/utils/wrapper';
 import { DOMRect } from '../utils/domRect';
 
-jest.setTimeout(10000);
-Range.prototype.getBoundingClientRect = jest.fn().mockReturnValue(new DOMRect(0, 0, 0, 0));
-Range.prototype.getClientRects = jest.fn().mockReturnValue([new DOMRect(0, 0, 0, 0)]);
-Element.prototype.getClientRects = jest.fn().mockReturnValue([new DOMRect(0, 0, 0, 0)]);
+vi.setConfig({ testTimeout: 10000 });
+Range.prototype.getBoundingClientRect = vi.fn().mockReturnValue(new DOMRect(0, 0, 0, 0));
+Range.prototype.getClientRects = vi.fn().mockReturnValue([new DOMRect(0, 0, 0, 0)]);
+Element.prototype.getClientRects = vi.fn().mockReturnValue([new DOMRect(0, 0, 0, 0)]);
 
-const Wrapper: React.FC = (props) => {
+const Wrapper: React.FC<{ children?: import('react').ReactNode }> = (props) => {
   return (
     <IntlWrapper>
       <hooksFormContainer.Provider>
@@ -25,8 +25,8 @@ const Wrapper: React.FC = (props) => {
   );
 };
 
-it('VariationItem snapshot', (done) => {
-  (async () => {
+it('VariationItem snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(
       <VariationItem
         total={1}
@@ -34,9 +34,9 @@ it('VariationItem snapshot', (done) => {
         returnType="boolean"
         prefix="drawer"
         hooksFormContainer={hooksFormContainer}
-        handleDelete={jest.fn()}
-        handleChangeVariation={jest.fn()}
-        handleInput={jest.fn()}
+        handleDelete={vi.fn()}
+        handleChangeVariation={vi.fn()}
+        handleInput={vi.fn()}
         ruleContainer={ruleContainer}
         defaultServeContainer={defaultServeContainer}
       />,
@@ -52,22 +52,20 @@ it('VariationItem snapshot', (done) => {
         item={{ index: 1 }}
         returnType="boolean"
         hooksFormContainer={hooksFormContainer}
-        handleDelete={jest.fn()}
-        handleChangeVariation={jest.fn()}
-        handleInput={jest.fn()}
+        handleDelete={vi.fn()}
+        handleChangeVariation={vi.fn()}
+        handleInput={vi.fn()}
         ruleContainer={ruleContainer}
         defaultServeContainer={defaultServeContainer}
       />
     );
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });
 
-test('VariationItem delete', (done) => {
-  (async () => {
-    const mockHandleDelete = jest.fn();
+it('VariationItem delete', async () => {
+  await (async () => {
+    const mockHandleDelete = vi.fn();
     render(
       <VariationItem
         total={1}
@@ -76,8 +74,8 @@ test('VariationItem delete', (done) => {
         prefix="drawer"
         hooksFormContainer={hooksFormContainer}
         handleDelete={mockHandleDelete}
-        handleChangeVariation={jest.fn()}
-        handleInput={jest.fn()}
+        handleChangeVariation={vi.fn()}
+        handleInput={vi.fn()}
         ruleContainer={ruleContainer}
         defaultServeContainer={defaultServeContainer}
       />,
@@ -90,14 +88,13 @@ test('VariationItem delete', (done) => {
     if (ele) await userEvent.click(ele);
 
     expect(mockHandleDelete).toBeCalled();
-    done();
   })();
 });
 
-test('VariationItem input', (done) => {
-  (async () => {
-    const mockHandleInput = jest.fn();
-    const mockHandleChange = jest.fn();
+it('VariationItem input', async () => {
+  await (async () => {
+    const mockHandleInput = vi.fn();
+    const mockHandleChange = vi.fn();
     const { rerender } = render(
       <VariationItem
         total={1}
@@ -105,7 +102,7 @@ test('VariationItem input', (done) => {
         returnType="boolean"
         prefix="drawer"
         hooksFormContainer={hooksFormContainer}
-        handleDelete={jest.fn()}
+        handleDelete={vi.fn()}
         handleChangeVariation={mockHandleChange}
         handleInput={mockHandleInput}
         ruleContainer={ruleContainer}
@@ -137,7 +134,7 @@ test('VariationItem input', (done) => {
         returnType="string"
         prefix="drawer"
         hooksFormContainer={hooksFormContainer}
-        handleDelete={jest.fn()}
+        handleDelete={vi.fn()}
         handleChangeVariation={mockHandleChange}
         handleInput={mockHandleInput}
         ruleContainer={ruleContainer}
@@ -148,15 +145,13 @@ test('VariationItem input', (done) => {
     await userEvent.click(screen.getByPlaceholderText('value'));
     await userEvent.keyboard('v');
     expect(mockHandleInput).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ value: 'v' }));
-
-    done();
   })();
 });
 
-test('VariationItem number input', (done) => {
-  (async () => {
-    const mockHandleInput = jest.fn();
-    const mockHandleChange = jest.fn();
+it('VariationItem number input', async () => {
+  await (async () => {
+    const mockHandleInput = vi.fn();
+    const mockHandleChange = vi.fn();
     render(
       <VariationItem
         total={1}
@@ -164,7 +159,7 @@ test('VariationItem number input', (done) => {
         returnType="number"
         prefix="drawer"
         hooksFormContainer={hooksFormContainer}
-        handleDelete={jest.fn()}
+        handleDelete={vi.fn()}
         handleChangeVariation={mockHandleChange}
         handleInput={mockHandleInput}
         ruleContainer={ruleContainer}
@@ -180,15 +175,13 @@ test('VariationItem number input', (done) => {
     await userEvent.keyboard('{backspace}');
     await userEvent.keyboard('100');
     expect(mockHandleInput).toHaveBeenLastCalledWith(expect.anything(), expect.objectContaining({ value: '100' }));
-
-    done();
   })();
 });
 
-test('VariationItem json modal', (done) => {
-  (async () => {
-    const mockHandleInput = jest.fn();
-    const mockHandleChange = jest.fn();
+it('VariationItem json modal', async () => {
+  await (async () => {
+    const mockHandleInput = vi.fn();
+    const mockHandleChange = vi.fn();
     render(
       <VariationItem
         total={1}
@@ -196,7 +189,7 @@ test('VariationItem json modal', (done) => {
         returnType="json"
         prefix="drawer"
         hooksFormContainer={hooksFormContainer}
-        handleDelete={jest.fn()}
+        handleDelete={vi.fn()}
         handleChangeVariation={mockHandleChange}
         handleInput={mockHandleInput}
         ruleContainer={ruleContainer}
@@ -207,8 +200,7 @@ test('VariationItem json modal', (done) => {
       }
     );
     await userEvent.click(screen.getByPlaceholderText('value'));
-    await userEvent.keyboard('{{');
-    await userEvent.keyboard('}');
+    await userEvent.keyboard('{{}');
     expect(mockHandleInput).toHaveBeenLastCalledWith(expect.anything(), expect.objectContaining({ value: '{}' }));
 
     const jsonModalOpen = document.getElementsByClassName('icon-code')[0];
@@ -228,7 +220,5 @@ test('VariationItem json modal', (done) => {
 
     await userEvent.click(screen.getByText('Confirm'));
     expect(mockHandleChange).toHaveBeenLastCalledWith(1, '{}');
-
-    done();
   })();
 });

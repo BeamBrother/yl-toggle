@@ -47,8 +47,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import spock.lang.Specification
 import spock.lang.Title
 
-import javax.persistence.EntityManager
-import javax.persistence.OptimisticLockException
+import jakarta.persistence.EntityManager
+import jakarta.persistence.OptimisticLockException
 
 @Title("Targeting Unit Test")
 class TargetingServiceSpec extends Specification {
@@ -513,4 +513,3 @@ class TargetingServiceSpec extends Specification {
     }
 
 }
-

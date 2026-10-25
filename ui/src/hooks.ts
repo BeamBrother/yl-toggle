@@ -36,7 +36,7 @@ export const useRequestTimeCheck = () => {
 
 export const useFormErrorScrollIntoView = (errors?: FieldErrors) => {
   const errorRef = useRef(errors);
-  const beforeScroll = useRef<(names: string[]) => void>();
+  const beforeScroll = useRef<((names: string[]) => void) | undefined>(undefined);
 
   useEffect(() => {
     errorRef.current = errors;

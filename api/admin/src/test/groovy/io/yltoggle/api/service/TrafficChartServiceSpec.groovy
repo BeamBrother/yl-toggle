@@ -26,7 +26,7 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

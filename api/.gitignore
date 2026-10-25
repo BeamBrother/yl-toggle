@@ -21,5 +21,4 @@ dist
 yarn-error.log
 .vscode
 build/
-package-lock.json
 coverage/

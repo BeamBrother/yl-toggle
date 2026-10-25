@@ -1,63 +1,28 @@
-/*!
-RON is a simple config format which looks similar to Rust syntax.
+#![deny(clippy::correctness)]
+#![deny(clippy::suspicious)]
+#![deny(clippy::complexity)]
+#![deny(clippy::perf)]
+#![deny(clippy::style)]
+#![warn(clippy::pedantic)]
+#![cfg_attr(not(test), deny(clippy::unwrap_used))]
+#![cfg_attr(not(test), deny(clippy::expect_used))]
+#![deny(clippy::panic)]
+#![warn(clippy::todo)]
+#![deny(clippy::unimplemented)]
+#![deny(clippy::unreachable)]
+#![deny(unsafe_code)]
+#![allow(clippy::missing_errors_doc)] // FIXME
+#![warn(clippy::alloc_instead_of_core)]
+#![warn(clippy::std_instead_of_alloc)]
+#![warn(clippy::std_instead_of_core)]
+#![doc = include_str!("../README.md")]
+#![doc(html_root_url = "https://docs.rs/ron/0.12.2")]
+#![no_std]
 
-## Features
+#[cfg(feature = "std")]
+extern crate std;
 
-* Data types
-    * Structs, typename optional
-    * Tuples
-    * Enums
-    * Lists
-    * Maps
-    * Units (`()`)
-    * Optionals
-    * Primitives: booleans, numbers, string, char
-* Allows nested layout (similar to JSON)
-* Supports comments
-* Trailing commas
-* Pretty serialization
-
-## Syntax example
-
-```rust,ignore
-Game(
-    title: "Hello, RON!",
-    level: Level( // We could just leave the `Level` out
-        buildings: [
-            (
-                size: (10, 20),
-                color: Yellow, // This as an enum variant
-                owner: None,
-            ),
-            (
-                size: (20, 25),
-                color: Custom(0.1, 0.8, 1.0),
-                owner: Some("guy"),
-            ),
-        ],
-        characters: {
-            "guy": (
-                friendly: true,
-            ),
-        },
-    ),
-)
-```
-
-## Usage
-
-Just add it to your `Cargo.toml`:
-
-```toml
-[dependencies]
-ron = "*"
-```
-
-Serializing / Deserializing is as simple as calling `to_string` / `from_str`.
-
-!*/
-
-#![doc(html_root_url = "https://docs.rs/ron/0.7.0")]
+extern crate alloc;
 
 pub mod de;
 pub mod ser;
@@ -68,9 +33,10 @@ pub mod value;
 pub mod extensions;
 
 pub mod options;
+pub mod util;
 
 pub use de::{from_str, Deserializer};
-pub use error::{Error, ErrorCode, Result};
+pub use error::{Error, Result};
 pub use options::Options;
 pub use ser::{to_string, Serializer};
 pub use value::{Map, Number, Value};

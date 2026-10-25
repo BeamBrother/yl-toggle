@@ -6,6 +6,7 @@ import { IMetricIteration } from 'interfaces/analysis';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   iterations: IMetricIteration[]
 }
 

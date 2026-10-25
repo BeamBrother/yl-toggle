@@ -27,7 +27,7 @@ import java.util.Objects;
 @Component
 public class HookAspect {
 
-    @javax.annotation.Resource
+    @jakarta.annotation.Resource
     IHookQueue hookQueue;
 
     @Pointcut("@annotation(io.yltoggle.api.base.hook.Hook)")

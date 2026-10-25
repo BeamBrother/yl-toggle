@@ -3,6 +3,7 @@ import { Popup } from 'semantic-ui-react';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   tags: string[];
   showCount?: number;
 }
@@ -11,7 +12,7 @@ const TagsList = (props: IProps) => {
   const { tags, showCount } = props;
   const [ showTags, saveShowTags ] = useState<string[]>([]);
   const [ popupTags, savePopupTags ] = useState<string[]>([]);
-  
+
   useEffect(() => {
     const length = tags.length;
     const maxShowCount = showCount || 5;
@@ -46,13 +47,13 @@ const TagsList = (props: IProps) => {
             position='bottom center'
             className={styles.popup}
             trigger={
-              <span 
-                className={styles['tags-more']} 
+              <span
+                className={styles['tags-more']}
                 onClick={(e: SyntheticEvent) => {
                   document.body.click();
                   e.stopPropagation();
                 }}
-              > 
+              >
                 +{ popupTags.length }...
               </span>
             }
@@ -76,5 +77,5 @@ const TagsList = (props: IProps) => {
     </div>
   );
 };
-  
+
 export default TagsList;

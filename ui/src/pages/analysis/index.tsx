@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import Metrics from './components/Metrics';
 import Results from './components/Results';
 import { IEvent } from 'interfaces/analysis';
 import { IRouterParams } from 'interfaces/project';
 import { getEventDetail } from 'services/analysis';
 import { ITarget } from 'interfaces/targeting';
+import { useParams } from 'utils/useParams';
 
 interface IProps {
+  children?: import('react').ReactNode;
   trackEvents: boolean;
   allowEnableTrackEvents: boolean;
   targeting?: ITarget;
@@ -36,14 +37,14 @@ const Analysis = (props: IProps) => {
 
   return (
     <div>
-      <Metrics 
+      <Metrics
         eventInfo={eventInfo}
         isLoading={isLoading}
         getEvent={getEvent}
         initTargeting={initTargeting}
       />
-      
-      <Results 
+
+      <Results
         eventInfo={eventInfo}
         targeting={targeting}
         trackEvents={trackEvents}

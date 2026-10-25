@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import userEvent from '@testing-library/user-event';
 import { Form } from 'semantic-ui-react';
@@ -17,14 +17,14 @@ const RuleData = {
   active: true,
 };
 
-const Wrapper: React.FC = ({ children }) => {
+const Wrapper: React.FC<{ children?: import('react').ReactNode }> = ({ children }) => {
   return (
     <IntlWrapper>
       <hooksFormContainer.Provider>
         <ruleContainer.Provider>
           <variationContainer.Provider>
             <Form>
-              <DragDropContext onDragEnd={jest.fn()}>
+              <DragDropContext onDragEnd={vi.fn()}>
                 <Droppable droppableId="droppable">
                   {(provided) => (
                     <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -44,7 +44,7 @@ const Wrapper: React.FC = ({ children }) => {
   );
 };
 
-const UseHookWrapper: React.FC = ({ children }) => {
+const UseHookWrapper: React.FC<{ children?: import('react').ReactNode }> = ({ children }) => {
   const { saveRules } = ruleContainer.useContainer();
   const { setValue } = hooksFormContainer.useContainer();
 
@@ -63,7 +63,7 @@ const UseHookWrapper: React.FC = ({ children }) => {
   return <>{children}</>;
 };
 
-it('RuleTitle snapshot', (done) => {
+it('RuleTitle snapshot', async () => {
   const { asFragment, rerender } = render(
     <RuleTitle
       rule={RuleData}
@@ -89,12 +89,10 @@ it('RuleTitle snapshot', (done) => {
       disabled={true}
     />
   );
-
-  done();
 });
 
-test('RuleTitle opt', (done) => {
-  (async () => {
+it('RuleTitle opt', async () => {
+  await (async () => {
     const { asFragment } = render(
       <RuleTitle
         rule={RuleData}
@@ -130,7 +128,5 @@ test('RuleTitle opt', (done) => {
     confirm && (await userEvent.click(confirm));
 
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });

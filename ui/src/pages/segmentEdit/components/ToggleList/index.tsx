@@ -1,3 +1,5 @@
+import asset_collect_gif from 'images/collect.gif';
+import asset_no_data_png from 'images/no-data.png';
 import { SyntheticEvent } from 'react';
 import { Table, PaginationProps, Popup } from 'semantic-ui-react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -15,6 +17,7 @@ interface IPagination {
 }
 
 interface IProps {
+  children?: import('react').ReactNode;
   total: number;
   pagination: IPagination;
   toggleList: IToggle[];
@@ -65,7 +68,7 @@ const ToggleList = (props: IProps) => {
                             inverted
                             className='popup-override'
                             trigger={
-                              <img src={require('images/collect.gif')} className={styles.analysis} alt='collect' />
+                              <img src={asset_collect_gif} className={styles.analysis} alt='collect' />
                             }
                             content={intl.formatMessage({id: 'analysis.ongoing'})}
                             position='top center'
@@ -133,7 +136,7 @@ const ToggleList = (props: IProps) => {
         ) : (
           <div className={styles['no-data']}>
             <div>
-              <img className={styles['no-data-image']} src={require('images/no-data.png')} alt='no-data' />
+              <img className={styles['no-data-image']} src={asset_no_data_png} alt='no-data' />
             </div>
             <div>
               <FormattedMessage id='common.nodata.text' />

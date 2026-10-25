@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import Condition from './condition';
 import { ICondition } from 'interfaces/targeting';
@@ -10,7 +10,7 @@ import { Form } from 'semantic-ui-react';
 import { ISegmentList } from 'interfaces/segment';
 import { variationContainer } from 'pages/toggle/provider';
 
-window.open = jest.fn();
+window.open = vi.fn();
 
 const ruleData = {
   id: 'test-id',
@@ -30,7 +30,7 @@ const ruleData = {
   active: true,
 };
 
-const Wrapper: React.FC = ({ children }) => {
+const Wrapper: React.FC<{ children?: import('react').ReactNode }> = ({ children }) => {
   return (
     <IntlWrapper>
       <hooksFormContainer.Provider>
@@ -85,7 +85,7 @@ const segmentList: ISegmentList = {
   },
 };
 
-const UseHookWrapper: React.FC = ({ children }) => {
+const UseHookWrapper: React.FC<{ children?: import('react').ReactNode }> = ({ children }) => {
   const { saveRules } = ruleContainer.useContainer();
   const { saveSegmentList } = segmentContainer.useContainer();
 
@@ -97,8 +97,8 @@ const UseHookWrapper: React.FC = ({ children }) => {
   return <>{children}</>;
 };
 
-it('RuleContent snapshot', (done) => {
-  (async () => {
+it('RuleContent snapshot', async () => {
+  await (async () => {
     const { asFragment } = render(
       <Condition
         rule={ruleData}
@@ -115,13 +115,11 @@ it('RuleContent snapshot', (done) => {
     );
 
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });
 
-it('RuleContent snapshot 2', (done) => {
-  (async () => {
+it('RuleContent snapshot 2', async () => {
+  await (async () => {
     const { asFragment } = render(
       <Condition
         rule={ruleData}
@@ -142,13 +140,11 @@ it('RuleContent snapshot 2', (done) => {
     );
 
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });
 
-test('RuleContent normal input', (done) => {
-  (async () => {
+it('RuleContent normal input', async () => {
+  await (async () => {
     const { asFragment } = render(
       <Condition
         rule={ruleData}
@@ -182,12 +178,11 @@ test('RuleContent normal input', (done) => {
     await userEvent.keyboard('{Enter}');
 
     expect(asFragment()).toMatchSnapshot();
-    done();
   })();
 });
 
-test('RuleContent number input', (done) => {
-  (async () => {
+it('RuleContent number input', async () => {
+  await (async () => {
     const conditions = [{ id: 'c-test-id', type: 'number', subject: '', predicate: '', objects: [] }];
     const { asFragment } = render(
       <Condition
@@ -227,12 +222,11 @@ test('RuleContent number input', (done) => {
     await userEvent.keyboard('{Enter}');
 
     expect(asFragment()).toMatchSnapshot();
-    done();
   })();
 });
 
-test('RuleContent semver input', (done) => {
-  (async () => {
+it('RuleContent semver input', async () => {
+  await (async () => {
     const conditions = [{ id: 'c-test-id', type: 'semver', subject: '', predicate: '', objects: [] }];
     const { asFragment } = render(
       <Condition
@@ -278,12 +272,11 @@ test('RuleContent semver input', (done) => {
     await userEvent.click(screen.getByText('Learn more'));
 
     expect(asFragment()).toMatchSnapshot();
-    done();
   })();
 });
 
-test('RuleContent datetime input', (done) => {
-  (async () => {
+it('RuleContent datetime input', async () => {
+  await (async () => {
     const datetimeData = {
       ...ruleData,
     };
@@ -325,12 +318,11 @@ test('RuleContent datetime input', (done) => {
       .replaceAll(' rdtActive rdtToday', '');
 
     expect(baseElement).toMatchSnapshot();
-    done();
   })();
 });
 
-test('RuleContent segment render', (done) => {
-  (async () => {
+it('RuleContent segment render', async () => {
+  await (async () => {
     const datetimeData = {
       ...ruleData,
     };
@@ -365,13 +357,11 @@ test('RuleContent segment render', (done) => {
     baseElement.innerHTML = baseElement.innerHTML.replaceAll(' rdtActive rdtToday', '');
 
     expect(baseElement).toMatchSnapshot();
-
-    done();
   })();
 });
 
-test('RuleContent other opt', (done) => {
-  (async () => {
+it('RuleContent other opt', async () => {
+  await (async () => {
     render(
       <Condition
         rule={ruleData}
@@ -391,7 +381,5 @@ test('RuleContent other opt', (done) => {
     expect(delBtn).not.toBeUndefined();
     expect(delBtn).toMatchSnapshot();
     delBtn && (await userEvent.click(delBtn));
-
-    done();
   })();
 });

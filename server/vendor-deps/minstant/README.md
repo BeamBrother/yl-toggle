@@ -11,7 +11,7 @@ A drop-in replacement for [`std::time::Instant`](https://doc.rust-lang.org/std/t
 
 ```toml
 [dependencies]
-minstant = "0.1.2"
+minstant = "0.1"
 ```
 
 ```rust
@@ -29,7 +29,14 @@ This library is used by a high performance tracing library [`minitrace-rust`](ht
 
 ## Platform Support
 
-Currently, only the Linux on `x86` or `x86_64` is backed by [TSC](https://en.wikipedia.org/wiki/Time_Stamp_Counter). On other platforms, `minstant` falls back to coarse time. If TSC is unstable, it will also fall back to coarse time.
+Currently, only the Linux on `x86` or `x86_64` is backed by [TSC](https://en.wikipedia.org/wiki/Time_Stamp_Counter). On other platforms, `minstant` falls back to `std::time`. If TSC is unstable, it will also fall back to `std::time`.
+
+If speed is privileged over accuracy when fallback occurs, you can use `fallback-corase` feature to use corase time:
+
+```toml
+[dependencies]
+minstant = { version = "0.1", features = ["fallback-coarse"] }
+```
 
 ## Benchmark
 

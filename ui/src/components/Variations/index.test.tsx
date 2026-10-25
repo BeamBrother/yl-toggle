@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import Variations from '.';
 import { hooksFormContainer, variationContainer } from 'pages/toggle/provider';
@@ -7,7 +7,7 @@ import { IntlWrapper } from 'components/utils/wrapper';
 import { useEffect } from 'react';
 import { defaultServeContainer, ruleContainer } from 'pages/targeting/provider';
 
-const Wrapper: React.FC = (props) => {
+const Wrapper: React.FC<{ children?: import('react').ReactNode }> = (props) => {
   return (
     <IntlWrapper>
       <hooksFormContainer.Provider>
@@ -34,7 +34,7 @@ const Wrapper: React.FC = (props) => {
   );
 };
 
-const ErrorWrapper: React.FC = (props) => {
+const ErrorWrapper: React.FC<{ children?: import('react').ReactNode }> = (props) => {
   return (
     <IntlWrapper>
       <hooksFormContainer.Provider>
@@ -67,7 +67,7 @@ const ErrorWrapper: React.FC = (props) => {
   );
 };
 
-const UseHookWrapper: React.FC<{ data: unknown }> = ({ children, data }) => {
+const UseHookWrapper: React.FC<{ children?: import('react').ReactNode; data: unknown }> = ({ children, data }) => {
   const { saveVariations } = variationContainer.useContainer();
 
   useEffect(() => {
@@ -77,8 +77,8 @@ const UseHookWrapper: React.FC<{ data: unknown }> = ({ children, data }) => {
   return <>{children}</>;
 };
 
-it('Variations snapshot', (done) => {
-  (async () => {
+it('Variations snapshot', async () => {
+  await (async () => {
     const { asFragment, rerender } = render(
       <Variations
         returnType="boolean"
@@ -129,13 +129,11 @@ it('Variations snapshot', (done) => {
       />
     );
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });
 
-it('Variations error name', (done) => {
-  (async () => {
+it('Variations error name', async () => {
+  await (async () => {
     const { asFragment } = render(
       <Variations
         returnType="boolean"
@@ -151,12 +149,11 @@ it('Variations error name', (done) => {
     );
 
     expect(asFragment()).toMatchSnapshot();
-    done();
   })();
 });
 
-test('Add Variations and delete', (done) => {
-  (async () => {
+it('Add Variations and delete', async () => {
+  await (async () => {
     const { baseElement } = render(
       <Variations
         returnType="boolean"
@@ -176,21 +173,19 @@ test('Add Variations and delete', (done) => {
     await userEvent.click(screen.getByText('Add Variation'));
 
     const matchDiv = document.createElement('div');
-    matchDiv.innerHTML = baseElement.innerHTML?.replaceAll(/\sname="variation_[\w-]+\w" /g, ' name="test-name"');
+    matchDiv.innerHTML = baseElement.innerHTML?.replaceAll(/variation_[0-9a-fA-F-]{36}/g, 'variation_test');
 
     expect(matchDiv).toMatchSnapshot();
 
     const dels = document.querySelectorAll('span.icon-minus');
     await userEvent.click(dels[0]);
-    matchDiv.innerHTML = baseElement.innerHTML?.replaceAll(/\sname="variation_[\w-]+\w" /g, ' name="test-name"');
+    matchDiv.innerHTML = baseElement.innerHTML?.replaceAll(/variation_[0-9a-fA-F-]{36}/g, 'variation_test');
     expect(matchDiv).toMatchSnapshot();
-
-    done();
   })();
 });
 
-test('Add Variations and input', (done) => {
-  (async () => {
+it('Add Variations and input', async () => {
+  await (async () => {
     render(
       <Variations
         returnType="boolean"
@@ -211,7 +206,5 @@ test('Add Variations and input', (done) => {
 
     await userEvent.type(screen.getAllByPlaceholderText('name')[0], 'name');
     await userEvent.type(screen.getAllByPlaceholderText('name')[1], 'name');
-
-    done();
   })();
 });

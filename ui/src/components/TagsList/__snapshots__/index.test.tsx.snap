@@ -1,24 +1,24 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`TagsList snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="tags-list"
+    class="_tags-list_1b22d1"
   >
     <div
-      class="tags"
+      class="_tags_1b22d1"
     >
       <span
-        class="tags-text"
+        class="_tags-text_1b22d1"
       >
         test1
       </span>
     </div>
     <div
-      class="tags"
+      class="_tags_1b22d1"
     >
       <span
-        class="tags-text"
+        class="_tags-text_1b22d1"
       >
         test2
       </span>
@@ -31,19 +31,19 @@ exports[`click TagsList more 1`] = `
 <body>
   <div>
     <div
-      class="tags-list"
+      class="_tags-list_1b22d1"
     >
       <div
-        class="tags"
+        class="_tags_1b22d1"
       >
         <span
-          class="tags-text"
+          class="_tags-text_1b22d1"
         >
           test1
         </span>
       </div>
       <span
-        class="tags-more"
+        class="_tags-more_1b22d1"
       >
         +
         1
@@ -58,19 +58,19 @@ exports[`click TagsList more 2`] = `
 <body>
   <div>
     <div
-      class="tags-list"
+      class="_tags-list_1b22d1"
     >
       <div
-        class="tags"
+        class="_tags_1b22d1"
       >
         <span
-          class="tags-text"
+          class="_tags-text_1b22d1"
         >
           test1
         </span>
       </div>
       <span
-        class="tags-more"
+        class="_tags-more_1b22d1"
       >
         +
         1
@@ -79,23 +79,27 @@ exports[`click TagsList more 2`] = `
     </div>
   </div>
   <div
-    style="display: flex; position: absolute; left: 0px; top: 0px; transform: translate(0px, 0px);"
+    data-suir-portal="true"
   >
     <div
-      class="ui bottom center basic popup transition visible popup"
-      style="position: initial;"
+      style="display: flex; position: absolute; left: 0px; top: 0px; z-index: auto; right: auto; bottom: auto; transform: translate(0px, 0px);"
     >
       <div
-        class="popup-list"
+        class="ui bottom center basic popup transition visible _popup_1b22d1"
+        style="left: auto; right: auto; position: initial;"
       >
         <div
-          class="tags"
+          class="_popup-list_1b22d1"
         >
-          <span
-            class="tags-text"
+          <div
+            class="_tags_1b22d1"
           >
-            test2
-          </span>
+            <span
+              class="_tags-text_1b22d1"
+            >
+              test2
+            </span>
+          </div>
         </div>
       </div>
     </div>

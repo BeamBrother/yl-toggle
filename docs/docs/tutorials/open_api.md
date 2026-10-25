@@ -35,13 +35,13 @@ By default, yl-toggle will create a My_Project project and an online environment
 We will demonstrate to create a "New Feature" toggle under this project.
 
 :::tip
-Replace ${API_ACCESS_TOKEN} in the command below with the TOKEN saved above.
+Replace $API_ACCESS_TOKEN in the command below with the TOKEN saved above.
 :::
 
 ```bash
 curl -i 'https://yl-toggle.io/api/projects/My_Project/toggles' \
   -X 'POST' \
-  -H 'Authorization: ${API_ACCESS_TOKEN}' \
+  -H 'Authorization: $API_ACCESS_TOKEN' \
   -H 'Content-Type: application/json' \
   --data-raw '{
       "name": "New Feature",
@@ -74,13 +74,13 @@ The toggle creates a default disabled state.
 Next, we will turn on this toggle through the REST API.
 
 :::tip
-Replace ${API_ACCESS_TOKEN} in the command below with the TOKEN saved above.
+Replace $API_ACCESS_TOKEN in the command below with the TOKEN saved above.
 :::
 
 ```bash
 curl -i 'https://yl-toggle.io/api/projects/My_Project/environments/online/toggles/new_feature/targeting' \
   -X 'PATCH' \
-  -H 'Authorization: ${API_ACCESS_TOKEN}' \
+  -H 'Authorization: $API_ACCESS_TOKEN' \
   -H 'Content-Type: application/json' \
   --data-raw '{
 	"comment": "Open toggle.",

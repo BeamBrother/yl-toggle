@@ -1,12 +1,12 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import { SidebarContainer } from 'layout/hooks';
 import { useEffect } from 'react';
 import { IntlWrapper } from 'components/utils/wrapper';
 import PutAway from '.';
 
-const TrueWrapper: React.FC = (props) => {
+const TrueWrapper: React.FC<{ children?: import('react').ReactNode }> = (props) => {
   return (
     <IntlWrapper>
       <SidebarContainer.Provider>
@@ -19,7 +19,7 @@ const TrueWrapper: React.FC = (props) => {
   );
 };
 
-const FalseWrapper: React.FC = (props) => {
+const FalseWrapper: React.FC<{ children?: import('react').ReactNode }> = (props) => {
   return (
     <IntlWrapper>
       <SidebarContainer.Provider>
@@ -29,7 +29,7 @@ const FalseWrapper: React.FC = (props) => {
   );
 };
 
-const UseHookWrapper: React.FC<{ isPutAway?: boolean }> = ({ children, isPutAway }) => {
+const UseHookWrapper: React.FC<{ children?: import('react').ReactNode; isPutAway?: boolean }> = ({ children, isPutAway }) => {
   const { setIsputAway } = SidebarContainer.useContainer();
 
   useEffect(() => {
@@ -39,37 +39,31 @@ const UseHookWrapper: React.FC<{ isPutAway?: boolean }> = ({ children, isPutAway
   return <>{children}</>;
 };
 
-it('PutAway true snapshot', (done) => {
-  (async () => {
+it('PutAway true snapshot', async () => {
+  await (async () => {
     const { baseElement } = render(<PutAway />, {
       wrapper: TrueWrapper,
     });
     expect(baseElement).toMatchSnapshot();
-
-    done();
   })();
 });
 
-it('PutAway false snapshot', (done) => {
-  (async () => {
+it('PutAway false snapshot', async () => {
+  await (async () => {
     const { baseElement } = render(<PutAway />, {
       wrapper: FalseWrapper,
     });
     expect(baseElement).toMatchSnapshot();
-
-    done();
   })();
 });
 
-test('click PutAway', (done) => {
-  (async () => {
+it('click PutAway', async () => {
+  await (async () => {
     const { asFragment } = render(<PutAway />, {
       wrapper: FalseWrapper,
     });
 
     await userEvent.click(screen.getByText('Collapse'));
     expect(asFragment()).toMatchSnapshot();
-
-    done();
   })();
 });

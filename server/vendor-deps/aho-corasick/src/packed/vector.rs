@@ -89,6 +89,7 @@ pub(crate) trait Vector:
     ///
     /// Callers must ensure that this is okay to call in the current target for
     /// the current CPU.
+    #[allow(dead_code)] // unused, but useful enough to keep around?
     unsafe fn or(self, vector2: Self) -> Self;
 
     /// Shift each 8-bit lane in this vector to the right by the number of
@@ -320,7 +321,7 @@ pub(crate) trait FatVector: Vector {
 mod x86_64_ssse3 {
     use core::arch::x86_64::*;
 
-    use crate::util::int::{I32, I64, I8};
+    use crate::util::int::{I32, I8};
 
     use super::Vector;
 
@@ -394,12 +395,14 @@ mod x86_64_ssse3 {
             self,
             mut f: impl FnMut(usize, u64) -> Option<T>,
         ) -> Option<T> {
-            let lane = _mm_extract_epi64(self, 0).to_bits();
-            if let Some(t) = f(0, lane) {
+            // We could just use _mm_extract_epi64 here, but that requires
+            // SSE 4.1. It isn't necessarily a problem to just require SSE 4.1,
+            // but everything else works with SSSE3 so we stick to that subset.
+            let lanes: [u64; 2] = core::mem::transmute(self);
+            if let Some(t) = f(0, lanes[0]) {
                 return Some(t);
             }
-            let lane = _mm_extract_epi64(self, 1).to_bits();
-            if let Some(t) = f(1, lane) {
+            if let Some(t) = f(1, lanes[1]) {
                 return Some(t);
             }
             None
@@ -593,7 +596,11 @@ mod x86_64_avx2 {
     }
 }
 
-#[cfg(target_arch = "aarch64")]
+#[cfg(all(
+    target_arch = "aarch64",
+    target_feature = "neon",
+    target_endian = "little"
+))]
 mod aarch64_neon {
     use core::arch::aarch64::*;
 

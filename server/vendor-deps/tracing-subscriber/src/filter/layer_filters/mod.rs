@@ -32,15 +32,14 @@ use crate::{
     layer::{self, Context, Layer},
     registry,
 };
-use std::{
+use alloc::{boxed::Box, fmt, sync::Arc};
+use core::{
     any::TypeId,
     cell::{Cell, RefCell},
-    fmt,
     marker::PhantomData,
     ops::Deref,
-    sync::Arc,
-    thread_local,
 };
+use std::thread_local;
 use tracing_core::{
     span,
     subscriber::{Interest, Subscriber},
@@ -99,12 +98,18 @@ pub struct FilterId(u64);
 ///
 /// [`Registry`]: crate::Registry
 /// [`Filter`]: crate::layer::Filter
-#[derive(Default, Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 pub(crate) struct FilterMap {
     bits: u64,
 }
 
-/// The current state of `enabled` calls to per-layer filters on this
+impl FilterMap {
+    pub(crate) const fn new() -> Self {
+        Self { bits: 0 }
+    }
+}
+
+/// The current state of `enabled` calls to per-subscriber filters on this
 /// thread.
 ///
 /// When `Filtered::enabled` is called, the filter will set the bit
@@ -129,7 +134,7 @@ pub(crate) struct FilterMap {
 /// 2. If all the bits are set, then every per-layer filter has decided it
 ///    doesn't want to enable that span or event. In that case, the
 ///    `Registry`'s `enabled` method will return `false`, so that
-///     recording a span or event can be skipped entirely.
+///    recording a span or event can be skipped entirely.
 #[derive(Debug)]
 pub(crate) struct FilterState {
     enabled: Cell<FilterMap>,
@@ -145,7 +150,7 @@ pub(crate) struct FilterState {
 
 /// Extra counters added to `FilterState` used only to make debug assertions.
 #[cfg(debug_assertions)]
-#[derive(Debug, Default)]
+#[derive(Debug)]
 struct DebugCounters {
     /// How many per-layer filters have participated in the current `enabled`
     /// call?
@@ -156,8 +161,18 @@ struct DebugCounters {
     in_interest_pass: Cell<usize>,
 }
 
+#[cfg(debug_assertions)]
+impl DebugCounters {
+    const fn new() -> Self {
+        Self {
+            in_filter_pass: Cell::new(0),
+            in_interest_pass: Cell::new(0),
+        }
+    }
+}
+
 thread_local! {
-    pub(crate) static FILTERING: FilterState = FilterState::new();
+    pub(crate) static FILTERING: FilterState = const { FilterState::new() };
 }
 
 /// Extension trait adding [combinators] for combining [`Filter`].
@@ -351,10 +366,10 @@ pub trait FilterExt<S>: layer::Filter<S> {
     //  globally applied to events where it doesn't today, since we can't know
     //  what `event_enabled` will say until we have the event to call it with.
     ///
-    /// [`Filter`]: crate::subscribe::Filter
-    /// [`enabled`]: crate::subscribe::Filter::enabled
-    /// [`event_enabled`]: crate::subscribe::Filter::event_enabled
-    /// [`callsite_enabled`]: crate::subscribe::Filter::callsite_enabled
+    /// [`Filter`]: crate::layer::Filter
+    /// [`enabled`]: crate::layer::Filter::enabled
+    /// [`event_enabled`]: crate::layer::Filter::event_enabled
+    /// [`callsite_enabled`]: crate::layer::Filter::callsite_enabled
     fn not(self) -> combinator::Not<Self, S>
     where
         Self: Sized,
@@ -478,6 +493,36 @@ macro_rules! filter_impl_body {
         fn max_level_hint(&self) -> Option<LevelFilter> {
             self.deref().max_level_hint()
         }
+
+        #[inline]
+        fn event_enabled(&self, event: &Event<'_>, cx: &Context<'_, S>) -> bool {
+            self.deref().event_enabled(event, cx)
+        }
+
+        #[inline]
+        fn on_new_span(&self, attrs: &span::Attributes<'_>, id: &span::Id, ctx: Context<'_, S>) {
+            self.deref().on_new_span(attrs, id, ctx)
+        }
+
+        #[inline]
+        fn on_record(&self, id: &span::Id, values: &span::Record<'_>, ctx: Context<'_, S>) {
+            self.deref().on_record(id, values, ctx)
+        }
+
+        #[inline]
+        fn on_enter(&self, id: &span::Id, ctx: Context<'_, S>) {
+            self.deref().on_enter(id, ctx)
+        }
+
+        #[inline]
+        fn on_exit(&self, id: &span::Id, ctx: Context<'_, S>) {
+            self.deref().on_exit(id, ctx)
+        }
+
+        #[inline]
+        fn on_close(&self, id: span::Id, ctx: Context<'_, S>) {
+            self.deref().on_close(id, ctx)
+        }
     };
 }
 
@@ -491,6 +536,75 @@ impl<S> layer::Filter<S> for Arc<dyn layer::Filter<S> + Send + Sync + 'static> {
 #[cfg_attr(docsrs, doc(cfg(feature = "registry")))]
 impl<S> layer::Filter<S> for Box<dyn layer::Filter<S> + Send + Sync + 'static> {
     filter_impl_body!();
+}
+
+// Implement Filter for Option<Filter> where None => allow
+#[cfg(feature = "registry")]
+#[cfg_attr(docsrs, doc(cfg(feature = "registry")))]
+impl<F, S> layer::Filter<S> for Option<F>
+where
+    F: layer::Filter<S>,
+{
+    #[inline]
+    fn enabled(&self, meta: &Metadata<'_>, ctx: &Context<'_, S>) -> bool {
+        self.as_ref()
+            .map(|inner| inner.enabled(meta, ctx))
+            .unwrap_or(true)
+    }
+
+    #[inline]
+    fn callsite_enabled(&self, meta: &'static Metadata<'static>) -> Interest {
+        self.as_ref()
+            .map(|inner| inner.callsite_enabled(meta))
+            .unwrap_or_else(Interest::always)
+    }
+
+    #[inline]
+    fn max_level_hint(&self) -> Option<LevelFilter> {
+        self.as_ref().and_then(|inner| inner.max_level_hint())
+    }
+
+    #[inline]
+    fn event_enabled(&self, event: &Event<'_>, ctx: &Context<'_, S>) -> bool {
+        self.as_ref()
+            .map(|inner| inner.event_enabled(event, ctx))
+            .unwrap_or(true)
+    }
+
+    #[inline]
+    fn on_new_span(&self, attrs: &span::Attributes<'_>, id: &span::Id, ctx: Context<'_, S>) {
+        if let Some(inner) = self {
+            inner.on_new_span(attrs, id, ctx)
+        }
+    }
+
+    #[inline]
+    fn on_record(&self, id: &span::Id, values: &span::Record<'_>, ctx: Context<'_, S>) {
+        if let Some(inner) = self {
+            inner.on_record(id, values, ctx)
+        }
+    }
+
+    #[inline]
+    fn on_enter(&self, id: &span::Id, ctx: Context<'_, S>) {
+        if let Some(inner) = self {
+            inner.on_enter(id, ctx)
+        }
+    }
+
+    #[inline]
+    fn on_exit(&self, id: &span::Id, ctx: Context<'_, S>) {
+        if let Some(inner) = self {
+            inner.on_exit(id, ctx)
+        }
+    }
+
+    #[inline]
+    fn on_close(&self, id: span::Id, ctx: Context<'_, S>) {
+        if let Some(inner) = self {
+            inner.on_close(id, ctx)
+        }
+    }
 }
 
 // === impl Filtered ===
@@ -595,7 +709,7 @@ impl<L, F, S> Filtered<L, F, S> {
     /// # }
     /// ```
     ///
-    /// [subscriber]: Subscribe
+    /// [`Layer`]: crate::layer::Layer
     pub fn inner_mut(&mut self) -> &mut L {
         &mut self.layer
     }
@@ -607,8 +721,8 @@ where
     F: layer::Filter<S> + 'static,
     L: Layer<S>,
 {
-    fn on_register_dispatch(&self, collector: &Dispatch) {
-        self.layer.on_register_dispatch(collector);
+    fn on_register_dispatch(&self, subscriber: &Dispatch) {
+        self.layer.on_register_dispatch(subscriber);
     }
 
     fn on_layer(&mut self, subscriber: &mut S) {
@@ -622,7 +736,7 @@ where
     //
     // it would be cool if there was some wild rust reflection way of checking
     // if a trait impl has the default impl of a trait method or not, but that's
-    // almsot certainly impossible...right?
+    // almost certainly impossible...right?
 
     fn register_callsite(&self, metadata: &'static Metadata<'static>) -> Interest {
         let interest = self.filter.callsite_enabled(metadata);
@@ -764,7 +878,7 @@ where
             id if id == TypeId::of::<MagicPlfDowncastMarker>() => {
                 Some(&self.id as *const _ as *const ())
             }
-            _ => self.layer.downcast_raw(id),
+            _ => unsafe { self.layer.downcast_raw(id) },
         }
     }
 }
@@ -787,7 +901,7 @@ where
 
 impl FilterId {
     const fn disabled() -> Self {
-        Self(std::u64::MAX)
+        Self(u64::MAX)
     }
 
     /// Returns a `FilterId` that will consider _all_ spans enabled.
@@ -930,7 +1044,7 @@ impl<F, S> FilterExt<S> for F where F: layer::Filter<S> {}
 
 impl FilterMap {
     pub(crate) fn set(self, FilterId(mask): FilterId, enabled: bool) -> Self {
-        if mask == std::u64::MAX {
+        if mask == u64::MAX {
             return self;
         }
 
@@ -952,7 +1066,7 @@ impl FilterMap {
 
     #[inline]
     pub(crate) fn any_enabled(self) -> bool {
-        self.bits != std::u64::MAX
+        self.bits != u64::MAX
     }
 }
 
@@ -981,13 +1095,13 @@ impl fmt::Binary for FilterMap {
 // === impl FilterState ===
 
 impl FilterState {
-    fn new() -> Self {
+    const fn new() -> Self {
         Self {
-            enabled: Cell::new(FilterMap::default()),
+            enabled: Cell::new(FilterMap::new()),
             interest: RefCell::new(None),
 
             #[cfg(debug_assertions)]
-            counters: DebugCounters::default(),
+            counters: DebugCounters::new(),
         }
     }
 
@@ -996,7 +1110,7 @@ impl FilterState {
         {
             let in_current_pass = self.counters.in_filter_pass.get();
             if in_current_pass == 0 {
-                debug_assert_eq!(self.enabled.get(), FilterMap::default());
+                debug_assert_eq!(self.enabled.get(), FilterMap::new());
             }
             self.counters.in_filter_pass.set(in_current_pass + 1);
             debug_assert_eq!(
@@ -1041,7 +1155,7 @@ impl FilterState {
                 #[cfg(debug_assertions)]
                 {
                     if this.counters.in_filter_pass.get() == 0 {
-                        debug_assert_eq!(this.enabled.get(), FilterMap::default());
+                        debug_assert_eq!(this.enabled.get(), FilterMap::new());
                     }
 
                     // Nothing enabled this event, we won't tick back down the
@@ -1078,7 +1192,7 @@ impl FilterState {
         {
             let in_current_pass = self.counters.in_filter_pass.get();
             if in_current_pass <= 1 {
-                debug_assert_eq!(self.enabled.get(), FilterMap::default());
+                debug_assert_eq!(self.enabled.get(), FilterMap::new());
             }
             self.counters
                 .in_filter_pass
@@ -1091,7 +1205,7 @@ impl FilterState {
         }
     }
 
-    /// Run a second filtering pass, e.g. for Subscribe::event_enabled.
+    /// Run a second filtering pass, e.g. for Layer::event_enabled.
     fn and(&self, filter: FilterId, f: impl FnOnce() -> bool) -> bool {
         let map = self.enabled.get();
         let enabled = map.is_enabled(filter) && f();
@@ -1108,7 +1222,7 @@ impl FilterState {
         // a panic and the thread-local has been torn down, that's fine, just
         // ignore it ratehr than panicking.
         let _ = FILTERING.try_with(|filtering| {
-            filtering.enabled.set(FilterMap::default());
+            filtering.enabled.set(FilterMap::new());
 
             #[cfg(debug_assertions)]
             filtering.counters.in_filter_pass.set(0);
@@ -1133,10 +1247,8 @@ impl FilterState {
     pub(crate) fn filter_map(&self) -> FilterMap {
         let map = self.enabled.get();
         #[cfg(debug_assertions)]
-        {
-            if self.counters.in_filter_pass.get() == 0 {
-                debug_assert_eq!(map, FilterMap::default());
-            }
+        if self.counters.in_filter_pass.get() == 0 {
+            debug_assert_eq!(map, FilterMap::new());
         }
 
         map

@@ -1,3 +1,4 @@
+import asset_no_data_png from 'images/no-data.png';
 import { SyntheticEvent } from 'react';
 import { Table, PaginationProps } from 'semantic-ui-react';
 import { FormattedMessage } from 'react-intl';
@@ -15,6 +16,7 @@ interface IPagination {
 }
 
 interface IProps {
+  children?: import('react').ReactNode;
   total: number;
   pagination: IPagination;
   toggleList: IPrerequisiteToggle[];
@@ -99,7 +101,7 @@ const ToggleList = (props: IProps) => {
         ) : (
           <div className={styles['no-data']}>
             <div>
-              <img className={styles['no-data-image']} src={require('images/no-data.png')} alt='no-data' />
+              <img className={styles['no-data-image']} src={asset_no_data_png} alt='no-data' />
             </div>
             <div>
               <FormattedMessage id='common.nodata.text' />

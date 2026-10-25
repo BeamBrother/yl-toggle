@@ -25,7 +25,7 @@ import org.hibernate.internal.SessionImpl
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 class MetricServiceSpec extends Specification {
 

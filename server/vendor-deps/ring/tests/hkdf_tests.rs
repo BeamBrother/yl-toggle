@@ -4,24 +4,27 @@
 // purpose with or without fee is hereby granted, provided that the above
 // copyright notice and this permission notice appear in all copies.
 //
-// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHORS DISCLAIM ALL WARRANTIES
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
 // WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
 // SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
 // OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 // CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-use ring::{digest, error, hkdf, test, test_file};
+#![allow(missing_docs)]
 
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen_test::{wasm_bindgen_test, wasm_bindgen_test_configure};
+use ring::{digest, error, hkdf};
+#[allow(deprecated)]
+use ring::{test, test_file};
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
+use wasm_bindgen_test::{wasm_bindgen_test as test, wasm_bindgen_test_configure};
+
+#[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
 wasm_bindgen_test_configure!(run_in_browser);
 
 #[test]
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
 fn hkdf_tests() {
     test::run(test_file!("hkdf_tests.txt"), |section, test_case| {
         assert_eq!(section, "");
@@ -57,7 +60,6 @@ fn hkdf_tests() {
 }
 
 #[test]
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
 fn hkdf_output_len_tests() {
     for &alg in &[hkdf::HKDF_SHA256, hkdf::HKDF_SHA384, hkdf::HKDF_SHA512] {
         const MAX_BLOCKS: usize = 255;
@@ -72,7 +74,7 @@ fn hkdf_output_len_tests() {
             assert_eq!(&result.0, &[]);
         }
 
-        let max_out_len = MAX_BLOCKS * alg.hmac_algorithm().digest_algorithm().output_len;
+        let max_out_len = MAX_BLOCKS * alg.hmac_algorithm().digest_algorithm().output_len();
 
         {
             // Test maximum length output succeeds.
@@ -124,6 +126,6 @@ impl From<hkdf::Okm<'_, My<usize>>> for My<Vec<u8>> {
     fn from(okm: hkdf::Okm<My<usize>>) -> Self {
         let mut r = vec![0u8; okm.len().0];
         okm.fill(&mut r).unwrap();
-        My(r)
+        Self(r)
     }
 }

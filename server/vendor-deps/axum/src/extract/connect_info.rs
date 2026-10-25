@@ -4,10 +4,10 @@
 //!
 //! [`Router::into_make_service_with_connect_info`]: crate::routing::Router::into_make_service_with_connect_info
 
-use super::{Extension, FromRequest, RequestParts};
-use crate::middleware::AddExtension;
-use async_trait::async_trait;
-use hyper::server::conn::AddrStream;
+use crate::extension::AddExtension;
+
+use super::{Extension, FromRequestParts};
+use http::request::Parts;
 use std::{
     convert::Infallible,
     fmt,
@@ -79,12 +79,35 @@ where
 /// [`Router::into_make_service_with_connect_info`]: crate::routing::Router::into_make_service_with_connect_info
 pub trait Connected<T>: Clone + Send + Sync + 'static {
     /// Create type holding information about the connection.
-    fn connect_info(target: T) -> Self;
+    fn connect_info(stream: T) -> Self;
 }
 
-impl Connected<&AddrStream> for SocketAddr {
-    fn connect_info(target: &AddrStream) -> Self {
-        target.remote_addr()
+#[cfg(all(feature = "tokio", any(feature = "http1", feature = "http2")))]
+const _: () = {
+    use crate::serve;
+    use tokio::net::TcpListener;
+
+    impl Connected<serve::IncomingStream<'_, TcpListener>> for SocketAddr {
+        fn connect_info(stream: serve::IncomingStream<'_, TcpListener>) -> Self {
+            *stream.remote_addr()
+        }
+    }
+
+    impl<'a, L, F> Connected<serve::IncomingStream<'a, serve::TapIo<L, F>>> for L::Addr
+    where
+        L: serve::Listener,
+        L::Addr: Clone + Sync + 'static,
+        F: FnMut(&mut L::Io) + Send + 'static,
+    {
+        fn connect_info(stream: serve::IncomingStream<'a, serve::TapIo<L, F>>) -> Self {
+            stream.remote_addr().clone()
+        }
+    }
+};
+
+impl Connected<SocketAddr> for SocketAddr {
+    fn connect_info(remote_addr: SocketAddr) -> Self {
+        remote_addr
     }
 }
 
@@ -127,62 +150,131 @@ opaque_future! {
 #[derive(Clone, Copy, Debug)]
 pub struct ConnectInfo<T>(pub T);
 
-#[async_trait]
-impl<B, T> FromRequest<B> for ConnectInfo<T>
+impl<S, T> FromRequestParts<S> for ConnectInfo<T>
 where
-    B: Send,
+    S: Send + Sync,
     T: Clone + Send + Sync + 'static,
 {
-    type Rejection = <Extension<Self> as FromRequest<B>>::Rejection;
+    type Rejection = <Extension<Self> as FromRequestParts<S>>::Rejection;
 
-    async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
-        let Extension(connect_info) = Extension::<Self>::from_request(req).await?;
-        Ok(connect_info)
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
+        match Extension::<Self>::from_request_parts(parts, state).await {
+            Ok(Extension(connect_info)) => Ok(connect_info),
+            Err(err) => match parts.extensions.get::<MockConnectInfo<T>>() {
+                Some(MockConnectInfo(connect_info)) => Ok(Self(connect_info.clone())),
+                None => Err(err),
+            },
+        }
+    }
+}
+
+axum_core::__impl_deref!(ConnectInfo);
+
+/// Middleware used to mock [`ConnectInfo`] during tests.
+///
+/// If you're accidentally using [`MockConnectInfo`] and
+/// [`Router::into_make_service_with_connect_info`] at the same time then
+/// [`Router::into_make_service_with_connect_info`] takes precedence.
+///
+/// # Example
+///
+/// ```
+/// use axum::{
+///     Router,
+///     extract::connect_info::{MockConnectInfo, ConnectInfo},
+///     body::Body,
+///     routing::get,
+///     http::{Request, StatusCode},
+/// };
+/// use std::net::SocketAddr;
+/// use tower::ServiceExt;
+///
+/// async fn handler(ConnectInfo(addr): ConnectInfo<SocketAddr>) {}
+///
+/// // this router you can run with `app.into_make_service_with_connect_info::<SocketAddr>()`
+/// fn app() -> Router {
+///     Router::new().route("/", get(handler))
+/// }
+///
+/// // use this router for tests
+/// fn test_app() -> Router {
+///     app().layer(MockConnectInfo(SocketAddr::from(([0, 0, 0, 0], 1337))))
+/// }
+///
+/// // #[tokio::test]
+/// async fn some_test() {
+///     let app = test_app();
+///
+///     let request = Request::new(Body::empty());
+///     let response = app.oneshot(request).await.unwrap();
+///     assert_eq!(response.status(), StatusCode::OK);
+/// }
+/// #
+/// # #[tokio::main]
+/// # async fn main() {
+/// #     some_test().await;
+/// # }
+/// ```
+///
+/// [`Router::into_make_service_with_connect_info`]: crate::Router::into_make_service_with_connect_info
+#[derive(Clone, Copy, Debug)]
+pub struct MockConnectInfo<T>(pub T);
+
+impl<S, T> Layer<S> for MockConnectInfo<T>
+where
+    T: Clone + Send + Sync + 'static,
+{
+    type Service = <Extension<Self> as Layer<S>>::Service;
+
+    fn layer(&self, inner: S) -> Self::Service {
+        Extension(self.clone()).layer(inner)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{routing::get, Router, Server};
-    use std::net::{SocketAddr, TcpListener};
+    use crate::{routing::get, serve::IncomingStream, test_helpers::TestClient, Router};
+    use tokio::net::TcpListener;
 
-    #[tokio::test]
+    #[crate::test]
     async fn socket_addr() {
         async fn handler(ConnectInfo(addr): ConnectInfo<SocketAddr>) -> String {
-            format!("{}", addr)
+            format!("{addr}")
         }
 
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
         let addr = listener.local_addr().unwrap();
 
         let (tx, rx) = tokio::sync::oneshot::channel();
         tokio::spawn(async move {
             let app = Router::new().route("/", get(handler));
-            let server = Server::from_tcp(listener)
-                .unwrap()
-                .serve(app.into_make_service_with_connect_info::<SocketAddr>());
             tx.send(()).unwrap();
-            server.await.expect("server error");
+            crate::serve(
+                listener,
+                app.into_make_service_with_connect_info::<SocketAddr>(),
+            )
+            .await
+            .unwrap();
         });
         rx.await.unwrap();
 
         let client = reqwest::Client::new();
 
-        let res = client.get(format!("http://{}", addr)).send().await.unwrap();
+        let res = client.get(format!("http://{addr}")).send().await.unwrap();
         let body = res.text().await.unwrap();
         assert!(body.starts_with("127.0.0.1:"));
     }
 
-    #[tokio::test]
+    #[crate::test]
     async fn custom() {
         #[derive(Clone, Debug)]
         struct MyConnectInfo {
             value: &'static str,
         }
 
-        impl Connected<&AddrStream> for MyConnectInfo {
-            fn connect_info(_target: &AddrStream) -> Self {
+        impl Connected<IncomingStream<'_, TcpListener>> for MyConnectInfo {
+            fn connect_info(_target: IncomingStream<'_, TcpListener>) -> Self {
                 Self {
                     value: "it worked!",
                 }
@@ -193,24 +285,72 @@ mod tests {
             addr.value
         }
 
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
         let addr = listener.local_addr().unwrap();
 
         let (tx, rx) = tokio::sync::oneshot::channel();
         tokio::spawn(async move {
             let app = Router::new().route("/", get(handler));
-            let server = Server::from_tcp(listener)
-                .unwrap()
-                .serve(app.into_make_service_with_connect_info::<MyConnectInfo>());
             tx.send(()).unwrap();
-            server.await.expect("server error");
+            crate::serve(
+                listener,
+                app.into_make_service_with_connect_info::<MyConnectInfo>(),
+            )
+            .await
+            .unwrap();
         });
         rx.await.unwrap();
 
         let client = reqwest::Client::new();
 
-        let res = client.get(format!("http://{}", addr)).send().await.unwrap();
+        let res = client.get(format!("http://{addr}")).send().await.unwrap();
         let body = res.text().await.unwrap();
         assert_eq!(body, "it worked!");
+    }
+
+    #[crate::test]
+    async fn mock_connect_info() {
+        async fn handler(ConnectInfo(addr): ConnectInfo<SocketAddr>) -> String {
+            format!("{addr}")
+        }
+
+        let app = Router::new()
+            .route("/", get(handler))
+            .layer(MockConnectInfo(SocketAddr::from(([0, 0, 0, 0], 1337))));
+
+        let client = TestClient::new(app);
+
+        let res = client.get("/").await;
+        let body = res.text().await;
+        assert!(body.starts_with("0.0.0.0:1337"));
+    }
+
+    #[crate::test]
+    async fn both_mock_and_real_connect_info() {
+        async fn handler(ConnectInfo(addr): ConnectInfo<SocketAddr>) -> String {
+            format!("{addr}")
+        }
+
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+
+        tokio::spawn(async move {
+            let app = Router::new()
+                .route("/", get(handler))
+                .layer(MockConnectInfo(SocketAddr::from(([0, 0, 0, 0], 1337))));
+
+            crate::serve(
+                listener,
+                app.into_make_service_with_connect_info::<SocketAddr>(),
+            )
+            .await
+            .unwrap();
+        });
+
+        let client = reqwest::Client::new();
+
+        let res = client.get(format!("http://{addr}")).send().await.unwrap();
+        let body = res.text().await.unwrap();
+        assert!(body.starts_with("127.0.0.1:"));
     }
 }

@@ -59,7 +59,7 @@ backendAPI:
     labels: { } # Backend API service labels
     type: ClusterIP # Backend API service type
   database:
-    url: "jdbc:mysql://localhost:3306/yl-toggle" # Backend API database connection URL
+    url: "jdbc:mariadb://localhost:3306/yl-toggle" # Backend API database connection URL
     secret_name: yl-toggle-database-credentials # The name of Kubernetes secret that holds database credentials
     username_secret_key: yltoggle_user # Kubernetes secret key for MySQL user name
     password_secret_key: yltoggle_password # Kubernetes secret key for MySQL password
@@ -142,7 +142,7 @@ analysisAPI:
     labels: { } # Analysis API service labels
     type: ClusterIP # Analysis API service type
   database:
-    url: "jdbc:mysql://localhost:3306/yl-toggle-events" # Analysis API database connection URL
+    url: "jdbc:mariadb://localhost:3306/yl-toggle-events" # Analysis API database connection URL
     secret_name: yl-toggle-database-credentials # The name of Kubernetes secret that holds database credentials
     username_secret_key: yltoggle_events_user # Kubernetes secret key for MySQL user name
     password_secret_key: yltoggle_events_password # Kubernetes secret key for MySQL password

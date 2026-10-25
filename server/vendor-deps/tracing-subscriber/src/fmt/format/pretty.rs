@@ -437,7 +437,7 @@ impl<'a> PrettyVisitor<'a> {
     }
 }
 
-impl<'a> field::Visit for PrettyVisitor<'a> {
+impl field::Visit for PrettyVisitor<'_> {
     fn record_str(&mut self, field: &Field, value: &str) {
         if self.result.is_err() {
             return;
@@ -451,21 +451,25 @@ impl<'a> field::Visit for PrettyVisitor<'a> {
     }
 
     fn record_error(&mut self, field: &Field, value: &(dyn std::error::Error + 'static)) {
+        let sanitize = self.writer.sanitizes_ansi_escapes();
         if let Some(source) = value.source() {
             let bold = self.bold();
             self.record_debug(
                 field,
                 &format_args!(
                     "{}, {}{}.sources{}: {}",
-                    value,
+                    EscapeGuard::new(format_args!("{}", value), sanitize),
                     bold.prefix(),
                     field,
                     bold.infix(self.style),
-                    ErrorSourceList(source),
+                    ErrorSourceList::new(source, sanitize),
                 ),
             )
         } else {
-            self.record_debug(field, &format_args!("{}", value))
+            self.record_debug(
+                field,
+                &EscapeGuard::new(format_args!("{}", value), sanitize),
+            )
         }
     }
 
@@ -475,7 +479,14 @@ impl<'a> field::Visit for PrettyVisitor<'a> {
         }
         let bold = self.bold();
         match field.name() {
-            "message" => self.write_padded(&format_args!("{}{:?}", self.style.prefix(), value,)),
+            "message" => {
+                // Escape ANSI characters to prevent malicious patterns (e.g., terminal injection attacks)
+                self.write_padded(&format_args!(
+                    "{}{:?}",
+                    self.style.prefix(),
+                    EscapeGuard::new(value, self.writer.sanitizes_ansi_escapes())
+                ))
+            }
             // Skip fields that are actually log metadata that have already been handled
             #[cfg(feature = "tracing-log")]
             name if name.starts_with("log.") => self.result = Ok(()),
@@ -497,14 +508,14 @@ impl<'a> field::Visit for PrettyVisitor<'a> {
     }
 }
 
-impl<'a> VisitOutput<fmt::Result> for PrettyVisitor<'a> {
+impl VisitOutput<fmt::Result> for PrettyVisitor<'_> {
     fn finish(mut self) -> fmt::Result {
         write!(&mut self.writer, "{}", self.style.suffix())?;
         self.result
     }
 }
 
-impl<'a> VisitFmt for PrettyVisitor<'a> {
+impl VisitFmt for PrettyVisitor<'_> {
     fn writer(&mut self) -> &mut dyn fmt::Write {
         &mut self.writer
     }

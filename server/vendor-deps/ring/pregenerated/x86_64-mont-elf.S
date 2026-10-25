@@ -1,40 +1,21 @@
-# This file is generated from a similarly-named Perl script in the BoringSSL
-# source tree. Do not edit by hand.
+// This file is generated from a similarly-named Perl script in the BoringSSL
+// source tree. Do not edit by hand.
 
-#if defined(__has_feature)
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
-#endif
+#include <ring-core/asm_base.h>
 
-#if defined(__x86_64__) && !defined(OPENSSL_NO_ASM)
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__ELF__)
 .text	
 
-.extern	GFp_ia32cap_P
-.hidden GFp_ia32cap_P
-
-.globl	GFp_bn_mul_mont
-.hidden GFp_bn_mul_mont
-.type	GFp_bn_mul_mont,@function
+.globl	bn_mul_mont_nohw
+.hidden bn_mul_mont_nohw
+.type	bn_mul_mont_nohw,@function
 .align	16
-GFp_bn_mul_mont:
+bn_mul_mont_nohw:
 .cfi_startproc	
+_CET_ENDBR
 	movl	%r9d,%r9d
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax
-	testl	$3,%r9d
-	jnz	.Lmul_enter
-	cmpl	$8,%r9d
-	jb	.Lmul_enter
-	movl	GFp_ia32cap_P+8(%rip),%r11d
-	cmpq	%rsi,%rdx
-	jne	.Lmul4x_enter
-	testl	$7,%r9d
-	jz	.Lsqr8x_enter
-	jmp	.Lmul4x_enter
-
-.align	16
-.Lmul_enter:
 	pushq	%rbx
 .cfi_offset	%rbx,-16
 	pushq	%rbp
@@ -264,20 +245,19 @@ GFp_bn_mul_mont:
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lmul_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
-.size	GFp_bn_mul_mont,.-GFp_bn_mul_mont
+.size	bn_mul_mont_nohw,.-bn_mul_mont_nohw
+.globl	bn_mul4x_mont
+.hidden bn_mul4x_mont
 .type	bn_mul4x_mont,@function
 .align	16
 bn_mul4x_mont:
 .cfi_startproc	
+_CET_ENDBR
 	movl	%r9d,%r9d
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax
-.Lmul4x_enter:
-	andl	$0x80100,%r11d
-	cmpl	$0x80100,%r11d
-	je	.Lmulx4x_enter
 	pushq	%rbx
 .cfi_offset	%rbx,-16
 	pushq	%rbp
@@ -698,21 +678,24 @@ bn_mul4x_mont:
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lmul4x_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	bn_mul4x_mont,.-bn_mul4x_mont
-.extern	GFp_bn_sqrx8x_internal
-.hidden GFp_bn_sqrx8x_internal
-.extern	GFp_bn_sqr8x_internal
-.hidden GFp_bn_sqr8x_internal
+.extern	bn_sqrx8x_internal
+.hidden bn_sqrx8x_internal
+.extern	bn_sqr8x_internal
+.hidden bn_sqr8x_internal
 
+.globl	bn_sqr8x_mont
+.hidden bn_sqr8x_mont
 .type	bn_sqr8x_mont,@function
 .align	32
 bn_sqr8x_mont:
 .cfi_startproc	
+_CET_ENDBR
+	movl	%r9d,%r9d
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax
-.Lsqr8x_enter:
 	pushq	%rbx
 .cfi_offset	%rbx,-16
 	pushq	%rbp
@@ -787,12 +770,10 @@ bn_sqr8x_mont:
 	pxor	%xmm0,%xmm0
 .byte	102,72,15,110,207
 .byte	102,73,15,110,218
-	movl	GFp_ia32cap_P+8(%rip),%eax
-	andl	$0x80100,%eax
-	cmpl	$0x80100,%eax
-	jne	.Lsqr8x_nox
+	testq	%rdx,%rdx
+	jz	.Lsqr8x_nox
 
-	call	GFp_bn_sqrx8x_internal
+	call	bn_sqrx8x_internal
 
 
 
@@ -806,7 +787,7 @@ bn_sqr8x_mont:
 
 .align	32
 .Lsqr8x_nox:
-	call	GFp_bn_sqr8x_internal
+	call	bn_sqr8x_internal
 
 
 
@@ -890,16 +871,18 @@ bn_sqr8x_mont:
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lsqr8x_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	bn_sqr8x_mont,.-bn_sqr8x_mont
+.globl	bn_mulx4x_mont
+.hidden bn_mulx4x_mont
 .type	bn_mulx4x_mont,@function
 .align	32
 bn_mulx4x_mont:
 .cfi_startproc	
+_CET_ENDBR
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax
-.Lmulx4x_enter:
 	pushq	%rbx
 .cfi_offset	%rbx,-16
 	pushq	%rbp
@@ -1246,10 +1229,9 @@ bn_mulx4x_mont:
 	leaq	(%rsi),%rsp
 .cfi_def_cfa_register	%rsp
 .Lmulx4x_epilogue:
-	.byte	0xf3,0xc3
+	ret
 .cfi_endproc	
 .size	bn_mulx4x_mont,.-bn_mulx4x_mont
 .byte	77,111,110,116,103,111,109,101,114,121,32,77,117,108,116,105,112,108,105,99,97,116,105,111,110,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	16
 #endif
-.section	.note.GNU-stack,"",@progbits

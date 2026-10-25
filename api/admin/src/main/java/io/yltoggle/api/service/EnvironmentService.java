@@ -30,8 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -96,7 +96,7 @@ public class EnvironmentService {
     public EnvironmentResponse offline(String projectKey, String environmentKey) {
         Environment environment = environmentRepository.findByProjectKeyAndKeyAndArchived(projectKey,
                 environmentKey, false).orElseThrow(() ->
-                new ResourceNotFoundException(ResourceType.ENVIRONMENT, environmentKey));
+                    new ResourceNotFoundException(ResourceType.ENVIRONMENT, environmentKey));
         changeLogService.create(environment, ChangeLogType.DELETE);
         environment.setArchived(true);
         return EnvironmentMapper.INSTANCE.entityToResponse(environmentRepository.save(environment));
@@ -107,7 +107,7 @@ public class EnvironmentService {
     public EnvironmentResponse restore(String projectKey, String environmentKey) {
         Environment environment = environmentRepository.findByProjectKeyAndKeyAndArchived(projectKey,
                 environmentKey, true).orElseThrow(() ->
-                new ResourceNotFoundException(ResourceType.ENVIRONMENT, environmentKey));
+                    new ResourceNotFoundException(ResourceType.ENVIRONMENT, environmentKey));
         changeLogService.create(environment, ChangeLogType.ADD);
         environment.setArchived(false);
         return EnvironmentMapper.INSTANCE.entityToResponse(environmentRepository.save(environment));

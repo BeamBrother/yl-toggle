@@ -16,6 +16,7 @@ interface IOption {
 }
 
 interface IProps {
+  children?: import('react').ReactNode;
   currentStep: number;
   currentSDK: SdkLanguage;
   clientAvailability: boolean;
@@ -142,10 +143,10 @@ const SelectSDK = (props: IProps) => {
                         <Dropdown.Divider />
                         {
                           (
-                            isTrackEvent 
-                              ? ((eventInfo?.eventType === PAGE_VIEW || eventInfo?.eventType === CLICK) 
-                                ? CLIENT_SIDE_AUTO_REPORT_SDKS 
-                                : CLIENT_SIDE_SDKS) 
+                            isTrackEvent
+                              ? ((eventInfo?.eventType === PAGE_VIEW || eventInfo?.eventType === CLICK)
+                                ? CLIENT_SIDE_AUTO_REPORT_SDKS
+                                : CLIENT_SIDE_SDKS)
                               : (clientAvailability ? CLIENT_SIDE_SDKS : [])
                           ).map((sdk: IOption) => {
                             return (
@@ -174,8 +175,8 @@ const SelectSDK = (props: IProps) => {
                     </Dropdown.Menu>
                   </Dropdown>
                 </Form.Field>
-                <Button 
-                  primary 
+                <Button
+                  primary
                   type='submit'
                   className={styles.save}
                   disabled={!currentSDK}
@@ -200,12 +201,12 @@ const SelectSDK = (props: IProps) => {
                   </div>
                 </div>
                 <div className={styles['card-right']}>
-                  <Icon 
-                    type='edit' 
+                  <Icon
+                    type='edit'
                     customclass={styles.iconfont}
                     onClick={() => {
                       goBackToStep(CURRENT);
-                    }} 
+                    }}
                   />
                 </div>
               </div>

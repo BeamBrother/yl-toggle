@@ -9,6 +9,7 @@ import { IPrerequisite, IToggleInfo } from 'interfaces/targeting';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   disabled?: boolean;
   prerequisiteToggles?: IToggleInfo[];
 }
@@ -16,7 +17,7 @@ interface IProps {
 const Prerequisite = (props: IProps) => {
   const { disabled, prerequisiteToggles } = props;
 
-  const { 
+  const {
     prerequisites,
     handleAddPrerequisite,
   } = prerequisiteContainer.useContainer();
@@ -39,7 +40,7 @@ const Prerequisite = (props: IProps) => {
           </div>
         )
       }
-      
+
       {
         prerequisites?.map((item: IPrerequisite, index: number) => {
           return (
@@ -53,7 +54,7 @@ const Prerequisite = (props: IProps) => {
           );
         })
       }
-      
+
       <div className={styles.add}>
         <Button
           primary

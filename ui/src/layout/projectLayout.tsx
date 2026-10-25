@@ -1,7 +1,7 @@
 import { ReactElement, useCallback, useEffect, useState } from 'react';
-import { useParams, useHistory, useRouteMatch } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Joyride, { CallBackProps, Step, EVENTS, ACTIONS } from 'react-joyride';
+import { Joyride, EventData, Step, EVENTS, ACTIONS } from 'react-joyride';
 import { Breadcrumb } from  'semantic-ui-react';
 import SideBar from './sidebar';
 import ProjectSiderbar from './projectSiderbar';
@@ -17,22 +17,24 @@ import { IDictionary } from 'interfaces/targeting';
 import { IProject, IRouterParams } from 'interfaces/project';
 import { IToggleInfo } from 'interfaces/targeting';
 import { EnvironmentColors } from 'constants/colors';
-import { commonConfig, floaterStyle, tourStyle } from 'constants/tourConfig';
+import { commonConfig, tourStyle } from 'constants/tourConfig';
 import { DEMO_TIP_SHOW, USER_GUIDE_LAYOUT } from 'constants/dictionaryKeys';
 
-import { 
-  TOGGLE_PATH, 
-  TARGETING_PATH, 
-  SEGMENT_PATH, 
-  SEGMENT_ADD_PATH, 
+import {
+  TOGGLE_PATH,
+  TARGETING_PATH,
+  SEGMENT_PATH,
+  SEGMENT_ADD_PATH,
   CONNECT_SDK_PATH,
   SEGMENT_EDIT_PATH,
   SETTING_PATH,
   TRACK_EVENT_PATH,
   EVENT_TRACKER_PATH,
 } from 'router/routes';
+import { useMatchedRoutePath } from 'utils/router';
 
 import styles from './layout.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IProps {
   children: ReactElement
@@ -114,8 +116,18 @@ const ProjectLayout = (props: IProps) => {
   const [ isLoading, saveIsLoading ] = useState<boolean>(false);
   const [ run, saveRun ] = useState<boolean>(false);
   const [ stepIndex, saveStepIndex ] = useState<number>(0);
-  const history = useHistory();
-  const match = useRouteMatch();
+  const navigate = useNavigate();
+  const matchedPath = useMatchedRoutePath([
+    TARGETING_PATH,
+    CONNECT_SDK_PATH,
+    TRACK_EVENT_PATH,
+    TOGGLE_PATH,
+    EVENT_TRACKER_PATH,
+    SETTING_PATH,
+    SEGMENT_PATH,
+    SEGMENT_ADD_PATH,
+    SEGMENT_EDIT_PATH,
+  ]);
   const intl = useIntl();
 
   useEffect(() => {
@@ -156,7 +168,7 @@ const ProjectLayout = (props: IProps) => {
 
       if (success && data) {
         saveToggleName(data.name);
-      } 
+      }
     });
   }, [projectKey, environmentKey, toggleKey]);
 
@@ -195,23 +207,23 @@ const ProjectLayout = (props: IProps) => {
       }
     });
   }, []);
-  
+
   const gotoProjects = useCallback(() => {
-    history.push('/projects');
-  }, [history]);
+    navigate('/projects');
+  }, [navigate]);
 
   const gotoToggle = useCallback(() => {
     if (!toggleKey) return;
-    history.push(`/${projectKey}/${environmentKey}/toggles`);
-  }, [history, projectKey, environmentKey, toggleKey]);
+    navigate(`/${projectKey}/${environmentKey}/toggles`);
+  }, [navigate, projectKey, environmentKey, toggleKey]);
 
   const gotoTargeting = useCallback(() => {
-    history.push(`/${projectKey}/${environmentKey}/${toggleKey}/targeting`);
-  }, [history, projectKey, environmentKey, toggleKey]);
+    navigate(`/${projectKey}/${environmentKey}/${toggleKey}/targeting`);
+  }, [navigate, projectKey, environmentKey, toggleKey]);
 
   const gotoSegments = useCallback(() => {
-    history.push(`/${projectKey}/${environmentKey}/segments`);
-  }, [history, projectKey, environmentKey]);
+    navigate(`/${projectKey}/${environmentKey}/segments`);
+  }, [navigate, projectKey, environmentKey]);
 
   const hideTip = useCallback(() => {
     saveDictionary(DEMO_TIP_SHOW, false).then((res) => {
@@ -221,7 +233,7 @@ const ProjectLayout = (props: IProps) => {
     });
   }, []);
 
-  const handleJoyrideCallback = useCallback((data: CallBackProps) => {
+  const handleJoyrideCallback = useCallback((data: EventData) => {
     const { action, index, type } = data;
 
     if (([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND] as string[]).includes(type)) {
@@ -235,21 +247,22 @@ const ProjectLayout = (props: IProps) => {
     <div className={styles.main}>
       <Joyride
         run={run}
-        callback={handleJoyrideCallback}
+        onEvent={handleJoyrideCallback}
         stepIndex={stepIndex}
-        continuous
-        hideCloseButton
         scrollToFirstStep
-        showProgress={false}
-        showSkipButton
+options={{
+          ...commonConfig,
+          buttons: ['back', 'skip', 'primary'] as const,
+          showProgress: false,
+          dismissKeyAction: false,
+          scrollOffset: 100,
+        }}
         steps={STEPS}
-        disableCloseOnEsc={true}
         locale={{
           'back': intl.formatMessage({id: 'guide.last'}),
           'next': intl.formatMessage({id: 'guide.next'}),
           'last': intl.formatMessage({id: 'guide.done'}),
         }}
-        floaterProps={{...floaterStyle}}
         styles={{...tourStyle}}
       />
       <SideBar>
@@ -277,15 +290,15 @@ const ProjectLayout = (props: IProps) => {
           </Breadcrumb.Section>
           <Breadcrumb.Divider icon={<Icon customclass={styles['breadcrumb-icon']} type='angle-right' />} />
           {
-            match.path === TARGETING_PATH && (
+            matchedPath === TARGETING_PATH && (
               <>
                 <Breadcrumb.Section link onClick={gotoToggle}>
-                  <TextLimit 
-                    text={projectInfo.name} 
-                    maxWidth={190} 
-                    popupProps={{ 
+                  <TextLimit
+                    text={projectInfo.name}
+                    maxWidth={190}
+                    popupProps={{
                       offset: [0, -12],
-                    }} 
+                    }}
                   />
                 </Breadcrumb.Section>
                 <Breadcrumb.Divider icon={<Icon customclass={styles['breadcrumb-icon']} type='angle-right' />} />
@@ -296,7 +309,7 @@ const ProjectLayout = (props: IProps) => {
             )
           }
           {
-            (match.path === CONNECT_SDK_PATH || match.path === TRACK_EVENT_PATH) && (
+            (matchedPath === CONNECT_SDK_PATH || matchedPath === TRACK_EVENT_PATH) && (
               <>
                 <Breadcrumb.Section link onClick={gotoToggle}>
                   <TextLimit text={projectInfo.name} maxWidth={190} popupProps={{ offset: [0, -12] }}  />
@@ -308,7 +321,7 @@ const ProjectLayout = (props: IProps) => {
                 <Breadcrumb.Divider icon={<Icon customclass={styles['breadcrumb-icon']} type='angle-right' />} />
                 <Breadcrumb.Section active>
                   {
-                    match.path === CONNECT_SDK_PATH 
+                    matchedPath === CONNECT_SDK_PATH
                       ? <FormattedMessage id='common.connect.sdk.text' />
                       : <FormattedMessage id='common.event.track.text' />
                   }
@@ -317,33 +330,33 @@ const ProjectLayout = (props: IProps) => {
             )
           }
           {
-            match.path === TOGGLE_PATH && (
+            matchedPath === TOGGLE_PATH && (
               <Breadcrumb.Section active>
                 <TextLimit text={projectInfo.name} maxWidth={190} popupProps={{ offset: [0, -12] }}  />
               </Breadcrumb.Section>
             )
           }
           {
-            match.path === EVENT_TRACKER_PATH && (
+            matchedPath === EVENT_TRACKER_PATH && (
               <Breadcrumb.Section active>
                 <FormattedMessage id='common.event.tracker.text' />
               </Breadcrumb.Section>
             )
           }
           {
-            match.path === SETTING_PATH && (
+            matchedPath === SETTING_PATH && (
               <Breadcrumb.Section active>
                 <FormattedMessage id='common.toggle.settings.text' />
               </Breadcrumb.Section>
             )
           }
           {
-            match.path === SEGMENT_PATH && (
+            matchedPath === SEGMENT_PATH && (
               <Breadcrumb.Section active><FormattedMessage id='common.segments.text' /></Breadcrumb.Section>
             )
           }
           {
-            match.path === SEGMENT_ADD_PATH && (
+            matchedPath === SEGMENT_ADD_PATH && (
               <>
                 <Breadcrumb.Section link onClick={gotoSegments}>
                   <FormattedMessage id='common.segments.text' />
@@ -356,7 +369,7 @@ const ProjectLayout = (props: IProps) => {
             )
           }
           {
-            match.path === SEGMENT_EDIT_PATH && (
+            matchedPath === SEGMENT_EDIT_PATH && (
               <>
                 <Breadcrumb.Section link onClick={gotoSegments}>
                   <FormattedMessage id='common.segments.text' />
@@ -371,12 +384,12 @@ const ProjectLayout = (props: IProps) => {
         </Breadcrumb>
         {
           (
-            match.path === SEGMENT_PATH || 
-            match.path === SEGMENT_ADD_PATH ||
-            match.path === SEGMENT_EDIT_PATH ||
-            match.path === SETTING_PATH
-          ) 
-            ? null 
+            matchedPath === SEGMENT_PATH ||
+            matchedPath === SEGMENT_ADD_PATH ||
+            matchedPath === SEGMENT_EDIT_PATH ||
+            matchedPath === SETTING_PATH
+          )
+            ? null
             : <div style={{background: EnvironmentColors[envIndex % 5]}} className={styles['environment-line']}></div>
         }
         { props.children }

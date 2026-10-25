@@ -31,7 +31,6 @@ jobs:
     strategy:
       matrix:
         rust:
-          - nightly
           - beta
           - stable
     steps:
@@ -61,12 +60,12 @@ jobs:
         run: ./ci/h2spec.sh
         if: matrix.rust == 'stable'
 
-  clippy_check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run Clippy
-        run: cargo clippy --all-targets --all-features
+  #clippy_check:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - uses: actions/checkout@v4
+  #    - name: Run Clippy
+  #      run: cargo clippy --all-targets --all-features
 
   msrv:
     name: Check MSRV
@@ -87,6 +86,14 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ steps.msrv.outputs.version }}
+
+      - name: Pin some dependencies for MSRV
+        run: |
+          cargo update --package tokio --precise 1.38.1
+          cargo update --package tokio-util --precise 0.7.11
+          cargo update --package hashbrown --precise 0.15.0
+          cargo update --package once_cell --precise 1.20.3
+          cargo update --package tracing-core --precise 0.1.33
 
       - run: cargo check -p h2
 

@@ -1,4 +1,4 @@
-//! Parallel iterator types for `IndexSet` with [rayon](https://docs.rs/rayon/1.0/rayon).
+//! Parallel iterator types for [`IndexSet`] with [rayon][::rayon].
 //!
 //! You will rarely need to interact with this module directly unless you need to name one of the
 //! iterator types.
@@ -7,16 +7,15 @@ use super::collect;
 use rayon::iter::plumbing::{Consumer, ProducerCallback, UnindexedConsumer};
 use rayon::prelude::*;
 
-use crate::vec::Vec;
 use alloc::boxed::Box;
+use alloc::vec::Vec;
 use core::cmp::Ordering;
 use core::fmt;
 use core::hash::{BuildHasher, Hash};
 use core::ops::RangeBounds;
 
-use crate::set::Slice;
-use crate::Entries;
 use crate::IndexSet;
+use crate::set::Slice;
 
 type Bucket<T> = crate::Bucket<T, ()>;
 
@@ -48,13 +47,10 @@ where
     }
 }
 
-/// A parallel owning iterator over the items of a `IndexSet`.
+/// A parallel owning iterator over the items of an [`IndexSet`].
 ///
-/// This `struct` is created by the [`into_par_iter`] method on [`IndexSet`]
-/// (provided by rayon's `IntoParallelIterator` trait). See its documentation for more.
-///
-/// [`IndexSet`]: ../struct.IndexSet.html
-/// [`into_par_iter`]: ../struct.IndexSet.html#method.into_par_iter
+/// This `struct` is created by the [`IndexSet::into_par_iter`] method
+/// (provided by rayon's [`IntoParallelIterator`] trait). See its documentation for more.
 pub struct IntoParIter<T> {
     entries: Vec<Bucket<T>>,
 }
@@ -104,13 +100,12 @@ where
     }
 }
 
-/// A parallel iterator over the items of a `IndexSet`.
+/// A parallel iterator over the items of an [`IndexSet`].
 ///
-/// This `struct` is created by the [`par_iter`] method on [`IndexSet`]
-/// (provided by rayon's `IntoParallelRefIterator` trait). See its documentation for more.
+/// This `struct` is created by the [`IndexSet::par_iter`] method
+/// (provided by rayon's [`IntoParallelRefIterator`] trait). See its documentation for more.
 ///
-/// [`IndexSet`]: ../struct.IndexSet.html
-/// [`par_iter`]: ../struct.IndexSet.html#method.par_iter
+/// [`IndexSet::par_iter`]: ../struct.IndexSet.html#method.par_iter
 pub struct ParIter<'a, T> {
     entries: &'a [Bucket<T>],
 }
@@ -152,13 +147,12 @@ where
     }
 }
 
-/// A parallel draining iterator over the items of a `IndexSet`.
+/// A parallel draining iterator over the items of an [`IndexSet`].
 ///
-/// This `struct` is created by the [`par_drain`] method on [`IndexSet`]
-/// (provided by rayon's `ParallelDrainRange` trait). See its documentation for more.
+/// This `struct` is created by the [`IndexSet::par_drain`] method
+/// (provided by rayon's [`ParallelDrainRange`] trait). See its documentation for more.
 ///
-/// [`par_drain`]: ../struct.IndexSet.html#method.par_drain
-/// [`IndexSet`]: ../struct.IndexSet.html
+/// [`IndexSet::par_drain`]: ../struct.IndexSet.html#method.par_drain
 pub struct ParDrain<'a, T: Send> {
     entries: rayon::vec::Drain<'a, Bucket<T>>,
 }
@@ -294,13 +288,10 @@ where
     }
 }
 
-/// A parallel iterator producing elements in the difference of `IndexSet`s.
+/// A parallel iterator producing elements in the difference of [`IndexSet`]s.
 ///
-/// This `struct` is created by the [`par_difference`] method on [`IndexSet`].
+/// This `struct` is created by the [`IndexSet::par_difference`] method.
 /// See its documentation for more.
-///
-/// [`IndexSet`]: ../struct.IndexSet.html
-/// [`par_difference`]: ../struct.IndexSet.html#method.par_difference
 pub struct ParDifference<'a, T, S1, S2> {
     set1: &'a IndexSet<T, S1>,
     set2: &'a IndexSet<T, S2>,
@@ -345,13 +336,10 @@ where
     }
 }
 
-/// A parallel iterator producing elements in the intersection of `IndexSet`s.
+/// A parallel iterator producing elements in the intersection of [`IndexSet`]s.
 ///
-/// This `struct` is created by the [`par_intersection`] method on [`IndexSet`].
+/// This `struct` is created by the [`IndexSet::par_intersection`] method.
 /// See its documentation for more.
-///
-/// [`IndexSet`]: ../struct.IndexSet.html
-/// [`par_intersection`]: ../struct.IndexSet.html#method.par_intersection
 pub struct ParIntersection<'a, T, S1, S2> {
     set1: &'a IndexSet<T, S1>,
     set2: &'a IndexSet<T, S2>,
@@ -396,13 +384,10 @@ where
     }
 }
 
-/// A parallel iterator producing elements in the symmetric difference of `IndexSet`s.
+/// A parallel iterator producing elements in the symmetric difference of [`IndexSet`]s.
 ///
-/// This `struct` is created by the [`par_symmetric_difference`] method on
-/// [`IndexSet`]. See its documentation for more.
-///
-/// [`IndexSet`]: ../struct.IndexSet.html
-/// [`par_symmetric_difference`]: ../struct.IndexSet.html#method.par_symmetric_difference
+/// This `struct` is created by the [`IndexSet::par_symmetric_difference`] method.
+/// See its documentation for more.
 pub struct ParSymmetricDifference<'a, T, S1, S2> {
     set1: &'a IndexSet<T, S1>,
     set2: &'a IndexSet<T, S2>,
@@ -447,13 +432,10 @@ where
     }
 }
 
-/// A parallel iterator producing elements in the union of `IndexSet`s.
+/// A parallel iterator producing elements in the union of [`IndexSet`]s.
 ///
-/// This `struct` is created by the [`par_union`] method on [`IndexSet`].
+/// This `struct` is created by the [`IndexSet::par_union`] method.
 /// See its documentation for more.
-///
-/// [`IndexSet`]: ../struct.IndexSet.html
-/// [`par_union`]: ../struct.IndexSet.html#method.par_union
 pub struct ParUnion<'a, T, S1, S2> {
     set1: &'a IndexSet<T, S1>,
     set2: &'a IndexSet<T, S2>,
@@ -501,10 +483,9 @@ where
 /// The following methods **require crate feature `"rayon"`**.
 impl<T, S> IndexSet<T, S>
 where
-    T: Hash + Eq + Send,
-    S: BuildHasher + Send,
+    T: Send,
 {
-    /// Sort the set’s values in parallel by their default ordering.
+    /// Sort the set's values in parallel by their default ordering.
     pub fn par_sort(&mut self)
     where
         T: Ord,
@@ -514,7 +495,7 @@ where
         });
     }
 
-    /// Sort the set’s values in place and in parallel, using the comparison function `cmp`.
+    /// Sort the set's values in place and in parallel, using the comparison function `cmp`.
     pub fn par_sort_by<F>(&mut self, cmp: F)
     where
         F: Fn(&T, &T) -> Ordering + Sync,
@@ -535,6 +516,17 @@ where
         IntoParIter { entries }
     }
 
+    /// Sort the set's values in place and in parallel, using a key extraction function.
+    pub fn par_sort_by_key<K, F>(&mut self, sort_key: F)
+    where
+        K: Ord,
+        F: Fn(&T) -> K + Sync,
+    {
+        self.with_entries(move |entries| {
+            entries.par_sort_by_key(move |a| sort_key(&a.key));
+        });
+    }
+
     /// Sort the set's values in parallel by their default ordering.
     pub fn par_sort_unstable(&mut self)
     where
@@ -545,7 +537,7 @@ where
         });
     }
 
-    /// Sort the set’s values in place and in parallel, using the comparison function `cmp`.
+    /// Sort the set's values in place and in parallel, using the comparison function `cmp`.
     pub fn par_sort_unstable_by<F>(&mut self, cmp: F)
     where
         F: Fn(&T, &T) -> Ordering + Sync,
@@ -566,7 +558,18 @@ where
         IntoParIter { entries }
     }
 
-    /// Sort the set’s values in place and in parallel, using a key extraction function.
+    /// Sort the set's values in place and in parallel, using a key extraction function.
+    pub fn par_sort_unstable_by_key<K, F>(&mut self, sort_key: F)
+    where
+        K: Ord,
+        F: Fn(&T) -> K + Sync,
+    {
+        self.with_entries(move |entries| {
+            entries.par_sort_unstable_by_key(move |a| sort_key(&a.key));
+        });
+    }
+
+    /// Sort the set's values in place and in parallel, using a key extraction function.
     pub fn par_sort_by_cached_key<K, F>(&mut self, sort_key: F)
     where
         K: Ord + Send,

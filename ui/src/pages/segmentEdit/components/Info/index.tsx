@@ -1,13 +1,13 @@
 import { SyntheticEvent, useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { Form, Button, PaginationProps, Loader, TextAreaProps } from 'semantic-ui-react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams, Prompt, useRouteMatch } from 'react-router-dom';
+import { unstable_usePrompt } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 import cloneDeep from 'lodash/cloneDeep';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { useFormErrorScrollIntoView } from 'hooks';
-import useResizeObserver from 'use-resize-observer';
+import { useResizeObserver } from 'use-resize-observer';
 import message from 'components/MessageBox';
 import EventTracker from 'components/EventTracker';
 import Modal from 'components/Modal';
@@ -24,12 +24,15 @@ import { ruleContainer, hooksFormContainer, segmentContainer } from '../../provi
 import { getSegmentDetail, confirmPublishSegment, getSegmentUsingToggles, getSegmentVersion } from 'services/segment';
 import { ISegmentInfo, IToggleList, IToggle, ISegmentVersion, ISegmentVersions } from 'interfaces/segment';
 import { SEGMENT_EDIT_PATH } from 'router/routes';
+import { useMatchedRoutePath } from 'utils/router';
 import { IRule, ICondition } from 'interfaces/targeting';
 import { IVersionParams } from 'interfaces/project';
 import { getBytes, MAX_SIZE } from 'utils/bytes';
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IParams {
+  [key: string]: string | undefined;
   projectKey: string;
   environmentKey: string;
   segmentKey: string;
@@ -79,9 +82,11 @@ const Info = () => {
   const [size, saveSize] = useState<number>(0);
   const [sizeConfirm, setSizeConfirm] = useState<boolean>(false);
   const { ref, height = 1 } = useResizeObserver<HTMLDivElement>();
-  const formRef = useRef();
+  const formRef = useRef<HTMLFormElement | null>(null);
   const intl = useIntl();
-  const match = useRouteMatch();
+  const leaveMessage = intl.formatMessage({ id: 'targeting.page.leave.text' });
+  unstable_usePrompt({ when: !publishDisabled, message: leaveMessage });
+  const matchedPath = useMatchedRoutePath([SEGMENT_EDIT_PATH]);
   const { rules, saveRules } = ruleContainer.useContainer();
   const { segmentInfo, saveSegmentInfo, saveOriginSegmentInfo } = segmentContainer.useContainer();
 
@@ -131,11 +136,11 @@ const Info = () => {
   }, [intl, projectKey, saveOriginSegmentInfo, saveRules, saveSegmentInfo, segmentKey]);
 
   useEffect(() => {
-    if (match.path === SEGMENT_EDIT_PATH) {
+    if (matchedPath === SEGMENT_EDIT_PATH) {
       saveIsLoading(true);
       getSegmentInfo();
     }
-  }, [match.path, getSegmentInfo]);
+  }, [matchedPath, getSegmentInfo]);
 
   useEffect(() => {
     const requestRules = cloneDeep(rules);
@@ -206,7 +211,7 @@ const Info = () => {
           } else {
             setValue(`rule_${rule.id}_condition_${condition.id}_objects`, condition.objects);
           }
-        } 
+        }
         else {
           setValue(`rule_${rule.id}_condition_${condition.id}_objects`, condition.objects);
         }
@@ -563,8 +568,6 @@ const Info = () => {
                 </div>
               </div>
             </Modal>
-
-            <Prompt when={!publishDisabled} message={intl.formatMessage({ id: 'targeting.page.leave.text' })} />
           </Form>
         )}
         {isHistoryOpen && (

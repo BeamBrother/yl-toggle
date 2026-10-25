@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
 import classNames from 'classnames';
 import Button from 'components/Button';
 import Icon from 'components/Icon';
@@ -10,8 +9,10 @@ import { CLICK, CUSTOM, PAGE_VIEW } from 'pages/analysis/constants';
 import { IEvent } from 'interfaces/analysis';
 import { DOC_FAQ_ACCESS_EN, DOC_FAQ_ACCESS_ZH, DOC_FAQ_TRACK_EN, DOC_FAQ_TRACK_ZH } from 'constants/docAddress';
 import { SdkLanguage, SDK_LOGOS } from 'pages/connectSDK/constants';
+import { useParams } from 'utils/useParams';
 
 interface IProps {
+  children?: import('react').ReactNode;
   isLoading: boolean;
   currentStep: number;
   isConnected?: boolean;
@@ -56,7 +57,7 @@ const TestConnection = (props: IProps) => {
         saveIsLoading(false);
         saveCount(1);
       }
-  
+
       return (() => {
         clearInterval(timer);
       });
@@ -113,12 +114,12 @@ const TestConnection = (props: IProps) => {
                     <div className={styles['connect-success']}>
                       <Icon type='success-circle' customclass={styles['success-circle']} />
                       {
-                        isTrackEvent 
+                        isTrackEvent
                           ? (
                             <>
                               { currentSDK && <img className={styles['connect-logo']} src={SDK_LOGOS[currentSDK]} alt='logo' /> }
                               { currentSDK }
-                              <FormattedMessage id='connect.fourth.event.success' /> 
+                              <FormattedMessage id='connect.fourth.event.success' />
                             </>
                           ) : (
                             <>
@@ -232,7 +233,7 @@ const TestConnection = (props: IProps) => {
                               </div>
                             )
                           }
-                          <a 
+                          <a
                             className={styles['error-link']}
                             target='_blank'
                             rel='noreferrer'
@@ -240,12 +241,12 @@ const TestConnection = (props: IProps) => {
                           >
                             <FormattedMessage id='connect.fourth.failed.link' />
                           </a>
-                         
+
                         </div>
                         <div className={styles['retry-connection']}>
-                          <Button 
-                            primary 
-                            className={styles['retry-connection-btn']} 
+                          <Button
+                            primary
+                            className={styles['retry-connection-btn']}
                             onClick={() => {
                               saveIsLoading(true);
                             }}

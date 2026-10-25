@@ -44,7 +44,7 @@ The following table lists the configurable parameters of the yl-toggle chart and
 | `backendAPI.resources.limits.cpu` | Backend API service CPU resources limits | `2` |
 | `backendAPI.service.labels` | Backend API service labels | `{}` |
 | `backendAPI.service.type` | Backend API service type | `"ClusterIP"` |
-| `backendAPI.database.url` | Backend API database connection URL | `"jdbc:mysql://localhost:3306/yl-toggle"` |
+| `backendAPI.database.url` | Backend API database connection URL | `"jdbc:mariadb://localhost:3306/yl-toggle"` |
 | `backendAPI.database.secret_name` | The name of Kubernetes secret that holds database credentials | `"yl-toggle-database-credentials"` |
 | `backendAPI.database.username_secret_key` | Kubernetes secret key for MySQL user name | `"yltoggle_user"` |
 | `backendAPI.database.password_secret_key` | Kubernetes secret key for MySQL password | `"yltoggle_password"` |
@@ -96,7 +96,7 @@ The following table lists the configurable parameters of the yl-toggle chart and
 | `analysisAPI.readinessProbe.initialDelaySeconds` |  | `30` |
 | `analysisAPI.service.labels` | Analysis API service labels | `{}` |
 | `analysisAPI.service.type` | Analysis API service type | `"ClusterIP"` |
-| `analysisAPI.database.url` | Analysis API database connection URL | `"jdbc:mysql://localhost:3306/yl-toggle-events"` |
+| `analysisAPI.database.url` | Analysis API database connection URL | `"jdbc:mariadb://localhost:3306/yl-toggle-events"` |
 | `analysisAPI.database.secret_name` | The name of Kubernetes secret that holds database credentials | `"yl-toggle-database-credentials"` |
 | `analysisAPI.database.username_secret_key` | Kubernetes secret key for MySQL user name | `"yltoggle_events_user"` |
 | `analysisAPI.database.password_secret_key` | Kubernetes secret key for MySQL password | `"yltoggle_events_password"` |

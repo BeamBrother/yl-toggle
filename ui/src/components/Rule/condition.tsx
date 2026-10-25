@@ -22,6 +22,7 @@ import { SEMVER_EN, SEMVER_ZH } from 'constants/docAddress';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   rule: IRule;
   disabled?: boolean;
   ruleIndex: number;
@@ -429,12 +430,12 @@ const RuleContent = (props: IProps) => {
                           }
 
                           if (
-                            condition.rightObjects && 
-                            condition.rightObjects.length > 0 && 
+                            condition.rightObjects &&
+                            condition.rightObjects.length > 0 &&
                             (parseInt((detail.value as string[])[0], 10) > parseInt(condition.rightObjects[0], 10))
                           ) {
                             setError(
-                              `rule_${rule.id}_condition_${condition.id}_objects`, { 
+                              `rule_${rule.id}_condition_${condition.id}_objects`, {
                                 message: intl.formatMessage({
                                   id: 'targeting.rule.number.before.tips'
                                 })
@@ -490,12 +491,12 @@ const RuleContent = (props: IProps) => {
                           }
 
                           if (
-                            condition.objects && 
+                            condition.objects &&
                             condition.objects.length > 0 &&
                             (parseInt((detail.value as string[])[0], 10) < parseInt(condition.objects[0], 10))
                           ) {
                             setError(
-                              `rule_${rule.id}_condition_${condition.id}_rightObjects`, { 
+                              `rule_${rule.id}_condition_${condition.id}_rightObjects`, {
                                 message: intl.formatMessage({
                                   id: 'targeting.rule.number.after.tips'
                                 })
@@ -503,7 +504,7 @@ const RuleContent = (props: IProps) => {
                             );
                             return;
                           }
-                          
+
                           setValue(detail.name, detail.value);
                           handleChangeRightValue(ruleIndex, conditionIndex, detail.value);
                           await trigger(`rule_${rule.id}_condition_${condition.id}_rightObjects`);
@@ -580,7 +581,7 @@ const RuleContent = (props: IProps) => {
                             try {
                               new RegExp(item);
                               return true;
-                            } catch (e) {
+                            } catch {
                               return false;
                             }
                           });

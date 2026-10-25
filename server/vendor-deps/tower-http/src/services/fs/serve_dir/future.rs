@@ -2,28 +2,29 @@ use super::{
     open_file::{FileOpened, FileRequestExtent, OpenFileOutput},
     DefaultServeDirFallback, ResponseBody,
 };
-use crate::{services::fs::AsyncReadBody, BoxError};
-use bytes::Bytes;
-use futures_util::{
-    future::{BoxFuture, FutureExt, TryFutureExt},
-    ready,
+use crate::{
+    body::UnsyncBoxBody, content_encoding::Encoding, services::fs::AsyncReadBody, BoxError,
 };
+use bytes::Bytes;
+use futures_core::future::BoxFuture;
+use futures_util::future::{FutureExt, TryFutureExt};
 use http::{
     header::{self, ALLOW},
     HeaderValue, Request, Response, StatusCode,
 };
-use http_body::{Body, Empty, Full};
+use http_body_util::{BodyExt, Empty, Full};
 use pin_project_lite::pin_project;
 use std::{
+    convert::Infallible,
     future::Future,
     io,
     pin::Pin,
-    task::{Context, Poll},
+    task::{ready, Context, Poll},
 };
 use tower_service::Service;
 
 pin_project! {
-    /// Response future of [`ServeDir`].
+    /// Response future of [`ServeDir::try_call()`][`super::ServeDir::try_call()`].
     pub struct ResponseFuture<ReqBody, F = DefaultServeDirFallback> {
         #[pin]
         pub(super) inner: ResponseFutureInner<ReqBody, F>,
@@ -67,7 +68,7 @@ pin_project! {
             fallback_and_request: Option<(F, Request<ReqBody>)>,
         },
         FallbackFuture {
-            future: BoxFuture<'static, io::Result<Response<ResponseBody>>>,
+            future: BoxFuture<'static, Result<Response<ResponseBody>, Infallible>>,
         },
         InvalidPath {
             fallback_and_request: Option<(F, Request<ReqBody>)>,
@@ -78,8 +79,7 @@ pin_project! {
 
 impl<F, ReqBody, ResBody> Future for ResponseFuture<ReqBody, F>
 where
-    F: Service<Request<ReqBody>, Response = Response<ResBody>> + Clone,
-    F::Error: Into<io::Error>,
+    F: Service<Request<ReqBody>, Response = Response<ResBody>, Error = Infallible> + Clone,
     F::Future: Send + 'static,
     ResBody: http_body::Body<Data = Bytes> + Send + 'static,
     ResBody::Error: Into<Box<dyn std::error::Error + Send + Sync>>,
@@ -105,7 +105,7 @@ where
                         break Poll::Ready(Ok(res));
                     }
 
-                    Ok(OpenFileOutput::FileNotFound) => {
+                    Ok(OpenFileOutput::FileNotFound | OpenFileOutput::InvalidFilename) => {
                         if let Some((mut fallback, request)) = fallback_and_request.take() {
                             call_fallback(&mut fallback, request)
                         } else {
@@ -123,9 +123,26 @@ where
                         break Poll::Ready(Ok(response_with_status(StatusCode::NOT_MODIFIED)));
                     }
 
+                    Ok(OpenFileOutput::InvalidRedirectUri) => {
+                        break Poll::Ready(Ok(response_with_status(
+                            StatusCode::INTERNAL_SERVER_ERROR,
+                        )));
+                    }
+
                     Err(err) => {
-                        if let io::ErrorKind::NotFound | io::ErrorKind::PermissionDenied =
-                            err.kind()
+                        #[cfg(unix)]
+                        // 20 = libc::ENOTDIR => "not a directory
+                        // when `io_error_more` landed, this can be changed
+                        // to checking for `io::ErrorKind::NotADirectory`.
+                        // https://github.com/rust-lang/rust/issues/86442
+                        let error_is_not_a_directory = err.raw_os_error() == Some(20);
+                        #[cfg(not(unix))]
+                        let error_is_not_a_directory = false;
+
+                        if matches!(
+                            err.kind(),
+                            io::ErrorKind::NotFound | io::ErrorKind::PermissionDenied
+                        ) || error_is_not_a_directory
                         {
                             if let Some((mut fallback, request)) = fallback_and_request.take() {
                                 call_fallback(&mut fallback, request)
@@ -139,7 +156,7 @@ where
                 },
 
                 ResponseFutureInnerProj::FallbackFuture { future } => {
-                    break Pin::new(future).poll(cx)
+                    break Pin::new(future).poll(cx).map_err(|err| match err {})
                 }
 
                 ResponseFutureInnerProj::InvalidPath {
@@ -181,23 +198,23 @@ pub(super) fn call_fallback<F, B, FResBody>(
     req: Request<B>,
 ) -> ResponseFutureInner<B, F>
 where
-    F: Service<Request<B>, Response = Response<FResBody>> + Clone,
-    F::Error: Into<io::Error>,
+    F: Service<Request<B>, Response = Response<FResBody>, Error = Infallible> + Clone,
     F::Future: Send + 'static,
     FResBody: http_body::Body<Data = Bytes> + Send + 'static,
     FResBody::Error: Into<BoxError>,
 {
     let future = fallback
         .call(req)
-        .err_into()
         .map_ok(|response| {
             response
                 .map(|body| {
-                    body.map_err(|err| match err.into().downcast::<io::Error>() {
-                        Ok(err) => *err,
-                        Err(err) => io::Error::new(io::ErrorKind::Other, err),
-                    })
-                    .boxed_unsync()
+                    UnsyncBoxBody::new(
+                        body.map_err(|err| match err.into().downcast::<io::Error>() {
+                            Ok(err) => *err,
+                            Err(err) => io::Error::new(io::ErrorKind::Other, err),
+                        })
+                        .boxed_unsync(),
+                    )
                 })
                 .map(ResponseBody::new)
         })
@@ -216,7 +233,10 @@ fn build_response(output: FileOpened) -> Response<ResponseBody> {
         .header(header::CONTENT_TYPE, output.mime_header_value)
         .header(header::ACCEPT_RANGES, "bytes");
 
-    if let Some(encoding) = output.maybe_encoding {
+    if let Some(encoding) = output
+        .maybe_encoding
+        .filter(|encoding| *encoding != Encoding::Identity)
+    {
         builder = builder.header(header::CONTENT_ENCODING, encoding.into_header_value());
     }
 
@@ -238,16 +258,22 @@ fn build_response(output: FileOpened) -> Response<ResponseBody> {
                 } else {
                     let body = if let Some(file) = maybe_file {
                         let range_size = range.end() - range.start() + 1;
-                        ResponseBody::new(
+                        ResponseBody::new(UnsyncBoxBody::new(
                             AsyncReadBody::with_capacity_limited(
                                 file,
                                 output.chunk_size,
                                 range_size,
                             )
                             .boxed_unsync(),
-                        )
+                        ))
                     } else {
                         empty_body()
+                    };
+
+                    let content_length = if size == 0 {
+                        0
+                    } else {
+                        range.end() - range.start() + 1
                     };
 
                     builder
@@ -255,7 +281,7 @@ fn build_response(output: FileOpened) -> Response<ResponseBody> {
                             header::CONTENT_RANGE,
                             format!("bytes {}-{}/{}", range.start(), range.end(), size),
                         )
-                        .header(header::CONTENT_LENGTH, range.end() - range.start() + 1)
+                        .header(header::CONTENT_LENGTH, content_length)
                         .status(StatusCode::PARTIAL_CONTENT)
                         .body(body)
                         .unwrap()
@@ -280,15 +306,15 @@ fn build_response(output: FileOpened) -> Response<ResponseBody> {
         // Not a range request
         None => {
             let body = if let Some(file) = maybe_file {
-                ResponseBody::new(
+                ResponseBody::new(UnsyncBoxBody::new(
                     AsyncReadBody::with_capacity(file, output.chunk_size).boxed_unsync(),
-                )
+                ))
             } else {
                 empty_body()
             };
 
             builder
-                .header(header::CONTENT_LENGTH, size.to_string())
+                .header(header::CONTENT_LENGTH, size)
                 .body(body)
                 .unwrap()
         }
@@ -297,10 +323,10 @@ fn build_response(output: FileOpened) -> Response<ResponseBody> {
 
 fn body_from_bytes(bytes: Bytes) -> ResponseBody {
     let body = Full::from(bytes).map_err(|err| match err {}).boxed_unsync();
-    ResponseBody::new(body)
+    ResponseBody::new(UnsyncBoxBody::new(body))
 }
 
 fn empty_body() -> ResponseBody {
     let body = Empty::new().map_err(|err| match err {}).boxed_unsync();
-    ResponseBody::new(body)
+    ResponseBody::new(UnsyncBoxBody::new(body))
 }

@@ -15,23 +15,20 @@
 // This implementation was taken from the public domain, neon2 version in
 // SUPERCOP by D. J. Bernstein and Peter Schwabe.
 
-#include <GFp/poly1305.h>
+#include <ring-core/base.h>
 
-#include "internal.h"
 #include "../internal.h"
 
 
-#if defined(OPENSSL_POLY1305_NEON)
-
 #pragma GCC diagnostic ignored "-Wsign-conversion"
-#pragma GCC diagnostic ignored "-Wcast-align"
 
+// Keep in sync with ffi_arm_neon.rs
 typedef struct {
   uint32_t v[12];  // for alignment; only using 10
 } fe1305x2;
 
-#define addmulmod GFp_poly1305_neon2_addmulmod
-#define blocks GFp_poly1305_neon2_blocks
+#define addmulmod openssl_poly1305_neon2_addmulmod
+#define blocks openssl_poly1305_neon2_blocks
 
 extern void addmulmod(fe1305x2 *r, const fe1305x2 *x, const fe1305x2 *y,
                       const fe1305x2 *c);
@@ -104,13 +101,13 @@ static void freeze(fe1305x2 *r) {
   r->v[8] = y4;
 }
 
-static void store32(uint8_t out[4], uint32_t v) { GFp_memcpy(out, &v, 4); }
+static void store32(uint8_t out[4], uint32_t v) { OPENSSL_memcpy(out, &v, 4); }
 
 // load32 exists to avoid breaking strict aliasing rules in
 // fe1305x2_frombytearray.
 static uint32_t load32(const uint8_t t[4]) {
   uint32_t tmp;
-  GFp_memcpy(&tmp, t, sizeof(tmp));
+  OPENSSL_memcpy(&tmp, t, sizeof(tmp));
   return tmp;
 }
 
@@ -177,22 +174,25 @@ static void fe1305x2_frombytearray(fe1305x2 *r, const uint8_t *x, size_t xlen) {
 
 static const alignas(16) fe1305x2 zero;
 
+// Keep in sync with ffi_arm_neon.rs
 struct poly1305_state_st {
-  uint8_t data[sizeof(fe1305x2[5]) + 128];
+  alignas(16) fe1305x2 r;
+  fe1305x2 h;
+  fe1305x2 c;
+  fe1305x2 precomp[2];
+  uint8_t data[128];
+
   uint8_t buf[32];
   size_t buf_used;
   uint8_t key[16];
 };
 
-OPENSSL_STATIC_ASSERT(sizeof(struct poly1305_state_st) <= sizeof(poly1305_state),
-  "poly1305_state isn't large enough to hold aligned poly1305_state_st");
+OPENSSL_STATIC_ASSERT(sizeof(fe1305x2) == 48, "fe1305x2 size is different than expected");
 
-void GFp_poly1305_init_neon(poly1305_state *state, const uint8_t key[32]) {
-  struct poly1305_state_st *st = (struct poly1305_state_st *)(state);
-  fe1305x2 *const r = (fe1305x2 *)(st->data + (15 & (-(int)st->data)));
-  fe1305x2 *const h = r + 1;
-  fe1305x2 *const c = h + 1;
-  fe1305x2 *const precomp = c + 1;
+void CRYPTO_poly1305_init_neon(struct poly1305_state_st *st, const uint8_t key[32]) {
+  fe1305x2 *const r = &st->r;
+  fe1305x2 *const h = &st->h;
+  fe1305x2 *const precomp = &st->precomp[0];
 
   r->v[1] = r->v[0] = 0x3ffffff & load32(key);
   r->v[3] = r->v[2] = 0x3ffff03 & (load32(key + 3) >> 2);
@@ -207,17 +207,15 @@ void GFp_poly1305_init_neon(poly1305_state *state, const uint8_t key[32]) {
   addmulmod(precomp, r, r, &zero);                  // precompute r^2
   addmulmod(precomp + 1, precomp, precomp, &zero);  // precompute r^4
 
-  GFp_memcpy(st->key, key + 16, 16);
+  OPENSSL_memcpy(st->key, key + 16, 16);
   st->buf_used = 0;
 }
 
-void GFp_poly1305_update_neon(poly1305_state *state, const uint8_t *in,
-                              size_t in_len) {
-  struct poly1305_state_st *st = (struct poly1305_state_st *)(state);
-  fe1305x2 *const r = (fe1305x2 *)(st->data + (15 & (-(int)st->data)));
-  fe1305x2 *const h = r + 1;
-  fe1305x2 *const c = h + 1;
-  fe1305x2 *const precomp = c + 1;
+void CRYPTO_poly1305_update_neon(struct poly1305_state_st *st, const uint8_t *in,
+                                 size_t in_len) {
+  fe1305x2 *const h = &st->h;
+  fe1305x2 *const c = &st->c;
+  fe1305x2 *const precomp = &st->precomp[0];
 
   if (st->buf_used) {
     size_t todo = 32 - st->buf_used;
@@ -259,12 +257,11 @@ void GFp_poly1305_update_neon(poly1305_state *state, const uint8_t *in,
   }
 }
 
-void GFp_poly1305_finish_neon(poly1305_state *state, uint8_t mac[16]) {
-  struct poly1305_state_st *st = (struct poly1305_state_st *)(state);
-  fe1305x2 *const r = (fe1305x2 *)(st->data + (15 & (-(int)st->data)));
-  fe1305x2 *const h = r + 1;
-  fe1305x2 *const c = h + 1;
-  fe1305x2 *const precomp = c + 1;
+void CRYPTO_poly1305_finish_neon(struct poly1305_state_st *st, uint8_t mac[16]) {
+  fe1305x2 *const r = &st->r;
+  fe1305x2 *const h = &st->h;
+  fe1305x2 *const c = &st->c;
+  fe1305x2 *const precomp = &st->precomp[0];
 
   addmulmod(h, h, precomp, &zero);
 
@@ -303,5 +300,3 @@ void GFp_poly1305_finish_neon(poly1305_state *state, uint8_t mac[16]) {
   h->v[8] += c->v[8];
   fe1305x2_tobytearray(mac, h);
 }
-
-#endif  // OPENSSL_POLY1305_NEON

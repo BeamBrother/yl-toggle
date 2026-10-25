@@ -15,7 +15,7 @@ import org.hibernate.internal.SessionImpl
 import org.springframework.context.ApplicationContext
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 class AccessTokenAuthenticationProviderSpec extends Specification {
 
@@ -79,4 +79,3 @@ class AccessTokenAuthenticationProviderSpec extends Specification {
 
 
 }
-

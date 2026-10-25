@@ -1,10 +1,17 @@
 #! /usr/bin/env perl
 # Copyright 2011-2016 The OpenSSL Project Authors. All Rights Reserved.
 #
-# Licensed under the OpenSSL license (the "License").  You may not use
-# this file except in compliance with the License.  You can obtain a copy
-# in the file LICENSE in the source distribution or at
-# https://www.openssl.org/source/license.html
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 
 ######################################################################
@@ -636,11 +643,12 @@ _vpaes_schedule_mangle:
 #
 # Interface to OpenSSL
 #
-.globl	GFp_${PREFIX}_set_encrypt_key
-.type	GFp_${PREFIX}_set_encrypt_key,\@function,3
+.globl	${PREFIX}_set_encrypt_key
+.type	${PREFIX}_set_encrypt_key,\@function,3
 .align	16
-GFp_${PREFIX}_set_encrypt_key:
+${PREFIX}_set_encrypt_key:
 .cfi_startproc
+	_CET_ENDBR
 #ifdef BORINGSSL_DISPATCH_TEST
 .extern        BORINGSSL_function_hit
        movb \$1, BORINGSSL_function_hit+5(%rip)
@@ -689,64 +697,20 @@ $code.=<<___;
 	xor	%eax,%eax
 	ret
 .cfi_endproc
-.size	GFp_${PREFIX}_set_encrypt_key,.-GFp_${PREFIX}_set_encrypt_key
-
-.globl	GFp_${PREFIX}_encrypt
-.type	GFp_${PREFIX}_encrypt,\@function,3
-.align	16
-GFp_${PREFIX}_encrypt:
-.cfi_startproc
-___
-$code.=<<___ if ($win64);
-	lea	-0xb8(%rsp),%rsp
-	movaps	%xmm6,0x10(%rsp)
-	movaps	%xmm7,0x20(%rsp)
-	movaps	%xmm8,0x30(%rsp)
-	movaps	%xmm9,0x40(%rsp)
-	movaps	%xmm10,0x50(%rsp)
-	movaps	%xmm11,0x60(%rsp)
-	movaps	%xmm12,0x70(%rsp)
-	movaps	%xmm13,0x80(%rsp)
-	movaps	%xmm14,0x90(%rsp)
-	movaps	%xmm15,0xa0(%rsp)
-.Lenc_body:
-___
-$code.=<<___;
-	movdqu	(%rdi),%xmm0
-	call	_vpaes_preheat
-	call	_vpaes_encrypt_core
-	movdqu	%xmm0,(%rsi)
-___
-$code.=<<___ if ($win64);
-	movaps	0x10(%rsp),%xmm6
-	movaps	0x20(%rsp),%xmm7
-	movaps	0x30(%rsp),%xmm8
-	movaps	0x40(%rsp),%xmm9
-	movaps	0x50(%rsp),%xmm10
-	movaps	0x60(%rsp),%xmm11
-	movaps	0x70(%rsp),%xmm12
-	movaps	0x80(%rsp),%xmm13
-	movaps	0x90(%rsp),%xmm14
-	movaps	0xa0(%rsp),%xmm15
-	lea	0xb8(%rsp),%rsp
-.Lenc_epilogue:
-___
-$code.=<<___;
-	ret
-.cfi_endproc
-.size	GFp_${PREFIX}_encrypt,.-GFp_${PREFIX}_encrypt
+.size	${PREFIX}_set_encrypt_key,.-${PREFIX}_set_encrypt_key
 ___
 {
 my ($inp,$out,$blocks,$key,$ivp)=("%rdi","%rsi","%rdx","%rcx","%r8");
-# void GFp_vpaes_ctr32_encrypt_blocks(const uint8_t *inp, uint8_t *out,
+# void vpaes_ctr32_encrypt_blocks(const uint8_t *inp, uint8_t *out,
 #                                 size_t blocks, const AES_KEY *key,
 #                                 const uint8_t ivp[16]);
 $code.=<<___;
-.globl	GFp_${PREFIX}_ctr32_encrypt_blocks
-.type	GFp_${PREFIX}_ctr32_encrypt_blocks,\@function,5
+.globl	${PREFIX}_ctr32_encrypt_blocks
+.type	${PREFIX}_ctr32_encrypt_blocks,\@function,5
 .align	16
-GFp_${PREFIX}_ctr32_encrypt_blocks:
+${PREFIX}_ctr32_encrypt_blocks:
 .cfi_startproc
+	_CET_ENDBR
 	# _vpaes_encrypt_core and _vpaes_encrypt_core_2x expect the key in %rdx.
 	xchg	$key, $blocks
 ___
@@ -838,7 +802,7 @@ $code.=<<___;
 .Lctr32_abort:
 	ret
 .cfi_endproc
-.size	GFp_${PREFIX}_ctr32_encrypt_blocks,.-GFp_${PREFIX}_ctr32_encrypt_blocks
+.size	${PREFIX}_ctr32_encrypt_blocks,.-${PREFIX}_ctr32_encrypt_blocks
 ___
 }
 $code.=<<___;
@@ -869,6 +833,7 @@ _vpaes_preheat:
 ##                                                    ##
 ########################################################
 .type	_vpaes_consts,\@object
+.section .rodata
 .align	64
 _vpaes_consts:
 .Lk_inv:	# inv, inva
@@ -937,6 +902,7 @@ _vpaes_consts:
 .asciz	"Vector Permutation AES for x86_64/SSSE3, Mike Hamburg (Stanford University)"
 .align	64
 .size	_vpaes_consts,.-_vpaes_consts
+.text
 ___
 
 if ($win64) {
@@ -1029,28 +995,21 @@ se_handler:
 
 .section	.pdata
 .align	4
-	.rva	.LSEH_begin_GFp_${PREFIX}_set_encrypt_key
-	.rva	.LSEH_end_GFp_${PREFIX}_set_encrypt_key
-	.rva	.LSEH_info_GFp_${PREFIX}_set_encrypt_key
+	.rva	.LSEH_begin_${PREFIX}_set_encrypt_key
+	.rva	.LSEH_end_${PREFIX}_set_encrypt_key
+	.rva	.LSEH_info_${PREFIX}_set_encrypt_key
 
-	.rva	.LSEH_begin_GFp_${PREFIX}_encrypt
-	.rva	.LSEH_end_GFp_${PREFIX}_encrypt
-	.rva	.LSEH_info_GFp_${PREFIX}_encrypt
-	.rva	.LSEH_begin_GFp_${PREFIX}_ctr32_encrypt_blocks
-	.rva	.LSEH_end_GFp_${PREFIX}_ctr32_encrypt_blocks
-	.rva	.LSEH_info_GFp_${PREFIX}_ctr32_encrypt_blocks
+	.rva	.LSEH_begin_${PREFIX}_ctr32_encrypt_blocks
+	.rva	.LSEH_end_${PREFIX}_ctr32_encrypt_blocks
+	.rva	.LSEH_info_${PREFIX}_ctr32_encrypt_blocks
 
 .section	.xdata
 .align	8
-.LSEH_info_GFp_${PREFIX}_set_encrypt_key:
+.LSEH_info_${PREFIX}_set_encrypt_key:
 	.byte	9,0,0,0
 	.rva	se_handler
 	.rva	.Lenc_key_body,.Lenc_key_epilogue	# HandlerData[]
-.LSEH_info_GFp_${PREFIX}_encrypt:
-	.byte	9,0,0,0
-	.rva	se_handler
-	.rva	.Lenc_body,.Lenc_epilogue		# HandlerData[]
-.LSEH_info_GFp_${PREFIX}_ctr32_encrypt_blocks:
+.LSEH_info_${PREFIX}_ctr32_encrypt_blocks:
 	.byte	9,0,0,0
 	.rva	se_handler
 	.rva	.Lctr32_body,.Lctr32_epilogue		# HandlerData[]
@@ -1061,4 +1020,4 @@ $code =~ s/\`([^\`]*)\`/eval($1)/gem;
 
 print $code;
 
-close STDOUT or die "error closing STDOUT";
+close STDOUT or die "error closing STDOUT: $!";

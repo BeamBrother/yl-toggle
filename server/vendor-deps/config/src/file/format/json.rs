@@ -1,20 +1,16 @@
 use std::error::Error;
 
+use crate::format;
 use crate::map::Map;
 use crate::value::{Value, ValueKind};
 
-pub fn parse(
+pub(crate) fn parse(
     uri: Option<&String>,
     text: &str,
 ) -> Result<Map<String, Value>, Box<dyn Error + Send + Sync>> {
     // Parse a JSON object value from the text
-    // TODO: Have a proper error fire if the root of a file is ever not a Table
     let value = from_json_value(uri, &serde_json::from_str(text)?);
-    match value.kind {
-        ValueKind::Table(map) => Ok(map),
-
-        _ => Ok(Map::new()),
-    }
+    format::extract_root_table(uri, value)
 }
 
 fn from_json_value(uri: Option<&String>, value: &serde_json::Value) -> Value {
@@ -24,6 +20,8 @@ fn from_json_value(uri: Option<&String>, value: &serde_json::Value) -> Value {
         serde_json::Value::Number(ref value) => {
             if let Some(value) = value.as_i64() {
                 Value::new(uri, ValueKind::I64(value))
+            } else if let Some(value) = value.as_u64() {
+                Value::new(uri, ValueKind::U64(value))
             } else if let Some(value) = value.as_f64() {
                 Value::new(uri, ValueKind::Float(value))
             } else {

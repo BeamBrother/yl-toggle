@@ -3,17 +3,17 @@
 [![crates.io](https://img.shields.io/crates/v/reqwest.svg)](https://crates.io/crates/reqwest)
 [![Documentation](https://docs.rs/reqwest/badge.svg)](https://docs.rs/reqwest)
 [![MIT/Apache-2 licensed](https://img.shields.io/crates/l/reqwest.svg)](./LICENSE-APACHE)
-[![CI](https://github.com/seanmonstar/reqwest/workflows/CI/badge.svg)](https://github.com/seanmonstar/reqwest/actions?query=workflow%3ACI)
+[![CI](https://github.com/seanmonstar/reqwest/actions/workflows/ci.yml/badge.svg)](https://github.com/seanmonstar/reqwest/actions/workflows/ci.yml)
 
 An ergonomic, batteries-included HTTP Client for Rust.
 
+- Async and blocking `Client`s
 - Plain bodies, JSON, urlencoded, multipart
 - Customizable redirect policy
 - HTTP Proxies
-- HTTPS via system-native TLS (or optionally, rustls)
+- HTTPS via rustls (or optionally, system-native TLS)
 - Cookie Store
 - WASM
-- [Changelog](CHANGELOG.md)
 
 
 ## Example
@@ -23,7 +23,7 @@ optional features, so your `Cargo.toml` could look like this:
 
 ```toml
 [dependencies]
-reqwest = { version = "0.11", features = ["json"] }
+reqwest = { version = "0.13", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
 ```
 
@@ -38,45 +38,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?
         .json::<HashMap<String, String>>()
         .await?;
-    println!("{:#?}", resp);
+    println!("{resp:#?}");
     Ok(())
 }
 ```
 
-## Blocking Client
+## Commercial Support
 
-There is an optional "blocking" client API that can be enabled:
-
-```toml
-[dependencies]
-reqwest = { version = "0.11", features = ["blocking", "json"] }
-```
-
-```rust,no_run
-use std::collections::HashMap;
-
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let resp = reqwest::blocking::get("https://httpbin.org/ip")?
-        .json::<HashMap<String, String>>()?;
-    println!("{:#?}", resp);
-    Ok(())
-}
-```
+For private advice, support, reviews, access to the maintainer, and the like, reach out for [commercial support][sponsor].
 
 ## Requirements
 
-On Linux:
-
-- OpenSSL 1.0.1, 1.0.2, 1.1.0, or 1.1.1 with headers (see https://github.com/sfackler/rust-openssl)
-
-On Windows and macOS:
-
-- Nothing.
-
-Reqwest uses [rust-native-tls](https://github.com/sfackler/rust-native-tls),
-which will use the operating system TLS framework if available, meaning Windows
-and macOS. On Linux, it will use OpenSSL 1.1.
-
+By default, Reqwest uses [rustls](https://github.com/rustls/rustls), but when the `native-tls` feature is enabled
+it will use the operating system TLS framework if available, meaning Windows and macOS.
+On Linux, it will use the available OpenSSL (see https://docs.rs/openssl for supported versions and more details)
+or fail to build if not found. Alternatively you can enable the `native-tls-vendored` feature to compile a copy of OpenSSL.
 
 ## License
 
@@ -90,3 +66,9 @@ Licensed under either of
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall
 be dual licensed as above, without any additional terms or conditions.
+
+## Sponsors
+
+Support this project by becoming a [sponsor][].
+
+[sponsor]: https://seanmonstar.com/sponsor

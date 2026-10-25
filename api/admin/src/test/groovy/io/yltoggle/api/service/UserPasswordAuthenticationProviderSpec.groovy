@@ -22,7 +22,7 @@ import org.springframework.ldap.core.LdapTemplate
 import org.springframework.ldap.core.support.LdapContextSource
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 class UserPasswordAuthenticationProviderSpec extends Specification {
 
@@ -121,4 +121,3 @@ class UserPasswordAuthenticationProviderSpec extends Specification {
     }
 
 }
-

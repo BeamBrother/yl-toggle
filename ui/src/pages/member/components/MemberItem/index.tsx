@@ -12,6 +12,7 @@ import { HeaderContainer } from 'layout/hooks';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   member?: IMember;
   setDrawerVisible(visible: boolean): void;
   setIsAdd(isAdd: boolean): void;
@@ -99,7 +100,7 @@ const MemberItem = (props: IProps) => {
         }
       </Table.Cell>
 
-      <Modal 
+      <Modal
         open={open}
         width={400}
         handleCancel={(e: SyntheticEvent) => handleCancel(e)}

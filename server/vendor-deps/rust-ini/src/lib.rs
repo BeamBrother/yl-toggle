@@ -42,63 +42,85 @@
 //! }
 //! ```
 
-use std::char;
-use std::error;
-use std::fmt::{self, Display};
-use std::fs::{File, OpenOptions};
-use std::io::{self, Read, Write};
-use std::io::{Seek, SeekFrom};
-use std::ops::{Index, IndexMut};
-use std::path::Path;
-use std::str::Chars;
+use std::{
+    borrow::Cow,
+    char,
+    error,
+    fmt::{self, Display},
+    fs::{File, OpenOptions},
+    io::{self, Read, Seek, SeekFrom, Write},
+    ops::{Index, IndexMut},
+    path::Path,
+    str::Chars,
+};
 
 use cfg_if::cfg_if;
-use ordered_multimap::list_ordered_multimap::{Entry, Iter, IterMut, OccupiedEntry, VacantEntry};
-use ordered_multimap::ListOrderedMultimap;
+use ordered_multimap::{
+    list_ordered_multimap::{Entry, IntoIter, Iter, IterMut, OccupiedEntry, VacantEntry},
+    ListOrderedMultimap,
+};
 #[cfg(feature = "case-insensitive")]
 use unicase::UniCase;
 
 /// Policies for escaping logic
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum EscapePolicy {
-    /// escape absolutely nothing (dangerous)
+    /// Escape absolutely nothing (dangerous)
     Nothing,
-    /// only escape the most necessary things
+    /// Only escape the most necessary things.
+    /// This means backslashes, control characters (codepoints U+0000 to U+001F), and delete (U+007F).
+    /// Quotes (single or double) are not escaped.
     Basics,
-    /// escape basics and non-ascii characters
+    /// Escape basics and non-ASCII characters in the [Basic Multilingual Plane](https://www.compart.com/en/unicode/plane)
+    /// (i.e. between U+007F - U+FFFF)
+    /// Codepoints above U+FFFF, e.g. '🐱' U+1F431 "CAT FACE" will *not* be escaped!
     BasicsUnicode,
+    /// Escape basics and all non-ASCII characters, including codepoints above U+FFFF.
+    /// This will escape emoji - if you want them to remain raw, use BasicsUnicode instead.
+    BasicsUnicodeExtended,
     /// Escape reserved symbols.
+    /// This includes everything in EscapePolicy::Basics, plus the comment characters ';' and '#' and the key/value-separating characters '=' and ':'.
     Reserved,
-    /// Escape reserved symbols and non-ascii characters
+    /// Escape reserved symbols and non-ASCII characters in the BMP.
+    /// Codepoints above U+FFFF, e.g. '🐱' U+1F431 "CAT FACE" will *not* be escaped!
     ReservedUnicode,
+    /// Escape reserved symbols and all non-ASCII characters, including codepoints above U+FFFF.
+    ReservedUnicodeExtended,
     /// Escape everything that some INI implementations assume
     Everything,
 }
 
 impl EscapePolicy {
     fn escape_basics(self) -> bool {
-        match self {
-            EscapePolicy::Nothing => false,
-            _ => true,
-        }
+        self != EscapePolicy::Nothing
     }
 
     fn escape_reserved(self) -> bool {
-        match self {
-            EscapePolicy::Reserved => true,
-            EscapePolicy::ReservedUnicode => true,
-            EscapePolicy::Everything => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            EscapePolicy::Reserved
+                | EscapePolicy::ReservedUnicode
+                | EscapePolicy::ReservedUnicodeExtended
+                | EscapePolicy::Everything
+        )
     }
 
     fn escape_unicode(self) -> bool {
-        match self {
-            EscapePolicy::BasicsUnicode => true,
-            EscapePolicy::ReservedUnicode => true,
-            EscapePolicy::Everything => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            EscapePolicy::BasicsUnicode
+                | EscapePolicy::BasicsUnicodeExtended
+                | EscapePolicy::ReservedUnicode
+                | EscapePolicy::ReservedUnicodeExtended
+                | EscapePolicy::Everything
+        )
+    }
+
+    fn escape_unicode_extended(self) -> bool {
+        matches!(
+            self,
+            EscapePolicy::BasicsUnicodeExtended | EscapePolicy::ReservedUnicodeExtended | EscapePolicy::Everything
+        )
     }
 
     /// Given a character this returns true if it should be escaped as
@@ -110,6 +132,7 @@ impl EscapePolicy {
             '\\' | '\x00'..='\x1f' | '\x7f' => self.escape_basics(),
             ';' | '#' | '=' | ':' => self.escape_reserved(),
             '\u{0080}'..='\u{FFFF}' => self.escape_unicode(),
+            '\u{10000}'..='\u{10FFFF}' => self.escape_unicode_extended(),
             _ => false,
         }
     }
@@ -155,6 +178,9 @@ fn escape_str(s: &str, policy: EscapePolicy) -> String {
             '\t' => escaped.push_str("\\t"),
             '\r' => escaped.push_str("\\r"),
             '\u{0080}'..='\u{FFFF}' => escaped.push_str(&format!("\\x{:04x}", c as isize)[..]),
+            // Longer escapes.
+            '\u{10000}'..='\u{FFFFF}' => escaped.push_str(&format!("\\x{:05x}", c as isize)[..]),
+            '\u{100000}'..='\u{10FFFF}' => escaped.push_str(&format!("\\x{:06x}", c as isize)[..]),
             _ => {
                 escaped.push('\\');
                 escaped.push(c);
@@ -188,12 +214,36 @@ pub struct ParseOption {
     ///
     /// If `enabled_escape` is true, then the value of `Key` will become `C:Windows` (`\W` equals to `W`).
     pub enabled_escape: bool,
+
+    /// Enables values that span lines
+    /// ```ini
+    /// [Section]
+    /// foo=
+    ///   b
+    ///   c
+    /// ```
+    pub enabled_indented_mutiline_value: bool,
+
+    /// Preserve key leading whitespace
+    ///
+    /// ```ini
+    /// [services my-services]
+    /// dynamodb=
+    ///   endpoint_url=http://localhost:8000
+    /// ```
+    ///
+    /// The leading whitespace in key `  endpoint_url` will be preserved if `enabled_preserve_key_leading_whitespace` is set to `true`.
+    pub enabled_preserve_key_leading_whitespace: bool,
 }
 
 impl Default for ParseOption {
     fn default() -> ParseOption {
-        ParseOption { enabled_quote: true,
-                      enabled_escape: true }
+        ParseOption {
+            enabled_quote: true,
+            enabled_escape: true,
+            enabled_indented_mutiline_value: false,
+            enabled_preserve_key_leading_whitespace: false,
+        }
     }
 }
 
@@ -218,6 +268,8 @@ static DEFAULT_LINE_SEPARATOR: &str = "\n";
 
 #[cfg(windows)]
 static DEFAULT_LINE_SEPARATOR: &str = "\r\n";
+
+static DEFAULT_KV_SEPARATOR: &str = "=";
 
 impl fmt::Display for LineSeparator {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
@@ -244,12 +296,18 @@ pub struct WriteOption {
 
     /// Newline style
     pub line_separator: LineSeparator,
+
+    /// Key value separator
+    pub kv_separator: &'static str,
 }
 
 impl Default for WriteOption {
     fn default() -> WriteOption {
-        WriteOption { escape_policy: EscapePolicy::Basics,
-                      line_separator: LineSeparator::SystemDefault }
+        WriteOption {
+            escape_policy: EscapePolicy::Basics,
+            line_separator: LineSeparator::SystemDefault,
+            kv_separator: DEFAULT_KV_SEPARATOR,
+        }
     }
 }
 
@@ -316,9 +374,11 @@ impl<'a> SectionSetter<'a> {
     }
 
     /// Set (replace) key-value pair in this section (all with the same name)
-    pub fn set<K, V>(&'a mut self, key: K, value: V) -> &'a mut SectionSetter<'a>
-        where K: Into<String>,
-              V: Into<String>
+    pub fn set<'b, K, V>(&'b mut self, key: K, value: V) -> &'b mut SectionSetter<'a>
+    where
+        K: Into<String>,
+        V: Into<String>,
+        'a: 'b,
     {
         self.ini
             .entry(self.section_name.clone())
@@ -328,8 +388,27 @@ impl<'a> SectionSetter<'a> {
         self
     }
 
+    /// Add (append) key-value pair in this section
+    pub fn add<'b, K, V>(&'b mut self, key: K, value: V) -> &'b mut SectionSetter<'a>
+    where
+        K: Into<String>,
+        V: Into<String>,
+        'a: 'b,
+    {
+        self.ini
+            .entry(self.section_name.clone())
+            .or_insert_with(Default::default)
+            .append(key, value);
+
+        self
+    }
+
     /// Delete the first entry in this section with `key`
-    pub fn delete<K: AsRef<str>>(&'a mut self, key: &K) -> &'a mut SectionSetter<'a> {
+    pub fn delete<'b, K>(&'b mut self, key: &K) -> &'b mut SectionSetter<'a>
+    where
+        K: AsRef<str>,
+        'a: 'b,
+    {
         for prop in self.ini.section_all_mut(self.section_name.as_ref()) {
             prop.remove(key);
         }
@@ -338,7 +417,7 @@ impl<'a> SectionSetter<'a> {
     }
 
     /// Get the entry in this section with `key`
-    pub fn get<K: AsRef<str>>(&'a mut self, key: K) -> Option<&'a str> {
+    pub fn get<K: AsRef<str>>(&'a self, key: K) -> Option<&'a str> {
         self.ini
             .section(self.section_name.as_ref())
             .and_then(|prop| prop.get(key))
@@ -369,8 +448,17 @@ impl Properties {
     }
 
     /// Get an iterator of the properties
-    pub fn iter(&self) -> impl DoubleEndedIterator<Item = (&str, &str)> {
-        self.data.iter().map(|(k, v)| (k.as_ref(), v.as_str()))
+    pub fn iter(&self) -> PropertyIter<'_> {
+        PropertyIter {
+            inner: self.data.iter(),
+        }
+    }
+
+    /// Get a mutable iterator of the properties
+    pub fn iter_mut(&mut self) -> PropertyIterMut<'_> {
+        PropertyIterMut {
+            inner: self.data.iter_mut(),
+        }
     }
 
     /// Return true if property exist
@@ -380,16 +468,18 @@ impl Properties {
 
     /// Insert (key, value) pair by replace
     pub fn insert<K, V>(&mut self, k: K, v: V)
-        where K: Into<String>,
-              V: Into<String>
+    where
+        K: Into<String>,
+        V: Into<String>,
     {
         self.data.insert(property_insert_key!(k.into()), v.into());
     }
 
     /// Append key with (key, value) pair
     pub fn append<K, V>(&mut self, k: K, v: V)
-        where K: Into<String>,
-              V: Into<String>
+    where
+        K: Into<String>,
+        V: Into<String>,
     {
         self.data.append(property_insert_key!(k.into()), v.into());
     }
@@ -410,7 +500,7 @@ impl Properties {
     }
 
     /// Remove the property with all values with the same key
-    pub fn remove_all<'a, S: AsRef<str>>(&'a mut self, s: S) -> impl DoubleEndedIterator<Item = String> + 'a {
+    pub fn remove_all<S: AsRef<str>>(&mut self, s: S) -> impl DoubleEndedIterator<Item = String> + '_ {
         self.data.remove_all(property_get_key!(s.as_ref()))
     }
 
@@ -427,6 +517,104 @@ impl<S: AsRef<str>> Index<S> for Properties {
         match self.get(s) {
             Some(p) => p,
             None => panic!("Key `{}` does not exist", s),
+        }
+    }
+}
+
+pub struct PropertyIter<'a> {
+    inner: Iter<'a, PropertyKey, String>,
+}
+
+impl<'a> Iterator for PropertyIter<'a> {
+    type Item = (&'a str, &'a str);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.inner.next().map(|(k, v)| (k.as_ref(), v.as_ref()))
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.inner.size_hint()
+    }
+}
+
+impl DoubleEndedIterator for PropertyIter<'_> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.inner.next_back().map(|(k, v)| (k.as_ref(), v.as_ref()))
+    }
+}
+
+/// Iterator for traversing sections
+pub struct PropertyIterMut<'a> {
+    inner: IterMut<'a, PropertyKey, String>,
+}
+
+impl<'a> Iterator for PropertyIterMut<'a> {
+    type Item = (&'a str, &'a mut String);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.inner.next().map(|(k, v)| (k.as_ref(), v))
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.inner.size_hint()
+    }
+}
+
+impl DoubleEndedIterator for PropertyIterMut<'_> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.inner.next_back().map(|(k, v)| (k.as_ref(), v))
+    }
+}
+
+pub struct PropertiesIntoIter {
+    inner: IntoIter<PropertyKey, String>,
+}
+
+impl Iterator for PropertiesIntoIter {
+    type Item = (String, String);
+
+    #[cfg_attr(not(feature = "case-insensitive"), allow(clippy::useless_conversion))]
+    fn next(&mut self) -> Option<Self::Item> {
+        self.inner.next().map(|(k, v)| (k.into(), v))
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.inner.size_hint()
+    }
+}
+
+impl DoubleEndedIterator for PropertiesIntoIter {
+    #[cfg_attr(not(feature = "case-insensitive"), allow(clippy::useless_conversion))]
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.inner.next_back().map(|(k, v)| (k.into(), v))
+    }
+}
+
+impl<'a> IntoIterator for &'a Properties {
+    type IntoIter = PropertyIter<'a>;
+    type Item = (&'a str, &'a str);
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a mut Properties {
+    type IntoIter = PropertyIterMut<'a>;
+    type Item = (&'a str, &'a mut String);
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter_mut()
+    }
+}
+
+impl IntoIterator for Properties {
+    type IntoIter = PropertiesIntoIter;
+    type Item = (String, String);
+
+    fn into_iter(self) -> Self::IntoIter {
+        PropertiesIntoIter {
+            inner: self.data.into_iter(),
         }
     }
 }
@@ -501,7 +689,7 @@ impl<'a> From<Entry<'a, SectionKey, Properties>> for SectionEntry<'a> {
 }
 
 /// Ini struct
-#[derive(Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct Ini {
     sections: ListOrderedMultimap<SectionKey, Properties>,
 }
@@ -513,18 +701,19 @@ impl Ini {
     }
 
     /// Set with a specified section, `None` is for the general section
-    pub fn with_section<S>(&mut self, section: Option<S>) -> SectionSetter
-        where S: Into<String>
+    pub fn with_section<S>(&mut self, section: Option<S>) -> SectionSetter<'_>
+    where
+        S: Into<String>,
     {
         SectionSetter::new(self, section.map(Into::into))
     }
 
     /// Set with general section, a simple wrapper of `with_section(None::<String>)`
-    pub fn with_general_section(&mut self) -> SectionSetter {
+    pub fn with_general_section(&mut self) -> SectionSetter<'_> {
         self.with_section(None::<String>)
     }
 
-    /// Get the immmutable general section
+    /// Get the immutable general section
     pub fn general_section(&self) -> &Properties {
         self.section(None::<String>)
             .expect("There is no general section in this Ini")
@@ -538,28 +727,32 @@ impl Ini {
 
     /// Get a immutable section
     pub fn section<S>(&self, name: Option<S>) -> Option<&Properties>
-        where S: Into<String>
+    where
+        S: Into<String>,
     {
         self.sections.get(&section_key!(name))
     }
 
     /// Get a mutable section
     pub fn section_mut<S>(&mut self, name: Option<S>) -> Option<&mut Properties>
-        where S: Into<String>
+    where
+        S: Into<String>,
     {
         self.sections.get_mut(&section_key!(name))
     }
 
     /// Get all sections immutable with the same key
     pub fn section_all<S>(&self, name: Option<S>) -> impl DoubleEndedIterator<Item = &Properties>
-        where S: Into<String>
+    where
+        S: Into<String>,
     {
         self.sections.get_all(&section_key!(name))
     }
 
     /// Get all sections mutable with the same key
     pub fn section_all_mut<S>(&mut self, name: Option<S>) -> impl DoubleEndedIterator<Item = &mut Properties>
-        where S: Into<String>
+    where
+        S: Into<String>,
     {
         self.sections.get_all_mut(&section_key!(name))
     }
@@ -567,7 +760,7 @@ impl Ini {
     /// Get the entry
     #[cfg(not(feature = "case-insensitive"))]
     pub fn entry(&mut self, name: Option<String>) -> SectionEntry<'_> {
-        SectionEntry::from(self.sections.entry(name.map(|s| s)))
+        SectionEntry::from(self.sections.entry(name))
     }
 
     /// Get the entry
@@ -588,7 +781,8 @@ impl Ini {
 
     /// Set key-value to a section
     pub fn set_to<S>(&mut self, section: Option<S>, key: String, value: String)
-        where S: Into<String>
+    where
+        S: Into<String>,
     {
         self.with_section(section).set(key, value);
     }
@@ -604,7 +798,8 @@ impl Ini {
     /// assert_eq!(ini.get_from(Some("sec"), "abc"), Some("def"));
     /// ```
     pub fn get_from<'a, S>(&'a self, section: Option<S>, key: &str) -> Option<&'a str>
-        where S: Into<String>
+    where
+        S: Into<String>,
     {
         self.sections.get(&section_key!(section)).and_then(|prop| prop.get(key))
     }
@@ -620,14 +815,16 @@ impl Ini {
     /// assert_eq!(ini.get_from_or(Some("sec"), "key", "default"), "default");
     /// ```
     pub fn get_from_or<'a, S>(&'a self, section: Option<S>, key: &str, default: &'a str) -> &'a str
-        where S: Into<String>
+    where
+        S: Into<String>,
     {
         self.get_from(section, key).unwrap_or(default)
     }
 
     /// Get the first mutable value from the sections with key
     pub fn get_from_mut<'a, S>(&'a mut self, section: Option<S>, key: &str) -> Option<&'a mut str>
-        where S: Into<String>
+    where
+        S: Into<String>,
     {
         self.sections
             .get_mut(&section_key!(section))
@@ -636,7 +833,8 @@ impl Ini {
 
     /// Delete the first section with key, return the properties if it exists
     pub fn delete<S>(&mut self, section: Option<S>) -> Option<Properties>
-        where S: Into<String>
+    where
+        S: Into<String>,
     {
         let key = section_key!(section);
         self.sections.remove(&key)
@@ -644,7 +842,8 @@ impl Ini {
 
     /// Delete the key from the section, return the value if key exists or None
     pub fn delete_from<S>(&mut self, section: Option<S>, key: &str) -> Option<String>
-        where S: Into<String>
+    where
+        S: Into<String>,
     {
         self.section_mut(section).and_then(|prop| prop.remove(key))
     }
@@ -654,9 +853,23 @@ impl Ini {
         self.sections.keys_len()
     }
 
-    /// Check if object coutains no section
+    /// Check if object contains no section
     pub fn is_empty(&self) -> bool {
         self.sections.is_empty()
+    }
+}
+
+impl Default for Ini {
+    /// Creates an ini instance with an empty general section. This allows [Ini::general_section]
+    /// and [Ini::with_general_section] to be called without panicking.
+    fn default() -> Self {
+        let mut result = Ini {
+            sections: Default::default(),
+        };
+
+        result.sections.insert(None, Default::default());
+
+        result
     }
 }
 
@@ -708,19 +921,21 @@ impl Ini {
 
     /// Write to a file
     pub fn write_to_file_policy<P: AsRef<Path>>(&self, filename: P, policy: EscapePolicy) -> io::Result<()> {
-        let mut file = OpenOptions::new().write(true)
-                                         .truncate(true)
-                                         .create(true)
-                                         .open(filename.as_ref())?;
+        let mut file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .create(true)
+            .open(filename.as_ref())?;
         self.write_to_policy(&mut file, policy)
     }
 
     /// Write to a file with options
     pub fn write_to_file_opt<P: AsRef<Path>>(&self, filename: P, opt: WriteOption) -> io::Result<()> {
-        let mut file = OpenOptions::new().write(true)
-                                         .truncate(true)
-                                         .create(true)
-                                         .open(filename.as_ref())?;
+        let mut file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .create(true)
+            .open(filename.as_ref())?;
         self.write_to_opt(&mut file, opt)
     }
 
@@ -731,44 +946,41 @@ impl Ini {
 
     /// Write to a writer
     pub fn write_to_policy<W: Write>(&self, writer: &mut W, policy: EscapePolicy) -> io::Result<()> {
-        self.write_to_opt(writer,
-                          WriteOption { escape_policy: policy,
-                                        ..Default::default() })
+        self.write_to_opt(
+            writer,
+            WriteOption {
+                escape_policy: policy,
+                ..Default::default()
+            },
+        )
     }
 
     /// Write to a writer with options
     pub fn write_to_opt<W: Write>(&self, writer: &mut W, opt: WriteOption) -> io::Result<()> {
         let mut firstline = true;
 
-        if let Some(props) = self.sections.get(&None) {
-            for (k, v) in props.iter() {
-                let k_str = escape_str(&k[..], opt.escape_policy);
-                let v_str = escape_str(&v[..], opt.escape_policy);
-                write!(writer, "{}={}{}", k_str, v_str, opt.line_separator)?;
-
-                firstline = false;
-            }
-        }
-
         for (section, props) in &self.sections {
-            if let Some(ref section) = *section {
+            if !props.data.is_empty() {
                 if firstline {
                     firstline = false;
                 } else {
                     // Write an empty line between sections
                     writer.write_all(opt.line_separator.as_str().as_bytes())?;
                 }
+            }
 
-                write!(writer,
-                       "[{}]{}",
-                       escape_str(&section[..], opt.escape_policy),
-                       opt.line_separator)?;
-
-                for (k, v) in props.iter() {
-                    let k_str = escape_str(&k[..], opt.escape_policy);
-                    let v_str = escape_str(&v[..], opt.escape_policy);
-                    write!(writer, "{}={}{}", k_str, v_str, opt.line_separator)?;
-                }
+            if let Some(ref section) = *section {
+                write!(
+                    writer,
+                    "[{}]{}",
+                    escape_str(&section[..], opt.escape_policy),
+                    opt.line_separator
+                )?;
+            }
+            for (k, v) in props.iter() {
+                let k_str = escape_str(k, opt.escape_policy);
+                let v_str = escape_str(v, opt.escape_policy);
+                write!(writer, "{}{}{}{}", k_str, opt.kv_separator, v_str, opt.line_separator)?;
             }
         }
         Ok(())
@@ -783,9 +995,13 @@ impl Ini {
 
     /// Load from a string, but do not interpret '\' as an escape character
     pub fn load_from_str_noescape(buf: &str) -> Result<Ini, ParseError> {
-        Ini::load_from_str_opt(buf,
-                               ParseOption { enabled_escape: false,
-                                             ..ParseOption::default() })
+        Ini::load_from_str_opt(
+            buf,
+            ParseOption {
+                enabled_escape: false,
+                ..ParseOption::default()
+            },
+        )
     }
 
     /// Load from a string with options
@@ -801,9 +1017,13 @@ impl Ini {
 
     /// Load from a reader, but do not interpret '\' as an escape character
     pub fn read_from_noescape<R: Read>(reader: &mut R) -> Result<Ini, Error> {
-        Ini::read_from_opt(reader,
-                           ParseOption { enabled_escape: false,
-                                         ..ParseOption::default() })
+        Ini::read_from_opt(
+            reader,
+            ParseOption {
+                enabled_escape: false,
+                ..ParseOption::default()
+            },
+        )
     }
 
     /// Load from a reader with options
@@ -824,9 +1044,13 @@ impl Ini {
 
     /// Load from a file, but do not interpret '\' as an escape character
     pub fn load_from_file_noescape<P: AsRef<Path>>(filename: P) -> Result<Ini, Error> {
-        Ini::load_from_file_opt(filename,
-                                ParseOption { enabled_escape: false,
-                                              ..ParseOption::default() })
+        Ini::load_from_file_opt(
+            filename,
+            ParseOption {
+                enabled_escape: false,
+                ..ParseOption::default()
+            },
+        )
     }
 
     /// Load from a file with options
@@ -843,10 +1067,8 @@ impl Ini {
         // Check if file starts with a BOM marker
         // UTF-8: EF BB BF
         let mut bom = [0u8; 3];
-        if let Ok(..) = reader.read_exact(&mut bom) {
-            if &bom == b"\xEF\xBB\xBF" {
-                with_bom = true;
-            }
+        if reader.read_exact(&mut bom).is_ok() && &bom == b"\xEF\xBB\xBF" {
+            with_bom = true;
         }
 
         if !with_bom {
@@ -904,10 +1126,35 @@ impl DoubleEndedIterator for SectionIterMut<'_> {
     }
 }
 
+/// Iterator for traversing sections
+pub struct SectionIntoIter {
+    inner: IntoIter<SectionKey, Properties>,
+}
+
+impl Iterator for SectionIntoIter {
+    type Item = (SectionKey, Properties);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.inner.next()
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.inner.size_hint()
+    }
+}
+
+impl DoubleEndedIterator for SectionIntoIter {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.inner.next_back()
+    }
+}
+
 impl<'a> Ini {
     /// Immutable iterate though sections
     pub fn iter(&'a self) -> SectionIter<'a> {
-        SectionIter { inner: self.sections.iter() }
+        SectionIter {
+            inner: self.sections.iter(),
+        }
     }
 
     /// Mutable iterate though sections
@@ -918,13 +1165,15 @@ impl<'a> Ini {
 
     /// Mutable iterate though sections
     pub fn iter_mut(&'a mut self) -> SectionIterMut<'a> {
-        SectionIterMut { inner: self.sections.iter_mut() }
+        SectionIterMut {
+            inner: self.sections.iter_mut(),
+        }
     }
 }
 
 impl<'a> IntoIterator for &'a Ini {
-    type Item = (Option<&'a str>, &'a Properties);
     type IntoIter = SectionIter<'a>;
+    type Item = (Option<&'a str>, &'a Properties);
 
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
@@ -932,11 +1181,22 @@ impl<'a> IntoIterator for &'a Ini {
 }
 
 impl<'a> IntoIterator for &'a mut Ini {
-    type Item = (Option<&'a str>, &'a mut Properties);
     type IntoIter = SectionIterMut<'a>;
+    type Item = (Option<&'a str>, &'a mut Properties);
 
     fn into_iter(self) -> Self::IntoIter {
         self.iter_mut()
+    }
+}
+
+impl IntoIterator for Ini {
+    type IntoIter = SectionIntoIter;
+    type Item = (SectionKey, Properties);
+
+    fn into_iter(self) -> Self::IntoIter {
+        SectionIntoIter {
+            inner: self.sections.into_iter(),
+        }
     }
 }
 
@@ -954,7 +1214,7 @@ struct Parser<'a> {
 pub struct ParseError {
     pub line: usize,
     pub col: usize,
-    pub msg: String,
+    pub msg: Cow<'static, str>,
 }
 
 impl Display for ParseError {
@@ -999,17 +1259,15 @@ impl From<io::Error> for Error {
 impl<'a> Parser<'a> {
     // Create a parser
     pub fn new(rdr: Chars<'a>, opt: ParseOption) -> Parser<'a> {
-        let mut p = Parser { ch: None,
-                             line: 0,
-                             col: 0,
-                             rdr,
-                             opt };
+        let mut p = Parser {
+            ch: None,
+            line: 0,
+            col: 0,
+            rdr,
+            opt,
+        };
         p.bump();
         p
-    }
-
-    fn eof(&self) -> bool {
-        self.ch.is_none()
     }
 
     fn bump(&mut self) {
@@ -1026,23 +1284,81 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn error<U, M: Into<String>>(&self, msg: M) -> Result<U, ParseError> {
-        Err(ParseError { line: self.line,
-                         col: self.col,
-                         msg: msg.into() })
+    #[cold]
+    #[inline(never)]
+    fn error<U, M: Into<Cow<'static, str>>>(&self, msg: M) -> Result<U, ParseError> {
+        Err(ParseError {
+            line: self.line + 1,
+            col: self.col + 1,
+            msg: msg.into(),
+        })
     }
 
-    /// Consume all the white space until the end of the line or a tab
-    fn parse_whitespace(&mut self) {
-        while let Some(c) = self.ch {
-            if !c.is_whitespace() && c != '\n' && c != '\t' && c != '\r' {
-                break;
-            }
-            self.bump();
+    #[cold]
+    fn eof_error(&self, expecting: &[Option<char>]) -> Result<char, ParseError> {
+        self.error(format!("expecting \"{:?}\" but found EOF.", expecting))
+    }
+
+    fn char_or_eof(&self, expecting: &[Option<char>]) -> Result<char, ParseError> {
+        match self.ch {
+            Some(ch) => Ok(ch),
+            None => self.eof_error(expecting),
         }
     }
 
-    /// Consume all the white space except line break
+    /// Consume all whitespace including newlines, tabs, and spaces
+    ///
+    /// This function consumes all types of whitespace characters until it encounters
+    /// a non-whitespace character. Used for general whitespace cleanup between tokens.
+    // fn parse_whitespace(&mut self) {
+    //     while let Some(c) = self.ch {
+    //         if !c.is_whitespace() && c != '\n' && c != '\t' && c != '\r' {
+    //             break;
+    //         }
+    //         self.bump();
+    //     }
+    // }
+
+    /// Consume whitespace but preserve leading spaces/tabs on lines (for key indentation)
+    ///
+    /// This function is designed to consume whitespace while preserving leading spaces
+    /// and tabs that might be part of indented keys. It consumes newlines and other
+    /// whitespace, but stops when it encounters spaces or tabs that could be the
+    /// beginning of an indented key.
+    fn parse_whitespace_preserve_line_leading(&mut self) {
+        while let Some(c) = self.ch {
+            match c {
+                // Always consume spaces and tabs that are not at the beginning of a line
+                ' ' | '\t' => {
+                    self.bump();
+                    // Continue consuming until we hit a non-space/tab character
+                    // If it's a comment character, let the caller handle it
+                    // If it's a newline, we'll handle it in the next iteration
+                }
+                '\n' | '\r' => {
+                    // Consume the newline
+                    self.bump();
+                    // Check if the next line starts with spaces/tabs (potential key indentation)
+                    if matches!(self.ch, Some(' ') | Some('\t')) {
+                        // Don't consume the leading spaces/tabs - they're part of the key
+                        break;
+                    }
+                    // Continue consuming other whitespace after the newline
+                }
+                c if c.is_whitespace() => {
+                    // Consume other whitespace (like form feed, vertical tab, etc.)
+                    self.bump();
+                }
+                _ => break,
+            }
+        }
+    }
+
+    /// Consume all whitespace except line breaks (newlines and carriage returns)
+    ///
+    /// This function consumes spaces, tabs, and other whitespace characters but
+    /// stops at newlines and carriage returns. Used when parsing values to avoid
+    /// consuming the line terminator.
     fn parse_whitespace_except_line_break(&mut self) {
         while let Some(c) = self.ch {
             if (c == '\n' || c == '\r' || !c.is_whitespace()) && c != '\t' {
@@ -1058,7 +1374,6 @@ impl<'a> Parser<'a> {
         let mut curkey: String = "".into();
         let mut cursec: Option<String> = None;
 
-        self.parse_whitespace();
         while let Some(cur_ch) = self.ch {
             match cur_ch {
                 ';' | '#' => {
@@ -1074,9 +1389,9 @@ impl<'a> Parser<'a> {
                     self.parse_comment();
                 }
                 '[' => match self.parse_section() {
-                    Ok(sec) => {
-                        let msec = sec[..].trim();
-                        cursec = Some((*msec).to_string());
+                    Ok(mut sec) => {
+                        trim_in_place(&mut sec);
+                        cursec = Some(sec);
                         match result.entry(cursec.clone()) {
                             SectionEntry::Vacant(v) => {
                                 v.insert(Default::default());
@@ -1085,17 +1400,15 @@ impl<'a> Parser<'a> {
                                 o.append(Default::default());
                             }
                         }
-                        self.bump();
                     }
                     Err(e) => return Err(e),
                 },
                 '=' | ':' => {
-                    if (&curkey[..]).is_empty() {
+                    if (curkey[..]).is_empty() {
                         return self.error("missing key");
                     }
                     match self.parse_val() {
-                        Ok(val) => {
-                            let mval = val[..].trim().to_owned();
+                        Ok(mval) => {
                             match result.entry(cursec.clone()) {
                                 SectionEntry::Vacant(v) => {
                                     // cursec must be None (the General Section)
@@ -1113,16 +1426,91 @@ impl<'a> Parser<'a> {
                         Err(e) => return Err(e),
                     }
                 }
+                ' ' | '\t' => {
+                    // First, consume the leading whitespace to see what comes after
+                    let mut consumed_whitespace = String::new();
+                    while let Some(c) = self.ch {
+                        if c == ' ' || c == '\t' {
+                            consumed_whitespace.push(c);
+                            self.bump();
+                        } else {
+                            break;
+                        }
+                    }
+
+                    // Check if what follows is a section header
+                    match self.ch {
+                        Some('[') => {
+                            // This is a section header, parse it as such
+                            match self.parse_section() {
+                                Ok(mut sec) => {
+                                    trim_in_place(&mut sec);
+                                    cursec = Some(sec);
+                                    match result.entry(cursec.clone()) {
+                                        SectionEntry::Vacant(v) => {
+                                            v.insert(Default::default());
+                                        }
+                                        SectionEntry::Occupied(mut o) => {
+                                            o.append(Default::default());
+                                        }
+                                    }
+                                }
+                                Err(e) => return Err(e),
+                            }
+                        }
+                        Some('\n') | Some('\r') => {
+                            // This is just leading whitespace before a newline, skip it
+                            self.bump(); // Consume the newline
+                            continue;
+                        }
+                        _ => {
+                            // This is a key with leading whitespace, parse the rest of it
+                            match self.parse_str_until(&[Some('='), Some(':')], false) {
+                                Ok(key_part) => {
+                                    let mut mkey = if self.opt.enabled_preserve_key_leading_whitespace {
+                                        consumed_whitespace + &key_part
+                                    } else {
+                                        key_part
+                                    };
+
+                                    // Only trim trailing whitespace, preserve leading whitespace if enabled
+                                    if self.opt.enabled_preserve_key_leading_whitespace {
+                                        trim_end_in_place(&mut mkey);
+                                    } else {
+                                        trim_in_place(&mut mkey);
+                                    }
+                                    curkey = mkey;
+                                }
+                                Err(_) => {
+                                    // If parsing key fails, it's probably just trailing whitespace at EOF - skip it
+                                    // We already consumed the whitespace, so just continue
+                                }
+                            }
+                        }
+                    }
+                }
+                '\n' | '\r' => {
+                    // Empty line, just skip it
+                    self.bump();
+                }
                 _ => match self.parse_key() {
-                    Ok(key) => {
-                        let mkey: String = key[..].trim().to_owned();
+                    Ok(mut mkey) => {
+                        // For regular keys, only trim trailing whitespace to preserve
+                        // any leading whitespace that might be part of the key name
+                        if self.opt.enabled_preserve_key_leading_whitespace {
+                            trim_end_in_place(&mut mkey);
+                        } else {
+                            trim_in_place(&mut mkey);
+                        }
                         curkey = mkey;
                     }
                     Err(e) => return Err(e),
                 },
             }
 
-            self.parse_whitespace();
+            // Use specialized whitespace parsing that preserves leading spaces/tabs
+            // on new lines, which might be part of indented key names
+            self.parse_whitespace_preserve_line_leading();
         }
 
         Ok(result)
@@ -1137,64 +1525,100 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_str_until(&mut self, endpoint: &[Option<char>]) -> Result<String, ParseError> {
+    fn parse_str_until(&mut self, endpoint: &[Option<char>], check_inline_comment: bool) -> Result<String, ParseError> {
         let mut result: String = String::new();
 
+        let mut in_line_continuation = false;
+
         while !endpoint.contains(&self.ch) {
-            match self.ch {
-                None => {
-                    return self.error(format!("expecting \"{:?}\" but found EOF.", endpoint));
-                }
-                Some('\\') if self.opt.enabled_escape => {
+            match self.char_or_eof(endpoint)? {
+                #[cfg(feature = "inline-comment")]
+                ch if check_inline_comment && (ch == ' ' || ch == '\t') => {
                     self.bump();
-                    if self.eof() {
-                        return self.error(format!("expecting \"{:?}\" but found EOF.", endpoint));
-                    }
-                    match self.ch.unwrap() {
-                        '0' => result.push('\0'),
-                        'a' => result.push('\x07'),
-                        'b' => result.push('\x08'),
-                        't' => result.push('\t'),
-                        'r' => result.push('\r'),
-                        'n' => result.push('\n'),
-                        '\n' => (),
-                        'x' => {
-                            // Unicode 4 character
-                            let mut code: String = String::with_capacity(4);
-                            for _ in 0..4 {
-                                self.bump();
-                                if self.eof() {
-                                    return self.error(format!("expecting \"{:?}\" but found EOF.", endpoint));
-                                } else if let Some('\\') = self.ch {
-                                    self.bump();
-                                    if self.ch != Some('\n') {
-                                        return self.error(format!("expecting \"\\\\n\" but \
-                                                                   found \"{:?}\".",
-                                                                  self.ch));
-                                    }
-                                }
-                                code.push(self.ch.unwrap());
-                            }
-                            let r = u32::from_str_radix(&code[..], 16);
-                            match r {
-                                Ok(c) => match char::from_u32(c) {
-                                    Some(c) => result.push(c),
-                                    None => {
-                                        return self.error("unknown character in \\xHH form");
-                                    }
-                                },
-                                Err(_) => return self.error("unknown character in \\xHH form"),
+
+                    match self.ch {
+                        Some('#') | Some(';') => {
+                            // [space]#, [space]; starts an inline comment
+                            self.parse_comment();
+                            if in_line_continuation {
+                                result.push(ch);
+                                continue;
+                            } else {
+                                break;
                             }
                         }
-                        c => result.push(c),
+                        Some(_) => {
+                            result.push(ch);
+                            continue;
+                        }
+                        None => {
+                            result.push(ch);
+                        }
                     }
                 }
-                Some(c) => {
-                    result.push(c);
+                #[cfg(feature = "inline-comment")]
+                ch if check_inline_comment && in_line_continuation && (ch == '#' || ch == ';') => {
+                    self.parse_comment();
+                    continue;
                 }
+                '\\' => {
+                    self.bump();
+                    let Some(ch) = self.ch else {
+                        result.push('\\');
+                        continue;
+                    };
+
+                    if matches!(ch, '\n') {
+                        in_line_continuation = true;
+                    } else if self.opt.enabled_escape {
+                        match ch {
+                            '0' => result.push('\0'),
+                            'a' => result.push('\x07'),
+                            'b' => result.push('\x08'),
+                            't' => result.push('\t'),
+                            'r' => result.push('\r'),
+                            'n' => result.push('\n'),
+                            '\n' => self.bump(),
+                            'x' => {
+                                // Unicode 4 character
+                                let mut code: String = String::with_capacity(4);
+                                for _ in 0..4 {
+                                    self.bump();
+                                    let ch = self.char_or_eof(endpoint)?;
+                                    if ch == '\\' {
+                                        self.bump();
+                                        if self.ch != Some('\n') {
+                                            return self.error(format!(
+                                                "expecting \"\\\\n\" but \
+                                             found \"{:?}\".",
+                                                self.ch
+                                            ));
+                                        }
+                                    }
+
+                                    code.push(ch);
+                                }
+                                let r = u32::from_str_radix(&code[..], 16);
+                                match r.ok().and_then(char::from_u32) {
+                                    Some(ch) => result.push(ch),
+                                    None => return self.error("unknown character in \\xHH form"),
+                                }
+                            }
+                            c => result.push(c),
+                        }
+                    } else {
+                        result.push('\\');
+                        result.push(ch);
+                    }
+                }
+                ch => result.push(ch),
             }
             self.bump();
         }
+
+        let _ = check_inline_comment;
+        let _ = in_line_continuation;
+
         Ok(result)
     }
 
@@ -1203,54 +1627,47 @@ impl<'a> Parser<'a> {
             if #[cfg(feature = "brackets-in-section-names")] {
                 // Skip [
                 self.bump();
-                let endpoint;
-                cfg_if! {
-                    if #[cfg(feature = "inline-comment")] {
-                        endpoint = &[Some('\r'), Some('\n'), Some('#'), Some(';')]
-                    } else {
-                        endpoint = &[Some('\r'), Some('\n')];
-                    }
+
+                let mut s = self.parse_str_until(&[Some('\r'), Some('\n')], cfg!(feature = "inline-comment"))?;
+
+                // Deal with inline comment
+                #[cfg(feature = "inline-comment")]
+                if matches!(self.ch, Some('#') | Some(';')) {
+                    self.parse_comment();
                 }
 
-                let result = self.parse_str_until(endpoint);
-                if result.is_err() {
-                    return result;
+                let tr = s.trim_end_matches([' ', '\t']);
+                if !tr.ends_with(']') {
+                    return self.error("section must be ended with ']'");
                 }
 
-                cfg_if! {
-                    if #[cfg(feature = "inline-comment")] {
-                        match self.ch {
-                            Some('#') | Some(';') => {
-                                let r = self.parse_str_until(&[Some('\r'), Some('\n')]);
-                                if r.is_err() {
-                                    return r;
-                                }
-                            },
-                            _ => {}
-                        }
-                    }
-                }
-
-                let s = result.unwrap();
-                let cut= s.chars().rev().take_while(|c| *c != ']').count();
-                let len = s.len() - cut - 1;
-                if cut > 0 {
-                    let all_acceptable = s[len+1..].chars().all(|c| c == ' ' || c == '\t');
-                    if !all_acceptable {
-                        return self.error("not acceptable character after section end");
-                    }
-                }
-                Ok(String::from(&s[0..len]))
+                s.truncate(tr.len() - 1);
+                Ok(s)
             } else {
                 // Skip [
                 self.bump();
-                self.parse_str_until(&[Some(']')])
+                let sec = self.parse_str_until(&[Some(']')], false)?;
+                if let Some(']') = self.ch {
+                    self.bump();
+                }
+
+                // Deal with inline comment
+                #[cfg(feature = "inline-comment")]
+                if matches!(self.ch, Some('#') | Some(';')) {
+                    self.parse_comment();
+                }
+
+                Ok(sec)
             }
         }
     }
 
+    /// Parse a key name until '=' or ':' delimiter
+    ///
+    /// This function parses characters until it encounters '=' or ':' which indicate
+    /// the start of a value. Used for regular keys without leading whitespace.
     fn parse_key(&mut self) -> Result<String, ParseError> {
-        self.parse_str_until(&[Some('='), Some(':')])
+        self.parse_str_until(&[Some('='), Some(':')], false)
     }
 
     fn parse_val(&mut self) -> Result<String, ParseError> {
@@ -1258,37 +1675,134 @@ impl<'a> Parser<'a> {
         // Issue #35: Allow empty value
         self.parse_whitespace_except_line_break();
 
-        match self.ch {
-            None => Ok(String::new()),
-            Some('"') if self.opt.enabled_quote => {
-                self.bump();
-                self.parse_str_until(&[Some('"')]).and_then(|s| {
-                                                      self.bump(); // Eats the last "
-                                                                   // Parse until EOL
-                                                      self.parse_str_until_eol().map(|x| s + &x)
-                                                  })
+        let mut val = String::new();
+        let mut val_first_part = true;
+        // Parse the first line of value
+        'parse_value_line_loop: loop {
+            match self.ch {
+                // EOF. Just break
+                None => break,
+
+                // Double Quoted
+                Some('"') if self.opt.enabled_quote => {
+                    // Bump the current "
+                    self.bump();
+                    // Parse until the next "
+                    let quoted_val = self.parse_str_until(&[Some('"')], false)?;
+                    val.push_str(&quoted_val);
+
+                    // Eats the "
+                    self.bump();
+
+                    // characters after " are still part of the value line
+                    val_first_part = false;
+                    continue;
+                }
+
+                // Single Quoted
+                Some('\'') if self.opt.enabled_quote => {
+                    // Bump the current '
+                    self.bump();
+                    // Parse until the next '
+                    let quoted_val = self.parse_str_until(&[Some('\'')], false)?;
+                    val.push_str(&quoted_val);
+
+                    // Eats the '
+                    self.bump();
+
+                    // characters after ' are still part of the value line
+                    val_first_part = false;
+                    continue;
+                }
+
+                // Standard value string
+                _ => {
+                    // Parse until EOL. White spaces are trimmed (both start and end)
+                    let standard_val = self.parse_str_until_eol(cfg!(feature = "inline-comment"))?;
+
+                    let trimmed_value = if val_first_part {
+                        // If it is the first part of the value, just trim all of them
+                        standard_val.trim()
+                    } else {
+                        // Otherwise, trim the ends
+                        standard_val.trim_end()
+                    };
+                    val_first_part = false;
+
+                    val.push_str(trimmed_value);
+
+                    if self.opt.enabled_indented_mutiline_value {
+                        // Multiline value is supported. We now check whether the next line is started with ' ' or '\t'.
+                        self.bump();
+
+                        loop {
+                            match self.ch {
+                                Some(' ') | Some('\t') => {
+                                    // Multiline value
+                                    // Eats the leading spaces
+                                    self.parse_whitespace_except_line_break();
+                                    // Push a line-break to the current value
+                                    val.push('\n');
+                                    // continue. Let read the whole value line
+                                    continue 'parse_value_line_loop;
+                                }
+
+                                Some('\r') => {
+                                    // Probably \r\n, try to eat one more
+                                    self.bump();
+                                    if self.ch == Some('\n') {
+                                        self.bump();
+                                        val.push('\n');
+                                    } else {
+                                        // \r with a character?
+                                        return self.error("\\r is not followed by \\n");
+                                    }
+                                }
+
+                                Some('\n') => {
+                                    // New-line, just push and continue
+                                    self.bump();
+                                    val.push('\n');
+                                }
+
+                                // Not part of the multiline value
+                                _ => break 'parse_value_line_loop,
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
             }
-            Some('\'') if self.opt.enabled_quote => {
-                self.bump();
-                self.parse_str_until(&[Some('\'')]).and_then(|s| {
-                                                       self.bump(); // Eats the last '
-                                                                    // Parse until EOL
-                                                       self.parse_str_until_eol().map(|x| s + &x)
-                                                   })
-            }
-            _ => self.parse_str_until_eol(),
         }
+
+        if self.opt.enabled_indented_mutiline_value {
+            // multiline value, trims line-breaks
+            trim_line_feeds(&mut val);
+        }
+
+        Ok(val)
     }
 
-    #[cfg(not(feature = "inline-comment"))]
-    fn parse_str_until_eol(&mut self) -> Result<String, ParseError> {
-        self.parse_str_until(&[Some('\n'), Some('\r'), None])
+    #[inline]
+    fn parse_str_until_eol(&mut self, check_inline_comment: bool) -> Result<String, ParseError> {
+        self.parse_str_until(&[Some('\n'), Some('\r'), None], check_inline_comment)
     }
+}
 
-    #[cfg(feature = "inline-comment")]
-    fn parse_str_until_eol(&mut self) -> Result<String, ParseError> {
-        self.parse_str_until(&[Some('\n'), Some('\r'), Some(';'), Some('#'), None])
-    }
+fn trim_in_place(string: &mut String) {
+    string.truncate(string.trim_end().len());
+    string.drain(..(string.len() - string.trim_start().len()));
+}
+
+fn trim_end_in_place(string: &mut String) {
+    string.truncate(string.trim_end().len());
+}
+
+fn trim_line_feeds(string: &mut String) {
+    const LF: char = '\n';
+    string.truncate(string.trim_end_matches(LF).len());
+    string.drain(..(string.len() - string.trim_start_matches(LF).len()));
 }
 
 // ------------------------------------------------------------------------------
@@ -1345,6 +1859,49 @@ mod test {
     }
 
     #[test]
+    fn load_from_str_with_empty_general_section() {
+        let input = "[sec1]\nkey1=val1\n";
+        let opt = Ini::load_from_str(input);
+        assert!(opt.is_ok());
+
+        let mut output = opt.unwrap();
+        assert_eq!(output.len(), 2);
+
+        assert!(output.general_section().is_empty());
+        assert!(output.general_section_mut().is_empty());
+
+        let props1 = output.section(None::<String>).unwrap();
+        assert!(props1.is_empty());
+        let props2 = output.section(Some("sec1")).unwrap();
+        assert_eq!(props2.len(), 1);
+        assert_eq!(props2.get("key1"), Some("val1"));
+    }
+
+    #[test]
+    fn load_from_str_with_empty_input() {
+        let input = "";
+        let opt = Ini::load_from_str(input);
+        assert!(opt.is_ok());
+
+        let mut output = opt.unwrap();
+        assert!(output.general_section().is_empty());
+        assert!(output.general_section_mut().is_empty());
+        assert_eq!(output.len(), 1);
+    }
+
+    #[test]
+    fn load_from_str_with_empty_lines() {
+        let input = "\n\n\n";
+        let opt = Ini::load_from_str(input);
+        assert!(opt.is_ok());
+
+        let mut output = opt.unwrap();
+        assert!(output.general_section().is_empty());
+        assert!(output.general_section_mut().is_empty());
+        assert_eq!(output.len(), 1);
+    }
+
+    #[test]
     #[cfg(not(feature = "brackets-in-section-names"))]
     fn load_from_str_with_valid_input() {
         let input = "[sec1]\nkey1=val1\nkey2=377\n[sec2]foo=bar\n";
@@ -1352,7 +1909,8 @@ mod test {
         assert!(opt.is_ok());
 
         let output = opt.unwrap();
-        assert_eq!(output.len(), 2);
+        // there is always a general section
+        assert_eq!(output.len(), 3);
         assert!(output.section(Some("sec1")).is_some());
 
         let sec1 = output.section(Some("sec1")).unwrap();
@@ -1375,7 +1933,8 @@ mod test {
         assert!(opt.is_ok());
 
         let output = opt.unwrap();
-        assert_eq!(output.len(), 2);
+        // there is always a general section
+        assert_eq!(output.len(), 3);
         assert!(output.section(Some("sec1")).is_some());
 
         let sec1 = output.section(Some("sec1")).unwrap();
@@ -1407,6 +1966,23 @@ mod test {
     }
 
     #[test]
+    fn parse_error_numbers() {
+        let invalid_input = "\n\\x";
+        let ini = Ini::load_from_str_opt(
+            invalid_input,
+            ParseOption {
+                enabled_escape: true,
+                ..Default::default()
+            },
+        );
+        assert!(ini.is_err());
+
+        let err = ini.unwrap_err();
+        assert_eq!(err.line, 2);
+        assert_eq!(err.col, 3);
+    }
+
+    #[test]
     fn parse_comment() {
         let input = "; abcdefghijklmn\n";
         let opt = Ini::load_from_str(input);
@@ -1433,10 +2009,19 @@ gender = mail ; abdddd
 [section name] # comment in section line
 name = hello # abcdefg
 gender = mail ; abdddd
+address = web#url ;# eeeeee
+phone = 01234	# tab before comment
+phone2 = 56789	 # tab + space before comment
+phone3 = 43210 	# space + tab before comment
 ";
         let ini = Ini::load_from_str(input).unwrap();
+        println!("{:?}", ini.section(Some("section name")));
         assert_eq!(ini.get_from(Some("section name"), "name").unwrap(), "hello");
         assert_eq!(ini.get_from(Some("section name"), "gender").unwrap(), "mail");
+        assert_eq!(ini.get_from(Some("section name"), "address").unwrap(), "web#url");
+        assert_eq!(ini.get_from(Some("section name"), "phone").unwrap(), "01234");
+        assert_eq!(ini.get_from(Some("section name"), "phone2").unwrap(), "56789");
+        assert_eq!(ini.get_from(Some("section name"), "phone3").unwrap(), "43210");
     }
 
     #[test]
@@ -1500,6 +2085,48 @@ Otherline\"
     }
 
     #[test]
+    fn string_multiline_escape() {
+        let input = r"
+[section name]
+# This is a comment
+Key = Value \
+Otherline
+";
+        let ini = Ini::load_from_str_opt(
+            input,
+            ParseOption {
+                enabled_escape: false,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        assert_eq!(ini.get_from(Some("section name"), "Key").unwrap(), "Value Otherline");
+    }
+
+    #[cfg(feature = "inline-comment")]
+    #[test]
+    fn string_multiline_inline_comment() {
+        let input = r"
+[section name]
+# This is a comment
+Key = Value \
+# This is also a comment
+; This is also a comment
+   # This is also a comment
+Otherline
+";
+        let ini = Ini::load_from_str_opt(
+            input,
+            ParseOption {
+                enabled_escape: false,
+                ..Default::default()
+            },
+        )
+        .unwrap();
+        assert_eq!(ini.get_from(Some("section name"), "Key").unwrap(), "Value    Otherline");
+    }
+
+    #[test]
     fn string_comment() {
         let input = "
 [section name]
@@ -1508,8 +2135,10 @@ Key = \"Value   # This is not a comment ; at all\"
 Stuff = Other
 ";
         let ini = Ini::load_from_str(input).unwrap();
-        assert_eq!(ini.get_from(Some("section name"), "Key").unwrap(),
-                   "Value   # This is not a comment ; at all");
+        assert_eq!(
+            ini.get_from(Some("section name"), "Key").unwrap(),
+            "Value   # This is not a comment ; at all"
+        );
     }
 
     #[test]
@@ -1556,8 +2185,10 @@ Stuff = Other
 Key = 'Value   # This is not a comment ; at all'
 ";
         let ini = Ini::load_from_str(input).unwrap();
-        assert_eq!(ini.get_from(Some("section name"), "Key").unwrap(),
-                   "Value   # This is not a comment ; at all");
+        assert_eq!(
+            ini.get_from(Some("section name"), "Key").unwrap(),
+            "Value   # This is not a comment ; at all"
+        );
     }
 
     #[test]
@@ -1702,10 +2333,7 @@ Key = 'Value   # This is not a comment ; at all'
     #[test]
     fn load_from_str_noescape() {
         let input = "path=C:\\Windows\\Some\\Folder\\";
-        let opt = Ini::load_from_str_noescape(input);
-        assert!(opt.is_ok());
-
-        let output = opt.unwrap();
+        let output = Ini::load_from_str_noescape(input).unwrap();
         assert_eq!(output.len(), 1);
         let sec = output.section(None::<String>).unwrap();
         assert_eq!(sec.len(), 1);
@@ -1746,9 +2374,14 @@ B=b";
 Exec = \"/path/to/exe with space\" arg
 ";
 
-        let opt = Ini::load_from_str_opt(input,
-                                         ParseOption { enabled_quote: false,
-                                                       ..ParseOption::default() }).unwrap();
+        let opt = Ini::load_from_str_opt(
+            input,
+            ParseOption {
+                enabled_quote: false,
+                ..ParseOption::default()
+            },
+        )
+        .unwrap();
         let sec = opt.section(Some("Desktop Entry")).unwrap();
         assert_eq!(&sec["Exec"], "\"/path/to/exe with space\" arg");
     }
@@ -1845,53 +2478,128 @@ a3 = n3
     }
 
     #[test]
+    fn write_new() {
+        use std::str;
+
+        let ini = Ini::new();
+
+        let opt = WriteOption {
+            line_separator: LineSeparator::CR,
+            ..Default::default()
+        };
+        let mut buf = Vec::new();
+        ini.write_to_opt(&mut buf, opt).unwrap();
+
+        assert_eq!("", str::from_utf8(&buf).unwrap());
+    }
+
+    #[test]
     fn write_line_separator() {
         use std::str;
 
         let mut ini = Ini::new();
         ini.with_section(Some("Section1"))
-           .set("Key1", "Value")
-           .set("Key2", "Value");
+            .set("Key1", "Value")
+            .set("Key2", "Value");
         ini.with_section(Some("Section2"))
-           .set("Key1", "Value")
-           .set("Key2", "Value");
+            .set("Key1", "Value")
+            .set("Key2", "Value");
 
         {
             let mut buf = Vec::new();
-            ini.write_to_opt(&mut buf,
-                             WriteOption { line_separator: LineSeparator::CR,
-                                           ..Default::default() })
-               .unwrap();
+            ini.write_to_opt(
+                &mut buf,
+                WriteOption {
+                    line_separator: LineSeparator::CR,
+                    ..Default::default()
+                },
+            )
+            .unwrap();
 
-            assert_eq!("[Section1]\nKey1=Value\nKey2=Value\n\n[Section2]\nKey1=Value\nKey2=Value\n",
-                       str::from_utf8(&buf).unwrap());
+            assert_eq!(
+                "[Section1]\nKey1=Value\nKey2=Value\n\n[Section2]\nKey1=Value\nKey2=Value\n",
+                str::from_utf8(&buf).unwrap()
+            );
         }
 
         {
             let mut buf = Vec::new();
-            ini.write_to_opt(&mut buf,
-                             WriteOption { line_separator: LineSeparator::CRLF,
-                                           ..Default::default() })
-               .unwrap();
+            ini.write_to_opt(
+                &mut buf,
+                WriteOption {
+                    line_separator: LineSeparator::CRLF,
+                    ..Default::default()
+                },
+            )
+            .unwrap();
 
-            assert_eq!("[Section1]\r\nKey1=Value\r\nKey2=Value\r\n\r\n[Section2]\r\nKey1=Value\r\nKey2=Value\r\n",
-                       str::from_utf8(&buf).unwrap());
+            assert_eq!(
+                "[Section1]\r\nKey1=Value\r\nKey2=Value\r\n\r\n[Section2]\r\nKey1=Value\r\nKey2=Value\r\n",
+                str::from_utf8(&buf).unwrap()
+            );
         }
 
         {
             let mut buf = Vec::new();
-            ini.write_to_opt(&mut buf,
-                             WriteOption { line_separator: LineSeparator::SystemDefault,
-                                           ..Default::default() })
-               .unwrap();
+            ini.write_to_opt(
+                &mut buf,
+                WriteOption {
+                    line_separator: LineSeparator::SystemDefault,
+                    ..Default::default()
+                },
+            )
+            .unwrap();
 
             if cfg!(windows) {
-                assert_eq!("[Section1]\r\nKey1=Value\r\nKey2=Value\r\n\r\n[Section2]\r\nKey1=Value\r\nKey2=Value\r\n",
-                           str::from_utf8(&buf).unwrap());
+                assert_eq!(
+                    "[Section1]\r\nKey1=Value\r\nKey2=Value\r\n\r\n[Section2]\r\nKey1=Value\r\nKey2=Value\r\n",
+                    str::from_utf8(&buf).unwrap()
+                );
             } else {
-                assert_eq!("[Section1]\nKey1=Value\nKey2=Value\n\n[Section2]\nKey1=Value\nKey2=Value\n",
-                           str::from_utf8(&buf).unwrap());
+                assert_eq!(
+                    "[Section1]\nKey1=Value\nKey2=Value\n\n[Section2]\nKey1=Value\nKey2=Value\n",
+                    str::from_utf8(&buf).unwrap()
+                );
             }
+        }
+    }
+
+    #[test]
+    fn write_kv_separator() {
+        use std::str;
+
+        let mut ini = Ini::new();
+        ini.with_section(None::<String>)
+            .set("Key1", "Value")
+            .set("Key2", "Value");
+        ini.with_section(Some("Section1"))
+            .set("Key1", "Value")
+            .set("Key2", "Value");
+        ini.with_section(Some("Section2"))
+            .set("Key1", "Value")
+            .set("Key2", "Value");
+
+        let mut buf = Vec::new();
+        ini.write_to_opt(
+            &mut buf,
+            WriteOption {
+                kv_separator: " = ",
+                ..Default::default()
+            },
+        )
+        .unwrap();
+
+        // Test different line endings in Windows and Unix
+        if cfg!(windows) {
+            assert_eq!(
+                "Key1 = Value\r\nKey2 = Value\r\n\r\n[Section1]\r\nKey1 = Value\r\nKey2 = Value\r\n\r\n[Section2]\r\nKey1 = Value\r\nKey2 = Value\r\n",
+                str::from_utf8(&buf).unwrap()
+            );
+        } else {
+            assert_eq!(
+                "Key1 = Value\nKey2 = Value\n\n[Section1]\nKey1 = Value\nKey2 = Value\n\n[Section2]\nKey1 = Value\nKey2 = Value\n",
+                str::from_utf8(&buf).unwrap()
+            );
         }
     }
 
@@ -1917,6 +2625,10 @@ bar = f
         assert_eq!(3, ini.section_all(Some("Peer")).count());
 
         let mut iter = ini.iter();
+        // there is always an empty general section
+        let (k0, p0) = iter.next().unwrap();
+        assert_eq!(None, k0);
+        assert!(p0.is_empty());
         let (k1, p1) = iter.next().unwrap();
         assert_eq!(Some("Peer"), k1);
         assert_eq!(Some("a"), p1.get("foo"));
@@ -1931,6 +2643,46 @@ bar = f
         assert_eq!(Some("f"), p3.get("bar"));
 
         assert_eq!(None, iter.next());
+    }
+
+    #[test]
+    fn add_properties_api() {
+        // Test duplicate properties in a section
+        let mut ini = Ini::new();
+        ini.with_section(Some("foo")).add("a", "1").add("a", "2");
+
+        let sec = ini.section(Some("foo")).unwrap();
+        assert_eq!(sec.get("a"), Some("1"));
+        assert_eq!(sec.get_all("a").collect::<Vec<&str>>(), vec!["1", "2"]);
+
+        // Test add with unique keys
+        let mut ini = Ini::new();
+        ini.with_section(Some("foo")).add("a", "1").add("b", "2");
+
+        let sec = ini.section(Some("foo")).unwrap();
+        assert_eq!(sec.get("a"), Some("1"));
+        assert_eq!(sec.get("b"), Some("2"));
+
+        // Test string representation
+        let mut ini = Ini::new();
+        ini.with_section(Some("foo")).add("a", "1").add("a", "2");
+        let mut buf = Vec::new();
+        ini.write_to(&mut buf).unwrap();
+        let ini_str = String::from_utf8(buf).unwrap();
+        if cfg!(windows) {
+            assert_eq!(ini_str, "[foo]\r\na=1\r\na=2\r\n");
+        } else {
+            assert_eq!(ini_str, "[foo]\na=1\na=2\n");
+        }
+    }
+
+    #[test]
+    fn new_has_empty_general_section() {
+        let mut ini = Ini::new();
+
+        assert!(ini.general_section().is_empty());
+        assert!(ini.general_section_mut().is_empty());
+        assert_eq!(ini.len(), 1);
     }
 
     #[test]
@@ -1972,9 +2724,11 @@ bar = f
     fn invalid_codepoint() {
         use std::io::Cursor;
 
-        let d = vec![10, 8, 68, 8, 61, 10, 126, 126, 61, 49, 10, 62, 8, 8, 61, 10, 91, 93, 93, 36, 91, 61, 10, 75, 91,
-                     10, 10, 10, 61, 92, 120, 68, 70, 70, 70, 70, 70, 126, 61, 10, 0, 0, 61, 10, 38, 46, 49, 61, 0,
-                     39, 0, 0, 46, 92, 120, 46, 36, 91, 91, 1, 0, 0, 16, 0, 0, 0, 0, 0, 0];
+        let d = vec![
+            10, 8, 68, 8, 61, 10, 126, 126, 61, 49, 10, 62, 8, 8, 61, 10, 91, 93, 93, 36, 91, 61, 10, 75, 91, 10, 10,
+            10, 61, 92, 120, 68, 70, 70, 70, 70, 70, 126, 61, 10, 0, 0, 61, 10, 38, 46, 49, 61, 0, 39, 0, 0, 46, 92,
+            120, 46, 36, 91, 91, 1, 0, 0, 16, 0, 0, 0, 0, 0, 0,
+        ];
         let mut file = Cursor::new(d);
         assert!(Ini::read_from(&mut file).is_err());
     }
@@ -2034,5 +2788,471 @@ c = d
 ";
         let ini = Ini::load_from_str(input);
         assert!(ini.is_err());
+    }
+
+    #[test]
+    fn escape_str_nothing_policy() {
+        let test_str = "\0\x07\n字'\"✨🍉杓";
+        // This policy should never escape anything.
+        let policy = EscapePolicy::Nothing;
+        assert_eq!(escape_str(test_str, policy), test_str);
+    }
+
+    #[test]
+    fn escape_str_basics() {
+        let test_backslash = r"\backslashes\";
+        let test_nul = "string with \x00nulls\x00 in it";
+        let test_controls = "|\x07| bell, |\x08| backspace, |\x7f| delete, |\x1b| escape";
+        let test_whitespace = "\t \r\n";
+
+        assert_eq!(escape_str(test_backslash, EscapePolicy::Nothing), test_backslash);
+        assert_eq!(escape_str(test_nul, EscapePolicy::Nothing), test_nul);
+        assert_eq!(escape_str(test_controls, EscapePolicy::Nothing), test_controls);
+        assert_eq!(escape_str(test_whitespace, EscapePolicy::Nothing), test_whitespace);
+
+        for policy in [
+            EscapePolicy::Basics,
+            EscapePolicy::BasicsUnicode,
+            EscapePolicy::BasicsUnicodeExtended,
+            EscapePolicy::Reserved,
+            EscapePolicy::ReservedUnicode,
+            EscapePolicy::ReservedUnicodeExtended,
+            EscapePolicy::Everything,
+        ] {
+            assert_eq!(escape_str(test_backslash, policy), r"\\backslashes\\");
+            assert_eq!(escape_str(test_nul, policy), r"string with \0nulls\0 in it");
+            assert_eq!(
+                escape_str(test_controls, policy),
+                r"|\a| bell, |\b| backspace, |\x007f| delete, |\x001b| escape"
+            );
+            assert_eq!(escape_str(test_whitespace, policy), r"\t \r\n");
+        }
+    }
+
+    #[test]
+    fn escape_str_reserved() {
+        // Test reserved characters.
+        let test_reserved = ":=;#";
+        // And characters which are *not* reserved, but look like they might be.
+        let test_punctuation = "!@$%^&*()-_+/?.>,<[]{}``";
+
+        // These policies should *not* escape reserved characters.
+        for policy in [
+            EscapePolicy::Nothing,
+            EscapePolicy::Basics,
+            EscapePolicy::BasicsUnicode,
+            EscapePolicy::BasicsUnicodeExtended,
+        ] {
+            assert_eq!(escape_str(test_reserved, policy), ":=;#");
+            assert_eq!(escape_str(test_punctuation, policy), test_punctuation);
+        }
+
+        // These should.
+        for policy in [
+            EscapePolicy::Reserved,
+            EscapePolicy::ReservedUnicodeExtended,
+            EscapePolicy::ReservedUnicode,
+            EscapePolicy::Everything,
+        ] {
+            assert_eq!(escape_str(test_reserved, policy), r"\:\=\;\#");
+            assert_eq!(escape_str(test_punctuation, policy), "!@$%^&*()-_+/?.>,<[]{}``");
+        }
+    }
+
+    #[test]
+    fn escape_str_unicode() {
+        // Test unicode escapes.
+        // The first are Basic Multilingual Plane (BMP) characters - i.e. <= U+FFFF
+        // Emoji are above U+FFFF (e.g. in the 1F???? range), and the CJK characters are in the U+20???? range.
+        // The last one is for codepoints at the edge of Rust's char type.
+        let test_unicode = r"é£∳字✨";
+        let test_emoji = r"🐱😉";
+        let test_cjk = r"𠈌𠕇";
+        let test_high_points = "\u{10ABCD}\u{10FFFF}";
+
+        let policy = EscapePolicy::Nothing;
+        assert_eq!(escape_str(test_unicode, policy), test_unicode);
+        assert_eq!(escape_str(test_emoji, policy), test_emoji);
+        assert_eq!(escape_str(test_high_points, policy), test_high_points);
+
+        // The "Unicode" policies should escape standard BMP unicode, but should *not* escape emoji or supplementary CJK codepoints.
+        // The Basics/Reserved policies should behave identically in this regard.
+        for policy in [EscapePolicy::BasicsUnicode, EscapePolicy::ReservedUnicode] {
+            assert_eq!(escape_str(test_unicode, policy), r"\x00e9\x00a3\x2233\x5b57\x2728");
+            assert_eq!(escape_str(test_emoji, policy), test_emoji);
+            assert_eq!(escape_str(test_cjk, policy), test_cjk);
+            assert_eq!(escape_str(test_high_points, policy), test_high_points);
+        }
+
+        // UnicodeExtended policies should escape both BMP and supplementary plane characters.
+        for policy in [
+            EscapePolicy::BasicsUnicodeExtended,
+            EscapePolicy::ReservedUnicodeExtended,
+        ] {
+            assert_eq!(escape_str(test_unicode, policy), r"\x00e9\x00a3\x2233\x5b57\x2728");
+            assert_eq!(escape_str(test_emoji, policy), r"\x1f431\x1f609");
+            assert_eq!(escape_str(test_cjk, policy), r"\x2020c\x20547");
+            assert_eq!(escape_str(test_high_points, policy), r"\x10abcd\x10ffff");
+        }
+    }
+
+    #[test]
+    fn iter_mut_preserve_order_in_section() {
+        let input = r"
+x2 = nc
+x1 = na
+x3 = nb
+";
+        let mut data = Ini::load_from_str(input).unwrap();
+        let section = data.general_section_mut();
+        section.iter_mut().enumerate().for_each(|(i, (_, v))| {
+            v.push_str(&i.to_string());
+        });
+        let props: Vec<_> = section.iter().collect();
+        assert_eq!(props, vec![("x2", "nc0"), ("x1", "na1"), ("x3", "nb2")]);
+    }
+
+    #[test]
+    fn preserve_order_properties_into_iter() {
+        let input = r"
+x2 = nc
+x1 = na
+x3 = nb
+";
+        let data = Ini::load_from_str(input).unwrap();
+        let (_, section) = data.into_iter().next().unwrap();
+        let props: Vec<_> = section.into_iter().collect();
+        assert_eq!(
+            props,
+            vec![
+                ("x2".to_owned(), "nc".to_owned()),
+                ("x1".to_owned(), "na".to_owned()),
+                ("x3".to_owned(), "nb".to_owned())
+            ]
+        );
+    }
+
+    #[test]
+    fn section_setter_chain() {
+        // fix issue #134
+
+        let mut ini = Ini::new();
+        let mut section_setter = ini.with_section(Some("section"));
+
+        // chained set() calls work
+        section_setter.set("a", "1").set("b", "2");
+        // separate set() calls work
+        section_setter.set("c", "3");
+
+        assert_eq!("1", section_setter.get("a").unwrap());
+        assert_eq!("2", section_setter.get("b").unwrap());
+        assert_eq!("3", section_setter.get("c").unwrap());
+
+        // overwrite values
+        section_setter.set("a", "4").set("b", "5");
+        section_setter.set("c", "6");
+
+        assert_eq!("4", section_setter.get("a").unwrap());
+        assert_eq!("5", section_setter.get("b").unwrap());
+        assert_eq!("6", section_setter.get("c").unwrap());
+
+        // delete entries
+        section_setter.delete(&"a").delete(&"b");
+        section_setter.delete(&"c");
+
+        assert!(section_setter.get("a").is_none());
+        assert!(section_setter.get("b").is_none());
+        assert!(section_setter.get("c").is_none());
+    }
+
+    #[test]
+    fn parse_enabled_indented_mutiline_value() {
+        let input = "
+[Foo]
+bar =
+    u
+    v
+
+baz = w
+  x # intentional trailing whitespace below
+   y 
+
+ z #2
+bla = a
+";
+
+        let opt = Ini::load_from_str_opt(
+            input,
+            ParseOption {
+                enabled_indented_mutiline_value: true,
+                ..ParseOption::default()
+            },
+        )
+        .unwrap();
+        let sec = opt.section(Some("Foo")).unwrap();
+        let mut iterator = sec.iter();
+        let bar = iterator.next().unwrap().1;
+        let baz = iterator.next().unwrap().1;
+        let bla = iterator.next().unwrap().1;
+        assert!(iterator.next().is_none());
+        assert_eq!(bar, "u\nv");
+        if cfg!(feature = "inline-comment") {
+            assert_eq!(baz, "w\nx\ny\n\nz");
+        } else {
+            assert_eq!(baz, "w\nx # intentional trailing whitespace below\ny\n\nz #2");
+        }
+        assert_eq!(bla, "a");
+    }
+
+    #[test]
+    fn whitespace_inside_quoted_value_should_not_be_trimed() {
+        let input = r#"
+[Foo]
+Key=   "  quoted with whitespace "  
+        "#;
+
+        let opt = Ini::load_from_str_opt(
+            input,
+            ParseOption {
+                enabled_quote: true,
+                ..ParseOption::default()
+            },
+        )
+        .unwrap();
+
+        assert_eq!("  quoted with whitespace ", opt.get_from(Some("Foo"), "Key").unwrap());
+    }
+
+    #[test]
+    fn preserve_leading_whitespace_in_keys() {
+        // Test this particular case in AWS Config files
+        // https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-files.html#cli-config-endpoint_url
+        let input = r"[profile dev]
+services=my-services
+
+[services my-services]
+dynamodb=
+  endpoint_url=http://localhost:8000
+";
+
+        let mut opts = ParseOption::default();
+        opts.enabled_preserve_key_leading_whitespace = true;
+
+        let data = Ini::load_from_str_opt(input, opts).unwrap();
+        let mut w = Vec::new();
+        data.write_to(&mut w).ok();
+        let output = String::from_utf8(w).ok().unwrap();
+
+        // Normalize line endings for cross-platform compatibility
+        let normalized_input = input.replace('\r', "");
+        let normalized_output = output.replace('\r', "");
+        assert_eq!(normalized_input, normalized_output);
+    }
+
+    #[test]
+    fn preserve_leading_whitespace_mixed_indentation() {
+        let input = r"[section]
+key1=value1
+  key2=value2
+    key3=value3
+";
+        let mut opts = ParseOption::default();
+        opts.enabled_preserve_key_leading_whitespace = true;
+
+        let data = Ini::load_from_str_opt(input, opts).unwrap();
+        let section = data.section(Some("section")).unwrap();
+
+        // Check that leading whitespace is preserved
+        assert!(section.contains_key("key1"));
+        assert!(section.contains_key("  key2"));
+        assert!(section.contains_key("    key3"));
+
+        // Check round-trip preservation with normalized line endings
+        let mut w = Vec::new();
+        data.write_to(&mut w).ok();
+        let output = String::from_utf8(w).ok().unwrap();
+        let normalized_input = input.replace('\r', "");
+        let normalized_output = output.replace('\r', "");
+        assert_eq!(normalized_input, normalized_output);
+    }
+
+    #[test]
+    fn preserve_leading_whitespace_tabs_get_escaped() {
+        // This test documents the current behavior: tabs in keys get escaped
+        let input = r"[section]
+	key1=value1
+";
+        let mut opts = ParseOption::default();
+        opts.enabled_preserve_key_leading_whitespace = true;
+
+        let data = Ini::load_from_str_opt(input, opts).unwrap();
+        let section = data.section(Some("section")).unwrap();
+
+        // The tab is preserved during parsing
+        assert!(section.contains_key("\tkey1"));
+        assert_eq!(section.get("\tkey1"), Some("value1"));
+
+        // But tabs get escaped during writing (this is expected INI behavior)
+        let mut w = Vec::new();
+        data.write_to(&mut w).ok();
+        let output = String::from_utf8(w).ok().unwrap();
+
+        // Normalize line endings and check that tab is escaped
+        let normalized_output = output.replace('\r', "");
+        let expected = "[section]\n\\tkey1=value1\n";
+        assert_eq!(normalized_output, expected);
+    }
+
+    #[test]
+    fn preserve_leading_whitespace_with_trailing_spaces() {
+        let input = r"[section]
+  key1  =value1
+    key2	=value2
+";
+        let mut opts = ParseOption::default();
+        opts.enabled_preserve_key_leading_whitespace = true;
+
+        let data = Ini::load_from_str_opt(input, opts).unwrap();
+        let section = data.section(Some("section")).unwrap();
+
+        // Leading whitespace should be preserved, trailing whitespace in keys should be trimmed
+        assert!(section.contains_key("  key1"));
+        assert!(section.contains_key("    key2"));
+        assert_eq!(section.get("  key1"), Some("value1"));
+        assert_eq!(section.get("    key2"), Some("value2"));
+    }
+
+    #[test]
+    fn section_after_whitespace_bug_reproduction() {
+        let input = "[SectionA]\nKey1=Value1\n\n  [SectionB]\n  Key2=Value2";
+
+        // Test with default options (whitespace preservation disabled)
+        let data_default = Ini::load_from_str(input).unwrap();
+
+        // Should have two sections
+        assert!(data_default.section(Some("SectionA")).is_some());
+        assert!(data_default.section(Some("SectionB")).is_some());
+
+        let section_a = data_default.section(Some("SectionA")).unwrap();
+        let section_b = data_default.section(Some("SectionB")).unwrap();
+
+        assert_eq!(section_a.get("Key1"), Some("Value1"));
+        assert_eq!(section_b.get("Key2"), Some("Value2"));
+
+        // Test with whitespace preservation enabled
+        let mut opts = ParseOption::default();
+        opts.enabled_preserve_key_leading_whitespace = true;
+        let data_preserve = Ini::load_from_str_opt(input, opts).unwrap();
+
+        // Should still have two sections
+        assert!(data_preserve.section(Some("SectionA")).is_some());
+        assert!(data_preserve.section(Some("SectionB")).is_some());
+
+        let section_a_preserve = data_preserve.section(Some("SectionA")).unwrap();
+        let section_b_preserve = data_preserve.section(Some("SectionB")).unwrap();
+
+        assert_eq!(section_a_preserve.get("Key1"), Some("Value1"));
+        // With whitespace preservation, the key includes leading whitespace
+        assert_eq!(section_b_preserve.get("  Key2"), Some("Value2"));
+    }
+
+    #[test]
+    fn section_after_tabs_and_spaces() {
+        // Test with mixed tabs and spaces before section
+        let input = "[SectionA]\nKey1=Value1\n\n\t  [SectionB]\n\t  Key2=Value2";
+
+        let data_default = Ini::load_from_str(input).unwrap();
+
+        assert!(data_default.section(Some("SectionA")).is_some());
+        assert!(data_default.section(Some("SectionB")).is_some());
+
+        let section_a = data_default.section(Some("SectionA")).unwrap();
+        let section_b = data_default.section(Some("SectionB")).unwrap();
+
+        assert_eq!(section_a.get("Key1"), Some("Value1"));
+        assert_eq!(section_b.get("Key2"), Some("Value2"));
+    }
+
+    #[test]
+    fn multiple_sections_with_whitespace() {
+        // Test multiple sections with whitespace
+        let input = "[SectionA]\nKey1=Value1\n\n  [SectionB]\n  Key2=Value2\n\n    [SectionC]\n    Key3=Value3";
+
+        let data = Ini::load_from_str(input).unwrap();
+
+        assert!(data.section(Some("SectionA")).is_some());
+        assert!(data.section(Some("SectionB")).is_some());
+        assert!(data.section(Some("SectionC")).is_some());
+
+        assert_eq!(data.section(Some("SectionA")).unwrap().get("Key1"), Some("Value1"));
+        assert_eq!(data.section(Some("SectionB")).unwrap().get("Key2"), Some("Value2"));
+        assert_eq!(data.section(Some("SectionC")).unwrap().get("Key3"), Some("Value3"));
+    }
+
+    #[test]
+    fn section_after_whitespace_bug_reproduction_preserve_enabled() {
+        let input = "[SectionA]\nKey1=Value1\n\n  [SectionB]\n  Key2=Value2";
+
+        let mut opts = ParseOption::default();
+        opts.enabled_preserve_key_leading_whitespace = true;
+        let data = Ini::load_from_str_opt(input, opts).unwrap();
+
+        assert!(data.section(Some("SectionA")).is_some());
+        assert!(data.section(Some("SectionB")).is_some());
+
+        let section_a = data.section(Some("SectionA")).unwrap();
+        let section_b = data.section(Some("SectionB")).unwrap();
+
+        assert_eq!(section_a.get("Key1"), Some("Value1"));
+        assert_eq!(section_b.get("  Key2"), Some("Value2"));
+    }
+
+    #[test]
+    fn section_after_tabs_and_spaces_preserve_enabled() {
+        let input = "[SectionA]\nKey1=Value1\n\n\t  [SectionB]\n\t  Key2=Value2";
+
+        let mut opts = ParseOption::default();
+        opts.enabled_preserve_key_leading_whitespace = true;
+        let data = Ini::load_from_str_opt(input, opts).unwrap();
+
+        assert!(data.section(Some("SectionA")).is_some());
+        assert!(data.section(Some("SectionB")).is_some());
+
+        let section_a = data.section(Some("SectionA")).unwrap();
+        let section_b = data.section(Some("SectionB")).unwrap();
+
+        assert_eq!(section_a.get("Key1"), Some("Value1"));
+        assert_eq!(section_b.get("\t  Key2"), Some("Value2"));
+    }
+
+    #[test]
+    fn multiple_sections_with_whitespace_preserve_enabled() {
+        let input = "[SectionA]\nKey1=Value1\n\n  [SectionB]\n  Key2=Value2\n\n    [SectionC]\n    Key3=Value3";
+
+        let mut opts = ParseOption::default();
+        opts.enabled_preserve_key_leading_whitespace = true;
+        let data = Ini::load_from_str_opt(input, opts).unwrap();
+
+        assert!(data.section(Some("SectionA")).is_some());
+        assert!(data.section(Some("SectionB")).is_some());
+        assert!(data.section(Some("SectionC")).is_some());
+
+        assert_eq!(data.section(Some("SectionA")).unwrap().get("Key1"), Some("Value1"));
+        assert_eq!(data.section(Some("SectionB")).unwrap().get("  Key2"), Some("Value2"));
+        assert_eq!(data.section(Some("SectionC")).unwrap().get("    Key3"), Some("Value3"));
+    }
+
+    #[test]
+    fn general_section_with_key_leading_whitespace() {
+        let input = "\n\n\n\r\n  key1=value1\n\tkey2=value2\nkey3=value3\n[Section]\nkeyA=valueA";
+        let mut opts = ParseOption::default();
+        opts.enabled_preserve_key_leading_whitespace = true;
+        let data = Ini::load_from_str_opt(input, opts).unwrap();
+        let general = data.general_section();
+        assert_eq!(general.get("  key1"), Some("value1"));
+        assert_eq!(general.get("\tkey2"), Some("value2"));
+        assert_eq!(general.get("key3"), Some("value3"));
+        let section = data.section(Some("Section")).unwrap();
+        assert_eq!(section.get("keyA"), Some("valueA"));
     }
 }

@@ -2,12 +2,13 @@ use std::error::Error;
 use std::fmt;
 use std::mem;
 
-use yaml_rust as yaml;
+use yaml_rust2 as yaml;
 
+use crate::format;
 use crate::map::Map;
 use crate::value::{Value, ValueKind};
 
-pub fn parse(
+pub(crate) fn parse(
     uri: Option<&String>,
     text: &str,
 ) -> Result<Map<String, Value>, Box<dyn Error + Send + Sync>> {
@@ -21,13 +22,8 @@ pub fn parse(
         }
     };
 
-    // TODO: Have a proper error fire if the root of a file is ever not a Table
     let value = from_yaml_value(uri, &root)?;
-    match value.kind {
-        ValueKind::Table(map) => Ok(map),
-
-        _ => Ok(Map::new()),
-    }
+    format::extract_root_table(uri, value)
 }
 
 fn from_yaml_value(
@@ -41,7 +37,7 @@ fn from_yaml_value(
             value
                 .parse::<f64>()
                 .map_err(|_| {
-                    Box::new(FloatParsingError(value.to_string())) as Box<(dyn Error + Send + Sync)>
+                    Box::new(FloatParsingError(value.clone())) as Box<dyn Error + Send + Sync>
                 })
                 .map(ValueKind::Float)
                 .map(|f| Value::new(uri, f))
@@ -51,10 +47,13 @@ fn from_yaml_value(
         yaml::Yaml::Hash(ref table) => {
             let mut m = Map::new();
             for (key, value) in table {
-                if let Some(k) = key.as_str() {
-                    m.insert(k.to_owned(), from_yaml_value(uri, value)?);
-                }
-                // TODO: should we do anything for non-string keys?
+                match key {
+                    yaml::Yaml::String(k) => m.insert(k.to_owned(), from_yaml_value(uri, value)?),
+                    yaml::Yaml::Integer(k) => m.insert(k.to_string(), from_yaml_value(uri, value)?),
+                    yaml::Yaml::Boolean(k) => m.insert(k.to_string(), from_yaml_value(uri, value)?),
+                    yaml::Yaml::Real(k) => m.insert(k.to_owned(), from_yaml_value(uri, value)?),
+                    other => Err(Box::new(UnsupportedHashKeyError(format!("{other:?}"))))?,
+                };
             }
             Ok(Value::new(uri, ValueKind::Table(m)))
         }
@@ -81,7 +80,7 @@ fn from_yaml_value(
 struct MultipleDocumentsError(usize);
 
 impl fmt::Display for MultipleDocumentsError {
-    fn fmt(&self, format: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, format: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(format, "Got {} YAML documents, expected 1", self.0)
     }
 }
@@ -96,7 +95,7 @@ impl Error for MultipleDocumentsError {
 struct FloatParsingError(String);
 
 impl fmt::Display for FloatParsingError {
-    fn fmt(&self, format: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, format: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(format, "Parsing {} as floating point number failed", self.0)
     }
 }
@@ -104,5 +103,24 @@ impl fmt::Display for FloatParsingError {
 impl Error for FloatParsingError {
     fn description(&self) -> &str {
         "Floating point number parsing failed"
+    }
+}
+
+#[derive(Debug, Clone)]
+struct UnsupportedHashKeyError(String);
+
+impl fmt::Display for UnsupportedHashKeyError {
+    fn fmt(&self, format: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            format,
+            "Cannot parse {} because it is an unsupported hash key type",
+            self.0
+        )
+    }
+}
+
+impl Error for UnsupportedHashKeyError {
+    fn description(&self) -> &str {
+        "Unsupported yaml hash key found"
     }
 }

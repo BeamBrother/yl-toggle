@@ -24,7 +24,7 @@ For example, modify a toggle's crowd rules with the following request:
 ```bash
 curl -i 'https://yl-toggle.io/api/projects/{PROJECT_KEY}/environments/{ENV_KEY}/toggles/{TOGGLE_KEY}/targeting' \
   -X 'PATCH' \
-  -H 'Authorization: ${API_ACCESS_TOKEN}' \
+  -H 'Authorization: $API_ACCESS_TOKEN' \
   -H 'Content-Type: application/json' \
   --data-raw '{
     "comment":"test api change",
@@ -74,4 +74,3 @@ curl -i 'https://yl-toggle.io/api/projects/{PROJECT_KEY}/environments/{ENV_KEY}/
 ### OpenAPI Specification
 
 We use the REST specification with OpenAPI, you can find our documentation here: [yl-toggle OpenAPI](https://yl-toggle.io/api-docs)。.
-

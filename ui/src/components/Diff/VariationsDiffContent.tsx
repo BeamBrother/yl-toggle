@@ -66,6 +66,7 @@ const VariationsCountDiffItem: React.FC<{
 };
 
 interface VariationsDiffContentProps {
+  children?: import('react').ReactNode;
   content: DiffResult;
 }
 

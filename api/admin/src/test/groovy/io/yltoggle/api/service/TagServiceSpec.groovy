@@ -6,7 +6,7 @@ import io.yltoggle.api.dao.repository.TagRepository
 import org.hibernate.internal.SessionImpl
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 class TagServiceSpec extends Specification {
 

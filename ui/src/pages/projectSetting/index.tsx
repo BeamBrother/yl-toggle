@@ -2,7 +2,6 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import  { Radio, CheckboxProps, Form, Dropdown, DropdownProps, DropdownItemProps, Popup } from 'semantic-ui-react';
-import { useParams } from 'react-router-dom';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 import { useForm } from 'react-hook-form';
@@ -20,8 +19,10 @@ import { IMember, IMemberList } from 'interfaces/member';
 import { IOption } from 'interfaces/targeting';
 import { OWNER } from 'constants/auth';
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IParams {
+  [key: string]: string | undefined;
   projectKey: string;
   environmentKey: string;
 }
@@ -209,25 +210,25 @@ const ProjectSetting = () => {
                                 trigger={
                                   <Radio
                                     size='mini'
-                                    toggle 
+                                    toggle
                                     checked={setting.enable}
                                     onChange={(e: SyntheticEvent, data: CheckboxProps) => {
                                       saveToggleDisable(setting.environmentKey, !!data.checked);
                                       trigger(`approval-reviewers-${index}`);
-                                    }} 
-                                    className={styles['approval-status']} 
+                                    }}
+                                    className={styles['approval-status']}
                                     disabled={!OWNER.includes(userInfo.role) || setting.locked}
                                   />
                                 }
                                 content={
-                                  !OWNER.includes(userInfo.role) 
-                                    ? intl.formatMessage({ id: 'toggles.settings.approval.enable.writer.tips' }) 
+                                  !OWNER.includes(userInfo.role)
+                                    ? intl.formatMessage({ id: 'toggles.settings.approval.enable.writer.tips' })
                                     : intl.formatMessage({ id: 'toggles.settings.approval.enable.tips' })
                                   }
                                 position='top left'
                                 wide
                               />
-                              
+
                             </Form.Field>
                           </Form.Group>
                         );
@@ -237,10 +238,10 @@ const ProjectSetting = () => {
                 </div>
               </div>
               <div className={styles.footer}>
-                <Button 
-                  primary 
-                  type='submit' 
-                  className={styles['publish-btn']} 
+                <Button
+                  primary
+                  type='submit'
+                  className={styles['publish-btn']}
                   onClick={handleSubmit}
                   disabled={!OWNER.includes(userInfo.role) || isSame || submitLoading}
                   loading={submitLoading}

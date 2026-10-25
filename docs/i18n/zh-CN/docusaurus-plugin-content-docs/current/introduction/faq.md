@@ -40,10 +40,10 @@ import TabItem from '@theme/TabItem';
 
   - RemoteUrl
     - 官方测试环境： https://yl-toggle.io/server
-    - Docker-compose 环境： http://{运行 docker compose 机器IP地址}:4007
-    - Docker image 部署或编译部署： http://{YT_SERVER_IP}:{FP_SERVER_PORT}
-  - ServerSdkKey: *<[如何获取 ServerSdkKey](/tutorials/backend_custom_attribute#编写代码)>*
-  - ClientSdkKey: *<[如何获取 ClientSdkKey](/tutorials/backend_custom_attribute#控制前端程序)>*
+    - Docker-compose 环境： `http://{运行 docker compose 机器IP地址}:4007`
+    - Docker image 部署或编译部署： `http://{YT_SERVER_IP}:{FP_SERVER_PORT}`
+  - ServerSdkKey: *[如何获取 ServerSdkKey](/tutorials/backend_custom_attribute#编写代码)*
+  - ClientSdkKey: *[如何获取 ClientSdkKey](/tutorials/backend_custom_attribute#控制前端程序)*
 
 - 检查 yl-toggle Server 服务是否正常：
 
@@ -52,8 +52,8 @@ import TabItem from '@theme/TabItem';
   - Docker 环境或编译部署环境:
 
     ```bash
-    curl "http://{YT_SERVER_IP}:{FP_SERVER_PORT}"
-    
+    curl "`http://{YT_SERVER_IP}:{FP_SERVER_PORT}`"
+
     <h1>yl-toggle Server</h1> # <- 显示该信息则表示服务正常
     ```
 
@@ -70,10 +70,10 @@ import TabItem from '@theme/TabItem';
           // highlight-end
           .build();
   ~~~
-  
+
     </TabItem>
     <TabItem value="golang" label="Go">
-  
+
   ~~~go title="example/main.go"
   config := yl-toggle.YTConfig{
       RemoteUrl:       RemoteUrl,
@@ -86,7 +86,7 @@ import TabItem from '@theme/TabItem';
 
   </TabItem>
   <TabItem value="rust" label="Rust">
-  
+
   ~~~rust title="examples/demo.rs"
   let config = YTConfig {
       remote_url: remote_url,
@@ -96,10 +96,10 @@ import TabItem from '@theme/TabItem';
     // highlight-end
   };
   ~~~
-  
+
   </TabItem>
   <TabItem value="python" label="Python">
-  
+
   ~~~python title="demo.py"
   config = fp.Config(remote_uri=remote_url,
                      sync_mode='polling',
@@ -107,7 +107,7 @@ import TabItem from '@theme/TabItem';
                      refresh_interval=5) #seconds
    									# highlight-end
   ~~~
-  
+
   </TabItem>
   <TabItem value="nodejs" label="Node.js">
 
@@ -122,7 +122,7 @@ import TabItem from '@theme/TabItem';
   ~~~
   </TabItem>
   <TabItem value="JavaScript" label="JavaScript">
-  
+
   ~~~js title="example/index.html"
   const fp = new YlToggle({
     remoteUrl: /* remoteUrl */,
@@ -133,11 +133,11 @@ import TabItem from '@theme/TabItem';
     // highlight-end
   })
   ~~~
-  
+
   </TabItem>
 
   <TabItem value="MiniProgram" label="MiniProgram">
-  
+
   ~~~js title="example/app.js"
   import { initialize } from "yl-toggle-client-sdk-miniprogram";
 
@@ -150,12 +150,12 @@ import TabItem from '@theme/TabItem';
     // highlight-end
   })
   ~~~
-  
+
   </TabItem>
   <TabItem value="React" label="React">
-  
+
   ~~~js title="demo.tsx"
-  <FPProvider 
+  <FPProvider
     config={{
       remoteUrl: /* remoteUrl */,
       clientSdkKey: /* clientSdkKey */,
@@ -168,7 +168,7 @@ import TabItem from '@theme/TabItem';
     <div className="App"></div>
   </FPProvider>
   ~~~
-  
+
   </TabItem>
 
   </Tabs>
@@ -178,13 +178,13 @@ import TabItem from '@theme/TabItem';
 
   <Tabs groupId="language">
   <TabItem value="JavaScript" label="JavaScript">
-  
+
   ~~~js title="example/app.js"
   fp.on("error", function() {
     console.log("JavaScript SDK初始化报错了！")
   })
   ~~~
-  
+
   </TabItem>
 
   <TabItem value="MiniProgram" label="MiniProgram">
@@ -232,7 +232,7 @@ import TabItem from '@theme/TabItem';
     </TabItem>
 
     <TabItem value="golang" label="Go">
-  
+
     ~~~go title="example/main.go"
     value := 99.9
     fp.track("YOUR_CUSTOM_EVENT_NAME", user, &value);
@@ -248,18 +248,18 @@ import TabItem from '@theme/TabItem';
 
     </TabItem>
     <TabItem value="python" label="Python">
-  
+
     ~~~python title="demo.py"
     fp.track("YOUR_CUSTOM_EVENT_NAME", user, 5.5);
     ~~~
-    
+
     </TabItem>
     <TabItem value="nodejs" label="Node.js">
 
     ~~~js title="example/demo.js"
     fp.track("YOUR_CUSTOM_EVENT_NAME", user, 5.5);
     ~~~
-    
+
     </TabItem>
 
   </Tabs>
@@ -273,7 +273,7 @@ import TabItem from '@theme/TabItem';
     ~~~js title="example/index.html"
     fp.track('YOUR_CUSTOM_EVENT_NAME', 5.5);
     ~~~
-    
+
     </TabItem>
 
     <TabItem value="Android" label="Android">
@@ -281,7 +281,7 @@ import TabItem from '@theme/TabItem';
     ~~~bash
     fp.track("YOUR_CUSTOM_EVENT_NAME", 5.5)
     ~~~
-    
+
     </TabItem>
 
     <TabItem value="Swift" label="Swift">
@@ -289,7 +289,7 @@ import TabItem from '@theme/TabItem';
     ~~~bash
     fp.track(event: "YOUR_CUSTOM_EVENT_NAME", value: 5.5)
     ~~~
-    
+
     </TabItem>
 
     <TabItem value="Objective-C" label="Objective-C">
@@ -297,7 +297,7 @@ import TabItem from '@theme/TabItem';
     ~~~bash
     [fp trackWithEvent:@"YOUR_CUSTOM_EVENT_NAME" value:5.5];
     ~~~
-    
+
     </TabItem>
 
     <TabItem value="MiniProgram" label="MiniProgram">
@@ -305,7 +305,7 @@ import TabItem from '@theme/TabItem';
     ~~~js title="example/app.js"
     ylToggleClient.track('YOUR_CUSTOM_EVENT_NAME', 5.5);
     ~~~
-    
+
     </TabItem>
 
     <TabItem value="React" label="React">
@@ -317,12 +317,12 @@ import TabItem from '@theme/TabItem';
 
     fp.track('YOUR_CUSTOM_EVENT_NAME', 5.5);
     ~~~
-    
+
     </TabItem>
 
   </Tabs>
 
-  需要注意的是 `YOUR_CUSTOM_EVENT_NAME` 必须和指标中的 “事件名称” 保持一致。 
+  需要注意的是 `YOUR_CUSTOM_EVENT_NAME` 必须和指标中的 “事件名称” 保持一致。
 
 
 - 如指标的事件类型是 “页面事件” 或 “点击事件”，请使用 JavaScript 和 React SDK 接入*（无须手工上报事件）*，并且检查指标中所设置 “目标页面URL” 和需要上报事件的页面 URL 是否匹配。其中 “点击事件” 还需要保证所设置“点击元素” 的 CSS 选择器和实际访问页面的元素的 path 是否匹配。

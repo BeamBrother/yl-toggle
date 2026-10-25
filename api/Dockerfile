@@ -1,11 +1,12 @@
-# The jar is prebuilt by Maven; keeping source out of the runtime image makes
-# builds deterministic and avoids apk/network access. BusyBox wget is used by
-# the Compose health check.
-FROM openjdk:8-jre-alpine
+# Multi-stage source build for the Spring Boot admin API.
+FROM maven:3.9-eclipse-temurin-25 AS build
+WORKDIR /src
+COPY . ./
+RUN --mount=type=cache,target=/root/.m2/repository mvn -B -DskipTests clean package
 
+FROM eclipse-temurin:25-jre-alpine
 ENV JVM_ARGS=
-
-COPY admin/target/api.jar /yl-toggle-api.jar
-
-ENTRYPOINT ["sh", "-c", "exec java $JVM_ARGS -jar /yl-toggle-api.jar"]
-
+WORKDIR /app
+COPY --from=build /src/admin/target/api.jar /app/api.jar
+EXPOSE 4008
+ENTRYPOINT ["sh", "-c", "exec java $JVM_ARGS -jar /app/api.jar"]

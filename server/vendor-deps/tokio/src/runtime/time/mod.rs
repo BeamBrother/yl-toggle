@@ -8,7 +8,7 @@
 
 mod entry;
 pub(crate) use entry::TimerEntry;
-use entry::{EntryList, TimerHandle, TimerShared, MAX_SAFE_MILLIS_DURATION};
+use entry::{TimerHandle, TimerShared, MAX_SAFE_MILLIS_DURATION};
 
 mod handle;
 pub(crate) use self::handle::Handle;
@@ -18,14 +18,18 @@ pub(crate) use source::TimeSource;
 
 mod wheel;
 
+#[cfg(all(tokio_unstable, feature = "rt-multi-thread"))]
+use super::time_alt;
+
 use crate::loom::sync::atomic::{AtomicBool, Ordering};
 use crate::loom::sync::Mutex;
 use crate::runtime::driver::{self, IoHandle, IoStack};
 use crate::time::error::Error;
 use crate::time::{Clock, Duration};
+use crate::util::WakeList;
 
 use std::fmt;
-use std::{num::NonZeroU64, ptr::NonNull, task::Waker};
+use std::{num::NonZeroU64, ptr::NonNull};
 
 /// Time implementation that drives [`Sleep`][sleep], [`Interval`][interval], and [`Timeout`][timeout].
 ///
@@ -88,29 +92,42 @@ pub(crate) struct Driver {
     park: IoStack,
 }
 
-/// Timer state shared between `Driver`, `Handle`, and `Registration`.
-struct Inner {
-    // The state is split like this so `Handle` can access `is_shutdown` without locking the mutex
-    pub(super) state: Mutex<InnerState>,
+enum Inner {
+    Traditional {
+        // The state is split like this so `Handle` can access `is_shutdown` without locking the mutex
+        state: Mutex<InnerState>,
 
-    /// True if the driver is being shutdown.
-    pub(super) is_shutdown: AtomicBool,
+        /// True if the driver is being shutdown.
+        is_shutdown: AtomicBool,
 
-    // When `true`, a call to `park_timeout` should immediately return and time
-    // should not advance. One reason for this to be `true` is if the task
-    // passed to `Runtime::block_on` called `task::yield_now()`.
-    //
-    // While it may look racy, it only has any effect when the clock is paused
-    // and pausing the clock is restricted to a single-threaded runtime.
-    #[cfg(feature = "test-util")]
-    did_wake: AtomicBool,
+        // When `true`, a call to `park_timeout` should immediately return and time
+        // should not advance. One reason for this to be `true` is if the task
+        // passed to `Runtime::block_on` called `task::yield_now()`.
+        //
+        // While it may look racy, it only has any effect when the clock is paused
+        // and pausing the clock is restricted to a single-threaded runtime.
+        #[cfg(feature = "test-util")]
+        did_wake: AtomicBool,
+    },
+
+    #[cfg(all(tokio_unstable, feature = "rt-multi-thread"))]
+    Alternative {
+        /// True if the driver is being shutdown.
+        is_shutdown: AtomicBool,
+
+        // When `true`, a call to `park_timeout` should immediately return and time
+        // should not advance. One reason for this to be `true` is if the task
+        // passed to `Runtime::block_on` called `task::yield_now()`.
+        //
+        // While it may look racy, it only has any effect when the clock is paused
+        // and pausing the clock is restricted to a single-threaded runtime.
+        #[cfg(feature = "test-util")]
+        did_wake: AtomicBool,
+    },
 }
 
 /// Time state shared which must be protected by a `Mutex`
 struct InnerState {
-    /// The last published timer `elapsed` value.
-    elapsed: u64,
-
     /// The earliest time at which we promise to wake up without unparking.
     next_wake: Option<NonZeroU64>,
 
@@ -130,9 +147,8 @@ impl Driver {
 
         let handle = Handle {
             time_source,
-            inner: Inner {
+            inner: Inner::Traditional {
                 state: Mutex::new(InnerState {
-                    elapsed: 0,
                     next_wake: None,
                     wheel: wheel::Wheel::new(),
                 }),
@@ -148,12 +164,26 @@ impl Driver {
         (driver, handle)
     }
 
+    #[cfg(all(tokio_unstable, feature = "rt-multi-thread"))]
+    pub(crate) fn new_alt(clock: &Clock) -> Handle {
+        let time_source = TimeSource::new(clock);
+
+        Handle {
+            time_source,
+            inner: Inner::Alternative {
+                is_shutdown: AtomicBool::new(false),
+                #[cfg(feature = "test-util")]
+                did_wake: AtomicBool::new(false),
+            },
+        }
+    }
+
     pub(crate) fn park(&mut self, handle: &driver::Handle) {
-        self.park_internal(handle, None)
+        self.park_internal(handle, None);
     }
 
     pub(crate) fn park_timeout(&mut self, handle: &driver::Handle, duration: Duration) {
-        self.park_internal(handle, Some(duration))
+        self.park_internal(handle, Some(duration));
     }
 
     pub(crate) fn shutdown(&mut self, rt_handle: &driver::Handle) {
@@ -163,7 +193,15 @@ impl Driver {
             return;
         }
 
-        handle.inner.is_shutdown.store(true, Ordering::SeqCst);
+        match &handle.inner {
+            Inner::Traditional { is_shutdown, .. } => {
+                is_shutdown.store(true, Ordering::SeqCst);
+            }
+            #[cfg(all(tokio_unstable, feature = "rt-multi-thread"))]
+            Inner::Alternative { is_shutdown, .. } => {
+                is_shutdown.store(true, Ordering::SeqCst);
+            }
+        }
 
         // Advance time forward to the end of time.
 
@@ -174,7 +212,7 @@ impl Driver {
 
     fn park_internal(&mut self, rt_handle: &driver::Handle, limit: Option<Duration>) {
         let handle = rt_handle.time();
-        let mut lock = handle.inner.state.lock();
+        let mut lock = handle.inner.lock();
 
         assert!(!handle.is_shutdown());
 
@@ -249,27 +287,25 @@ impl Driver {
 }
 
 impl Handle {
-    /// Runs timer related logic, and returns the next wakeup time
     pub(self) fn process(&self, clock: &Clock) {
         let now = self.time_source().now(clock);
 
-        self.process_at_time(now)
+        self.process_at_time(now);
     }
 
     pub(self) fn process_at_time(&self, mut now: u64) {
-        let mut waker_list: [Option<Waker>; 32] = Default::default();
-        let mut waker_idx = 0;
+        let mut waker_list = WakeList::new();
 
         let mut lock = self.inner.lock();
 
-        if now < lock.elapsed {
+        if now < lock.wheel.elapsed() {
             // Time went backwards! This normally shouldn't happen as the Rust language
             // guarantees that an Instant is monotonic, but can happen when running
             // Linux in a VM on a Windows host due to std incorrectly trusting the
             // hardware clock to be monotonic.
             //
             // See <https://github.com/tokio-rs/tokio/issues/3619> for more information.
-            now = lock.elapsed;
+            now = lock.wheel.elapsed();
         }
 
         while let Some(entry) = lock.wheel.poll(now) {
@@ -277,27 +313,19 @@ impl Handle {
 
             // SAFETY: We hold the driver lock, and just removed the entry from any linked lists.
             if let Some(waker) = unsafe { entry.fire(Ok(())) } {
-                waker_list[waker_idx] = Some(waker);
+                waker_list.push(waker);
 
-                waker_idx += 1;
-
-                if waker_idx == waker_list.len() {
+                if !waker_list.can_push() {
                     // Wake a batch of wakers. To avoid deadlock, we must do this with the lock temporarily dropped.
                     drop(lock);
 
-                    for waker in waker_list.iter_mut() {
-                        waker.take().unwrap().wake();
-                    }
-
-                    waker_idx = 0;
+                    waker_list.wake_all();
 
                     lock = self.inner.lock();
                 }
             }
         }
 
-        // Update the elapsed cache
-        lock.elapsed = lock.wheel.elapsed();
         lock.next_wake = lock
             .wheel
             .poll_at()
@@ -305,9 +333,38 @@ impl Handle {
 
         drop(lock);
 
-        for waker in waker_list[0..waker_idx].iter_mut() {
-            waker.take().unwrap().wake();
+        waker_list.wake_all();
+    }
+
+    #[cfg(all(tokio_unstable, feature = "rt-multi-thread"))]
+    pub(crate) fn process_at_time_alt(
+        &self,
+        wheel: &mut time_alt::Wheel,
+        mut now: u64,
+        wake_queue: &mut time_alt::WakeQueue,
+    ) {
+        if now < wheel.elapsed() {
+            // Time went backwards! This normally shouldn't happen as the Rust language
+            // guarantees that an Instant is monotonic, but can happen when running
+            // Linux in a VM on a Windows host due to std incorrectly trusting the
+            // hardware clock to be monotonic.
+            //
+            // See <https://github.com/tokio-rs/tokio/issues/3619> for more information.
+            now = wheel.elapsed();
         }
+
+        wheel.take_expired(now, wake_queue);
+    }
+
+    #[cfg(all(tokio_unstable, feature = "rt-multi-thread"))]
+    pub(crate) fn shutdown_alt(&self, wheel: &mut time_alt::Wheel) {
+        // self.is_shutdown.store(true, Ordering::SeqCst);
+        // Advance time forward to the end of time.
+        // This will ensure that all timers are fired.
+        let max_tick = u64::MAX;
+        let mut wake_queue = time_alt::WakeQueue::new();
+        self.process_at_time_alt(wheel, max_tick, &mut wake_queue);
+        wake_queue.wake_all();
     }
 
     /// Removes a registered timer from the driver.
@@ -328,7 +385,9 @@ impl Handle {
                 lock.wheel.remove(entry);
             }
 
-            entry.as_ref().handle().fire(Ok(()));
+            let waker = entry.as_ref().handle().fire(Ok(()));
+            drop(lock);
+            drop(waker);
         }
     }
 
@@ -368,8 +427,7 @@ impl Handle {
                     Ok(when) => {
                         if lock
                             .next_wake
-                            .map(|next_wake| when < next_wake.get())
-                            .unwrap_or(true)
+                            .is_none_or(|next_wake| when < next_wake.get())
                         {
                             unpark.unpark();
                         }
@@ -394,8 +452,12 @@ impl Handle {
     }
 
     cfg_test_util! {
-        fn did_wake(&self) -> bool {
-            self.inner.did_wake.swap(false, Ordering::SeqCst)
+        pub(super) fn did_wake(&self) -> bool {
+            match &self.inner {
+                Inner::Traditional { did_wake, .. } => did_wake.swap(false, Ordering::SeqCst),
+                #[cfg(all(tokio_unstable, feature = "rt-multi-thread"))]
+                Inner::Alternative { did_wake, .. } => did_wake.swap(false, Ordering::SeqCst),
+            }
         }
     }
 }
@@ -405,12 +467,20 @@ impl Handle {
 impl Inner {
     /// Locks the driver's inner structure
     pub(super) fn lock(&self) -> crate::loom::sync::MutexGuard<'_, InnerState> {
-        self.state.lock()
+        match self {
+            Inner::Traditional { state, .. } => state.lock(),
+            #[cfg(all(tokio_unstable, feature = "rt-multi-thread"))]
+            Inner::Alternative { .. } => unreachable!("unreachable in alternative timer"),
+        }
     }
 
     // Check whether the driver has been shutdown
     pub(super) fn is_shutdown(&self) -> bool {
-        self.is_shutdown.load(Ordering::SeqCst)
+        match self {
+            Inner::Traditional { is_shutdown, .. } => is_shutdown.load(Ordering::SeqCst),
+            #[cfg(all(tokio_unstable, feature = "rt-multi-thread"))]
+            Inner::Alternative { is_shutdown, .. } => is_shutdown.load(Ordering::SeqCst),
+        }
     }
 }
 

@@ -1,10 +1,10 @@
 # axum
 
-`axum` is a web application framework that focuses on ergonomics and modularity.
+`axum` is an HTTP routing and request-handling library that focuses on ergonomics and modularity.
 
 [![Build status](https://github.com/tokio-rs/axum/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/tokio-rs/axum/actions/workflows/CI.yml)
 [![Crates.io](https://img.shields.io/crates/v/axum)](https://crates.io/crates/axum)
-[![Documentation](https://docs.rs/axum/badge.svg)](https://docs.rs/axum)
+[![Documentation](https://docs.rs/axum/badge.svg)][docs]
 
 More information about this crate can be found in the [crate documentation][docs].
 
@@ -17,7 +17,7 @@ More information about this crate can be found in the [crate documentation][docs
 - Take full advantage of the [`tower`] and [`tower-http`] ecosystem of
   middleware, services, and utilities.
 
-In particular the last point is what sets `axum` apart from other frameworks.
+In particular the last point is what sets `axum` apart from other libraries / frameworks.
 `axum` doesn't have its own middleware system but instead uses
 [`tower::Service`]. This means `axum` gets timeouts, tracing, compression,
 authorization, and more, for free. It also enables you to share middleware with
@@ -29,11 +29,9 @@ applications written using [`hyper`] or [`tonic`].
 use axum::{
     routing::{get, post},
     http::StatusCode,
-    response::IntoResponse,
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
-use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() {
@@ -47,14 +45,9 @@ async fn main() {
         // `POST /users` goes to `create_user`
         .route("/users", post(create_user));
 
-    // run our app with hyper
-    // `axum::Server` is a re-export of `hyper::Server`
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    tracing::debug!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    // run our app with hyper, listening globally on port 3000
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 }
 
 // basic handler that responds with a static string
@@ -66,7 +59,7 @@ async fn create_user(
     // this argument tells axum to parse the request body
     // as JSON into a `CreateUser` type
     Json(payload): Json<CreateUser>,
-) -> impl IntoResponse {
+) -> (StatusCode, Json<User>) {
     // insert your application logic here
     let user = User {
         id: 1337,
@@ -111,7 +104,7 @@ This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in
 
 ## Minimum supported Rust version
 
-axum's MSRV is 1.56.
+axum's MSRV is 1.80.
 
 ## Examples
 
@@ -121,7 +114,7 @@ The [examples] folder contains various examples of how to use `axum`. The
 ## Getting Help
 
 In the `axum`'s repo we also have a [number of examples][examples] showing how
-to put everything together. Community-maintained [showcases] and [tutorials] also demonstrate how to use `axum` for real-world applications. You're also welcome to ask in the [Discord channel][chat] or open an [issue] with your question.
+to put everything together. Community-maintained [showcases] and [tutorials] also demonstrate how to use `axum` for real-world applications. You're also welcome to ask in the [Discord channel][chat] or open a [discussion] with your question.
 
 ## Community projects
 
@@ -130,7 +123,7 @@ built with `axum`.
 
 ## Contributing
 
-:balloon: Thanks for your help improving the project! We are so happy to have
+🎈 Thanks for your help improving the project! We are so happy to have
 you! We have a [contributing guide][contributing] to help you get involved in the
 `axum` project.
 
@@ -153,7 +146,7 @@ additional terms or conditions.
 [`tonic`]: https://crates.io/crates/tonic
 [contributing]: https://github.com/tokio-rs/axum/blob/main/CONTRIBUTING.md
 [chat]: https://discord.gg/tokio
-[issue]: https://github.com/tokio-rs/axum/issues/new
+[discussion]: https://github.com/tokio-rs/axum/discussions/new?category=q-a
 [`tower::Service`]: https://docs.rs/tower/latest/tower/trait.Service.html
 [ecosystem]: https://github.com/tokio-rs/axum/blob/main/ECOSYSTEM.md
 [showcases]: https://github.com/tokio-rs/axum/blob/main/ECOSYSTEM.md#project-showcase

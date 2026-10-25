@@ -4,6 +4,7 @@ import idiff, { ChangeItem } from './diff';
 import styles from './DiffSection.module.scss';
 
 export interface DiffSectionProps {
+  children?: import('react').ReactNode;
   title: string;
   before?: unknown;
   after?: unknown;

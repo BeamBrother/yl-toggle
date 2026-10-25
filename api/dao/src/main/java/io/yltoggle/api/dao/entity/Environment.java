@@ -15,14 +15,14 @@ import org.hibernate.annotations.JoinColumnOrFormula;
 import org.hibernate.annotations.JoinColumnsOrFormulas;
 import org.hibernate.annotations.ParamDef;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.io.Serializable;
 
 @EqualsAndHashCode(exclude = "project")
@@ -36,11 +36,11 @@ import java.io.Serializable;
 @Table(name = "environment")
 @DynamicInsert
 @EntityListeners(TenantEntityListener.class)
-@FilterDef(name = "tenantFilter", parameters = {@ParamDef(name = "organizationId", type = "long")})
+@FilterDef(name = "tenantFilter", parameters = {@ParamDef(name = "organizationId", type = Long.class)})
 @Filter(name = "tenantFilter", condition = "organization_id = :organizationId")
-@FilterDef(name = "deletedFilter", parameters = {@ParamDef(name = "deleted", type = "boolean")})
+@FilterDef(name = "deletedFilter", parameters = {@ParamDef(name = "deleted", type = Boolean.class)})
 @Filter(name = "deletedFilter", condition = "deleted = :deleted")
-@FilterDef(name = "archivedFilter", parameters = {@ParamDef(name = "archived", type = "boolean")})
+@FilterDef(name = "archivedFilter", parameters = {@ParamDef(name = "archived", type = Boolean.class)})
 @Filter(name = "archivedFilter", condition = "archived = :archived")
 public class Environment extends AbstractAuditEntity implements TenantSupport, Serializable {
 

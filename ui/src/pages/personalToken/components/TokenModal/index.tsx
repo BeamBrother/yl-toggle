@@ -14,6 +14,7 @@ import TextLimit from 'components/TextLimit';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   open: boolean;
   handleCancel?: () => void;
   refresh?: () => unknown;

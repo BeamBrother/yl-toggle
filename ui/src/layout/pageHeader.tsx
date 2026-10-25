@@ -1,5 +1,5 @@
 import { SyntheticEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Popup } from 'semantic-ui-react';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -28,7 +28,7 @@ const EMPTY_NAV = 'empty';
 const isMainColorHeader = false;
 
 const PageHeader = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const intl = useIntl();
   const { approvalCount, saveUserInfo, saveApprovalCount } = HeaderContainer.useContainer();
@@ -119,7 +119,7 @@ const PageHeader = () => {
     }
     initApprovalList();
     timer.current = setInterval(initApprovalList, 5000);
-    
+
     return () => {
       clearInterval(timer.current as NodeJS.Timeout);
     };
@@ -146,19 +146,19 @@ const PageHeader = () => {
   }, [location.pathname]);
 
   const handleGotoProject = useCallback(() => {
-    history.push(PROJECT_PATH);
-  }, [history]);
+    navigate(PROJECT_PATH);
+  }, [navigate]);
 
   const handleGotoAccount = useCallback(() => {
-    history.push('/settings/members');
-  }, [history]);
+    navigate('/settings/members');
+  }, [navigate]);
 
   const handleLogout = useCallback(async () => {
     localStorage.removeItem('token');
     localStorage.removeItem('organizeId');
     localStorage.removeItem('account');
-    history.push('/login');
-  }, [history]);
+    navigate('/login');
+  }, [navigate]);
 
   const handleGotoGithub = useCallback(() => {
     window.open(GITHUB);
@@ -173,18 +173,18 @@ const PageHeader = () => {
   }, [i18n]);
 
   const handleGotoApproval = useCallback(() => {
-    history.push('/approvals/list');
-  }, [history]);
+    navigate('/approvals/list');
+  }, [navigate]);
 
   const handleGotoProfile = useCallback(() => {
-    history.push('/user/profile');
-  }, [history]);
+    navigate('/user/profile');
+  }, [navigate]);
 
   return (
     <div className={headerCls}>
       <div className={styles.logo} onClick={handleGotoProject}>
         {
-          isMainColorHeader 
+          isMainColorHeader
           ? <img className={styles['logo-image']} src={logoWhite} alt='logo' />
           : <img className={styles['logo-image']} src={logo} alt='logo' />
         }
@@ -198,7 +198,7 @@ const PageHeader = () => {
         <div className={settingCls} onClick={handleGotoAccount}>
           <FormattedMessage id='common.settings.text' />
         </div>
-      
+
         <div className={approvalCls} onClick={handleGotoApproval}>
           <FormattedMessage id='approvals.center' />
           { approvalCount !== 0 && <span className={styles.count}>{approvalCount > 99 ? '99+' : approvalCount}</span> }
@@ -213,7 +213,7 @@ const PageHeader = () => {
           position='bottom right'
           className={styles.popup}
           trigger={
-            <div 
+            <div
               onClick={(e: SyntheticEvent) => {
                 document.body.click();
                 e.stopPropagation();
@@ -226,16 +226,16 @@ const PageHeader = () => {
           }
         >
           <div className={styles['menu']} onClick={() => {setHelpMenuOpen(false);}}>
-            <div 
-              className={styles['menu-item']} 
+            <div
+              className={styles['menu-item']}
               onClick={()=> {
                 handleGotoDocument();
               }}
             >
               <FormattedMessage id='common.documentation.text' />
             </div>
-            <div 
-              className={styles['menu-item']} 
+            <div
+              className={styles['menu-item']}
               onClick={()=> {
                 handleGotoGithub();
               }}

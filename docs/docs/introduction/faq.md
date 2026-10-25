@@ -31,10 +31,10 @@ Here are some common problems and solutions during the use of yl-toggle.
 
   - RemoteUrl
     - Official online test environment: https://yl-toggle.io/server
-    - Docker-compose environment: http://{docker compose runnig machine IP address}:4007
-    - Docker image deployment or source code deployment: http://{YT_SERVER_IP}:{FP_SERVER_PORT}
-  - ServerSdkKey: *<[How to get ServerSdkKey](/tutorials/backend_custom_attribute#编写代码)>*
-  - ClientSdkKey: *<[How to get ClientSdkKey](/tutorials/backend_custom_attribute#控制前端程序)>*
+    - Docker-compose environment: `http://{docker compose runnig machine IP address}:4007`
+    - Docker image deployment or source code deployment: `http://{YT_SERVER_IP}:{FP_SERVER_PORT}`
+  - ServerSdkKey: *[How to get ServerSdkKey](/tutorials/backend_custom_attribute#编写代码)*
+  - ClientSdkKey: *[How to get ClientSdkKey](/tutorials/backend_custom_attribute#控制前端程序)*
 
 - Check that the yl-toggle Server service running:
 
@@ -43,8 +43,8 @@ Here are some common problems and solutions during the use of yl-toggle.
   - Docker image deployment or source code deployment:
 
     ```bash
-    curl "http://{YT_SERVER_IP}:{FP_SERVER_PORT}"
-    
+    curl "`http://{YT_SERVER_IP}:{FP_SERVER_PORT}`"
+
     <h1>yl-toggle Server</h1> # <- Displaying this means that the service is normal
     ```
 
@@ -61,10 +61,10 @@ Here are some common problems and solutions during the use of yl-toggle.
           // highlight-end
           .build();
   ~~~
-  
+
     </TabItem>
     <TabItem value="golang" label="Go">
-  
+
   ~~~go title="example/main.go"
   config := yl-toggle.YTConfig{
       RemoteUrl:       RemoteUrl,
@@ -77,7 +77,7 @@ Here are some common problems and solutions during the use of yl-toggle.
 
   </TabItem>
   <TabItem value="rust" label="Rust">
-  
+
   ~~~rust title="examples/demo.rs"
   let config = YTConfig {
       remote_url: remote_url,
@@ -87,10 +87,10 @@ Here are some common problems and solutions during the use of yl-toggle.
     // highlight-end
   };
   ~~~
-  
+
   </TabItem>
   <TabItem value="python" label="Python">
-  
+
   ~~~python title="demo.py"
   config = fp.Config(remote_uri=remote_url,
                      sync_mode='polling',
@@ -98,7 +98,7 @@ Here are some common problems and solutions during the use of yl-toggle.
                      refresh_interval=5) #seconds
    									# highlight-end
   ~~~
-  
+
   </TabItem>
   <TabItem value="nodejs" label="Node.js">
 
@@ -113,7 +113,7 @@ Here are some common problems and solutions during the use of yl-toggle.
   ~~~
   </TabItem>
   <TabItem value="JavaScript" label="JavaScript">
-  
+
   ~~~js title="example/index.html"
   const fp = new YlToggle({
     remoteUrl: /* remoteUrl */,
@@ -124,10 +124,10 @@ Here are some common problems and solutions during the use of yl-toggle.
     // highlight-end
   })
   ~~~
-  
+
   </TabItem>
   <TabItem value="MiniProgram" label="MiniProgram">
-  
+
   ~~~js title="example/app.js"
   import { initialize } from "yl-toggle-client-sdk-miniprogram";
 
@@ -140,12 +140,12 @@ Here are some common problems and solutions during the use of yl-toggle.
     // highlight-end
   })
   ~~~
-  
+
   </TabItem>
   <TabItem value="React" label="React">
-  
+
   ~~~js title="demo.tsx"
-  <FPProvider 
+  <FPProvider
     config={{
       remoteUrl: /* remoteUrl */,
       clientSdkKey: /* clientSdkKey */,
@@ -158,7 +158,7 @@ Here are some common problems and solutions during the use of yl-toggle.
     <div className="App"></div>
   </FPProvider>
   ~~~
-  
+
   </TabItem>
   </Tabs>
 
@@ -222,7 +222,7 @@ Here are some common problems and solutions during the use of yl-toggle.
     </TabItem>
 
     <TabItem value="golang" label="Go">
-  
+
     ~~~go title="example/main.go"
     value := 99.9
     fp.track("YOUR_CUSTOM_EVENT_NAME", user, &value);
@@ -239,24 +239,24 @@ Here are some common problems and solutions during the use of yl-toggle.
     </TabItem>
 
     <TabItem value="python" label="Python">
-  
+
     ~~~python title="demo.py"
     fp.track("YOUR_CUSTOM_EVENT_NAME", user, 5.5);
     ~~~
-    
+
     </TabItem>
     <TabItem value="nodejs" label="Node.js">
 
     ~~~js title="example/demo.js"
     fp.track("YOUR_CUSTOM_EVENT_NAME", user, 5.5);
     ~~~
-    
+
     </TabItem>
 
   </Tabs>
 
   Client side SDKs:
-  
+
   <Tabs groupId="language">
 
     <TabItem value="JavaScript" label="JavaScript">
@@ -264,7 +264,7 @@ Here are some common problems and solutions during the use of yl-toggle.
     ~~~js title="example/index.html"
     fp.track('YOUR_CUSTOM_EVENT_NAME', 5.5);
     ~~~
-    
+
     </TabItem>
 
     <TabItem value="Android" label="Android">
@@ -272,7 +272,7 @@ Here are some common problems and solutions during the use of yl-toggle.
     ~~~bash
     fp.track("YOUR_CUSTOM_EVENT_NAME", 5.5)
     ~~~
-    
+
     </TabItem>
 
     <TabItem value="Swift" label="Swift">
@@ -280,7 +280,7 @@ Here are some common problems and solutions during the use of yl-toggle.
     ~~~bash
     fp.track(event: "YOUR_CUSTOM_EVENT_NAME", value: 5.5)
     ~~~
-    
+
     </TabItem>
 
     <TabItem value="Objective-C" label="Objective-C">
@@ -288,7 +288,7 @@ Here are some common problems and solutions during the use of yl-toggle.
     ~~~bash
     [fp trackWithEvent:@"YOUR_CUSTOM_EVENT_NAME" value:5.5];
     ~~~
-    
+
     </TabItem>
 
     <TabItem value="MiniProgram" label="MiniProgram">
@@ -296,7 +296,7 @@ Here are some common problems and solutions during the use of yl-toggle.
     ~~~js title="example/app.js"
     ylToggleClient.track('YOUR_CUSTOM_EVENT_NAME', 5.5);
     ~~~
-    
+
     </TabItem>
 
     <TabItem value="React" label="React">
@@ -308,7 +308,7 @@ Here are some common problems and solutions during the use of yl-toggle.
 
     fp.track('YOUR_CUSTOM_EVENT_NAME', 5.5);
     ~~~
-    
+
     </TabItem>
 
   </Tabs>
@@ -318,7 +318,7 @@ Here are some common problems and solutions during the use of yl-toggle.
 - If the metric's event type is "Page Event" or "Click Event", please use the JavaScript and React SDK for integration (without manual event reporting). Also, make sure that the "Target Page URL" set in the metric matches the page URL for reporting events. For "Click Events", make sure that the CSS selector for the "click element" set in the
 
 
-## 
+##
 
 
 ## 2. Deployment problems

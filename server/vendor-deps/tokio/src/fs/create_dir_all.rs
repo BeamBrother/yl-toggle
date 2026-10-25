@@ -6,9 +6,7 @@ use std::path::Path;
 /// Recursively creates a directory and all of its parent components if they
 /// are missing.
 ///
-/// This is an async version of [`std::fs::create_dir_all`][std]
-///
-/// [std]: std::fs::create_dir_all
+/// This is an async version of [`std::fs::create_dir_all`].
 ///
 /// # Platform-specific behavior
 ///
@@ -24,9 +22,12 @@ use std::path::Path;
 /// limited to just these cases:
 ///
 /// * If any directory in the path specified by `path` does not already exist
-/// and it could not be created otherwise. The specific error conditions for
-/// when a directory is being created (after it is determined to not exist) are
-/// outlined by [`fs::create_dir`].
+///   and it could not be created otherwise. The specific error conditions for
+///   when a directory is being created (after it is determined to not exist) are
+///   outlined by [`fs::create_dir`].
+///
+/// If the final component at `path` already exists and is a directory, this
+/// function will also return successfully without error.
 ///
 /// Notable exception is made for situations where any of the directories
 /// specified in the `path` could not be created as it was being created concurrently.

@@ -19,6 +19,7 @@ import { IEnvironment } from 'interfaces/project';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   open: boolean;
   isAdd: boolean;
   projectKey: string;

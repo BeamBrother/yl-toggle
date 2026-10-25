@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import classNames from 'classnames';
@@ -31,8 +30,10 @@ import { IEvent } from 'interfaces/analysis';
 import { AVERAGE, CUSTOM, SUM } from 'pages/analysis/constants';
 
 import styles from '../../index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface IProps {
+  children?: import('react').ReactNode;
   attributes: string[];
   eventInfo?: IEvent;
   currentStep: number;

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Click CopyToClipboard 1`] = `
 <body>
@@ -10,20 +10,24 @@ exports[`Click CopyToClipboard 1`] = `
     </span>
   </div>
   <div
-    style="display: flex; position: absolute; left: 0px; top: 0px; bottom: 0px; transform: translate(0px, 0px);"
+    data-suir-portal="true"
   >
     <div
-      class="ui top center popup transition visible"
-      style="position: initial;"
+      style="display: flex; position: absolute; left: 0px; top: auto; z-index: auto; right: auto; bottom: 0px; transform: translate(0px, 0px);"
     >
-      <span>
-        <span
-          class="iconfont icon-success-circle icon-success"
-          customclass="icon-success"
-          type="success-circle"
-        />
-        Copy success
-      </span>
+      <div
+        class="ui top center popup transition visible"
+        style="left: auto; right: auto; position: initial;"
+      >
+        <span>
+          <span
+            class="iconfont icon-success-circle _icon-success_e418e8"
+            customclass="_icon-success_e418e8"
+            type="success-circle"
+          />
+          Copy success
+        </span>
+      </div>
     </div>
   </div>
 </body>
@@ -38,6 +42,27 @@ exports[`Click CopyToClipboard 2`] = `
       </span>
     </span>
   </div>
+  <div
+    data-suir-portal="true"
+  >
+    <div
+      style="display: flex; position: absolute; left: 0px; top: auto; z-index: auto; right: auto; bottom: 0px; transform: translate(0px, 0px);"
+    >
+      <div
+        class="ui top center popup transition visible"
+        style="left: auto; right: auto; position: initial;"
+      >
+        <span>
+          <span
+            class="iconfont icon-success-circle _icon-success_e418e8"
+            customclass="_icon-success_e418e8"
+            type="success-circle"
+          />
+          Copy success
+        </span>
+      </div>
+    </div>
+  </div>
 </body>
 `;
 
@@ -51,15 +76,19 @@ exports[`CopyToClipboard hover snapshot 1`] = `
     </span>
   </div>
   <div
-    style="display: flex; position: absolute; left: 0px; top: 0px; bottom: 0px; transform: translate(0px, 0px);"
+    data-suir-portal="true"
   >
     <div
-      class="ui top center popup transition visible"
-      style="position: initial;"
+      style="display: flex; position: absolute; left: 0px; top: auto; z-index: auto; right: auto; bottom: 0px; transform: translate(0px, 0px);"
     >
-      <span>
-        Click to copy
-      </span>
+      <div
+        class="ui top center popup transition visible"
+        style="left: auto; right: auto; position: initial;"
+      >
+        <span>
+          Click to copy
+        </span>
+      </div>
     </div>
   </div>
 </body>

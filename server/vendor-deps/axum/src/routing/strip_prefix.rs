@@ -3,6 +3,8 @@ use std::{
     sync::Arc,
     task::{Context, Poll},
 };
+use tower::Layer;
+use tower_layer::layer_fn;
 use tower_service::Service;
 
 #[derive(Clone)]
@@ -12,11 +14,12 @@ pub(super) struct StripPrefix<S> {
 }
 
 impl<S> StripPrefix<S> {
-    pub(super) fn new(inner: S, prefix: &str) -> Self {
-        Self {
+    pub(super) fn layer(prefix: &str) -> impl Layer<S, Service = Self> + Clone {
+        let prefix = Arc::from(prefix);
+        layer_fn(move |inner| Self {
             inner,
-            prefix: prefix.into(),
-        }
+            prefix: Arc::clone(&prefix),
+        })
     }
 }
 
@@ -53,7 +56,7 @@ fn strip_prefix(uri: &Uri, prefix: &str) -> Option<Uri> {
     //          ^^^^ this much is matched and the length is 4. Thus if we chop off the first 4
     //          characters we get the remainder
     //
-    // prefix = /api/:version
+    // prefix = /api/{version}
     // path   = /api/v0/users
     //          ^^^^^^^ this much is matched and the length is 7.
     let mut matching_prefix_length = Some(0);
@@ -63,7 +66,7 @@ fn strip_prefix(uri: &Uri, prefix: &str) -> Option<Uri> {
 
         match item {
             Item::Both(path_segment, prefix_segment) => {
-                if prefix_segment.starts_with(':') || path_segment == prefix_segment {
+                if is_capture(prefix_segment) || path_segment == prefix_segment {
                     // the prefix segment is either a param, which matches anything, or
                     // it actually matches the path segment
                     *matching_prefix_length.as_mut().unwrap() += path_segment.len();
@@ -101,15 +104,15 @@ fn strip_prefix(uri: &Uri, prefix: &str) -> Option<Uri> {
     }
 
     // if the prefix matches it will always do so up until a `/`, it cannot match only
-    // part of a segment. Therefore this will always be at a char boundary and `split_at` wont
+    // part of a segment. Therefore this will always be at a char boundary and `split_at` won't
     // panic
     let after_prefix = uri.path().split_at(matching_prefix_length?).1;
 
     let new_path_and_query = match (after_prefix.starts_with('/'), path_and_query.query()) {
         (true, None) => after_prefix.parse().unwrap(),
-        (true, Some(query)) => format!("{}?{}", after_prefix, query).parse().unwrap(),
-        (false, None) => format!("/{}", after_prefix).parse().unwrap(),
-        (false, Some(query)) => format!("/{}?{}", after_prefix, query).parse().unwrap(),
+        (true, Some(query)) => format!("{after_prefix}?{query}").parse().unwrap(),
+        (false, None) => format!("/{after_prefix}").parse().unwrap(),
+        (false, Some(query)) => format!("/{after_prefix}?{query}").parse().unwrap(),
     };
 
     let mut parts = uri.clone().into_parts();
@@ -137,15 +140,20 @@ where
 {
     let a = a.map(Some).chain(std::iter::repeat_with(|| None));
     let b = b.map(Some).chain(std::iter::repeat_with(|| None));
-    a.zip(b)
-        // use `map_while` when its stable in our MSRV (1.57)
-        .take_while(|(a, b)| a.is_some() || b.is_some())
-        .filter_map(|(a, b)| match (a, b) {
-            (Some(a), Some(b)) => Some(Item::Both(a, b)),
-            (Some(a), None) => Some(Item::First(a)),
-            (None, Some(b)) => Some(Item::Second(b)),
-            (None, None) => unreachable!("take_while removes these"),
-        })
+    a.zip(b).map_while(|(a, b)| match (a, b) {
+        (Some(a), Some(b)) => Some(Item::Both(a, b)),
+        (Some(a), None) => Some(Item::First(a)),
+        (None, Some(b)) => Some(Item::Second(b)),
+        (None, None) => None,
+    })
+}
+
+fn is_capture(segment: &str) -> bool {
+    segment.starts_with('{')
+        && segment.ends_with('}')
+        && !segment.starts_with("{{")
+        && !segment.ends_with("}}")
+        && !segment.starts_with("{*")
 }
 
 #[derive(Debug)]
@@ -279,74 +287,89 @@ mod tests {
         expected = Some("/"),
     );
 
-    test!(param_0, uri = "/", prefix = "/:param", expected = Some("/"),);
+    test!(
+        param_0,
+        uri = "/",
+        prefix = "/{param}",
+        expected = Some("/"),
+    );
 
     test!(
         param_1,
         uri = "/a",
-        prefix = "/:param",
+        prefix = "/{param}",
         expected = Some("/"),
     );
 
     test!(
         param_2,
         uri = "/a/b",
-        prefix = "/:param",
+        prefix = "/{param}",
         expected = Some("/b"),
     );
 
     test!(
         param_3,
         uri = "/b/a",
-        prefix = "/:param",
+        prefix = "/{param}",
         expected = Some("/a"),
     );
 
     test!(
         param_4,
         uri = "/a/b",
-        prefix = "/a/:param",
+        prefix = "/a/{param}",
         expected = Some("/"),
     );
 
-    test!(param_5, uri = "/b/a", prefix = "/a/:param", expected = None,);
+    test!(
+        param_5,
+        uri = "/b/a",
+        prefix = "/a/{param}",
+        expected = None,
+    );
 
-    test!(param_6, uri = "/a/b", prefix = "/:param/a", expected = None,);
+    test!(
+        param_6,
+        uri = "/a/b",
+        prefix = "/{param}/a",
+        expected = None,
+    );
 
     test!(
         param_7,
         uri = "/b/a",
-        prefix = "/:param/a",
+        prefix = "/{param}/a",
         expected = Some("/"),
     );
 
     test!(
         param_8,
         uri = "/a/b/c",
-        prefix = "/a/:param/c",
+        prefix = "/a/{param}/c",
         expected = Some("/"),
     );
 
     test!(
         param_9,
         uri = "/c/b/a",
-        prefix = "/a/:param/c",
+        prefix = "/a/{param}/c",
         expected = None,
     );
 
     test!(
         param_10,
         uri = "/a/",
-        prefix = "/:param",
+        prefix = "/{param}",
         expected = Some("/"),
     );
 
-    test!(param_11, uri = "/a", prefix = "/:param/", expected = None,);
+    test!(param_11, uri = "/a", prefix = "/{param}/", expected = None,);
 
     test!(
         param_12,
         uri = "/a/",
-        prefix = "/:param/",
+        prefix = "/{param}/",
         expected = Some("/"),
     );
 

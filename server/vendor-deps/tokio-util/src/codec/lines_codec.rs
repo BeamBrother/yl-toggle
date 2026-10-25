@@ -2,9 +2,11 @@ use crate::codec::decoder::Decoder;
 use crate::codec::encoder::Encoder;
 
 use bytes::{Buf, BufMut, BytesMut};
-use std::{cmp, fmt, io, str, usize};
+use std::{cmp, fmt, io, str};
 
 /// A simple [`Decoder`] and [`Encoder`] implementation that splits up data into lines.
+///
+/// This uses the `\n` character as the line ending on all platforms.
 ///
 /// [`Decoder`]: crate::codec::Decoder
 /// [`Encoder`]: crate::codec::Encoder
@@ -73,7 +75,6 @@ impl LinesCodec {
     /// Returns the maximum line length when decoding.
     ///
     /// ```
-    /// use std::usize;
     /// use tokio_util::codec::LinesCodec;
     ///
     /// let codec = LinesCodec::new();
@@ -113,9 +114,7 @@ impl Decoder for LinesCodec {
             // there's no max_length set, we'll read to the end of the buffer.
             let read_to = cmp::min(self.max_length.saturating_add(1), buf.len());
 
-            let newline_offset = buf[self.next_index..read_to]
-                .iter()
-                .position(|b| *b == b'\n');
+            let newline_offset = crate::util::memchr::memchr(b'\n', &buf[self.next_index..read_to]);
 
             match (self.is_discarding, newline_offset) {
                 (true, Some(offset)) => {
@@ -167,6 +166,7 @@ impl Decoder for LinesCodec {
         Ok(match self.decode(buf)? {
             Some(frame) => Some(frame),
             None => {
+                self.next_index = 0;
                 // No terminating newline - return remaining data, if any
                 if buf.is_empty() || buf == &b"\r"[..] {
                     None
@@ -174,7 +174,6 @@ impl Decoder for LinesCodec {
                     let line = buf.split_to(buf.len());
                     let line = without_carriage_return(&line);
                     let line = utf8(line)?;
-                    self.next_index = 0;
                     Some(line.to_string())
                 }
             }
@@ -216,7 +215,7 @@ impl fmt::Display for LinesCodecError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             LinesCodecError::MaxLineLengthExceeded => write!(f, "max line length exceeded"),
-            LinesCodecError::Io(e) => write!(f, "{}", e),
+            LinesCodecError::Io(e) => write!(f, "{e}"),
         }
     }
 }

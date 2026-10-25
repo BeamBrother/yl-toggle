@@ -18,7 +18,7 @@ export const isJSON = (str: string) => {
     if (JSON.parse(str) instanceof Object) {
       return true;
     }
-  } catch (error) {
+  } catch {
     return false;
   }
 };

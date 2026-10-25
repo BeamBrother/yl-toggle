@@ -80,7 +80,7 @@ const Lists = () => {
     savePageIndex(Number(data.activePage) - 1);
   }, []);
 
-  const handleChange = useCallback((status) => {
+  const handleChange = useCallback((status: string) => {
     if (statusList.includes(status)) {
       const index = statusList.indexOf(status);
       statusList.splice(index, 1);
@@ -108,7 +108,7 @@ const Lists = () => {
             type === 'APPLY' && (
               <>
                 <div className={styles['tabs-item']}>
-                  <Checkbox 
+                  <Checkbox
                     label={intl.formatMessage({id: 'approvals.status.accepted'})}
                     checked={statusList.includes('PASS')}
                     onChange={() => {
@@ -117,27 +117,27 @@ const Lists = () => {
                   />
                 </div>
                 <div className={styles['tabs-item']}>
-                  <Checkbox 
-                    label={intl.formatMessage({id: 'approvals.status.declined'})} 
+                  <Checkbox
+                    label={intl.formatMessage({id: 'approvals.status.declined'})}
                     onChange={() => {
                       handleChange('REJECT');
                     }}
                   />
                 </div>
                 <div className={styles['tabs-item']}>
-                  <Checkbox 
-                    label={intl.formatMessage({id: 'approvals.status.skipped'})} 
+                  <Checkbox
+                    label={intl.formatMessage({id: 'approvals.status.skipped'})}
                     onChange={() => {
                       handleChange('JUMP');
                     }}
                   />
                 </div>
                 <div className={styles['tabs-item']}>
-                  <Checkbox 
-                    label={intl.formatMessage({id: 'approvals.status.withdrawn'})} 
+                  <Checkbox
+                    label={intl.formatMessage({id: 'approvals.status.withdrawn'})}
                     onChange={() => {
                       handleChange('REVOKE');
-                    }} 
+                    }}
                   />
                 </div>
               </>
@@ -146,8 +146,8 @@ const Lists = () => {
         </div>
         <Form className={styles.form}>
           <Form.Field className={styles['keywords-field']}>
-            <Form.Input 
-              placeholder={intl.formatMessage({id: 'toggles.filter.search.placeholder'})} 
+            <Form.Input
+              placeholder={intl.formatMessage({id: 'toggles.filter.search.placeholder'})}
               icon={<Icon customclass={styles['icon-search']} type='search' />}
               onChange={handleSearch}
             />

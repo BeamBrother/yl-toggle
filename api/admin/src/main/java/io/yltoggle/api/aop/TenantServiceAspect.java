@@ -15,7 +15,7 @@ import org.hibernate.Session;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

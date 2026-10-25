@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import Modal from '.';
 import { IntlWrapper } from 'components/utils/wrapper';
 
-it('Modal snapshot', (done) => {
-  (async () => {
+it('Modal snapshot', async () => {
+  await (async () => {
     const { baseElement, rerender } = render(
       <Modal open={true}>
         <div>modal content</div>
@@ -21,14 +21,13 @@ it('Modal snapshot', (done) => {
         <div>modal content</div>
       </Modal>
     );
-    done();
   })();
 });
 
-test('click Modal button', (done) => {
-  (async () => {
-    const mockHandleCancel = jest.fn();
-    const mockHandleConfirm = jest.fn();
+it('click Modal button', async () => {
+  await (async () => {
+    const mockHandleCancel = vi.fn();
+    const mockHandleConfirm = vi.fn();
     render(
       <Modal open={true} handleCancel={mockHandleCancel} handleConfirm={mockHandleConfirm}>
         <div>modal content</div>
@@ -43,7 +42,5 @@ test('click Modal button', (done) => {
 
     expect(mockHandleCancel).toBeCalled();
     expect(mockHandleConfirm).toBeCalled();
-
-    done();
   })();
 });

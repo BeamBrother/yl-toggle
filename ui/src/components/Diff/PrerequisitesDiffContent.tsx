@@ -60,6 +60,7 @@ const PrerequisitesCountDiffItem: React.FC<{
 };
 
 interface PrerequisitesDiffContentProps {
+  children?: import('react').ReactNode;
   content: DiffResult;
 }
 

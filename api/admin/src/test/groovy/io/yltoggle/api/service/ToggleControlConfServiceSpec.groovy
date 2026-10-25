@@ -14,7 +14,7 @@ import io.yltoggle.api.dao.repository.PublishMessageRepository
 import io.yltoggle.api.dao.repository.TargetingVersionRepository
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 
 class ToggleControlConfServiceSpec extends Specification {

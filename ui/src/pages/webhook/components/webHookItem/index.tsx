@@ -11,6 +11,7 @@ import CopyToClipboardPopup from 'components/CopyToClipboard';
 import { deleteWebHook, updateWebHook } from 'services/webhook';
 import styles from './index.module.scss';
 interface IProps {
+  children?: import('react').ReactNode;
   index: number;
   webhook: IWebHook;
   handleEdit: (key: number) => void;
@@ -33,7 +34,7 @@ const WebHookItem = (props: IProps) => {
         } else {
           message.error(res.message || intl.formatMessage({ id: 'webhook.delete.failed' }));
         }
-      } catch (err) {
+      } catch {
         message.error(intl.formatMessage({ id: 'webhook.delete.failed' }));
       }
     })();

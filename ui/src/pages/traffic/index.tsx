@@ -1,8 +1,9 @@
+import asset_no_data_png from 'images/no-data.png';
 import { useEffect, useMemo, useCallback, useState, SyntheticEvent, useRef } from 'react';
 import { Select, DropdownProps } from 'semantic-ui-react';
 import { Line } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 import {
   CategoryScale,
@@ -27,6 +28,7 @@ import { ITraffic, IValues, ITrafficContent } from 'interfaces/targeting';
 import { getTraffic } from 'services/toggle';
 
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 const Traffic = () => {
   const [ traffic, setTraffic ] = useState<ITraffic[]>([]);
@@ -38,7 +40,7 @@ const Traffic = () => {
   const [ isLoading, saveIsLoading ] = useState<boolean>(true);
   const { projectKey, environmentKey, toggleKey } = useParams<IRouterParams>();
   const intl = useIntl();
-  const history = useHistory();
+  const navigate = useNavigate();
   const timer: { current: NodeJS.Timeout | null } = useRef(null);
 
   const initMetrics = useCallback(() => {
@@ -70,7 +72,7 @@ const Traffic = () => {
     }
     initMetrics();
     timer.current = setInterval(initMetrics, 5000);
-    
+
     return () => {
       clearInterval(timer.current as NodeJS.Timeout);
     };
@@ -89,8 +91,8 @@ const Traffic = () => {
   }, []);
 
   const handleGotoSDK = useCallback(() => {
-    history.push(`/${projectKey}/${environmentKey}/${toggleKey}/connect-sdk`);
-  }, [history, projectKey, environmentKey, toggleKey]);
+    navigate(`/${projectKey}/${environmentKey}/${toggleKey}/connect-sdk`);
+  }, [navigate, projectKey, environmentKey, toggleKey]);
 
   const menuNameCls = classNames({
     [styles['menu-item-selected']]: fitlerType === 'name',
@@ -140,19 +142,19 @@ const Traffic = () => {
                       <div>
                         {
                           intl.formatMessage(
-                            {id: 'targeting.variations.evaluations.text'}, 
+                            {id: 'targeting.variations.evaluations.text'},
                             {
-                              type: fitlerType === 'name' 
-                                ? intl.formatMessage({id: 'common.name.lowercase.text'}) 
-                                : intl.formatMessage({id: 'common.value.text'}) 
+                              type: fitlerType === 'name'
+                                ? intl.formatMessage({id: 'common.name.lowercase.text'})
+                                : intl.formatMessage({id: 'common.value.text'})
                             }
                           )
                         }
                       </div>
-                      { 
+                      {
                         total !== 0 && <div className={styles.total}>
                           { total }
-                        </div> 
+                        </div>
                       }
                     </div>
                     <div className={styles['table-content']}>
@@ -184,7 +186,7 @@ const Traffic = () => {
               ) : (
                 <div className={styles['no-data']}>
                   <div>
-                    <img className={styles['no-data-image']} src={require('images/no-data.png')} alt='no-data' />
+                    <img className={styles['no-data-image']} src={asset_no_data_png} alt='no-data' />
                   </div>
                   <div className={styles['no-data-text']}>
                     <FormattedMessage id='targeting.traffic.no.data.text' />

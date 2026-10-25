@@ -1,15 +1,14 @@
+use async_trait::async_trait;
 use axum::{
-    async_trait,
     extract::{Extension, Json},
-    headers::{HeaderName, UserAgent},
     http::{
         header::{self, AUTHORIZATION},
         StatusCode,
     },
     response::{IntoResponse, Response},
-    TypedHeader,
 };
-use headers::{Error, Header, HeaderMap, HeaderValue};
+use axum_extra::TypedHeader;
+use headers::{Error, Header, HeaderMap, HeaderName, HeaderValue, UserAgent};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::collections::VecDeque;
@@ -27,11 +26,11 @@ pub trait EventHandler {
 }
 
 pub async fn post_events<T>(
-    Json(data): Json<VecDeque<Value>>,
+    Extension(handler): Extension<T>,
     TypedHeader(SdkAuthorization(sdk_key)): TypedHeader<SdkAuthorization>,
     TypedHeader(user_agent): TypedHeader<UserAgent>,
     headers: HeaderMap,
-    Extension(handler): Extension<T>,
+    Json(data): Json<VecDeque<Value>>,
 ) -> Result<Response, YTEventError>
 where
     T: EventHandler + Clone + Send + Sync + 'static,
@@ -118,3 +117,5 @@ impl Header for SdkAuthorization {
         }
     }
 }
+
+

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Add conditions 1`] = `
 <body>
@@ -19,30 +19,30 @@ exports[`Add conditions 1`] = `
           tabindex="0"
         >
           <div
-            class="rule"
+            class="_rule_b24de5"
           >
             <div
               class="accordion ui"
             >
               <div
-                class="title rule-accordion-title"
+                class="title _rule-accordion-title_b24de5"
               >
                 <span
-                  class="iconfont icon-angle-right icon-accordion"
-                  customclass="icon-accordion"
+                  class="iconfont icon-angle-right _icon-accordion_b24de5"
+                  customclass="_icon-accordion_b24de5"
                   type="angle-right"
                 />
                 <div
-                  class="rule-title"
+                  class="_rule-title_b24de5"
                 >
                   <div
-                    class="equal width fields rule-title-input"
+                    class="equal width fields _rule-title-input_b24de5"
                   >
                     <div
                       class="field"
                     >
                       <div
-                        class="field rule-input"
+                        class="field _rule-input_b24de5"
                       >
                         <div
                           class="ui input"
@@ -57,16 +57,16 @@ exports[`Add conditions 1`] = `
                     </div>
                   </div>
                   <span
-                    class="rule-title-operation"
+                    class="_rule-title-operation_b24de5"
                   >
                     <span
-                      class="iconfont icon-drag icon-drag"
-                      customclass="icon-drag"
+                      class="iconfont icon-drag _icon-drag_b24de5"
+                      customclass="_icon-drag_b24de5"
                       type="drag"
                     />
                     <span
-                      class="iconfont icon-archive icon-archive"
-                      customclass="icon-archive"
+                      class="iconfont icon-archive _icon-archive_b24de5"
+                      customclass="_icon-archive_b24de5"
                       type="archive"
                     />
                   </span>
@@ -76,43 +76,43 @@ exports[`Add conditions 1`] = `
                 class="content"
               >
                 <div
-                  class="rule-content"
+                  class="_rule-content_b24de5"
                 >
                   <div
-                    class="rule-item"
+                    class="_rule-item_b24de5"
                   >
                     <span
-                      class="rule-item-prefix rule-item-first"
+                      class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
                     >
                       <span
-                        class="rule-item-text"
+                        class="_rule-item-text_b24de5"
                       >
                         If
                       </span>
                     </span>
                     <div
-                      class="rule-item-type"
+                      class="_rule-item-type_b24de5"
                     >
                       <div
-                        class="rule-item-type-box"
+                        class="_rule-item-type-box_b24de5"
                       >
                         <div
-                          class="rule-item-type-text"
+                          class="_rule-item-type-text_b24de5"
                         >
                           string
                         </div>
                       </div>
                     </div>
                     <div
-                      class="equal width fields rule-item-left"
+                      class="equal width fields _rule-item-left_b24de5"
                     >
                       <div
-                        class="field rule-item-subject"
+                        class="field _rule-item-subject_b24de5"
                       >
                         <div
                           aria-expanded="false"
-                          class="ui floating search selection dropdown rule-item-subject-dropdown"
-                          name="test-name-1356"
+                          class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
+                          name="test-name-1532"
                           role="combobox"
                         >
                           <input
@@ -138,12 +138,12 @@ exports[`Add conditions 1`] = `
                         </div>
                       </div>
                       <div
-                        class="field rule-item-operator"
+                        class="field _rule-item-operator_b24de5"
                       >
                         <div
                           aria-expanded="false"
-                          class="ui floating selection dropdown rule-item-operator-dropdown"
-                          name="test-name-1853"
+                          class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
+                          name="test-name-2045"
                           role="listbox"
                           tabindex="0"
                         >
@@ -156,8 +156,8 @@ exports[`Add conditions 1`] = `
                             Select an operator
                           </div>
                           <span
-                            class="iconfont icon-angle-down angle-down"
-                            customclass="angle-down"
+                            class="iconfont icon-angle-down _angle-down_b24de5"
+                            customclass="_angle-down_b24de5"
                             type="angle-down"
                           />
                           <div
@@ -302,7 +302,7 @@ exports[`Add conditions 1`] = `
                         <div
                           aria-expanded="false"
                           class="ui floating multiple search selection dropdown"
-                          name="test-name-3839"
+                          name="test-name-4055"
                           role="combobox"
                         >
                           <input
@@ -333,23 +333,23 @@ exports[`Add conditions 1`] = `
                       </div>
                     </div>
                     <span
-                      class="iconfont icon-minus icon-minus"
-                      customclass="icon-minus"
+                      class="iconfont icon-minus _icon-minus_b24de5"
+                      customclass="_icon-minus_b24de5"
                       type="minus"
                     />
                   </div>
                   <div
-                    class="rule-add"
+                    class="_rule-add_b24de5"
                     name="rule_testId1_add"
                   >
                     <div>
                       <button
-                        class="ui secondary button rule-add-btn"
+                        class="ui secondary button _rule-add-btn_b24de5"
                         type="button"
                       >
                         <span
-                          class="iconfont icon-add iconfont"
-                          customclass="iconfont"
+                          class="iconfont icon-add _iconfont_b24de5"
+                          customclass="_iconfont_b24de5"
                           type="add"
                         />
                         Add
@@ -369,7 +369,7 @@ exports[`Add conditions 1`] = `
     aria-atomic="true"
     aria-live="assertive"
     id="rbd-announcement-1"
-    style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0px; padding: 0px; overflow: hidden; clip-path: inset(100%);"
+    style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0px; padding: 0px; overflow: hidden; clip: rect(0px); clip-path: inset(100%);"
   />
   <div
     id="rbd-hidden-text-1-hidden-text-3"
@@ -382,39 +382,43 @@ exports[`Add conditions 1`] = `
 
   </div>
   <div
-    style="display: flex; position: absolute; left: 0px; top: 0px; right: 0px; transform: translate(0px, 0px);"
+    data-suir-portal="true"
   >
     <div
-      class="ui bottom right basic popup transition visible popup"
-      style="position: initial;"
+      style="display: flex; position: absolute; left: auto; top: 0px; z-index: auto; right: 0px; bottom: auto; transform: translate(0px, 0px);"
     >
       <div
-        class="menu"
+        class="ui bottom right basic popup transition visible _popup_b24de5"
+        style="left: auto; right: auto; position: initial;"
       >
         <div
-          class="menu-item-centering"
+          class="_menu_b24de5"
         >
-          string
-        </div>
-        <div
-          class="menu-item-centering"
-        >
-          number
-        </div>
-        <div
-          class="menu-item-centering"
-        >
-          datetime
-        </div>
-        <div
-          class="menu-item-centering"
-        >
-          semver
-        </div>
-        <div
-          class="menu-item-centering"
-        >
-          segment
+          <div
+            class="_menu-item-centering_b24de5"
+          >
+            string
+          </div>
+          <div
+            class="_menu-item-centering_b24de5"
+          >
+            number
+          </div>
+          <div
+            class="_menu-item-centering_b24de5"
+          >
+            datetime
+          </div>
+          <div
+            class="_menu-item-centering_b24de5"
+          >
+            semver
+          </div>
+          <div
+            class="_menu-item-centering_b24de5"
+          >
+            segment
+          </div>
         </div>
       </div>
     </div>
@@ -440,30 +444,30 @@ exports[`Rule snapshot 1`] = `
         tabindex="0"
       >
         <div
-          class="rule"
+          class="_rule_b24de5"
         >
           <div
             class="accordion ui"
           >
             <div
-              class="title rule-accordion-title"
+              class="title _rule-accordion-title_b24de5"
             >
               <span
-                class="iconfont icon-angle-right icon-accordion"
-                customclass="icon-accordion"
+                class="iconfont icon-angle-right _icon-accordion_b24de5"
+                customclass="_icon-accordion_b24de5"
                 type="angle-right"
               />
               <div
-                class="rule-title"
+                class="_rule-title_b24de5"
               >
                 <div
-                  class="equal width fields rule-title-input"
+                  class="equal width fields _rule-title-input_b24de5"
                 >
                   <div
                     class="field"
                   >
                     <div
-                      class="field rule-input"
+                      class="field _rule-input_b24de5"
                     >
                       <div
                         class="ui input"
@@ -483,20 +487,20 @@ exports[`Rule snapshot 1`] = `
               class="content"
             >
               <div
-                class="rule-content"
+                class="_rule-content_b24de5"
               >
                 <div
-                  class="rule-add-one"
+                  class="_rule-add-one_b24de5"
                   name="rule_testId1_add"
                 >
                   <div>
                     <button
-                      class="ui secondary button rule-add-btn"
+                      class="ui secondary button _rule-add-btn_b24de5"
                       type="button"
                     >
                       <span
-                        class="iconfont icon-add iconfont"
-                        customclass="iconfont"
+                        class="iconfont icon-add _iconfont_b24de5"
+                        customclass="_iconfont_b24de5"
                         type="add"
                       />
                       Add

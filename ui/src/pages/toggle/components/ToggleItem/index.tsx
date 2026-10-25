@@ -1,5 +1,5 @@
 import { SyntheticEvent, useState, useCallback } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { v4 as uuidv4 } from 'uuid';
 import { Table, Popup, PaginationProps } from 'semantic-ui-react';
@@ -19,8 +19,10 @@ import { variationContainer, toggleInfoContainer } from '../../provider';
 import { IPrerequisiteToggle, IPrerequisiteToggleList } from 'interfaces/prerequisite';
 import ToggleList from 'pages/targeting/components/PublishModal/ToggleList';
 import styles from './index.module.scss';
+import { useParams } from 'utils/useParams';
 
 interface ILocationParams {
+  [key: string]: string | undefined;
   projectKey: string;
   environmentKey: string;
 }
@@ -31,6 +33,7 @@ interface ISearchParams {
 }
 
 interface IProps {
+  children?: import('react').ReactNode;
   toggle: IToggle
   isArchived?: boolean;
   enableApproval: boolean;
@@ -56,7 +59,7 @@ const ToggleItem = (props: IProps) => {
   });
   const [ toggles, saveToggles ] = useState<IPrerequisiteToggle[]>([]);
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const intl = useIntl();
   const { projectKey, environmentKey } = useParams<ILocationParams>();
   const { saveVariations } = variationContainer.useContainer();
@@ -86,13 +89,13 @@ const ToggleItem = (props: IProps) => {
         } else {
           setArchiveOpen(true);
         }
-      } 
+      }
     });
   }, [environmentKey, projectKey]);
 
   const gotoEditing = useCallback((toggleKey: string) => {
-    history.push(`/${projectKey}/${environmentKey}/${toggleKey}/targeting`);
-  }, [projectKey, environmentKey, history]);
+    navigate(`/${projectKey}/${environmentKey}/${toggleKey}/targeting`);
+  }, [projectKey, environmentKey, navigate]);
 
   const handleEditToggle = useCallback((e: SyntheticEvent, toggleKey: string) => {
     e.stopPropagation();
@@ -109,7 +112,7 @@ const ToggleItem = (props: IProps) => {
           variation.id = uuidv4();
         });
         saveVariations(cloneVariations);
-  
+
         saveToggleInfo({
           name,
           key,
@@ -167,7 +170,7 @@ const ToggleItem = (props: IProps) => {
 	return (
     <Table.Row
       className={styles['list-item']}
-      onMouseEnter={handleMouseEnter} 
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={() => gotoEditing(toggle.key)}
     >
@@ -293,7 +296,7 @@ const ToggleItem = (props: IProps) => {
                 <FormattedMessage id='common.enabled.text' />
               </div>
             </div>
-          ) 
+          )
         }
       </Table.Cell>
       <Table.Cell>
@@ -304,7 +307,7 @@ const ToggleItem = (props: IProps) => {
       <Table.Cell>
         {
           toggle.tags && toggle.tags.length > 0 ? (
-            <TagsList 
+            <TagsList
               tags={toggle.tags}
               showCount={2}
             />
@@ -329,7 +332,7 @@ const ToggleItem = (props: IProps) => {
                     }
                   </span>
                 </div>
-              </div> 
+              </div>
             ) : (
               <div className={styles['toggle-evaluated']}>
                 <div>
@@ -345,15 +348,15 @@ const ToggleItem = (props: IProps) => {
                     }
                   </span>
                 </div>
-              </div> 
+              </div>
             )
           ) : (
             <div className={styles['toggle-evaluated']}>
               <div>
-                <FormattedMessage id='toggles.evaluated.novisit' /> 
+                <FormattedMessage id='toggles.evaluated.novisit' />
               </div>
               <div className={styles['toggle-evaluated-tips']}>
-                <FormattedMessage id='toggles.evaluated.link.sdk' /> 
+                <FormattedMessage id='toggles.evaluated.link.sdk' />
               </div>
             </div>
           )
@@ -375,20 +378,20 @@ const ToggleItem = (props: IProps) => {
               }
               {
                 isArchived ? (
-                  <div 
-                    className={styles['toggle-operation-item']} 
+                  <div
+                    className={styles['toggle-operation-item']}
                     onClick={(e) => {
                       document.body.click();
                       e.stopPropagation();
-                      setRestoreOpen(true); 
+                      setRestoreOpen(true);
                     }}
                   >
                     <FormattedMessage id='common.restore.text' />
                   </div>
                 ) : (
-                  <div 
-                    className={styles['toggle-operation-item']} 
-                    onClick={(e) => { 
+                  <div
+                    className={styles['toggle-operation-item']}
+                    onClick={(e) => {
                       document.body.click();
                       e.stopPropagation();
                       getToggleList(toggle.key, searchParams);
@@ -404,7 +407,7 @@ const ToggleItem = (props: IProps) => {
           )
         }
       </Table.Cell>
-      <Modal 
+      <Modal
         open={archiveOpen}
         width={400}
         handleCancel={(e: SyntheticEvent) => {
@@ -430,7 +433,7 @@ const ToggleItem = (props: IProps) => {
         </div>
       </Modal>
 
-      <Modal 
+      <Modal
         open={restoreOpen}
         width={400}
         handleCancel={(e: SyntheticEvent) => {
@@ -458,7 +461,7 @@ const ToggleItem = (props: IProps) => {
 
       <Modal
         open={canNotDeleteOpen}
-        width={600} 
+        width={600}
         footer={
           <div className={styles['modal-footer']}>
             <Button
@@ -494,7 +497,7 @@ const ToggleItem = (props: IProps) => {
               {intl.formatMessage({ id: 'toggles.archive.prerequisite.tips'}, { toggle: total })}
             </div>
             <div className={styles['modal-not-delete-content']}>
-              <ToggleList 
+              <ToggleList
                 total={total}
                 pagination={pagination}
                 toggleList={toggles}

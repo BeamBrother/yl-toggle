@@ -12,8 +12,8 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.47.0 # our MSRV
-        os: [ubuntu-18.04]
+          - 1.61.0 # our MSRV
+        os: [ubuntu-latest]
         # but only stable on macos/windows (slower platforms)
         include:
           - os: macos-latest
@@ -22,13 +22,12 @@ jobs:
             rust: stable
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install ${{ matrix.rust }} toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
 
       - name: cargo build (debug; default features)
         run: cargo build
@@ -48,49 +47,37 @@ jobs:
 
   coverage:
     name: Measure coverage
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
-
-      - name: Install LLVM12
-        run: |
-          curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          sudo apt-add-repository -y 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main'
-          sudo apt-get install -y clang-12
+        uses: actions/checkout@v4
 
       - name: Install rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@nightly
         with:
-          toolchain: nightly
-          override: true
-          default: true
+          components: llvm-tools
 
-      - name: Build lcov
-        run: admin/build-lcov
+      - name: Install cargo-llvm-cov
+        run: cargo install cargo-llvm-cov
 
       - name: Measure coverage
-        run: admin/coverage
+        run: cargo llvm-cov --lcov --output-path ./lcov.info
 
       - name: Report to codecov.io
-        uses: codecov/codecov-action@v1.0.10
+        uses: codecov/codecov-action@v3
         with:
-          file: final.info
+          files: ./lcov.info
           fail_ci_if_error: false
 
   minver:
     name: Check minimum versions
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
-          default: true
+        uses: dtolnay/rust-toolchain@nightly
 
       - name: cargo test (debug; all features; -Z minimal-versions)
         run: cargo -Z minimal-versions test --all-features
@@ -100,48 +87,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: nightly-2021-03-30
-          override: true
-          default: true
+          components: rustfmt
       - name: Check formatting
-        run: |
-          ./admin/fmt -- --check
+        run: cargo fmt -- --check
 
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          override: true
-          default: true
           components: clippy
-      - uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings
+      - run: cargo clippy -- --deny warnings
 
   clippy-nightly:
     name: Clippy (Nightly)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install rust toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@nightly
         with:
-          toolchain: nightly
-          override: true
-          default: true
           components: clippy
-      - uses: actions-rs/cargo@v1
-        with:
-          command: clippy
+      - run: cargo clippy

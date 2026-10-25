@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { Table, Popup } from 'semantic-ui-react';
 import dayjs from 'dayjs';
@@ -9,17 +9,18 @@ import TextLimit from 'components/TextLimit';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   type: string;
   approval: IApproval;
 }
 
 const ListItem = (props: IProps) => {
   const { approval, type } = props;
-  const history = useHistory();
+  const navigate = useNavigate();
 
-  const gotoToggle = useCallback((projectKey, environmentKey, toggleKey) => {
-    history.push(`/${projectKey}/${environmentKey}/${toggleKey}/targeting`);
-  }, [history]);
+  const gotoToggle = useCallback((projectKey: string, environmentKey: string, toggleKey: string) => {
+    navigate(`/${projectKey}/${environmentKey}/${toggleKey}/targeting`);
+  }, [navigate]);
 
 	return (
     <Table.Row className={styles['list-item']}>
@@ -48,8 +49,8 @@ const ListItem = (props: IProps) => {
         </div>
       </Table.Cell>
       <Table.Cell className={styles['column-toggle']}>
-        <div 
-          className={styles['list-item-toggle']} 
+        <div
+          className={styles['list-item-toggle']}
           onClick={() => {
             gotoToggle(approval.projectKey, approval.environmentKey, approval.toggleKey);
           }}
@@ -63,7 +64,7 @@ const ListItem = (props: IProps) => {
                   trigger={
                     <span className={styles['toggle-lock-bg']}>
                       <Icon type='lock' customclass={styles['toggle-lock']}></Icon>
-                    </span>   
+                    </span>
                   }
                   content={
                     <div>

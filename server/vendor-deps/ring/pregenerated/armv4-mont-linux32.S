@@ -1,17 +1,9 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if !defined(__has_feature)
-#define __has_feature(x) 0
-#endif
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
+#include <ring-core/asm_base.h>
 
-#if !defined(OPENSSL_NO_ASM)
-#if defined(__arm__)
-#include <GFp/arm_arch.h>
-
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_ARM) && defined(__ELF__)
 @ Silence ARMv8 deprecated IT instruction warnings. This file is used by both
 @ ARMv7 and ARMv8 processors and does not use ARMv8 instructions.
 .arch	armv7-a
@@ -24,40 +16,14 @@
 .code	32
 #endif
 
-#if __ARM_MAX_ARCH__>=7
-
-.hidden	GFp_armcap_P
-.align	5
-.LOPENSSL_armcap:
-.word	GFp_armcap_P-.Lbn_mul_mont
-#endif
-
-.globl	GFp_bn_mul_mont
-.hidden	GFp_bn_mul_mont
-.type	GFp_bn_mul_mont,%function
+.globl	bn_mul_mont_nohw
+.hidden	bn_mul_mont_nohw
+.type	bn_mul_mont_nohw,%function
 
 .align	5
-GFp_bn_mul_mont:
-.Lbn_mul_mont:
+bn_mul_mont_nohw:
 	ldr	ip,[sp,#4]		@ load num
 	stmdb	sp!,{r0,r2}		@ sp points at argument block
-#if __ARM_MAX_ARCH__>=7
-	tst	ip,#7
-	bne	.Lialu
-	adr	r0,.Lbn_mul_mont
-	ldr	r2,.LOPENSSL_armcap
-	ldr	r0,[r0,r2]
-#ifdef	__APPLE__
-	ldr	r0,[r0]
-#endif
-	tst	r0,#ARMV7_NEON		@ NEON available?
-	ldmia	sp, {r0,r2}
-	beq	.Lialu
-	add	sp,sp,#8
-	b	bn_mul8x_mont_neon
-.align	4
-.Lialu:
-#endif
 	cmp	ip,#2
 	mov	r0,ip			@ load num
 #ifdef	__thumb2__
@@ -201,18 +167,20 @@ GFp_bn_mul_mont:
 	add	sp,sp,#2*4		@ skip over {r0,r2}
 	mov	r0,#1
 .Labrt:
-#if __ARM_ARCH__>=5
+#if __ARM_ARCH>=5
 	bx	lr				@ bx lr
 #else
 	tst	lr,#1
 	moveq	pc,lr			@ be binary compatible with V4, yet
 .word	0xe12fff1e			@ interoperable with Thumb ISA:-)
 #endif
-.size	GFp_bn_mul_mont,.-GFp_bn_mul_mont
+.size	bn_mul_mont_nohw,.-bn_mul_mont_nohw
 #if __ARM_MAX_ARCH__>=7
 .arch	armv7-a
 .fpu	neon
 
+.globl	bn_mul8x_mont_neon
+.hidden	bn_mul8x_mont_neon
 .type	bn_mul8x_mont_neon,%function
 .align	5
 bn_mul8x_mont_neon:
@@ -966,6 +934,4 @@ bn_mul8x_mont_neon:
 #endif
 .byte	77,111,110,116,103,111,109,101,114,121,32,109,117,108,116,105,112,108,105,99,97,116,105,111,110,32,102,111,114,32,65,82,77,118,52,47,78,69,79,78,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	2
-#endif
-#endif  // !OPENSSL_NO_ASM
-.section	.note.GNU-stack,"",%progbits
+#endif  // !OPENSSL_NO_ASM && defined(OPENSSL_ARM) && defined(__ELF__)

@@ -9,8 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -333,9 +333,3 @@ public class TrafficIngestBuffer {
         return date == null ? null : new Timestamp(date.getTime());
     }
 }
-
-
-
-
-
-

@@ -1,19 +1,9 @@
-import { useEffect, useRef } from 'react';
-import jsonlint from 'jsonlint-mod';
-import CodeMirror from 'codemirror';
-import 'codemirror/addon/edit/matchbrackets';
-import 'codemirror/addon/comment/continuecomment';
-import 'codemirror/addon/comment/comment';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/mode/javascript/javascript.js';
-import 'codemirror/keymap/sublime.js';
-import 'codemirror/addon/lint/lint.css';
-import 'codemirror/addon/lint/lint.js';
-import 'codemirror/addon/lint/json-lint.js';
-
-window.jsonlint = jsonlint;
+import { useMemo } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+import { json } from '@codemirror/lang-json';
 
 interface IProps {
+  children?: import('react').ReactNode;
   value?: string;
   disabled?: boolean;
   onChange?(value: string): void;
@@ -21,34 +11,30 @@ interface IProps {
 
 const JsonEditor = (props: IProps) => {
   const { value, disabled, onChange } = props;
-  const editorRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    if (editorRef.current) {
-      const myCodeMirror = CodeMirror.fromTextArea(editorRef?.current, {
-        mode: 'application/json',
-        lint: true,
-        tabSize: 2,
-        readOnly: disabled,
-      });
-  
-      try {
-        if (value) {
-          myCodeMirror.setValue(JSON.stringify(JSON.parse(value), null, 2));
-        }
-      } catch (error) {
-        myCodeMirror.setValue(value || '');
+  const editorValue = useMemo(() => {
+    try {
+      if (value) {
+        return JSON.stringify(JSON.parse(value), null, 2);
       }
-  
-      myCodeMirror.on('change', cm => {
-        onChange && onChange(cm.getValue());
-      });
+    } catch {
+      return value || '';
     }
-    
-  }, [value, onChange, disabled]);
+    return '';
+  }, [value]);
 
   return (
-    <textarea ref={editorRef}></textarea>
+    <CodeMirror
+      value={editorValue}
+      extensions={[json()]}
+      readOnly={disabled}
+      basicSetup={{
+        tabSize: 2,
+        highlightActiveLine: !disabled,
+        foldGutter: true,
+      }}
+      onChange={(nextValue) => onChange?.(nextValue)}
+    />
   );
 };
 

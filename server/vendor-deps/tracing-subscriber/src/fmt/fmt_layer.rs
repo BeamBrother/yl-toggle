@@ -4,8 +4,10 @@ use crate::{
     layer::{self, Context},
     registry::{self, LookupSpan, SpanRef},
 };
+use alloc::{fmt, format, string::String};
+use core::{any::TypeId, marker::PhantomData, ops::Deref};
 use format::{FmtSpan, TimingDisplay};
-use std::{any::TypeId, cell::RefCell, fmt, io, marker::PhantomData, ops::Deref, time::Instant};
+use std::{cell::RefCell, env, eprintln, io, thread_local, time::Instant};
 use tracing_core::{
     field,
     span::{Attributes, Current, Id, Record},
@@ -70,6 +72,7 @@ pub struct Layer<
     fmt_event: E,
     fmt_span: format::FmtSpanConfig,
     is_ansi: bool,
+    ansi_sanitization: bool,
     log_internal_errors: bool,
     _inner: PhantomData<fn(S)>,
 }
@@ -120,6 +123,7 @@ where
             fmt_span: self.fmt_span,
             make_writer: self.make_writer,
             is_ansi: self.is_ansi,
+            ansi_sanitization: self.ansi_sanitization,
             log_internal_errors: self.log_internal_errors,
             _inner: self._inner,
         }
@@ -150,6 +154,7 @@ where
             fmt_span: self.fmt_span,
             make_writer: self.make_writer,
             is_ansi: self.is_ansi,
+            ansi_sanitization: self.ansi_sanitization,
             log_internal_errors: self.log_internal_errors,
             _inner: self._inner,
         }
@@ -183,6 +188,7 @@ impl<S, N, E, W> Layer<S, N, E, W> {
             fmt_event: self.fmt_event,
             fmt_span: self.fmt_span,
             is_ansi: self.is_ansi,
+            ansi_sanitization: self.ansi_sanitization,
             log_internal_errors: self.log_internal_errors,
             make_writer,
             _inner: self._inner,
@@ -239,6 +245,27 @@ impl<S, N, E, W> Layer<S, N, E, W> {
         self.is_ansi = ansi;
     }
 
+    /// Modifies how synthesized events are emitted at points in the [span
+    /// lifecycle][lifecycle].
+    ///
+    /// See [`Self::with_span_events`] for documentation on the [`FmtSpan`]
+    ///
+    /// This method is primarily expected to be used with the
+    /// [`reload::Handle::modify`](crate::reload::Handle::modify) method
+    ///
+    /// Note that using this method modifies the span configuration instantly and does not take into
+    /// account any current spans. If the previous configuration was set to capture
+    /// `FmtSpan::ALL`, for example, using this method to change to `FmtSpan::NONE` will cause an
+    /// exit event for currently entered events not to be formatted
+    ///
+    /// [lifecycle]: mod@tracing::span#the-span-lifecycle
+    pub fn set_span_events(&mut self, kind: FmtSpan) {
+        self.fmt_span = format::FmtSpanConfig {
+            kind,
+            fmt_timing: self.fmt_span.fmt_timing,
+        }
+    }
+
     /// Configures the layer to support [`libtest`'s output capturing][capturing] when used in
     /// unit tests.
     ///
@@ -267,6 +294,7 @@ impl<S, N, E, W> Layer<S, N, E, W> {
             fmt_event: self.fmt_event,
             fmt_span: self.fmt_span,
             is_ansi: self.is_ansi,
+            ansi_sanitization: self.ansi_sanitization,
             log_internal_errors: self.log_internal_errors,
             make_writer: TestWriter::default(),
             _inner: self._inner,
@@ -275,6 +303,15 @@ impl<S, N, E, W> Layer<S, N, E, W> {
 
     /// Sets whether or not the formatter emits ANSI terminal escape codes
     /// for colors and other text formatting.
+    ///
+    /// When the "ansi" crate feature flag is enabled, ANSI colors are enabled
+    /// by default unless the [`NO_COLOR`] environment variable is set to
+    /// a non-empty value.  If the [`NO_COLOR`] environment variable is set to
+    /// any non-empty value, then ANSI colors will be suppressed by default.
+    /// The [`with_ansi`] and [`set_ansi`] methods can be used to forcibly
+    /// enable ANSI colors, overriding any [`NO_COLOR`] environment variable.
+    ///
+    /// [`NO_COLOR`]: https://no-color.org/
     ///
     /// Enabling ANSI escapes (calling `with_ansi(true)`) requires the "ansi"
     /// crate feature flag. Calling `with_ansi(true)` without the "ansi"
@@ -288,6 +325,9 @@ impl<S, N, E, W> Layer<S, N, E, W> {
     /// ANSI escape codes can ensure that they are not used, regardless of
     /// whether or not other crates in the dependency graph enable the "ansi"
     /// feature flag.
+    ///
+    /// [`with_ansi`]: Layer::with_ansi
+    /// [`set_ansi`]: Layer::set_ansi
     pub fn with_ansi(self, ansi: bool) -> Self {
         #[cfg(not(feature = "ansi"))]
         if ansi {
@@ -305,16 +345,29 @@ impl<S, N, E, W> Layer<S, N, E, W> {
         }
     }
 
+    /// Sets whether ANSI control character sanitization is enabled.
+    ///
+    /// This defaults to `true` as a protective measure against terminal
+    /// injection attacks. If this is set to `false`, ANSI sanitization is
+    /// disabled and trusted ANSI control sequences in logged values are passed
+    /// through unchanged.
+    pub fn with_ansi_sanitization(self, ansi_sanitization: bool) -> Self {
+        Self {
+            ansi_sanitization,
+            ..self
+        }
+    }
+
     /// Sets whether to write errors from [`FormatEvent`] to the writer.
     /// Defaults to true.
     ///
     /// By default, `fmt::Layer` will write any `FormatEvent`-internal errors to
     /// the writer. These errors are unlikely and will only occur if there is a
     /// bug in the `FormatEvent` implementation or its dependencies.
-    /// 
+    ///
     /// If writing to the writer fails, the error message is printed to stderr
     /// as a fallback.
-    /// 
+    ///
     /// [`FormatEvent`]: crate::fmt::FormatEvent
     pub fn log_internal_errors(self, log_internal_errors: bool) -> Self {
         Self {
@@ -351,6 +404,7 @@ impl<S, N, E, W> Layer<S, N, E, W> {
             fmt_event: self.fmt_event,
             fmt_span: self.fmt_span,
             is_ansi: self.is_ansi,
+            ansi_sanitization: self.ansi_sanitization,
             log_internal_errors: self.log_internal_errors,
             make_writer: f(self.make_writer),
             _inner: self._inner,
@@ -383,6 +437,7 @@ where
             fmt_span: self.fmt_span,
             make_writer: self.make_writer,
             is_ansi: self.is_ansi,
+            ansi_sanitization: self.ansi_sanitization,
             log_internal_errors: self.log_internal_errors,
             _inner: self._inner,
         }
@@ -396,6 +451,7 @@ where
             fmt_span: self.fmt_span.without_time(),
             make_writer: self.make_writer,
             is_ansi: self.is_ansi,
+            ansi_sanitization: self.ansi_sanitization,
             log_internal_errors: self.log_internal_errors,
             _inner: self._inner,
         }
@@ -407,22 +463,22 @@ where
     /// The following options are available:
     ///
     /// - `FmtSpan::NONE`: No events will be synthesized when spans are
-    ///    created, entered, exited, or closed. Data from spans will still be
-    ///    included as the context for formatted events. This is the default.
+    ///   created, entered, exited, or closed. Data from spans will still be
+    ///   included as the context for formatted events. This is the default.
     /// - `FmtSpan::NEW`: An event will be synthesized when spans are created.
     /// - `FmtSpan::ENTER`: An event will be synthesized when spans are entered.
     /// - `FmtSpan::EXIT`: An event will be synthesized when spans are exited.
     /// - `FmtSpan::CLOSE`: An event will be synthesized when a span closes. If
-    ///    [timestamps are enabled][time] for this formatter, the generated
-    ///    event will contain fields with the span's _busy time_ (the total
-    ///    time for which it was entered) and _idle time_ (the total time that
-    ///    the span existed but was not entered).
+    ///   [timestamps are enabled][time] for this formatter, the generated
+    ///   event will contain fields with the span's _busy time_ (the total
+    ///   time for which it was entered) and _idle time_ (the total time that
+    ///   the span existed but was not entered).
     /// - `FmtSpan::ACTIVE`: Events will be synthesized when spans are entered
-    ///    or exited.
+    ///   or exited.
     /// - `FmtSpan::FULL`: Events will be synthesized whenever a span is
-    ///    created, entered, exited, or closed. If timestamps are enabled, the
-    ///    close event will contain the span's busy and idle time, as
-    ///    described above.
+    ///   created, entered, exited, or closed. If timestamps are enabled, the
+    ///   close event will contain the span's busy and idle time, as
+    ///   described above.
     ///
     /// The options can be enabled in any combination. For instance, the following
     /// will synthesize events whenever spans are created and closed:
@@ -525,6 +581,7 @@ where
             fmt_span: self.fmt_span,
             make_writer: self.make_writer,
             is_ansi: self.is_ansi,
+            ansi_sanitization: self.ansi_sanitization,
             log_internal_errors: self.log_internal_errors,
             _inner: self._inner,
         }
@@ -540,6 +597,7 @@ where
             fmt_span: self.fmt_span,
             make_writer: self.make_writer,
             is_ansi: self.is_ansi,
+            ansi_sanitization: self.ansi_sanitization,
             log_internal_errors: self.log_internal_errors,
             _inner: self._inner,
         }
@@ -558,7 +616,7 @@ where
     /// # Options
     ///
     /// - [`Layer::flatten_event`] can be used to enable flattening event fields into the root
-    /// object.
+    ///   object.
     ///
     /// [`Layer::flatten_event`]: Layer::flatten_event()
     #[cfg(feature = "json")]
@@ -571,6 +629,7 @@ where
             make_writer: self.make_writer,
             // always disable ANSI escapes in JSON mode!
             is_ansi: false,
+            ansi_sanitization: self.ansi_sanitization,
             log_internal_errors: self.log_internal_errors,
             _inner: self._inner,
         }
@@ -638,6 +697,7 @@ impl<S, N, E, W> Layer<S, N, E, W> {
             fmt_span: self.fmt_span,
             make_writer: self.make_writer,
             is_ansi: self.is_ansi,
+            ansi_sanitization: self.ansi_sanitization,
             log_internal_errors: self.log_internal_errors,
             _inner: self._inner,
         }
@@ -669,6 +729,7 @@ impl<S, N, E, W> Layer<S, N, E, W> {
             fmt_span: self.fmt_span,
             make_writer: self.make_writer,
             is_ansi: self.is_ansi,
+            ansi_sanitization: self.ansi_sanitization,
             log_internal_errors: self.log_internal_errors,
             _inner: self._inner,
         }
@@ -677,12 +738,17 @@ impl<S, N, E, W> Layer<S, N, E, W> {
 
 impl<S> Default for Layer<S> {
     fn default() -> Self {
+        // only enable ANSI when the feature is enabled, and the NO_COLOR
+        // environment variable is unset or empty.
+        let ansi = cfg!(feature = "ansi") && env::var("NO_COLOR").map_or(true, |v| v.is_empty());
+
         Layer {
             fmt_fields: format::DefaultFields::default(),
             fmt_event: format::Format::default(),
             fmt_span: format::FmtSpanConfig::default(),
             make_writer: io::stdout,
-            is_ansi: cfg!(feature = "ansi"),
+            is_ansi: ansi,
+            ansi_sanitization: true,
             log_internal_errors: false,
             _inner: PhantomData,
         }
@@ -715,12 +781,23 @@ where
 /// without conflicting.
 ///
 /// [extensions]: crate::registry::Extensions
-#[derive(Default)]
 pub struct FormattedFields<E: ?Sized> {
     _format_fields: PhantomData<fn(E)>,
     was_ansi: bool,
+    was_ansi_sanitized: bool,
     /// The formatted fields of a span.
     pub fields: String,
+}
+
+impl<E: ?Sized> Default for FormattedFields<E> {
+    fn default() -> Self {
+        Self {
+            _format_fields: Default::default(),
+            was_ansi: Default::default(),
+            was_ansi_sanitized: true,
+            fields: Default::default(),
+        }
+    }
 }
 
 impl<E: ?Sized> FormattedFields<E> {
@@ -729,6 +806,7 @@ impl<E: ?Sized> FormattedFields<E> {
         Self {
             fields,
             was_ansi: false,
+            was_ansi_sanitized: true,
             _format_fields: PhantomData,
         }
     }
@@ -738,7 +816,9 @@ impl<E: ?Sized> FormattedFields<E> {
     /// The returned [`format::Writer`] can be used with the
     /// [`FormatFields::format_fields`] method.
     pub fn as_writer(&mut self) -> format::Writer<'_> {
-        format::Writer::new(&mut self.fields).with_ansi(self.was_ansi)
+        format::Writer::new(&mut self.fields)
+            .with_ansi(self.was_ansi)
+            .with_ansi_sanitization(self.was_ansi_sanitized)
     }
 }
 
@@ -748,6 +828,7 @@ impl<E: ?Sized> fmt::Debug for FormattedFields<E> {
             .field("fields", &self.fields)
             .field("formatter", &format_args!("{}", std::any::type_name::<E>()))
             .field("was_ansi", &self.was_ansi)
+            .field("was_ansi_sanitized", &self.was_ansi_sanitized)
             .finish()
     }
 }
@@ -775,7 +856,7 @@ macro_rules! with_event_from_span {
         #[allow(unused)]
         let mut iter = fs.iter();
         let v = [$(
-            (&iter.next().unwrap(), Some(&$value as &dyn field::Value)),
+            (&iter.next().unwrap(), ::core::option::Option::Some(&$value as &dyn field::Value)),
         )*];
         let vs = fs.value_set(&v);
         let $event = Event::new_child_of($id, meta, &vs);
@@ -796,12 +877,13 @@ where
 
         if extensions.get_mut::<FormattedFields<N>>().is_none() {
             let mut fields = FormattedFields::<N>::new(String::new());
+            fields.was_ansi = self.is_ansi;
+            fields.was_ansi_sanitized = self.ansi_sanitization;
             if self
                 .fmt_fields
-                .format_fields(fields.as_writer().with_ansi(self.is_ansi), attrs)
+                .format_fields(fields.as_writer(), attrs)
                 .is_ok()
             {
-                fields.was_ansi = self.is_ansi;
                 extensions.insert(fields);
             } else {
                 eprintln!(
@@ -836,12 +918,13 @@ where
         }
 
         let mut fields = FormattedFields::<N>::new(String::new());
+        fields.was_ansi = self.is_ansi;
+        fields.was_ansi_sanitized = self.ansi_sanitization;
         if self
             .fmt_fields
-            .format_fields(fields.as_writer().with_ansi(self.is_ansi), values)
+            .format_fields(fields.as_writer(), values)
             .is_ok()
         {
-            fields.was_ansi = self.is_ansi;
             extensions.insert(fields);
         }
     }
@@ -851,9 +934,12 @@ where
             let span = ctx.span(id).expect("Span not found, this is a bug");
             let mut extensions = span.extensions_mut();
             if let Some(timings) = extensions.get_mut::<Timings>() {
-                let now = Instant::now();
-                timings.idle += (now - timings.last).as_nanos() as u64;
-                timings.last = now;
+                if timings.entered_count == 0 {
+                    let now = Instant::now();
+                    timings.idle += (now - timings.last).as_nanos() as u64;
+                    timings.last = now;
+                }
+                timings.entered_count += 1;
             }
 
             if self.fmt_span.trace_enter() {
@@ -871,9 +957,12 @@ where
             let span = ctx.span(id).expect("Span not found, this is a bug");
             let mut extensions = span.extensions_mut();
             if let Some(timings) = extensions.get_mut::<Timings>() {
-                let now = Instant::now();
-                timings.busy += (now - timings.last).as_nanos() as u64;
-                timings.last = now;
+                timings.entered_count -= 1;
+                if timings.entered_count == 0 {
+                    let now = Instant::now();
+                    timings.busy += (now - timings.last).as_nanos() as u64;
+                    timings.last = now;
+                }
             }
 
             if self.fmt_span.trace_exit() {
@@ -895,7 +984,9 @@ where
                     busy,
                     mut idle,
                     last,
+                    entered_count,
                 } = *timing;
+                debug_assert_eq!(entered_count, 0);
                 idle += (Instant::now() - last).as_nanos() as u64;
 
                 let t_idle = field::display(TimingDisplay(idle));
@@ -925,7 +1016,7 @@ where
 
     fn on_event(&self, event: &Event<'_>, ctx: Context<'_, S>) {
         thread_local! {
-            static BUF: RefCell<String> = RefCell::new(String::new());
+            static BUF: RefCell<String> = const { RefCell::new(String::new()) };
         }
 
         BUF.with(|buf| {
@@ -948,7 +1039,9 @@ where
                 .fmt_event
                 .format_event(
                     &ctx,
-                    format::Writer::new(&mut buf).with_ansi(self.is_ansi),
+                    format::Writer::new(&mut buf)
+                        .with_ansi(self.is_ansi)
+                        .with_ansi_sanitization(self.ansi_sanitization),
                     event,
                 )
                 .is_ok()
@@ -996,13 +1089,13 @@ pub struct FmtContext<'a, S, N> {
     pub(crate) event: &'a Event<'a>,
 }
 
-impl<'a, S, N> fmt::Debug for FmtContext<'a, S, N> {
+impl<S, N> fmt::Debug for FmtContext<'_, S, N> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("FmtContext").finish()
     }
 }
 
-impl<'cx, 'writer, S, N> FormatFields<'writer> for FmtContext<'cx, S, N>
+impl<'writer, S, N> FormatFields<'writer> for FmtContext<'_, S, N>
 where
     S: Subscriber + for<'lookup> LookupSpan<'lookup>,
     N: FormatFields<'writer> + 'static,
@@ -1016,7 +1109,7 @@ where
     }
 }
 
-impl<'a, S, N> FmtContext<'a, S, N>
+impl<S, N> FmtContext<'_, S, N>
 where
     S: Subscriber + for<'lookup> LookupSpan<'lookup>,
     N: for<'writer> FormatFields<'writer> + 'static,
@@ -1185,6 +1278,7 @@ struct Timings {
     idle: u64,
     busy: u64,
     last: Instant,
+    entered_count: u64,
 }
 
 impl Timings {
@@ -1193,6 +1287,7 @@ impl Timings {
             idle: 0,
             busy: 0,
             last: Instant::now(),
+            entered_count: 0,
         }
     }
 }
@@ -1208,6 +1303,7 @@ mod test {
         time,
     };
     use crate::Registry;
+    use alloc::{string::ToString, vec, vec::Vec};
     use format::FmtSpan;
     use regex::Regex;
     use tracing::subscriber::with_default;
@@ -1288,8 +1384,17 @@ mod test {
         let actual = sanitize_timings(make_writer.get_string());
 
         // Only assert the start because the line number and callsite may change.
-        let expected = concat!("Unable to format the following event. Name: event ", file!(), ":");
-        assert!(actual.as_str().starts_with(expected), "\nactual = {}\nshould start with expected = {}\n", actual, expected);
+        let expected = concat!(
+            "Unable to format the following event. Name: event ",
+            file!(),
+            ":"
+        );
+        assert!(
+            actual.as_str().starts_with(expected),
+            "\nactual = {}\nshould start with expected = {}\n",
+            actual,
+            expected
+        );
     }
 
     #[test]
@@ -1488,6 +1593,122 @@ mod test {
         assert_eq!(
             "fake time writer1_span{x=42}: hello writer2!\n\
              fake time writer1_span{x=42}:writer2_span: close timing timing\n",
+            actual.as_str()
+        );
+    }
+
+    // Because we need to modify an environment variable for these test cases,
+    // we do them all in a single test.
+    #[cfg(feature = "ansi")]
+    #[test]
+    fn layer_no_color() {
+        const NO_COLOR: &str = "NO_COLOR";
+
+        // Restores the previous value of the `NO_COLOR` env variable when
+        // dropped.
+        //
+        // This is done in a `Drop` implementation, rather than just resetting
+        // the value at the end of the test, so that the previous value is
+        // restored even if the test panics.
+        struct RestoreEnvVar(Result<String, env::VarError>);
+        impl Drop for RestoreEnvVar {
+            fn drop(&mut self) {
+                match self.0 {
+                    Ok(ref var) => env::set_var(NO_COLOR, var),
+                    Err(_) => env::remove_var(NO_COLOR),
+                }
+            }
+        }
+
+        let _saved_no_color = RestoreEnvVar(env::var(NO_COLOR));
+
+        let cases: Vec<(Option<&str>, bool)> = vec![
+            (Some("0"), false),   // any non-empty value disables ansi
+            (Some("off"), false), // any non-empty value disables ansi
+            (Some("1"), false),
+            (Some(""), true), // empty value does not disable ansi
+            (None, true),
+        ];
+
+        for (var, ansi) in cases {
+            if let Some(value) = var {
+                env::set_var(NO_COLOR, value);
+            } else {
+                env::remove_var(NO_COLOR);
+            }
+
+            let layer: Layer<()> = fmt::Layer::default();
+            assert_eq!(
+                layer.is_ansi, ansi,
+                "NO_COLOR={:?}; Layer::default().is_ansi should be {}",
+                var, ansi
+            );
+
+            // with_ansi should override any `NO_COLOR` value
+            let layer: Layer<()> = fmt::Layer::default().with_ansi(true);
+            assert!(
+                layer.is_ansi,
+                "NO_COLOR={:?}; Layer::default().with_ansi(true).is_ansi should be true",
+                var
+            );
+
+            // set_ansi should override any `NO_COLOR` value
+            let mut layer: Layer<()> = fmt::Layer::default();
+            layer.set_ansi(true);
+            assert!(
+                layer.is_ansi,
+                "NO_COLOR={:?}; layer.set_ansi(true); layer.is_ansi should be true",
+                var
+            );
+        }
+
+        // dropping `_saved_no_color` will restore the previous value of
+        // `NO_COLOR`.
+    }
+
+    // Validates that span event configuration can be modified with a reload handle
+    #[test]
+    fn modify_span_events() {
+        let make_writer = MockMakeWriter::default();
+
+        let inner_layer = fmt::Layer::default()
+            .with_writer(make_writer.clone())
+            .with_level(false)
+            .with_ansi(false)
+            .with_timer(MockTime)
+            .with_span_events(FmtSpan::ACTIVE);
+
+        let (reloadable_layer, reload_handle) = crate::reload::Layer::new(inner_layer);
+        let reload = reloadable_layer.with_subscriber(Registry::default());
+
+        with_default(reload, || {
+            {
+                let span1 = tracing::info_span!("span1", x = 42);
+                let _e = span1.enter();
+            }
+
+            let _ = reload_handle.modify(|s| s.set_span_events(FmtSpan::NONE));
+
+            // this span should not be logged at all!
+            {
+                let span2 = tracing::info_span!("span2", x = 100);
+                let _e = span2.enter();
+            }
+
+            {
+                let span3 = tracing::info_span!("span3", x = 42);
+                let _e = span3.enter();
+
+                // The span config was modified after span3 was already entered.
+                // We should only see an exit
+                let _ = reload_handle.modify(|s| s.set_span_events(FmtSpan::ACTIVE));
+            }
+        });
+        let actual = sanitize_timings(make_writer.get_string());
+        assert_eq!(
+            "fake time span1{x=42}: tracing_subscriber::fmt::fmt_layer::test: enter\n\
+             fake time span1{x=42}: tracing_subscriber::fmt::fmt_layer::test: exit\n\
+             fake time span3{x=42}: tracing_subscriber::fmt::fmt_layer::test: exit\n",
             actual.as_str()
         );
     }

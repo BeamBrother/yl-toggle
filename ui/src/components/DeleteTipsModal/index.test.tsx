@@ -1,16 +1,16 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import DeleteTipsModal from '.';
 import { IntlWrapper } from 'components/utils/wrapper';
 
-it('DeleteTipsModal snapshot', (done) => {
-  (async () => {
+it('DeleteTipsModal snapshot', async () => {
+  await (async () => {
     const { baseElement, rerender } = render(
       <DeleteTipsModal
         open={true}
-        onCancel={jest.fn()}
-        onConfirm={jest.fn()}
+        onCancel={vi.fn()}
+        onConfirm={vi.fn()}
         content={'test content'}
         title={'test title'}
       />,
@@ -23,23 +23,21 @@ it('DeleteTipsModal snapshot', (done) => {
     rerender(
       <DeleteTipsModal
         open={true}
-        onCancel={jest.fn()}
-        onConfirm={jest.fn()}
+        onCancel={vi.fn()}
+        onConfirm={vi.fn()}
         content={'test content'}
         title={'test title'}
         renderFooter={(nodes) => nodes}
       />
     );
     expect(baseElement).toMatchSnapshot();
-
-    done();
   })();
 });
 
-it('DeleteTipsModal clcik', (done) => {
-  (async () => {
-    const mockOnCancel = jest.fn();
-    const mockOnConfirm = jest.fn();
+it('DeleteTipsModal clcik', async () => {
+  await (async () => {
+    const mockOnCancel = vi.fn();
+    const mockOnConfirm = vi.fn();
     render(
       <DeleteTipsModal
         open={true}
@@ -52,13 +50,11 @@ it('DeleteTipsModal clcik', (done) => {
         wrapper: IntlWrapper,
       }
     );
-    
+
     await userEvent.click(screen.getByText('Confirm'));
     await userEvent.click(screen.getByText('Cancel'));
 
     expect(mockOnCancel).toBeCalled();
     expect(mockOnConfirm).toBeCalled();
-
-    done();
   })();
 });

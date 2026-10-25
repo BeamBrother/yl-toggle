@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { HeaderContainer } from 'layout/hooks';
 import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Lists from './components/Lists';
 import styles from './index.module.scss';
 
@@ -12,9 +12,9 @@ const MINE = '/approvals/mine';
 const Approvals = () => {
   const [ selectedNav, saveSelectedNav ] = useState<string>(LIST);
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { approvalCount } = HeaderContainer.useContainer();
-  
+
   const listCls = classNames(
     styles['navs-item'],
     {
@@ -41,19 +41,19 @@ const Approvals = () => {
   return (
     <div className={styles.approvals}>
       <div className={styles.navs}>
-        <div 
-          className={listCls} 
-          onClick={() => { 
-            history.push(LIST);
+        <div
+          className={listCls}
+          onClick={() => {
+            navigate(LIST);
           }}
         >
           <FormattedMessage id='approvals.lists' />
           { approvalCount !== 0 && <span className={styles.count}>{approvalCount > 99 ? '99+' : approvalCount}</span> }
         </div>
-        <div 
-          className={mineCls} 
-          onClick={() => { 
-            history.push(MINE);
+        <div
+          className={mineCls}
+          onClick={() => {
+            navigate(MINE);
           }}
         >
           <FormattedMessage id='approvals.application.lists' />

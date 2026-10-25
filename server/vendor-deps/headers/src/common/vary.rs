@@ -1,6 +1,7 @@
-use util::FlatCsv;
+use http::{HeaderName, HeaderValue};
+use std::iter::FromIterator;
 
-use HeaderValue;
+use crate::util::FlatCsv;
 
 /// `Vary` header, defined in [RFC7231](https://tools.ietf.org/html/rfc7231#section-7.1.4)
 ///
@@ -24,7 +25,6 @@ use HeaderValue;
 /// # Example
 ///
 /// ```
-/// # extern crate headers;
 /// use headers::Vary;
 ///
 /// let vary = Vary::any();
@@ -54,6 +54,21 @@ impl Vary {
     }
 }
 
+impl From<HeaderName> for Vary {
+    fn from(name: HeaderName) -> Self {
+        Vary(HeaderValue::from(name).into())
+    }
+}
+
+impl FromIterator<HeaderName> for Vary {
+    fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = HeaderName>,
+    {
+        Vary(iter.into_iter().map(HeaderValue::from).collect())
+    }
+}
+
 /*
 test_vary {
     test_header!(test1, vec![b"accept-encoding, accept-language"]);
@@ -75,10 +90,34 @@ test_vary {
 
 #[cfg(test)]
 mod tests {
+    use http::header::{ACCEPT_ENCODING, ACCEPT_LANGUAGE};
+
     use super::*;
 
     #[test]
     fn any_is_any() {
         assert!(Vary::any().is_any());
+    }
+
+    #[test]
+    fn from_header_name() {
+        let vary = Vary::from(ACCEPT_ENCODING);
+
+        assert!(!vary.is_any());
+        assert_eq!(
+            vary.iter_strs().collect::<Vec<_>>(),
+            vec![ACCEPT_ENCODING.as_str()]
+        );
+    }
+
+    #[test]
+    fn from_iter_header_name() {
+        let vary = Vary::from_iter([ACCEPT_ENCODING, ACCEPT_LANGUAGE]);
+
+        assert!(!vary.is_any());
+        assert_eq!(
+            vary.iter_strs().collect::<Vec<_>>(),
+            vec![ACCEPT_ENCODING.as_str(), ACCEPT_LANGUAGE.as_str()]
+        );
     }
 }

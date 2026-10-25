@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`PopupConFirm snapshot 1`] = `
 <body>
@@ -8,37 +8,41 @@ exports[`PopupConFirm snapshot 1`] = `
     </span>
   </div>
   <div
-    style="display: flex; position: absolute; left: 0px; top: 0px;"
+    data-suir-portal="true"
   >
     <div
-      class="ui top left flowing popup transition visible popup"
-      style="position: initial;"
+      style="display: flex; position: absolute; left: 0px; top: 0px;"
     >
       <div
-        class="content"
+        class="ui top left flowing popup transition visible _popup_39039c"
+        style="left: auto; right: auto; position: initial;"
       >
-        <span
-          class="iconfont icon-error-circle iconfont"
-          customclass="iconfont"
-          type="error-circle"
-        />
-        <span>
-          popup confirm text
-        </span>
-      </div>
-      <div
-        class="btn-group"
-      >
-        <button
-          class="ui mini secondary button btn-cancel"
+        <div
+          class="_content_39039c"
         >
-          Cancel
-        </button>
-        <button
-          class="ui mini primary button"
+          <span
+            class="iconfont icon-error-circle _iconfont_39039c"
+            customclass="_iconfont_39039c"
+            type="error-circle"
+          />
+          <span>
+            popup confirm text
+          </span>
+        </div>
+        <div
+          class="_btn-group_39039c"
         >
-          Confirm
-        </button>
+          <button
+            class="ui mini secondary button _btn-cancel_39039c"
+          >
+            Cancel
+          </button>
+          <button
+            class="ui mini primary button"
+          >
+            Confirm
+          </button>
+        </div>
       </div>
     </div>
   </div>

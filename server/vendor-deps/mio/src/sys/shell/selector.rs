@@ -1,6 +1,6 @@
 use std::io;
 #[cfg(unix)]
-use std::os::unix::io::{AsRawFd, RawFd};
+use std::os::fd::{AsFd, AsRawFd, BorrowedFd, RawFd};
 use std::time::Duration;
 
 pub type Event = usize;
@@ -18,15 +18,10 @@ impl Selector {
     pub fn select(&self, _: &mut Events, _: Option<Duration>) -> io::Result<()> {
         os_required!();
     }
-
-    #[cfg(all(debug_assertions, not(target_os = "wasi")))]
-    pub fn register_waker(&self) -> bool {
-        os_required!();
-    }
 }
 
 #[cfg(unix)]
-cfg_any_os_ext! {
+cfg_os_ext! {
     use crate::{Interest, Token};
 
     impl Selector {
@@ -69,6 +64,13 @@ cfg_io_source! {
         pub fn id(&self) -> usize {
             os_required!();
         }
+    }
+}
+
+#[cfg(unix)]
+impl AsFd for Selector {
+    fn as_fd(&self) -> BorrowedFd<'_> {
+        os_required!()
     }
 }
 

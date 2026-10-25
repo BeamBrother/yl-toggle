@@ -1,6 +1,6 @@
 {
   "name": "yl-toggle-docs",
-  "version": "1.0.1",
+  "version": "3.0.0",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
@@ -15,25 +15,24 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@docusaurus/core": "^2.3.1",
-    "@docusaurus/plugin-google-gtag": "^2.3.1",
-    "@docusaurus/preset-classic": "^2.3.1",
-    "@docusaurus/theme-live-codeblock": "^2.3.1",
-    "@mdx-js/react": "^1.6.22",
-    "clsx": "^1.2.1",
-    "yl-toggle-client-sdk-js": "^1.1.0",
-    "hast-util-is-element": "^1.1.0",
-    "prism-react-renderer": "^1.3.5",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "rehype-katex": "^5.0.0",
-    "remark-math": "^3.0.1"
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/plugin-google-gtag": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@docusaurus/theme-live-codeblock": "3.10.2",
+    "@mdx-js/react": "3.1.1",
+    "clsx": "2.1.1",
+    "prism-react-renderer": "2.4.1",
+    "prismjs": "1.30.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "rehype-katex": "7.0.1",
+    "remark-math": "6.0.0"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "^2.3.1",
-    "@tsconfig/docusaurus": "^1.0.5",
-    "gh-pages": "^6.1.1",
-    "typescript": "^4.7.4"
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@tsconfig/docusaurus": "2.0.9",
+    "gh-pages": "6.3.0",
+    "typescript": "5.9.3"
   },
   "browserslist": {
     "production": [
@@ -48,6 +47,13 @@
     ]
   },
   "engines": {
-    "node": ">=16.14"
+    "node": ">=24.13.1 <25"
+  },
+  "overrides": {
+    "katex": "0.19.1",
+    "postcss-selector-parser": "7.1.7",
+    "serialize-javascript": "7.1.4",
+    "tinypool": "2.2.0",
+    "uuid": "14.0.3"
   }
 }

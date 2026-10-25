@@ -12,6 +12,7 @@ import { useFormErrorScrollIntoView } from 'hooks';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   rule: IRule;
   ruleIndex: number;
   disabled?: boolean;
@@ -95,10 +96,10 @@ const RuleContent = (props: IProps) => {
         })
       }
 
-      <div 
+      <div
         {
           ...registerErrorName(`rule_${rule.id}_add`)
-        } 
+        }
         className={ruleAddCls}
       >
         <Popup

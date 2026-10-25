@@ -1,11 +1,22 @@
+use std::sync::Arc;
+
+use hyper_util::client::legacy::connect::HttpConnector;
+#[cfg(any(
+    feature = "rustls-native-certs",
+    feature = "rustls-platform-verifier",
+    feature = "webpki-roots"
+))]
+use rustls::crypto::CryptoProvider;
+use rustls::pki_types::ServerName;
 use rustls::ClientConfig;
 
-use super::HttpsConnector;
-#[cfg(any(feature = "rustls-native-certs", feature = "webpki-roots"))]
+use super::{DefaultServerNameResolver, HttpsConnector, ResolveServerName};
+#[cfg(any(
+    feature = "rustls-native-certs",
+    feature = "webpki-roots",
+    feature = "rustls-platform-verifier"
+))]
 use crate::config::ConfigBuilderExt;
-
-#[cfg(feature = "tokio-runtime")]
-use hyper::client::HttpConnector;
 
 /// A builder for an [`HttpsConnector`]
 ///
@@ -17,12 +28,15 @@ use hyper::client::HttpConnector;
 /// ```
 /// use hyper_rustls::HttpsConnectorBuilder;
 ///
-/// # #[cfg(all(feature = "webpki-roots", feature = "tokio-runtime", feature = "http1"))]
-/// let https = HttpsConnectorBuilder::new()
+/// # #[cfg(all(feature = "webpki-roots", feature = "http1", feature="aws-lc-rs"))]
+/// # {
+/// # let _ = rustls::crypto::aws_lc_rs::default_provider().install_default();
+///     let https = HttpsConnectorBuilder::new()
 ///     .with_webpki_roots()
 ///     .https_only()
 ///     .enable_http1()
 ///     .build();
+/// # }
 /// ```
 pub struct ConnectorBuilder<State>(State);
 
@@ -51,38 +65,115 @@ impl ConnectorBuilder<WantsTlsConfig> {
         ConnectorBuilder(WantsSchemes { tls_config: config })
     }
 
-    /// Shorthand for using rustls' [safe defaults][with_safe_defaults]
-    /// and native roots
+    /// Shorthand for using rustls' default crypto provider and other defaults, and
+    /// the platform verifier.
+    ///
+    /// See [`ConfigBuilderExt::with_platform_verifier()`].
+    #[cfg(all(
+        any(feature = "ring", feature = "aws-lc-rs"),
+        feature = "rustls-platform-verifier"
+    ))]
+    pub fn with_platform_verifier(self) -> ConnectorBuilder<WantsSchemes> {
+        self.try_with_platform_verifier()
+            .expect("failure to initialize platform verifier")
+    }
+
+    /// Shorthand for using rustls' default crypto provider and other defaults, and
+    /// the platform verifier.
+    ///
+    /// See [`ConfigBuilderExt::with_platform_verifier()`].
+    #[cfg(all(
+        any(feature = "ring", feature = "aws-lc-rs"),
+        feature = "rustls-platform-verifier"
+    ))]
+    pub fn try_with_platform_verifier(
+        self,
+    ) -> Result<ConnectorBuilder<WantsSchemes>, rustls::Error> {
+        Ok(self.with_tls_config(
+            ClientConfig::builder()
+                .try_with_platform_verifier()?
+                .with_no_client_auth(),
+        ))
+    }
+
+    /// Shorthand for using a custom [`CryptoProvider`] and the platform verifier.
+    ///
+    /// See [`ConfigBuilderExt::with_platform_verifier()`].
+    #[cfg(feature = "rustls-platform-verifier")]
+    pub fn with_provider_and_platform_verifier(
+        self,
+        provider: impl Into<Arc<CryptoProvider>>,
+    ) -> std::io::Result<ConnectorBuilder<WantsSchemes>> {
+        Ok(self.with_tls_config(
+            ClientConfig::builder_with_provider(provider.into())
+                .with_safe_default_protocol_versions()
+                .and_then(|builder| builder.try_with_platform_verifier())
+                .map_err(std::io::Error::other)?
+                .with_no_client_auth(),
+        ))
+    }
+
+    /// Shorthand for using rustls' default crypto provider and safe defaults, with
+    /// native roots.
     ///
     /// See [`ConfigBuilderExt::with_native_roots`]
+    #[cfg(all(
+        any(feature = "ring", feature = "aws-lc-rs"),
+        feature = "rustls-native-certs"
+    ))]
+    pub fn with_native_roots(self) -> std::io::Result<ConnectorBuilder<WantsSchemes>> {
+        Ok(self.with_tls_config(
+            ClientConfig::builder()
+                .with_native_roots()?
+                .with_no_client_auth(),
+        ))
+    }
+
+    /// Shorthand for using a custom [`CryptoProvider`] and native roots
     ///
-    /// [with_safe_defaults]: rustls::ConfigBuilder::with_safe_defaults
+    /// See [`ConfigBuilderExt::with_native_roots`]
     #[cfg(feature = "rustls-native-certs")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "rustls-native-certs")))]
-    pub fn with_native_roots(self) -> ConnectorBuilder<WantsSchemes> {
+    pub fn with_provider_and_native_roots(
+        self,
+        provider: impl Into<Arc<CryptoProvider>>,
+    ) -> std::io::Result<ConnectorBuilder<WantsSchemes>> {
+        Ok(self.with_tls_config(
+            ClientConfig::builder_with_provider(provider.into())
+                .with_safe_default_protocol_versions()
+                .map_err(std::io::Error::other)?
+                .with_native_roots()?
+                .with_no_client_auth(),
+        ))
+    }
+
+    /// Shorthand for using rustls' default crypto provider and its
+    /// safe defaults.
+    ///
+    /// See [`ConfigBuilderExt::with_webpki_roots`]
+    #[cfg(all(any(feature = "ring", feature = "aws-lc-rs"), feature = "webpki-roots"))]
+    pub fn with_webpki_roots(self) -> ConnectorBuilder<WantsSchemes> {
         self.with_tls_config(
             ClientConfig::builder()
-                .with_safe_defaults()
-                .with_native_roots()
+                .with_webpki_roots()
                 .with_no_client_auth(),
         )
     }
 
-    /// Shorthand for using rustls' [safe defaults][with_safe_defaults]
-    /// and Mozilla roots
+    /// Shorthand for using a custom [`CryptoProvider`], Rustls' safe default
+    /// protocol versions and Mozilla roots
     ///
     /// See [`ConfigBuilderExt::with_webpki_roots`]
-    ///
-    /// [with_safe_defaults]: rustls::ConfigBuilder::with_safe_defaults
     #[cfg(feature = "webpki-roots")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "webpki-roots")))]
-    pub fn with_webpki_roots(self) -> ConnectorBuilder<WantsSchemes> {
-        self.with_tls_config(
-            ClientConfig::builder()
-                .with_safe_defaults()
+    pub fn with_provider_and_webpki_roots(
+        self,
+        provider: impl Into<Arc<CryptoProvider>>,
+    ) -> Result<ConnectorBuilder<WantsSchemes>, rustls::Error> {
+        Ok(self.with_tls_config(
+            ClientConfig::builder_with_provider(provider.into())
+                .with_safe_default_protocol_versions()?
                 .with_webpki_roots()
                 .with_no_client_auth(),
-        )
+        ))
     }
 }
 
@@ -106,7 +197,7 @@ impl ConnectorBuilder<WantsSchemes> {
         ConnectorBuilder(WantsProtocols1 {
             tls_config: self.0.tls_config,
             https_only: true,
-            override_server_name: None,
+            server_name_resolver: None,
         })
     }
 
@@ -118,7 +209,7 @@ impl ConnectorBuilder<WantsSchemes> {
         ConnectorBuilder(WantsProtocols1 {
             tls_config: self.0.tls_config,
             https_only: false,
-            override_server_name: None,
+            server_name_resolver: None,
         })
     }
 }
@@ -130,7 +221,7 @@ impl ConnectorBuilder<WantsSchemes> {
 pub struct WantsProtocols1 {
     tls_config: ClientConfig,
     https_only: bool,
-    override_server_name: Option<String>,
+    server_name_resolver: Option<Arc<dyn ResolveServerName + Sync + Send>>,
 }
 
 impl WantsProtocols1 {
@@ -138,12 +229,13 @@ impl WantsProtocols1 {
         HttpsConnector {
             force_https: self.https_only,
             http: conn,
-            tls_config: std::sync::Arc::new(self.tls_config),
-            override_server_name: self.override_server_name,
+            tls_config: Arc::new(self.tls_config),
+            server_name_resolver: self
+                .server_name_resolver
+                .unwrap_or_else(|| Arc::new(DefaultServerNameResolver::default())),
         }
     }
 
-    #[cfg(feature = "tokio-runtime")]
     fn build(self) -> HttpsConnector<HttpConnector> {
         let mut http = HttpConnector::new();
         // HttpConnector won't enforce scheme, but HttpsConnector will
@@ -165,7 +257,6 @@ impl ConnectorBuilder<WantsProtocols1> {
     ///
     /// This needs to be called explicitly, no protocol is enabled by default
     #[cfg(feature = "http2")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "http2")))]
     pub fn enable_http2(mut self) -> ConnectorBuilder<WantsProtocols3> {
         self.0.tls_config.alpn_protocols = vec![b"h2".to_vec()];
         ConnectorBuilder(WantsProtocols3 {
@@ -174,17 +265,38 @@ impl ConnectorBuilder<WantsProtocols1> {
         })
     }
 
-    /// Enable all HTTP versions
+    /// Enable all HTTP versions built into this library (enabled with Cargo features)
     ///
-    /// For now, this enables both HTTP 1 and 2. In the future, other supported versions
-    /// will be enabled as well.
-    #[cfg(all(feature = "http1", feature = "http2"))]
+    /// For now, this could enable both HTTP 1 and 2, depending on active features.
+    /// In the future, other supported versions will be enabled as well.
+    #[cfg(feature = "http2")]
     pub fn enable_all_versions(mut self) -> ConnectorBuilder<WantsProtocols3> {
-        self.0.tls_config.alpn_protocols = vec![b"h2".to_vec()];
+        #[cfg(feature = "http1")]
+        let alpn_protocols = vec![b"h2".to_vec(), b"http/1.1".to_vec()];
+        #[cfg(not(feature = "http1"))]
+        let alpn_protocols = vec![b"h2".to_vec()];
+
+        self.0.tls_config.alpn_protocols = alpn_protocols;
         ConnectorBuilder(WantsProtocols3 {
             inner: self.0,
-            enable_http1: true,
+            enable_http1: cfg!(feature = "http1"),
         })
+    }
+
+    /// Override server name for the TLS stack
+    ///
+    /// By default, for each connection hyper-rustls will extract host portion
+    /// of the destination URL and verify that server certificate contains
+    /// this value.
+    ///
+    /// If this method is called, hyper-rustls will instead use this resolver
+    /// to compute the value used to verify the server certificate.
+    pub fn with_server_name_resolver(
+        mut self,
+        resolver: impl ResolveServerName + 'static + Sync + Send,
+    ) -> Self {
+        self.0.server_name_resolver = Some(Arc::new(resolver));
+        self
     }
 
     /// Override server name for the TLS stack
@@ -196,9 +308,22 @@ impl ConnectorBuilder<WantsProtocols1> {
     /// If this method is called, hyper-rustls will instead verify that server
     /// certificate contains `override_server_name`. Domain name included in
     /// the URL will not affect certificate validation.
-    pub fn with_server_name(mut self, override_server_name: String) -> Self {
-        self.0.override_server_name = Some(override_server_name);
-        self
+    #[deprecated(
+        since = "0.27.1",
+        note = "use Self::with_server_name_resolver with FixedServerNameResolver instead"
+    )]
+    pub fn with_server_name(self, mut override_server_name: String) -> Self {
+        // remove square brackets around IPv6 address.
+        if let Some(trimmed) = override_server_name
+            .strip_prefix('[')
+            .and_then(|s| s.strip_suffix(']'))
+        {
+            override_server_name = trimmed.to_string();
+        }
+
+        self.with_server_name_resolver(move |_: &_| {
+            ServerName::try_from(override_server_name.clone())
+        })
     }
 }
 
@@ -217,7 +342,6 @@ impl ConnectorBuilder<WantsProtocols2> {
     ///
     /// This needs to be called explicitly, no protocol is enabled by default
     #[cfg(feature = "http2")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "http2")))]
     pub fn enable_http2(mut self) -> ConnectorBuilder<WantsProtocols3> {
         self.0.inner.tls_config.alpn_protocols = vec![b"h2".to_vec(), b"http/1.1".to_vec()];
         ConnectorBuilder(WantsProtocols3 {
@@ -227,7 +351,6 @@ impl ConnectorBuilder<WantsProtocols2> {
     }
 
     /// This builds an [`HttpsConnector`] built on hyper's default [`HttpConnector`]
-    #[cfg(feature = "tokio-runtime")]
     pub fn build(self) -> HttpsConnector<HttpConnector> {
         self.0.inner.build()
     }
@@ -258,7 +381,6 @@ pub struct WantsProtocols3 {
 #[cfg(feature = "http2")]
 impl ConnectorBuilder<WantsProtocols3> {
     /// This builds an [`HttpsConnector`] built on hyper's default [`HttpConnector`]
-    #[cfg(feature = "tokio-runtime")]
     pub fn build(self) -> HttpsConnector<HttpConnector> {
         self.0.inner.build()
     }
@@ -278,6 +400,7 @@ mod tests {
     #[test]
     #[cfg(all(feature = "webpki-roots", feature = "http1"))]
     fn test_builder() {
+        ensure_global_state();
         let _connector = super::ConnectorBuilder::new()
             .with_webpki_roots()
             .https_only()
@@ -289,9 +412,9 @@ mod tests {
     #[cfg(feature = "http1")]
     #[should_panic(expected = "ALPN protocols should not be pre-defined")]
     fn test_reject_predefined_alpn() {
+        ensure_global_state();
         let roots = rustls::RootCertStore::empty();
         let mut config_with_alpn = rustls::ClientConfig::builder()
-            .with_safe_defaults()
             .with_root_certificates(roots)
             .with_no_client_auth();
         config_with_alpn.alpn_protocols = vec![b"fancyprotocol".to_vec()];
@@ -305,9 +428,9 @@ mod tests {
     #[test]
     #[cfg(all(feature = "http1", feature = "http2"))]
     fn test_alpn() {
+        ensure_global_state();
         let roots = rustls::RootCertStore::empty();
         let tls_config = rustls::ClientConfig::builder()
-            .with_safe_defaults()
             .with_root_certificates(roots)
             .with_no_client_auth();
         let connector = super::ConnectorBuilder::new()
@@ -326,7 +449,7 @@ mod tests {
             .build();
         assert_eq!(&connector.tls_config.alpn_protocols, &[b"h2".to_vec()]);
         let connector = super::ConnectorBuilder::new()
-            .with_tls_config(tls_config)
+            .with_tls_config(tls_config.clone())
             .https_only()
             .enable_http1()
             .enable_http2()
@@ -335,5 +458,43 @@ mod tests {
             &connector.tls_config.alpn_protocols,
             &[b"h2".to_vec(), b"http/1.1".to_vec()]
         );
+        let connector = super::ConnectorBuilder::new()
+            .with_tls_config(tls_config)
+            .https_only()
+            .enable_all_versions()
+            .build();
+        assert_eq!(
+            &connector.tls_config.alpn_protocols,
+            &[b"h2".to_vec(), b"http/1.1".to_vec()]
+        );
+    }
+
+    #[test]
+    #[cfg(all(not(feature = "http1"), feature = "http2"))]
+    fn test_alpn_http2() {
+        let roots = rustls::RootCertStore::empty();
+        let tls_config = rustls::ClientConfig::builder()
+            .with_safe_defaults()
+            .with_root_certificates(roots)
+            .with_no_client_auth();
+        let connector = super::ConnectorBuilder::new()
+            .with_tls_config(tls_config.clone())
+            .https_only()
+            .enable_http2()
+            .build();
+        assert_eq!(&connector.tls_config.alpn_protocols, &[b"h2".to_vec()]);
+        let connector = super::ConnectorBuilder::new()
+            .with_tls_config(tls_config)
+            .https_only()
+            .enable_all_versions()
+            .build();
+        assert_eq!(&connector.tls_config.alpn_protocols, &[b"h2".to_vec()]);
+    }
+
+    fn ensure_global_state() {
+        #[cfg(feature = "ring")]
+        let _ = rustls::crypto::ring::default_provider().install_default();
+        #[cfg(feature = "aws-lc-rs")]
+        let _ = rustls::crypto::aws_lc_rs::default_provider().install_default();
     }
 }

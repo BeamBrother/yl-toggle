@@ -1,14 +1,14 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event';
 import Filter from '.';
 import sleep from 'utils/sleep';
 import { IntlWrapper } from 'components/utils/wrapper';
 
-it('Filter snapshot', (done) => {
-  (async () => {
+it('Filter snapshot', async () => {
+  await (async () => {
     const { asFragment } = render(
-      <Filter handleConfirm={jest.fn()} handleClear={jest.fn()} selected>
+      <Filter handleConfirm={vi.fn()} handleClear={vi.fn()} selected>
         <div>
           <div>1</div>
           <div>2</div>
@@ -16,14 +16,13 @@ it('Filter snapshot', (done) => {
       </Filter>
     );
     expect(asFragment()).toMatchSnapshot();
-    done();
   })();
 });
 
-test('Filter icon click snapshot', (done) => {
-  (async () => {
+it('Filter icon click snapshot', async () => {
+  await (async () => {
     const { baseElement } = render(
-      <Filter handleConfirm={jest.fn()} handleClear={jest.fn()} selected={true}>
+      <Filter handleConfirm={vi.fn()} handleClear={vi.fn()} selected={true}>
         <div>
           <div>1</div>
           <div>2</div>
@@ -35,14 +34,13 @@ test('Filter icon click snapshot', (done) => {
     await userEvent.click(ele);
 
     expect(baseElement).toMatchSnapshot();
-    done();
   })();
 });
 
-test('Filter Confirm Button click snapshot', (done) => {
-  (async () => {
-    const mockHandleCancel = jest.fn();
-    const mockHandleConfirm = jest.fn();
+it('Filter Confirm Button click snapshot', async () => {
+  await (async () => {
+    const mockHandleCancel = vi.fn();
+    const mockHandleConfirm = vi.fn();
 
     const { baseElement } = render(
       <Filter handleConfirm={mockHandleConfirm} handleClear={mockHandleCancel} selected={true}>
@@ -66,7 +64,5 @@ test('Filter Confirm Button click snapshot', (done) => {
     expect(mockHandleConfirm).toBeCalled();
 
     expect(baseElement).toMatchSnapshot();
-
-    done();
   })();
 });

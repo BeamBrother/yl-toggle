@@ -1,7 +1,10 @@
 #![warn(rust_2018_idioms)]
-#![cfg(feature = "full")]
+#![cfg(any(
+    feature = "full",
+    all(target_os = "emscripten", feature = "rt", feature = "macros")
+))]
 
-use tokio::runtime::Runtime;
+use tokio::runtime::{self, Runtime};
 use tokio::sync::oneshot;
 use tokio::time::{timeout, Duration};
 use tokio_test::{assert_err, assert_ok};
@@ -18,7 +21,7 @@ mod support {
 
 macro_rules! cfg_metrics {
     ($($t:tt)*) => {
-        #[cfg(tokio_unstable)]
+        #[cfg(all(tokio_unstable, target_has_atomic = "64"))]
         {
             $( $t )*
         }
@@ -181,25 +184,35 @@ fn drop_tasks_in_context() {
 #[cfg_attr(target_os = "wasi", ignore = "Wasi does not support panic recovery")]
 #[should_panic(expected = "boom")]
 fn wake_in_drop_after_panic() {
-    let (tx, rx) = oneshot::channel::<()>();
-
     struct WakeOnDrop(Option<oneshot::Sender<()>>);
 
     impl Drop for WakeOnDrop {
         fn drop(&mut self) {
-            self.0.take().unwrap().send(()).unwrap();
+            let _ = self.0.take().unwrap().send(());
         }
     }
 
     let rt = rt();
 
+    let (tx1, rx1) = oneshot::channel::<()>();
+    let (tx2, rx2) = oneshot::channel::<()>();
+
+    // Spawn two tasks. We don't know the order in which they are dropped, so we
+    // make both tasks identical. When the first task is dropped, we wake up the
+    // second task. This ensures that we trigger a wakeup on a live task while
+    // handling the "boom" panic, no matter the order in which the tasks are
+    // dropped.
     rt.spawn(async move {
-        let _wake_on_drop = WakeOnDrop(Some(tx));
-        // wait forever
-        futures::future::pending::<()>().await;
+        let _wake_on_drop = WakeOnDrop(Some(tx2));
+        let _ = rx1.await;
+        unreachable!()
     });
 
-    let _join = rt.spawn(async move { rx.await });
+    rt.spawn(async move {
+        let _wake_on_drop = WakeOnDrop(Some(tx1));
+        let _ = rx2.await;
+        unreachable!()
+    });
 
     rt.block_on(async {
         tokio::task::yield_now().await;
@@ -239,7 +252,10 @@ fn spawn_two() {
     }
 }
 
-#[cfg_attr(target_os = "wasi", ignore = "WASI: std::thread::spawn not supported")]
+#[cfg_attr(
+    target_family = "wasm",
+    ignore = "wasm targets do not support std::thread::spawn"
+)]
 #[test]
 fn spawn_remote() {
     let rt = rt();
@@ -291,6 +307,27 @@ fn timeout_panics_when_no_time_handle() {
     });
 }
 
+#[test]
+fn default_runtime_name_should_be_none() {
+    let rt1 = runtime::Builder::new_current_thread().build().unwrap();
+
+    assert!(rt1.handle().name().is_none());
+}
+
+#[test]
+fn different_runtime_names() {
+    let rt1 = runtime::Builder::new_current_thread()
+        .name("test-runtime-1")
+        .build()
+        .unwrap();
+    let rt2 = runtime::Builder::new_current_thread()
+        .name("test-runtime-2")
+        .build()
+        .unwrap();
+
+    assert_ne!(rt1.handle().name().unwrap(), rt2.handle().name().unwrap());
+}
+
 #[cfg(tokio_unstable)]
 mod unstable {
     use tokio::runtime::{Builder, RngSeed, UnhandledPanic};
@@ -315,7 +352,10 @@ mod unstable {
     }
 
     #[test]
-    #[cfg_attr(target_os = "wasi", ignore = "Wasi does not support panic recovery")]
+    #[cfg_attr(
+        target_family = "wasm",
+        ignore = "wasm targets do not support std::thread::spawn"
+    )]
     fn spawns_do_nothing() {
         use std::sync::Arc;
 
@@ -344,7 +384,10 @@ mod unstable {
     }
 
     #[test]
-    #[cfg_attr(target_os = "wasi", ignore = "Wasi does not support panic recovery")]
+    #[cfg_attr(
+        target_family = "wasm",
+        ignore = "wasm targets do not support std::thread::spawn"
+    )]
     fn shutdown_all_concurrent_block_on() {
         const N: usize = 2;
         use std::sync::{mpsc, Arc};
@@ -355,13 +398,13 @@ mod unstable {
             .unwrap();
 
         let rt = Arc::new(rt);
-        let mut ths = vec![];
+        let mut threads = vec![];
         let (tx, rx) = mpsc::channel();
 
         for _ in 0..N {
             let rt = rt.clone();
             let tx = tx.clone();
-            ths.push(std::thread::spawn(move || {
+            threads.push(std::thread::spawn(move || {
                 rt.block_on(async {
                     tx.send(()).unwrap();
                     futures::future::pending::<()>().await;
@@ -377,8 +420,8 @@ mod unstable {
             panic!("boom");
         });
 
-        for th in ths {
-            assert!(th.join().is_err());
+        for thread in threads {
+            assert!(thread.join().is_err());
         }
     }
 
@@ -445,4 +488,45 @@ fn rt() -> Runtime {
         .enable_all()
         .build()
         .unwrap()
+}
+
+#[test]
+fn before_park_yields() {
+    use futures::task::ArcWake;
+    use std::sync::Arc;
+    use tokio::runtime::Builder;
+    use tokio::sync::Notify;
+
+    struct MyWaker(Notify);
+
+    impl ArcWake for MyWaker {
+        fn wake_by_ref(arc_self: &Arc<Self>) {
+            arc_self.0.notify_one();
+        }
+    }
+
+    let notify = Arc::new(MyWaker(Notify::new()));
+    let notify2 = notify.clone();
+    let waker = futures::task::waker(notify2);
+    let woken = Arc::new(AtomicBool::new(false));
+    let woken2 = woken.clone();
+
+    let rt = Builder::new_current_thread()
+        .enable_all()
+        .on_thread_park(move || {
+            if !woken2.swap(true, Ordering::SeqCst) {
+                let mut cx = Context::from_waker(&waker);
+                // `yield_now` pushes the waker to the defer slot.
+                let fut = std::pin::pin!(tokio::task::yield_now());
+                let _ = fut.poll(&mut cx);
+            }
+        })
+        .build()
+        .unwrap();
+
+    rt.block_on(async {
+        notify.0.notified().await;
+    });
+
+    assert!(woken.load(Ordering::SeqCst));
 }

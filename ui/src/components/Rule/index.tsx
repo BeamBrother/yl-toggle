@@ -10,6 +10,7 @@ import { IContainer } from 'interfaces/provider';
 import styles from './index.module.scss';
 
 interface IProps {
+  children?: import('react').ReactNode;
   rule: IRule,
   index: number;
   disabled?: boolean;
@@ -23,8 +24,8 @@ interface IProps {
 }
 
 const Rule = (props: IProps) => {
-  const { 
-    rule, 
+  const {
+    rule,
     index,
     disabled,
     useSegment,
@@ -70,7 +71,7 @@ const Rule = (props: IProps) => {
                 title: {
                   className: styles['rule-accordion-title'],
                   icon: (
-                    !active 
+                    !active
                       ? <Icon customclass={styles['icon-accordion']} type='angle-right' />
                       : <Icon customclass={styles['icon-accordion']} type='angle-down' />
                   ),

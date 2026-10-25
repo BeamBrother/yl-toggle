@@ -16,7 +16,7 @@ import io.yltoggle.api.dto.EventTrackerStatusRequest
 import org.hibernate.internal.SessionImpl
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 class EventTrackerServiceSpec extends Specification {
 
@@ -122,4 +122,3 @@ class EventTrackerServiceSpec extends Specification {
     }
 
 }
-
