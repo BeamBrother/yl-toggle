@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 @Configuration
 public class DocConfig {
 
@@ -37,7 +36,7 @@ public class DocConfig {
                         "You can manage personal access tokens on your Account settings page.** <br/>")
                 .contact(new Contact().name("yl-toggle Technical Support Team").email("support@yl-toggle.com")
                         .url("https://github.com/yl-toggle/yl-toggle#-community-and-sharing"))
-                .version("1.0.0")
+                .version("3.0.0")
                 .extensions(extension)
                 .license(new License().name("Apache 2.0")
                         .url("https://github.com/yl-toggle/yl-toggle/blob/main/LICENSE"));

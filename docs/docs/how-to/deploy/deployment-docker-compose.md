@@ -2,32 +2,62 @@
 sidebar_position: 1
 ---
 
-# Docker Compose Deploy Guide
+# Docker Compose deployment
 
-> This document describes how to deploy the yl-toggle service.
-
+This guide starts the complete yl-toggle stack from source with Docker Compose.
 
 ## Requirements
 
-* Docker 17+
-* Recommendation: 2-core CPU/4G memory and above
+- Docker Engine 24+ with Compose v2
+- 2-core CPU / 4 GB RAM or better
 
-## Deploy yl-toggle Service
+## Deploy
 
-### 一、Standalone
+```bash
+git clone https://github.com/yl-toggle/yl-toggle.git
+cd yl-toggle
+docker compose up -d --build
+```
 
-Get up and running on Linux/Unix/Mac quickly with docker-compose.
+Compose builds these local images:
 
-**Setps：**
+- `yl-toggle/api:3.0.0`
+- `yl-toggle/server:3.0.0`
+- `yl-toggle/ui:3.0.0`
+- `yl-toggle/analysis:3.0.0`
 
-1. Make sure you have [`git`](https://git-scm.com/) and [`docker`](https://www.docker.com/) installed.
-2. For users in Mainland China, please refer to [configure mirror](https://github.com/yl-toggle/yl-toggle/blob/main/DOCKER_HUB.md) to speed up your download.
-3. Clone the repository to your server and boot up the services
-   ```shell
-   git clone https://gitee.com/yl-toggle/yl-toggle.git
-   cd yl-toggle
-   docker compose up
-   ```
-4. Go to UI/Portal at `http://localhost:4009` and use the default credentials to log in.
-   - username: `admin`
-   - password: `Pass1234`
+It also starts MariaDB 11.8.9 and Redoc.
+
+## Scale the API and evaluation server
+
+```bash
+docker compose up -d --build --scale backendAPI=2 --scale serverAPI=2
+```
+
+## Verify
+
+```bash
+docker compose ps --all
+curl http://127.0.0.1:4009/
+curl http://127.0.0.1:4006/actuator/health
+curl http://127.0.0.1:4009/api/v3/api-docs.yaml
+# Redoc UI: http://127.0.0.1:4009/api-docs
+```
+
+Open [http://127.0.0.1:4009/](http://127.0.0.1:4009/) and sign in with:
+
+- username: `Admin`
+- password: `Pass1234`
+
+## Reset the local environment
+
+The local volume contains database data. To recreate it:
+
+```bash
+docker compose down -v
+docker compose up -d --build
+```
+
+:::caution
+`docker compose down -v` deletes the local MariaDB volume and all data in it.
+:::

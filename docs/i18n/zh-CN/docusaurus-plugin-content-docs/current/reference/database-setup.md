@@ -4,81 +4,57 @@ sidebar_position: 6
 
 # 初始化数据库
 
-要运行 yl-toggle API，您需要运行 MySQL 数据库（MySQL 5.7 或更新版本）。
+yl-toggle 3.0.0 使用 MariaDB 11.8.9。
+
+管理 API 与 Analysis API 使用两个独立数据库：
+
+- `yl-toggle`
+- `yl-toggle-events`
 
 ## 创建数据库
 
-连接到 MySQL Server 后，执行以下 SQL 创建 yl-toggle 数据库：
+连接 MariaDB 后执行：
 
 ```sql
-CREATE DATABASE IF NOT EXISTS `yl-toggle` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE IF NOT EXISTS `yl-toggle`;
+CREATE DATABASE IF NOT EXISTS `yl-toggle-events`;
 ```
 
-## 创建表和初始数据
+## Flyway 自动迁移
 
-我们提供了两种方式来创建表和初始数据：
+两个服务均使用 Flyway，启动时会自动执行数据库迁移，无需手工建表。
 
-### **基于 Flyway 自动创建**
+- 管理 API migration：`api/admin/src/main/resources/db/migration`
+- Analysis API migration：`analysis/src/main/resources/db/migration`
 
-无须特殊配置，yl-toggle API 原生采用 [flyway](https://flywaydb.org/) 对数据库版本管理和自动创建，在 [gitub](https://github.com/yl-toggle/yl-toggle/tree/main/api/admin/src/main/resources/db/migration) 上你可以看到所有针对数据库的变更 SQL。在您每次启动 yl-toggle API 时，程序将自动执行 DML/DDL ，无须手工对数据表版本进行维护。
+Flyway 会在 `flyway_schema_history` 表中记录已执行版本。
 
-并且，针对数据库的变化您可以查看 `yl-toggle.flyway_schema_history` 中的数据。
+## 手工导入
 
-### **手工导入 DML/DDL **
-
-如果不希望使用 flyway 自动创建表和管理数据库版本，可以获取原生 DML/DDL 实现手工导入创建。
-
-在使用该方式前需要在应用程序中禁用 flyway 的使用，避免产生冲突。在 `api` 启动时增加如下参数来禁用 flyway 的执行：
+不推荐手工导入，因为这样会导致 Flyway 无法自动追踪后续表结构升级。如确需手工导入，请先禁用 Flyway：
 
 ```bash
 --spring.flyway.enabled=false
 ```
 
-**操作步骤**
-
-**SETP1**: 下载 `api` 代码
+生成管理 API SQL：
 
 ```bash
-$ git clone https://github.com/yl-toggle/yl-toggle
+cd api/admin/src/main/resources/db/migration
+find . -name 'V*.sql' | sort -V | xargs cat > rollup.sql
+mariadb --host {DATABASE_HOST} --port {DATABASE_PORT} --user root --password yl-toggle < rollup.sql
 ```
 
-**SETP2**: 获取 SQL
+生成 Analysis SQL：
 
 ```bash
-$ cd api
-$ ls -1 admin/src/main/resources/db/migration/V* \
-	| sort -V | xargs cat >> rollup.sql
+cd analysis/src/main/resources/db/migration
+find . -name 'V*.sql' | sort -V | xargs cat > rollup.sql
+mariadb --host {DATABASE_HOST} --port {DATABASE_PORT} --user root --password yl-toggle-events < rollup.sql
 ```
 
-执行完成后将生成 `rollup.sql` 文件，里面包含了所有 DML 和 DDL。
+验证表：
 
-**SETP3**: 导入 SQL
-
-将生成的 `rollup.sql` 导入到 `yl-toggle` 库中即可。
-
+```sql
+SHOW TABLES;
 ```
-mysql> use yl-toggle;
-mysql> source ./rollup.sql;
-```
-
-导入完成后使用 `show tables` 可以看到所有表结构：
-
-```bash
-mysql> show tables;
-+---------------------------+
-| Tables_in_yl-toggle |
-+---------------------------+
-| access_token              |
-| approval_record           |
-| attribute                 |
-| dictionary                |
-| environment               |
-| targeting_segment         |
-| webhook_settings          |
-...
-```
-
-:::tip
-建议使用基于 Flyway 方式来自动维护数据库，手工导入 DML/DDL 方式将导致后续无法对表结构进行自动化升级，需要手工维护版本。
-:::
-

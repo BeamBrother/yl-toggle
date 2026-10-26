@@ -5,8 +5,6 @@ sidebar_position: 4
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-
-
 # 常见问题 FAQ
 
 这里记录了 yl-toggle 使用过程中的常见问题及解决方案。
@@ -19,20 +17,13 @@ import TabItem from '@theme/TabItem';
 - 使用了百分比放量，建议传入任何能够唯一标识此次请求的 id 作为 StableRollout Key 值。yl-toggle 不关心传入的 Key 值语意，只是把它当做任意字符串看待，需要用户自行根据配置约定保证传参质量。例如：如果传入的 key 是 username，那么流量就是按 username 划分；如果传入的是固定值，那么进入的分组不变。
 - 具体使用可查看教程：[按百分比灰度放量](/tutorials/rollout_tutorial/)
 
-
-
 ### 1.2 如何保证同一个用户总是进入相同的组？
 
 - 如果传入 yl-toggle SDK 的 StableRollout Key 不变，流量的准入/分组规则配置不变，那么用户将恒定进入某个组，这是 yl-toggle 的默认行为，不需要特殊配置。
 
-
-
-
 ### 1.3 怎么通过接口修改 yl-toggle 开关信息？
 
 - yl-toggle 提供 Open API 可对项目、开关（查询、创建、修改、发布等）及环境等信息管理，涵盖目前 yl-toggle 管理后台上所有功能操作。详情可查看 [OpenAPI 文档](https://yl-toggle.io/api-docs)。
-
-
 
 ### 1.4 接入引导提示 “您没有 *x* 应用程序在 *x* 环境中监听 *x* 开关。” 该如何排查？
 
@@ -41,7 +32,7 @@ import TabItem from '@theme/TabItem';
   - RemoteUrl
     - 官方测试环境： https://yl-toggle.io/server
     - Docker-compose 环境： `http://{运行 docker compose 机器IP地址}:4007`
-    - Docker image 部署或编译部署： `http://{YT_SERVER_IP}:{FP_SERVER_PORT}`
+    - Docker image 部署或编译部署： `http://{YT_SERVER_IP}:{YT_SERVER_PORT}`
   - ServerSdkKey: *[如何获取 ServerSdkKey](/tutorials/backend_custom_attribute#编写代码)*
   - ClientSdkKey: *[如何获取 ClientSdkKey](/tutorials/backend_custom_attribute#控制前端程序)*
 
@@ -52,7 +43,7 @@ import TabItem from '@theme/TabItem';
   - Docker 环境或编译部署环境:
 
     ```bash
-    curl "`http://{YT_SERVER_IP}:{FP_SERVER_PORT}`"
+    curl "`http://{YT_SERVER_IP}:{YT_SERVER_PORT}`"
 
     <h1>yl-toggle Server</h1> # <- 显示该信息则表示服务正常
     ```
@@ -172,7 +163,6 @@ import TabItem from '@theme/TabItem';
   </TabItem>
 
   </Tabs>
-
 
 - 前端SDK可以监听SDK是否发布的 `error` 事件，同时在浏览器控制台也可以看到错误详情：
 
@@ -324,11 +314,7 @@ import TabItem from '@theme/TabItem';
 
   需要注意的是 `YOUR_CUSTOM_EVENT_NAME` 必须和指标中的 “事件名称” 保持一致。
 
-
 - 如指标的事件类型是 “页面事件” 或 “点击事件”，请使用 JavaScript 和 React SDK 接入*（无须手工上报事件）*，并且检查指标中所设置 “目标页面URL” 和需要上报事件的页面 URL 是否匹配。其中 “点击事件” 还需要保证所设置“点击元素” 的 CSS 选择器和实际访问页面的元素的 path 是否匹配。
-
-
-
 
 ## 二. 部署问题
 
@@ -345,8 +331,6 @@ import TabItem from '@theme/TabItem';
 事件数据需要主动调用track方法，如果没有时间数据，可能的原因为：
   - 没有调用类似 `fpClient.track("YOUR_CUSTOM_EVENT_NAME", user, 5.5);` 的代码追踪事件
   - 上报URL错误，如 SDK 接入 URL 配置错误，无法上报数据
-
-
 
 ### 3.3 无Join数据
 Join数据是分流数据和事件数据通过相同的 user_id 进行关联，如果没有Join数据，可能的原因为：

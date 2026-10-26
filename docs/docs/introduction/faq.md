@@ -32,7 +32,7 @@ Here are some common problems and solutions during the use of yl-toggle.
   - RemoteUrl
     - Official online test environment: https://yl-toggle.io/server
     - Docker-compose environment: `http://{docker compose runnig machine IP address}:4007`
-    - Docker image deployment or source code deployment: `http://{YT_SERVER_IP}:{FP_SERVER_PORT}`
+    - Docker image deployment or source code deployment: `http://{YT_SERVER_IP}:{YT_SERVER_PORT}`
   - ServerSdkKey: *[How to get ServerSdkKey](/tutorials/backend_custom_attribute#编写代码)*
   - ClientSdkKey: *[How to get ClientSdkKey](/tutorials/backend_custom_attribute#控制前端程序)*
 
@@ -43,7 +43,7 @@ Here are some common problems and solutions during the use of yl-toggle.
   - Docker image deployment or source code deployment:
 
     ```bash
-    curl "`http://{YT_SERVER_IP}:{FP_SERVER_PORT}`"
+    curl "`http://{YT_SERVER_IP}:{YT_SERVER_PORT}`"
 
     <h1>yl-toggle Server</h1> # <- Displaying this means that the service is normal
     ```
@@ -162,7 +162,6 @@ Here are some common problems and solutions during the use of yl-toggle.
   </TabItem>
   </Tabs>
 
-
 - The front-end SDKs can listen to the `error` event triggered by the SDK, and you can also see the error details in the browser console:
 
 <Tabs groupId="language">
@@ -200,8 +199,6 @@ Here are some common problems and solutions during the use of yl-toggle.
 
 </TabItem>
 </Tabs>
-
-
 
 ### 1.5 How to solve "You have no X applications listening for X event in the X environment" in user guidance of tracking events?
 
@@ -317,9 +314,7 @@ Here are some common problems and solutions during the use of yl-toggle.
 
 - If the metric's event type is "Page Event" or "Click Event", please use the JavaScript and React SDK for integration (without manual event reporting). Also, make sure that the "Target Page URL" set in the metric matches the page URL for reporting events. For "Click Events", make sure that the CSS selector for the "click element" set in the
 
-
 ##
-
 
 ## 2. Deployment problems
 
@@ -336,7 +331,6 @@ Variation records is upload automatically when SDK value evaluation. There are s
 Event records is generated when user call `track` api. There are some reasons when this error message show:
   - No track api called, like  `fpClient.track("YOUR_CUSTOM_EVENT_NAME", user, 5.5);` is not called
   - URL is wrong when init SDK. SDK can not upload varation data to backend
-
 
 ### 3.3 No join records
 Join records is varitiation records join on event records on same user_id. There are some reasons when this error message show:

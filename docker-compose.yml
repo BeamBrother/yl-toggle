@@ -159,8 +159,6 @@ services:
 
   redoc:
     image: redocly/redoc:v2.5.3
-    ports:
-      - "4010:4010"
     environment:
       - SPEC_URL=/api/v3/api-docs.yaml
       - PORT=4010

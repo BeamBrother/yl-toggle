@@ -1,7 +1,12 @@
-yl-toggle
+yl-toggle Helm chart
 ===========
 
-A Helm chart for yl-toggle feature management service
+This chart deploys yl-toggle 3.0.0.
+
+- Chart version: `0.4.0`
+- App version: `3.0.0`
+- Minimum Helm version: `3.0`
+- Component image tags default to the chart app version (`3.0.0`) when `*.image.tag` is not set.
 
 Configuration
 -------------
@@ -33,7 +38,7 @@ The following table lists the configurable parameters of the yl-toggle chart and
 | `backendAPI.logLevel` | Backend API service logging level | `"INFO"` |
 | `backendAPI.ports.http` | Backend API service HTTP port number | `4008` |
 | `backendAPI.image.repository` | Container repository to pull the image from | `"yl-toggle/api"` |
-| `backendAPI.image.tag` | Image tag to use | `null` |
+| `backendAPI.image.tag` | Image tag to use; defaults to the chart app version | `3.0.0` |
 | `backendAPI.image.pullPolicy` | Container image pull policy | `"IfNotPresent"` |
 | `backendAPI.readinessProbe.httpGet.path` | Health check path | `"/actuator/health"` |
 | `backendAPI.readinessProbe.httpGet.port` | Health check port | `"http"` |
@@ -46,8 +51,8 @@ The following table lists the configurable parameters of the yl-toggle chart and
 | `backendAPI.service.type` | Backend API service type | `"ClusterIP"` |
 | `backendAPI.database.url` | Backend API database connection URL | `"jdbc:mariadb://localhost:3306/yl-toggle"` |
 | `backendAPI.database.secret_name` | The name of Kubernetes secret that holds database credentials | `"yl-toggle-database-credentials"` |
-| `backendAPI.database.username_secret_key` | Kubernetes secret key for MySQL user name | `"yltoggle_user"` |
-| `backendAPI.database.password_secret_key` | Kubernetes secret key for MySQL password | `"yltoggle_password"` |
+| `backendAPI.database.username_secret_key` | Kubernetes secret key for MariaDB user name | `"yltoggle_user"` |
+| `backendAPI.database.password_secret_key` | Kubernetes secret key for MariaDB password | `"yltoggle_password"` |
 | `serverAPI.name` | Always "server-api" | `"server-api"` |
 | `serverAPI.enabled` | Enables or disables Server API service deployment | `true` |
 | `serverAPI.replicaCount` | The number of replicas for Server API service | `2` |
@@ -55,7 +60,7 @@ The following table lists the configurable parameters of the yl-toggle chart and
 | `serverAPI.ports.http` | Server API service HTTP port number | `4007` |
 | `serverAPI.ports.realtime` | Server API service "realtime" HTTP port number | `4011` |
 | `serverAPI.image.repository` | Container repository to pull the image from | `"yl-toggle/server"` |
-| `serverAPI.image.tag` | Image tag to use | `null` |
+| `serverAPI.image.tag` | Image tag to use; defaults to the chart app version | `3.0.0` |
 | `serverAPI.image.pullPolicy` | Container image pull policy | `"IfNotPresent"` |
 | `serverAPI.resources.requests.memory` | Server API service memory resources requests | `"64Mi"` |
 | `serverAPI.resources.requests.cpu` | Server API service CPU resources requests | `"250m"` |
@@ -70,7 +75,7 @@ The following table lists the configurable parameters of the yl-toggle chart and
 | `ui.replicaCount` | The number of replicas for UI service | `2` |
 | `ui.ports.http` | UI service HTTP port number | `4009` |
 | `ui.image.repository` | Container repository to pull the image from | `"yl-toggle/ui"` |
-| `ui.image.tag` | Image tag to use | `null` |
+| `ui.image.tag` | Image tag to use; defaults to the chart app version | `3.0.0` |
 | `ui.image.pullPolicy` | Container image pull policy | `"IfNotPresent"` |
 | `ui.resources.requests.memory` | UI service memory resources requests | `"64Mi"` |
 | `ui.resources.requests.cpu` | UI service CPU resources requests | `"250m"` |
@@ -86,7 +91,7 @@ The following table lists the configurable parameters of the yl-toggle chart and
 | `analysisAPI.jvmArgs` | Analysis API JVM arguments | `"-Xmx2048m -Xms2048m"` |
 | `analysisAPI.ports.http` | Analysis API service HTTP port number | `4006` |
 | `analysisAPI.image.repository` | Container repository to pull the image from | `"yl-toggle/analysis"` |
-| `analysisAPI.image.tag` | Image tag to use | `null` |
+| `analysisAPI.image.tag` | Image tag to use; defaults to the chart app version | `3.0.0` |
 | `analysisAPI.image.pullPolicy` | Container image pull policy | `"IfNotPresent"` |
 | `analysisAPI.resources.requests.memory` | Analysis API service memory resources requests | `"1024Mi"` |
 | `analysisAPI.resources.requests.cpu` | Analysis API service CPU resources requests | `"1"` |
@@ -98,14 +103,14 @@ The following table lists the configurable parameters of the yl-toggle chart and
 | `analysisAPI.service.type` | Analysis API service type | `"ClusterIP"` |
 | `analysisAPI.database.url` | Analysis API database connection URL | `"jdbc:mariadb://localhost:3306/yl-toggle-events"` |
 | `analysisAPI.database.secret_name` | The name of Kubernetes secret that holds database credentials | `"yl-toggle-database-credentials"` |
-| `analysisAPI.database.username_secret_key` | Kubernetes secret key for MySQL user name | `"yltoggle_events_user"` |
-| `analysisAPI.database.password_secret_key` | Kubernetes secret key for MySQL password | `"yltoggle_events_password"` |
+| `analysisAPI.database.username_secret_key` | Kubernetes secret key for MariaDB user name | `"yltoggle_events_user"` |
+| `analysisAPI.database.password_secret_key` | Kubernetes secret key for MariaDB password | `"yltoggle_events_password"` |
 | `databaseSecret.create` | Creates a Kubernetes secret with database credentials. If the secret already exists, leave it `false`. | `false` |
 | `databaseSecret.namePostfix` | Name postfix for database Kubernetes secret | `"database-credentials"` |
-| `databaseSecret.secrets.yltoggle_user` | Kubernetes secret key for Backend API MySQL user name | `"yl-toggle"` |
-| `databaseSecret.secrets.yltoggle_password` | Kubernetes secret key for Backend API MySQL user password | `null` |
-| `databaseSecret.secrets.yltoggle_events_user` | Kubernetes secret key for Analysis API MySQL user name | `"yltoggle_events"` |
-| `databaseSecret.secrets.yltoggle_events_password` | Kubernetes secret key for Analysis API MySQL user password | `null` |
+| `databaseSecret.secrets.yltoggle_user` | Kubernetes secret key for Backend API MariaDB user name | `"yl-toggle"` |
+| `databaseSecret.secrets.yltoggle_password` | Kubernetes secret key for Backend API MariaDB user password | `null` |
+| `databaseSecret.secrets.yltoggle_events_user` | Kubernetes secret key for Analysis API MariaDB user name | `"yltoggle_events"` |
+| `databaseSecret.secrets.yltoggle_events_password` | Kubernetes secret key for Analysis API MariaDB user password | `null` |
 
 ---
 _Documentation generated by [Frigate](https://frigate.readthedocs.io)._

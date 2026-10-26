@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Deploy a private environment 
+# Deploy a private environment
 
 We will take you to deploy yl-toggle on your own server resources, so that you can have your own private environment to experience the features of yl-toggle, and you can also directly manage your online services through this private environment.
 
@@ -40,7 +40,7 @@ Open the browser, visit [http://localhost:4009](http://localhost:4009), you can 
 ![login](/docker_login_en.png)
 
 Log in with the default account:
-* `username`: admin
+* `username`: Admin
 * `password`: Pass1234
 
 Log in to see the four built-in toggles and start trying them out.

@@ -1,39 +1,37 @@
 # Website
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+This website is built with [Docusaurus 3.10.2](https://docusaurus.io/).
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/en/download/) version 16.14 or above (which can be checked by running `node -v`). You can use [nvm](https://github.com/nvm-sh/nvm) for managing multiple Node versions on a single machine installed.
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+- Node.js 24.13.1
+- npm 10 or newer
 
-### Installation
+## Install dependencies
 
+```bash
+npm ci
 ```
-npm install
-```
 
-### Local Development for English Version
+## Local development for the English version
 
-```
+```bash
 npm run start
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+Most edits are reflected live without restarting the development server.
 
-### Local Development for Chinese Version
+## Local development for the Chinese version
 
-```
+```bash
 npm run start -- --locale zh-CN
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+## Typecheck and build
 
-### Build
-
+```bash
+npm run typecheck
+npm run build
 ```
-$ npm run build
-```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
+The production site is generated in the `build` directory.

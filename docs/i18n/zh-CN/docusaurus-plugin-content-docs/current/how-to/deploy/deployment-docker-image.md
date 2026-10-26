@@ -2,157 +2,102 @@
 sidebar_position: 2
 ---
 
-# Docker image 部署
-> 使用各模块提供的docker 镜象在 Linux/Unix/Mac 独立部署各子服务
+# 独立 Docker 部署
 
-## 环境准备
+本文介绍如何将 yl-toggle 各服务分别部署为独立容器。
 
-* Docker 17+
-* MySQL 5.7+
-* 建议：生产环境3个节点及以上
-* 建议：2核 CPU/4G内存及以上
+## 环境要求
 
+- Docker Engine 24+
+- MariaDB 11.8.9+
+- 生产环境建议至少 3 个节点
+- 每个节点建议 2 核 CPU / 4 GB 内存及以上
 
-## 子服务独立部署
+## 部署拓扑
 
-使用各模块提供的 [docker 镜象](https://hub.docker.com/u/yl-toggle)在 Linux/Unix/Mac 独立部署。
-需要部署有三个服务镜像，如下部署示例：
+| 示例机器 | 服务 | 端口 |
+|---|---|---|
+| 10.100.1.1 | yl-toggle API | 4008 |
+| 10.100.1.1 | yl-toggle UI | 4009 |
+| 10.100.1.2 | yl-toggle Server | 4007、4011 |
+| 10.100.1.3 | yl-toggle Analysis | 4006 |
+| 10.100.1.4 | MariaDB | 13306 |
 
-| 示例机器   | 部署模块            | 端口          |
-| ---------- | ------------------- | ------------- |
-| 10.100.1.1 | yl-toggle API    | 4008          |
-| 10.100.1.1 | yl-toggle UI     | 4009（Nginx） |
-| 10.100.1.2 | yl-toggle Server | 4007 4011     |
-| 10.100.1.3 | 数据库（MySQL）     | 13306         |
+## 1. 启动 MariaDB
 
-:::tip
-上述IP地址请根据实际部署环境替换为实际IP地址，而不是127.0.0.1（Docker默认采用bridge网络模式，并不指向宿主机）
-:::
+```bash
+docker run -p 13306:13306 \
+  -e MYSQL_TCP_PORT=13306 \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=yl-toggle \
+  --name database -d mariadb:11.8.9
+```
 
-### 操作步骤
+创建 Analysis 数据库：
 
-1. 运行 MySQL 数据库实例:
-   :::tip
-   如果使用您已经部署好的其他MySQL环境（可参考[初始化数据库](/reference/database-setup)文档），可以跳过此步骤。在下一步API服务的启动参数中填入您自己的MySQL环境配置信息。
-   :::
+```sql
+CREATE DATABASE IF NOT EXISTS `yl-toggle-events`;
+```
 
-   ```bash
-   docker run -p 13306:13306 \
-       -e MYSQL_TCP_PORT=13306 \
-       -e MYSQL_ROOT_PASSWORD=root \
-       -e MYSQL_DATABASE=yl-toggle \
-       --name database -d mariadb
-   ```
+## 2. 启动管理 API
 
-   :::tip
-   更详细数据库启动参数配置可以参考 [数据库配置](https://mariadb.com/kb/en/mariadb-docker-environment-variables/)
-   :::
+```bash
+docker run -p 4008:4008 \
+  -e server.port=4008 \
+  -e spring.datasource.jdbc-url='jdbc:mariadb://10.100.1.4:13306/yl-toggle?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai' \
+  -e spring.datasource.username=root \
+  -e spring.datasource.password=root \
+  -e app.analysis-base-url=http://10.100.1.3:4006 \
+  -e app.server-base-urls=http://10.100.1.2:4007 \
+  --name yl-toggle-api -d yl-toggle/api:3.0.0
+```
 
+## 3. 启动评估服务
 
-2. 运行 yl-toggle API 实例:
+```bash
+docker run -p 4007:4007 -p 4011:4011 \
+  -e YT_SERVER_PORT=4007 \
+  -e YT_REALTIME_PORT=4011 \
+  -e YT_TOGGLES_URL=http://10.100.1.1:4008/internal/server/toggles \
+  -e YT_EVENTS_URL=http://10.100.1.1:4008/internal/server/events \
+  -e YT_KEYS_URL=http://10.100.1.1:4008/internal/server/sdk_keys \
+  -e YT_ANALYSIS_URL=http://10.100.1.3:4006/events \
+  --name yl-toggle-server -d yl-toggle/server:3.0.0
+```
 
-   ```bash
-   docker run -p 4008:4008 \
-      -e server.port=4008 \
-      -e spring.datasource.jdbc-url=jdbc:mysql://10.100.1.4:13306/yl-toggle \
-      -e spring.datasource.username=root \
-      -e spring.datasource.password=root \
-      -e app.analysis-url=http://10.100.1.1:4006
-      -e app.server-base-urls=http://10.100.1.1:4009
-      --name ylToggleAPI -d yl-toggle/api
-      
-   # 上述 10.100.1.4:13306 为 MySQL Server 的 IP 和端口，请根据实际情况调整
-   # 上述 10.100.1.1:4006 为yl-toggle Analysis 的IP和端口，请根据实际情况调整
-   # 上述 10.100.1.1:4009 为yl-toggle Server 的IP和端口，请根据实际情况调整
-   ```
-   :::info
-   API服务更详细的启动参数说明见 [yl-toggle API 参数说明文档](../../reference/deployment-configuration#yl-toggle-api)
-   :::
-   
-3. 运行 yl-toggle Server 实例:
+## 4. 启动 Analysis 服务
 
-   ```bash
-   docker run -p 4007:4007 -p 4011:4011 \
-     -e FP_SERVER_PORT=4007 \
-     -e FP_REALTIME_PORT=4011 \
-     -e FP_TOGGLES_URL=http://10.100.1.1:4008/internal/server/toggles \
-     -e FP_EVENTS_URL=http://10.100.1.1:4008/internal/server/events \
-     -e FP_KEYS_URL=http://10.100.1.1:4008/internal/server/sdk_keys \
-     -e FP_ANALYSIS_URL=http://10.100.1.1:4006/events \
-     --name ylToggleServer -d yl-toggle/server
-     
-   # 上述 10.100.1.1:4008 为 yl-toggle API 服务 IP 和端口，请根据实际情况调整
-   # 上述 10.100.1.1:4006 为 yl-toggle Analysis 服务 IP 和端口，请根据实际情况调整
-   ```
-   :::info
-   Server服务更详细启动参数说明详见 [yl-toggle Server 参数说明文档](../../reference/deployment-configuration#yl-toggle-server)
-   :::
+```bash
+docker run -p 4006:4006 \
+  -e server.port=4006 \
+  -e app.datasource.jdbcUrl='jdbc:mariadb://10.100.1.4:13306/yl-toggle-events' \
+  -e app.datasource.username=root \
+  -e app.datasource.password=root \
+  -e spring.profiles.active=online \
+  -e JVM_ARGS='-Xmx2048m -Xms2048m' \
+  -e TZ=Asia/Shanghai \
+  --name yl-toggle-analysis -d yl-toggle/analysis:3.0.0
+```
 
-4. 运行 yl-toggle Analysis 实例：
+## 5. 启动 UI
 
-:::info
-Analysis服务数据库与API数据库是分开的，运行Analysis之前，请先创建一个名为 yl-toggle-events 的库, 可以使用上面同一个数据库服务。
-:::
+挂载一个将 `/api`、`/server/api` 和 `/server/realtime` 代理到对应服务的 NGINX 配置。可以基于仓库中的 [`nginx_configs/default.conf`](https://github.com/yl-toggle/yl-toggle/blob/main/nginx_configs/default.conf) 修改。
 
-   ```shell
-   CREATE DATABASE IF NOT EXISTS yl-toggle-events;
-   ```
+```bash
+docker run -p 4009:4009 \
+  -v /my_custom/default.conf:/etc/nginx/conf.d/default.conf \
+  --name yl-toggle-ui -d yl-toggle/ui:3.0.0
+```
 
-   ```bash
-   docker run -p 4006:4006 \
-	   -e server.port=4006 \
-	   -e app.datasource.jdbcUrl=jdbc:mysql://10.100.1.4:13306/yl-toggle-events \
-	   -e app.datasource.username=root \
-	   -e app.datasource.password=fp@root \
-	   -e spring.profiles.active=online \
-	   -e JVM_ARGS='-Xmx2048m -Xms2048m' \
-	   -e TZ=Asia/Shanghai \
-	   --name ylToggleAnalysis -d yl-toggle/analysis
-     
-   # 上述 10.100.1.4:13306 为 MySQL Server 的 IP 和端口，请根据实际情况调整
-   ```
+## 验证
 
-5. 运行 yl-toggle UI 实例:
+```bash
+curl http://{API_HOST}:4008/actuator/health
+curl http://{ANALYSIS_HOST}:4006/actuator/health
+curl http://{UI_HOST}:4009/
+```
 
-   ```bash
-   docker run -p 4009:4009 \
-   -v /my_custom/default.conf:/etc/nginx/conf.d/default.conf \
-   --name ylToggleUI -d yl-toggle/ui 
-   ```
+打开 `http://{UI_HOST}:4009/`，使用以下账号登录：
 
-   为保证 API 和 UI 端口一致(避免请求跨域)，需要自定义 nginx 配置转发 API 请求，`/my_custom/default.conf` 配置如下示例：
-
-   ```nginx
-   upstream ylToggleAPI {
-      # YlToggleAPI 服务的 IP 和端口，请根据实际情况调整
-      server 10.100.1.1:4008;
-   }
-   
-   server {
-      # 访问的 UI 端口
-      listen 4009;  # UI 端口
-   
-      location / {
-         index  index.html index.htm;
-         root /usr/share/nginx/html;
-         try_files $uri /index.html;
-      }
-   
-      location /api { # 访问 /api 时统一转发到 ylToggleAPI 服务
-         proxy_set_header X-Real-IP $remote_addr;
-         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-         proxy_set_header X-NginX-Proxy true;
-         proxy_pass http://ylToggleAPI/api;
-         proxy_ssl_session_reuse off;
-         proxy_set_header Host $http_host;
-         proxy_cache_bypass $http_upgrade;
-         proxy_redirect off;
-      }
-   }
-   ```
-
-## 部署验证
-上述服务启动后打开浏览器，访问：`http://10.100.1.2:4009` (UI服务 IP 和端口)并用以下默认帐号登录试用：
-
-   - username: `admin`
-   - password: `Pass1234`
+- username: `Admin`
+- password: `Pass1234`

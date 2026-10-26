@@ -2,56 +2,70 @@
 sidebar_position: 8
 ---
 
-# Deployment Configuration
+# Deployment configuration
 
-The following is the description of the parameters of the API module and Server module at startup.
+## Management API
 
-## yl-toggle API
+| Environment variable | Default | Required | Description |
+|---|---:|---:|---|
+| `server.port` | `8080` | No | HTTP port |
+| `TZ` | `Asia/Shanghai` | No | Container timezone |
+| `spring.datasource.jdbc-url` | - | Yes | MariaDB JDBC URL, for example `jdbc:mariadb://database:13306/yl-toggle` |
+| `spring.datasource.username` | - | Yes | Database username |
+| `spring.datasource.password` | - | Yes | Database password |
+| `spring.profiles.active` | `online` | No | Active Spring profile |
+| `logging.level.root` | `INFO` | No | Root log level |
+| `spring.jpa.show-sql` | `false` | No | Print SQL statements |
+| `app.analysis-base-url` | `http://127.0.0.1:4006` | No | Analysis API base URL |
+| `app.server-base-urls` | `http://127.0.0.1:4007` | No | Comma-separated evaluation server URLs |
+| `app.security.jwt.keystore-location` | `./jwt.jks` | No | JWT keystore path |
+| `app.security.jwt.keystore-password` | `password` | No | Keystore password |
+| `app.security.jwt.private-key-passphrase` | `password` | No | Private-key passphrase |
 
-| **Environment variable**                | **Default value** | Required | **Description**                                              |
-| --------------------------------------- | ----------------- | -------- | ------------------------------------------------------------ |
-| server.port                             | 8080              | no       | Server port                                                     |
-| TZ                                      | Asia/Shanghai     | no       | Timezone                                                         |
-| spring.datasource.jdbc-url              | -                 | yes       |  Connection address of JDBC. Such as `jdbc:mysql://database:13306/yl-toggle` |
-| spring.profiles.active                  | online            | no       | Currently active profile                                           |
-| logging.level.root                      | INFO              | no       | Application log level: `INFO`/`ERROR`/`WARN`/`DEBUG`                  |
-| spring.jpa.show-sql                     | false             | no       | Whether to display the SQL statement at execution time                                    |
-| app.security.jwt.keystore-location      | ./jwt.jks         | no       | Certificate file path                                                 |
-| app.security.jwt.keystore-password      | password          | no       | Storepass when generating the certificate                                         |
-| app.security.jwt.private-key-passphrase | password          | no       | Keypass when generating the certificate                                        |
-| app.analysis-url |    http://127.0.0.1:4006       | no       |  Analysis Server URL                          |
-| server-base-urls | http://127.0.0.1:4007          | no       |  Server URLs;           Multiple URLs, separated by commas            |
+### JWT keystore
 
-*The above parameters use the docker method to start the program and pass it in through Environment, such as starting it with a jar package and passing it in through java -D.*
-
-### Security authentication configuration
-
-yl-toggle API is used as the management background, using [JWT](https://jwt.io/) standard protocol for user login authentication, and using [RSA256](https://de.wikipedia.org/wiki/RSA-Kryptosystem) encryption Algorithmic signature. For security reasons, it is strongly recommended to regenerate the RSA key file.
-
-Key generation method:
+The management API uses JWT with an RSA key. Generate a production-specific key:
 
 ```bash
-keytool -genkey -alias my-yl-toggle-jwt -keyalg RSA -keysize 1024 -keystore fp-jwt.jks -validity 365 -keypass YOU-PRIVATE-KEY-PASSPHRASE -storepass YOU-KEYSTORE-PASSWORD
+keytool -genkey \
+  -alias my-yl-toggle-jwt \
+  -keyalg RSA \
+  -keysize 2048 \
+  -keystore yl-toggle-jwt.jks \
+  -validity 365 \
+  -keypass YOUR_PRIVATE_KEY_PASSPHRASE \
+  -storepass YOUR_KEYSTORE_PASSWORD
 ```
 
-After the execution is completed, the `fp-jwt.jks` file will be generated in the current directory. The parameter description:
+Mount the keystore and override the `app.security.jwt.*` values.
 
-- validity - Certificate valid days
-- keypass - *YOU-PRIVATE-KEY-PASSPHRASE*
-- storepass - *YOU-KEYSTORE-PASSWORD*
+## Analysis API
 
-After the certificate is generated, you need to modify the enabling parameters `app.security.jwt.*` to make the current certificate take effect in the application.
+| Environment variable | Default | Required | Description |
+|---|---:|---:|---|
+| `server.port` | `4006` | No | HTTP port |
+| `app.datasource.jdbcUrl` | - | Yes | MariaDB JDBC URL for `yl-toggle-events` |
+| `app.datasource.username` | - | Yes | Database username |
+| `app.datasource.password` | - | Yes | Database password |
+| `spring.profiles.active` | `online` | No | Active Spring profile |
+| `JVM_ARGS` | - | No | JVM arguments, such as `-Xmx2048m -Xms2048m` |
+| `TZ` | `Asia/Shanghai` | No | Container timezone |
 
-## yl-toggle Server
+## Evaluation server
 
-| **Environment variable** | **Default value**                         | Required | **Description**                                        |
-| ------------------------ | ----------------------------------------- | -------- | ------------------------------------------------------ |
-| FP_SERVER_PORT           | 4007                                      | no       | Server port                                               |
-| FP_TOGGLES_URL           | http://127.0.0.1:8080/api/server/toggles  | yes       | Service address to connect to yl-toggle API. Used for pull toggles         |
-| FP_KEYS_URL              | http://127.0.0.1:8080/api/server/sdk_keys | yes       | Service address to connect to yl-toggle API. Used for pull sdk key     |
-| FP_EVENTS_URL            | http://127.0.0.1:8080/api/server/events   | yes       | Service address to connect to yl-toggle API. Used to report toggle access events |
-| FP_ANALYSIS_URL          |  -   | yes       | Analysis Server URL，Used to report toggle events|
-| FP_REFRESH_SECONDS       | 3                                         | no       | Interval of polling pull toggle                                    |
-| RUST_LOG                 | info                                      | no       | Application log level, `info`/`error`                          |
+| Environment variable | Default | Required | Description |
+|---|---:|---:|---|
+| `YT_SERVER_PORT` | `4007` | No | HTTP port |
+| `YT_REALTIME_PORT` | `4011` | No | Realtime port |
+| `YT_TOGGLES_URL` | - | Yes | Management API toggle endpoint |
+| `YT_EVENTS_URL` | - | Yes | Management API event endpoint |
+| `YT_KEYS_URL` | - | Yes | Management API SDK-key endpoint |
+| `YT_ANALYSIS_URL` | - | Yes | Analysis API event endpoint |
+| `YT_REFRESH_SECONDS` | `3` | No | Configuration refresh interval |
+| `RUST_LOG` | `info` | No | Log level |
+| `YT_EVENTS_BUFFER_CAPACITY` | `100000` | No | Maximum queued events |
+| `YT_EVENTS_MAX_BATCH` | `500` | No | Maximum events per upstream batch |
+| `YT_EVENTS_FLUSH_MS` | `200` | No | Event flush interval |
+| `YT_EVENTS_RETRIES` | `3` | No | Upstream event retry attempts |
 
-*Whether the above parameters are started in docker mode or binary mode, they are all passed in through Environment.*
+When Docker or a process supervisor is used, pass these values as environment variables. When running a JAR directly, pass the Spring properties with `--property=value`.

@@ -6,52 +6,52 @@ sidebar_position: 2
 
 ## 环境要求
 
-* JDK 1.8 以及以上版本
-* Maven 选择当前最新版本即可
+- JDK 25
+- Maven 3.9+
+- MariaDB 11.8.9+
 
 ## 获取源码
 
-:::tip
-从 1.11.1 版本开始, 我们对Api服务和UI服务仓库进行了合并，API服务打包会包含UI服务，
-本地开发直接可通过API服务根路径访问yl-toggle管理页面
-:::
-
 ```shell
 git clone https://github.com/yl-toggle/yl-toggle.git
-cd yl-toggle/api/
+cd yl-toggle/api
 ```
 
-## 配置修改
+## 配置数据库
 
-目前API服务只需要依赖外部数据库，启动API服务前需要准备一个版本在 5.6 及以上的 Mysql 服务，并创建一个名为 yl-toggle 库。
-然后修改 admin模块 resources/config/application-online.yml 配置文件中数据库配置。
+创建名为 `yl-toggle` 的 MariaDB 数据库。API 启动时 Flyway 会自动创建并迁移表结构。
 
-![api_db_config](/api_db_config.png)
-
-
-## 编译
-
-api服务采用模块化开发，admin模块负责对外提供Web服务。启动API服务需要先编译admin模块。编译过程会先编译UI前端项目，如果是初次编译，会先在 yl-toggle/api/node 目录下安装前端编译所需的环境。
-主要是安装 node 以及 yarn。 配置国内代理可放开下图 yl-toggle/api/admin/pom.xml 文件注释。
-
-![api_maven_mirror](/api_maven_mirror.png)
+修改 `admin/src/main/resources/config/application.yml`，或通过 Spring 环境变量覆盖配置：
 
 ```shell
-cd /admin
-mvn clean compile
+export SPRING_DATASOURCE_JDBC_URL='jdbc:mariadb://127.0.0.1:3306/yl-toggle?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai'
+export SPRING_DATASOURCE_USERNAME=root
+export SPRING_DATASOURCE_PASSWORD=root
 ```
 
-编译完成后UI项目的静态文件会在 admin 模块target/classes/static 目录下
+API 默认端口为 `8080`。
 
-:::note
-如果想关闭关闭UI编译选项，请将 yl-toggle/api/admin/pom.xml 如下配置置为 true .
-![skip_compile_ui](/skip_compile_ui.png)
-:::
+## 编译与测试
 
-## 本地开发
+API 是多模块 Maven 项目，Web 服务位于 `admin` 模块。
 
-编译完成后，通过自己熟悉的IDE运行 admin 模块，访问 `http://localhost:8080` 查看UI页面。
+```shell
+mvn verify
+```
 
-:::info
-如果UI项目代码变动，需要重新执行编译步骤。
-:::
+Maven 构建不再耦合 UI；前端开发与构建请在 `../ui` 中执行。
+
+## 本地运行
+
+```shell
+mvn -pl admin -am spring-boot:run
+```
+
+访问 [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health) 验证服务状态。
+
+如需生产样式包：
+
+```shell
+mvn -pl admin -am package
+java -jar admin/target/api.jar
+```

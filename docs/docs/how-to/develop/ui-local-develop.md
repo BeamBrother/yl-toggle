@@ -6,54 +6,54 @@ sidebar_position: 1
 
 ## Requirements
 
-[Node.js](https://nodejs.org/en/download/) version 16.13 or above (which can be checked by running `node -v`). You can use [nvm](https://github.com/nvm-sh/nvm) for managing multiple Node versions on a single machine installed.
+- Node.js 24.13.1
+- npm 10 or newer
 
-### Installation
-
-Clone code to your local
+## Install dependencies
 
 ```shell
-git clone git@github.com:yl-toggle/yl-toggle.git
+git clone https://github.com/yl-toggle/yl-toggle.git
 cd yl-toggle/ui
+npm ci
 ```
 
-<!-- Use `yarn` to install dependencies -->
+## Start the development server
 
 ```shell
-npm install
+npm run dev
 ```
 
-<!-- :::info
-It is highly recommended that use `yarn` as the package manager.If you are using `npm install` to install and encountering this error as below, use `npm install --legacy-peer-deps` instead
+The portal is available at [http://localhost:3000/](http://localhost:3000/).
 
-![toggles screenshot](/local_develop_install_error.png)
-:::
+## Proxy API requests in development
 
+The Vite development proxy is configured in `vite.config.ts`:
+
+```ts
+server: {
+  proxy: {
+    '/api': {
+      target: 'https://yl-toggle.io',
+      changeOrigin: true,
+      secure: false,
+    },
+  },
+},
+```
+
+Change `target` to your own API endpoint, such as `http://localhost:8080`.
+
+## Typecheck, test, and build
 
 ```shell
-npm install --legacy-peer-deps
-``` -->
-
-### Start development server
-
-```
-npm run start
+npm run typecheck
+npm run lint
+npm test
+npm run build
 ```
 
-This command starts a local development server and opens up a browser window, the default port is 3000. Visit `http://localhost:3000` to get the UI page.
+Production assets are generated in `build/`.
 
+## Deployment
 
-### Proxying API Requests in Development
-
-By adding a proxy filed in `package.json`, you can tell the development server to proxy all the requests to an API server in development.
-
-```
-"proxy": "https://yl-toggle.io/"
-```
-
-The default setting is our online demo service: `https://yl-toggle.io/`, if you have deployed your own API service, change this field your own.
-
-
-### Deloyment
-
-If you want to deploy UI project independently, refer this doc: [UI Service](../deploy/deployment-source-code#ui-%E6%9C%8D%E5%8A%A1)
+To deploy the UI independently, see [UI Service](../deploy/deployment-source-code#portal).

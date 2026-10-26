@@ -11,8 +11,8 @@ sidebar_position: 2
 ## 工具环境准备
 
 1. 首先确保您的服务器连接了网络。
-2. 安装[git](https://git-scm.com/) 
-3. 安装[docker](https://www.docker.com/) 
+2. 安装[git](https://git-scm.com/)
+3. 安装[docker](https://www.docker.com/)
 4. 国内网络访问docker hub会比较慢，需要添加[国内镜像](https://gitee.com/yl-toggle/yl-toggle/blob/main/DOCKER_HUB.md)
 
 ## 安装启动yl-toggle
@@ -40,7 +40,7 @@ yl-toggle包含5个独立镜像，需要这5个镜像全部启动成功后才能
 ![login](/docker_login.png)
 
 使用默认帐号登录：
-* `username`: admin
+* `username`: Admin
 * `password`: Pass1234
 
 登录后即可看到4个内置开关，并开始试用了。
