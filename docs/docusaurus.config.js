@@ -14,10 +14,15 @@ const config = {
   url: 'https://yl-toggle.github.io/',
   baseUrl: '/yl-toggle/',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   deploymentBranch: 'gh-pages',
   staticDirectories: ['pictures', 'static'],
+
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.

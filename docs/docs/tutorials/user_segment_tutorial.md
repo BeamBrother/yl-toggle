@@ -446,7 +446,7 @@ Next, let's update the rules of the segment, and then verify that the updated re
 
 ### Rerun the program to see the result
 
-Run the program again according to the above [operation method](##run-the-code) to view the log
+Run the program again according to the above [operation method](#run-the-code) to view the log
 
 ~~~bash
 tester_a@company.com see the new feature1

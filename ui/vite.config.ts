@@ -46,13 +46,20 @@ export default defineConfig({
         // Match exact package directories: a loose `id.includes('node_modules/react')`
         // pulled every react-* package (syntax-highlighter's full language registry,
         // moment, joyride, ...) into the eager react chunk.
-        advancedChunks: {
+        codeSplitting: {
           groups: [
             // babel helpers are shared by nearly every package; listed first so
             // they are captured before (and kept out of) feature chunks
             { name: 'babel-runtime', test: /[\\/]node_modules[\\/]@babel[\\/]runtime[\\/]/ },
             { name: 'react', test: /[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/ },
             { name: 'chart', test: /[\\/]node_modules[\\/](chart\.js|chartjs-plugin-annotation|react-chartjs-2|@kurkle)[\\/]/ },
+            // Keep the highlighter registry out of the shared misc chunk and cap its
+            // generated fragments so the full language set is not emitted as one asset.
+            {
+              name: 'syntax',
+              maxSize: 480 * 1024,
+              test: /[\\/]node_modules[\\/](react-syntax-highlighter|lowlight|highlight\.js|refractor|prismjs)[\\/]/,
+            },
             { name: 'codemirror', test: /[\\/]node_modules[\\/](@uiw[\\/]react-codemirror|@uiw[\\/]codemirror-extensions-basic-setup|@codemirror|@lezer|@marijn|style-mod|w3c-keyname|crelt)[\\/]/ },
           ],
         },

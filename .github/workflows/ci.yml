@@ -22,7 +22,7 @@ jobs:
           cache: maven
       - name: Verify
         working-directory: api
-        run: mvn -B verify
+        run: ./mvnw -B verify
 
   analysis:
     name: Analysis

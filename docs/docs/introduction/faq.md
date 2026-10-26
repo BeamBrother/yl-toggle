@@ -33,8 +33,8 @@ Here are some common problems and solutions during the use of yl-toggle.
     - Official online test environment: https://yl-toggle.io/server
     - Docker-compose environment: `http://{docker compose runnig machine IP address}:4007`
     - Docker image deployment or source code deployment: `http://{YT_SERVER_IP}:{YT_SERVER_PORT}`
-  - ServerSdkKey: *[How to get ServerSdkKey](/tutorials/backend_custom_attribute#编写代码)*
-  - ClientSdkKey: *[How to get ClientSdkKey](/tutorials/backend_custom_attribute#控制前端程序)*
+  - ServerSdkKey: *[How to get ServerSdkKey](/tutorials/backend_custom_attribute#write-code)*
+  - ClientSdkKey: *[How to get ClientSdkKey](/tutorials/backend_custom_attribute#control-the-front-end-program)*
 
 - Check that the yl-toggle Server service running:
 

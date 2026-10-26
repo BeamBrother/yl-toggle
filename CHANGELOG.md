@@ -36,6 +36,9 @@ yl-toggle 3.0.0 is a unified runtime and dependency modernization release. Appli
 - The evaluation server now emits the distinct payload shapes expected by backendAPI and Analysis.
 - Rust tests use ephemeral localhost ports instead of collision-prone fixed ports.
 - UI snapshots no longer depend on random UUID values.
+- The API integration-test database and pinned Maven wrapper now match the v3 toolchain.
+- Portal syntax-highlighting dependencies are split into bounded chunks instead of one large shared asset.
+- English documentation anchors and Docusaurus markdown configuration no longer emit upgrade warnings.
 - Redoc is served through the portal at `/api-docs`, and NGINX now proxies the Redoc container's internal port correctly.
 
 ### Breaking
