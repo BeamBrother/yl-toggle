@@ -138,19 +138,19 @@ class AnalysisFunctionKtTests{
     fun testChartProperty() {
         val d1 = BetaDistribution(150.0, 300.0)
         val d2 = BetaDistribution(120.0, 300.0)
-        val property = chartProperty(mapOf("1" to d1, "2" to d2), true)
+        val property = checkNotNull(chartProperty(mapOf("1" to d1, "2" to d2), true))
 
-        assertEquals(0.213, property!!.min, 0.001)
-        assertEquals(0.406, property!!.max, 0.001)
-        assertEquals(0.007, property!!.step, 0.001)
+        assertEquals(0.213, property.min, 0.001)
+        assertEquals(0.406, property.max, 0.001)
+        assertEquals(0.007, property.step, 0.001)
 
         val d3 = NormalDistribution(45.0, 44.72)
         val d4 = NormalDistribution(125.0, 44.72)
-        val property2 = chartProperty(mapOf("1" to d3, "2" to d4), false)
+        val property2 = checkNotNull(chartProperty(mapOf("1" to d3, "2" to d4), false))
 
-        assertEquals(-102.1, property2!!.min, 0.1)
-        assertEquals(272.1, property2!!.max, 0.1)
-        assertEquals(14.7, property2!!.step, 0.1)
+        assertEquals(-102.1, property2.min, 0.1)
+        assertEquals(272.1, property2.max, 0.1)
+        assertEquals(14.7, property2.step, 0.1)
     }
 
     @Test

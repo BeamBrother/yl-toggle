@@ -136,16 +136,16 @@ fun chartProperty(ds: Map<String, AbstractRealDistribution>, binomial: Boolean):
             max = 1.0
         }
 
-        if (minX == null || min < minX!!) {
+        if (minX == null || min < minX) {
             minX = min
         }
 
-        if (maxX == null || maxX!! < max) {
+        if (maxX == null || maxX < max) {
             maxX = max
         }
 
         val s = range / 10
-        if (step == null || step!! > s) {
+        if (step == null || step > s) {
             step = s
         }
     }
