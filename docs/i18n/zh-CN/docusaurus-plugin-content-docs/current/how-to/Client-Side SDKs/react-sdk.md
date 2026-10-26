@@ -132,7 +132,7 @@ export default withFPConsumer(Home);
 ## API
 
 ### FPProvider
-使用`FPProvider`进行SDK初始化。`FPProvider`方法接收`config`对象作为参数，`config`对象中需配置SDK初始化时必填的[参数](./javascript-sdk#available-options)
+使用`FPProvider`进行SDK初始化。`FPProvider`方法接收`config`对象作为参数，`config`对象中需配置SDK初始化时必填的[参数](./javascript-sdk#sdk初始化的参数)
 
 ```jsx
 import { FPProvider } from 'yl-toggle-client-sdk-react';
