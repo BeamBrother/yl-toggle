@@ -1,0 +1,3432 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RuleContent datetime input 1`] = `
+<body>
+  <div>
+    <form
+      class="ui form"
+    >
+      <div
+        class="_rule-item_b24de5"
+      >
+        <span
+          class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
+        >
+          <span
+            class="_rule-item-text_b24de5"
+          >
+            If
+          </span>
+        </span>
+        <div
+          class="_rule-item-type_b24de5"
+        >
+          <div
+            class="_rule-item-type-box_b24de5"
+          >
+            <div
+              class="_rule-item-type-text_b24de5"
+            >
+              datetime
+            </div>
+          </div>
+        </div>
+        <div
+          class="equal width fields _rule-item-left_b24de5"
+        >
+          <div
+            class="field _rule-item-subject_b24de5"
+          >
+            <div
+              aria-expanded="false"
+              class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
+              name="rule_test-id_condition_c-test-id_subject"
+              role="combobox"
+            >
+              <input
+                aria-autocomplete="list"
+                autocomplete="off"
+                class="search"
+                tabindex="0"
+                type="text"
+                value=""
+              />
+              <div
+                aria-atomic="true"
+                aria-live="polite"
+                class="divider default text"
+                role="alert"
+              >
+                Enter a subject
+              </div>
+              <div
+                class="menu transition"
+                role="listbox"
+              />
+            </div>
+          </div>
+          <div
+            class="field _rule-item-operator_b24de5"
+          >
+            <div
+              aria-expanded="false"
+              class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
+              name="rule_test-id_condition_c-test-id_predicate"
+              role="listbox"
+              tabindex="0"
+            >
+              <div
+                aria-atomic="true"
+                aria-live="polite"
+                class="divider default text"
+                role="alert"
+              >
+                Select an operator
+              </div>
+              <span
+                class="iconfont icon-angle-down _angle-down_b24de5"
+                customclass="_angle-down_b24de5"
+                type="angle-down"
+              />
+              <div
+                class="menu transition"
+              >
+                <div
+                  aria-checked="false"
+                  aria-selected="true"
+                  class="selected item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    before
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    after
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="six wide field _rule-item-datetime_b24de5"
+            name="rule_test-id_condition_c-test-id_datetime"
+          >
+            <div
+              class="rdt"
+            >
+              <input
+                class="form-control"
+                placeholder="Please select"
+                type="text"
+                value="test_value"
+              />
+              <div
+                class="rdtPicker"
+              >
+                <div
+                  class="rdtDays"
+                >
+                  <table>
+                    <thead>
+                      <tr>
+                        <th
+                          class="rdtPrev"
+                        >
+                          <span>
+                            ‹
+                          </span>
+                        </th>
+                        <th
+                          class="rdtSwitch"
+                          colspan="5"
+                          data-value="10"
+                        >
+                          November 2022
+                        </th>
+                        <th
+                          class="rdtNext"
+                        >
+                          <span>
+                            ›
+                          </span>
+                        </th>
+                      </tr>
+                      <tr>
+                        <th
+                          class="dow"
+                        >
+                          Su
+                        </th>
+                        <th
+                          class="dow"
+                        >
+                          Mo
+                        </th>
+                        <th
+                          class="dow"
+                        >
+                          Tu
+                        </th>
+                        <th
+                          class="dow"
+                        >
+                          We
+                        </th>
+                        <th
+                          class="dow"
+                        >
+                          Th
+                        </th>
+                        <th
+                          class="dow"
+                        >
+                          Fr
+                        </th>
+                        <th
+                          class="dow"
+                        >
+                          Sa
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td
+                          class="rdtDay rdtOld"
+                          data-month="9"
+                          data-value="30"
+                          data-year="2022"
+                        >
+                          30
+                        </td>
+                        <td
+                          class="rdtDay rdtOld"
+                          data-month="9"
+                          data-value="31"
+                          data-year="2022"
+                        >
+                          31
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="1"
+                          data-year="2022"
+                        >
+                          1
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="2"
+                          data-year="2022"
+                        >
+                          2
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="3"
+                          data-year="2022"
+                        >
+                          3
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="4"
+                          data-year="2022"
+                        >
+                          4
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="5"
+                          data-year="2022"
+                        >
+                          5
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="6"
+                          data-year="2022"
+                        >
+                          6
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="7"
+                          data-year="2022"
+                        >
+                          7
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="8"
+                          data-year="2022"
+                        >
+                          8
+                        </td>
+                        <td
+                          class="rdtDay rdtActive"
+                          data-month="10"
+                          data-value="9"
+                          data-year="2022"
+                        >
+                          9
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="10"
+                          data-year="2022"
+                        >
+                          10
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="11"
+                          data-year="2022"
+                        >
+                          11
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="12"
+                          data-year="2022"
+                        >
+                          12
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="13"
+                          data-year="2022"
+                        >
+                          13
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="14"
+                          data-year="2022"
+                        >
+                          14
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="15"
+                          data-year="2022"
+                        >
+                          15
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="16"
+                          data-year="2022"
+                        >
+                          16
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="17"
+                          data-year="2022"
+                        >
+                          17
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="18"
+                          data-year="2022"
+                        >
+                          18
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="19"
+                          data-year="2022"
+                        >
+                          19
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="20"
+                          data-year="2022"
+                        >
+                          20
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="21"
+                          data-year="2022"
+                        >
+                          21
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="22"
+                          data-year="2022"
+                        >
+                          22
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="23"
+                          data-year="2022"
+                        >
+                          23
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="24"
+                          data-year="2022"
+                        >
+                          24
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="25"
+                          data-year="2022"
+                        >
+                          25
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="26"
+                          data-year="2022"
+                        >
+                          26
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="27"
+                          data-year="2022"
+                        >
+                          27
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="28"
+                          data-year="2022"
+                        >
+                          28
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="29"
+                          data-year="2022"
+                        >
+                          29
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="30"
+                          data-year="2022"
+                        >
+                          30
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="1"
+                          data-year="2022"
+                        >
+                          1
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="2"
+                          data-year="2022"
+                        >
+                          2
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="3"
+                          data-year="2022"
+                        >
+                          3
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="4"
+                          data-year="2022"
+                        >
+                          4
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="5"
+                          data-year="2022"
+                        >
+                          5
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="6"
+                          data-year="2022"
+                        >
+                          6
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="7"
+                          data-year="2022"
+                        >
+                          7
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="8"
+                          data-year="2022"
+                        >
+                          8
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="9"
+                          data-year="2022"
+                        >
+                          9
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="10"
+                          data-year="2022"
+                        >
+                          10
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td
+                          class="rdtTimeToggle"
+                          colspan="7"
+                        >
+                          test_value
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <img
+              alt="canlendar"
+              class="_rule-item-datetime-canlendar_b24de5"
+              src="data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='UTF-8'?%3e%3csvg%20width='16px'%20height='16px'%20viewBox='0%200%2016%2016'%20version='1.1'%20xmlns='http://www.w3.org/2000/svg'%20xmlns:xlink='http://www.w3.org/1999/xlink'%3e%3ctitle%3ecalendar-o%3c/title%3e%3cg%20id='迭代需求0627'%20stroke='none'%20stroke-width='1'%20fill='none'%20fill-rule='evenodd'%3e%3cg%20transform='translate(-1377.000000,%20-580.000000)'%20fill='%2374788d'%20fill-rule='nonzero'%20id='编组-26备份-3'%3e%3cg%20transform='translate(749.000000,%20307.000000)'%3e%3cg%20id='编组-20'%20transform='translate(24.000000,%2024.000000)'%3e%3cg%20id='编组-24备份-2'%20transform='translate(0.000000,%2040.000000)'%3e%3cg%20id='编组-45备份-2'%20transform='translate(30.000000,%20201.000000)'%3e%3cg%20id='编组-25'%20transform='translate(358.000000,%200.000000)'%3e%3cg%20id='calendar-o'%20transform='translate(216.000000,%208.000000)'%3e%3cpath%20d='M13,4.33333333%20L13,3%20L3,3%20L3,4.33333333%20L13,4.33333333%20Z%20M13,5.33333333%20L3,5.33333333%20L3,13%20L13,13%20L13,5.33333333%20Z%20M2.33333333,2%20L13.6666667,2%20C13.8507616,2%2014,2.14923842%2014,2.33333333%20L14,13.6666667%20C14,13.8507616%2013.8507616,14%2013.6666667,14%20L2.33333333,14%20C2.14923842,14%202,13.8507616%202,13.6666667%20L2,2.33333333%20C2,2.14923842%202.14923842,2%202.33333333,2%20Z%20M4.83333333,6.66666667%20L5.83333333,6.66666667%20L5.83333333,7.66666667%20L4.83333333,7.66666667%20L4.83333333,6.66666667%20Z%20M7.5,6.66666667%20L8.5,6.66666667%20L8.5,7.66666667%20L7.5,7.66666667%20L7.5,6.66666667%20Z%20M10.1666667,6.66666667%20L11.1666667,6.66666667%20L11.1666667,7.66666667%20L10.1666667,7.66666667%20L10.1666667,6.66666667%20Z%20M4.83333333,8.66666667%20L5.83333333,8.66666667%20L5.83333333,9.66666667%20L4.83333333,9.66666667%20L4.83333333,8.66666667%20Z%20M7.5,8.66666667%20L8.5,8.66666667%20L8.5,9.66666667%20L7.5,9.66666667%20L7.5,8.66666667%20Z%20M10.1666667,8.66666667%20L11.1666667,8.66666667%20L11.1666667,9.66666667%20L10.1666667,9.66666667%20L10.1666667,8.66666667%20Z%20M4.83333333,10.6666667%20L5.83333333,10.6666667%20L5.83333333,11.6666667%20L4.83333333,11.6666667%20L4.83333333,10.6666667%20Z%20M7.5,10.6666667%20L8.5,10.6666667%20L8.5,11.6666667%20L7.5,11.6666667%20L7.5,10.6666667%20Z'%20id='形状'%3e%3c/path%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/svg%3e"
+            />
+          </div>
+          <div
+            class="six wide field"
+          >
+            <div
+              aria-expanded="false"
+              class="ui floating search selection dropdown"
+              name="rule_test-id_condition_c-test-id_timezone"
+              role="combobox"
+            >
+              <input
+                aria-autocomplete="list"
+                autocomplete="off"
+                class="search"
+                tabindex="0"
+                type="text"
+                value=""
+              />
+              <div
+                aria-atomic="true"
+                aria-live="polite"
+                class="divider text"
+                role="alert"
+              >
+                UTC +8
+              </div>
+              <span
+                class="iconfont icon-angle-down _angle-down_b24de5"
+                customclass="_angle-down_b24de5"
+                type="angle-down"
+              />
+              <div
+                class="menu transition"
+                role="listbox"
+              >
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +0
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +1
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +2
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +3
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +4
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +5
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +6
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +7
+                  </span>
+                </div>
+                <div
+                  aria-checked="true"
+                  aria-selected="true"
+                  class="active selected item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +8
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +9
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +10
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +11
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +12
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -12
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -11
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -10
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -9
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -8
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -7
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -6
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -5
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -4
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -3
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -2
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -1
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span
+          class="iconfont icon-minus _icon-minus_b24de5"
+          customclass="_icon-minus_b24de5"
+          type="minus"
+        />
+      </div>
+    </form>
+  </div>
+</body>
+`;
+
+exports[`RuleContent normal input 1`] = `
+<DocumentFragment>
+  <form
+    class="ui form"
+  >
+    <div
+      class="_rule-item_b24de5"
+    >
+      <span
+        class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
+      >
+        <span
+          class="_rule-item-text_b24de5"
+        >
+          If
+        </span>
+      </span>
+      <div
+        class="_rule-item-type_b24de5"
+      >
+        <div
+          class="_rule-item-type-box_b24de5"
+        >
+          <div
+            class="_rule-item-type-text_b24de5"
+          >
+            string
+          </div>
+        </div>
+      </div>
+      <div
+        class="equal width fields _rule-item-left_b24de5"
+      >
+        <div
+          class="field _rule-item-subject_b24de5"
+        >
+          <div
+            aria-expanded="true"
+            class="ui active visible floating search selection dropdown _rule-item-subject-dropdown_b24de5"
+            name="rule_test-id_condition_c-test-id_subject"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              autocomplete="off"
+              class="search"
+              tabindex="0"
+              type="text"
+              value="test text"
+            />
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider text filtered"
+              role="alert"
+            >
+              Add 
+              <b>
+                test text
+              </b>
+            </div>
+            <div
+              class="visible menu transition"
+              role="listbox"
+            >
+              <div
+                aria-checked="false"
+                aria-selected="true"
+                class="selected item addition"
+                data-additional="true"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  Add 
+                  <b>
+                    test text
+                  </b>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="field _rule-item-operator_b24de5"
+        >
+          <div
+            aria-expanded="false"
+            class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
+            name="rule_test-id_condition_c-test-id_predicate"
+            role="listbox"
+            tabindex="0"
+          >
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider text"
+              role="alert"
+            >
+              is one of
+            </div>
+            <span
+              class="iconfont icon-angle-down _angle-down_b24de5"
+              customclass="_angle-down_b24de5"
+              type="angle-down"
+            />
+            <div
+              class="menu transition"
+            >
+              <div
+                aria-checked="true"
+                aria-selected="true"
+                class="active selected item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  is one of
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  is not any of
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  starts with
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  does not start with
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  ends with
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  does not end with
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  contains
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  does not contain
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  matches regex
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  does not match regex
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="six wide field"
+        >
+          <div
+            aria-expanded="false"
+            class="ui floating multiple search selection dropdown"
+            name="rule_test-id_condition_c-test-id_objects"
+            role="combobox"
+          >
+            <a
+              class="ui label"
+              value="2022-11-09T10:14:06+08:00"
+            >
+              2022-11-09T10:14:06+08:00
+              <span
+                class="iconfont icon-close _dropdown-remove-icon_b24de5"
+                customclass="_dropdown-remove-icon_b24de5"
+                type="close"
+              />
+            </a>
+            <input
+              aria-autocomplete="list"
+              autocomplete="off"
+              class="search"
+              tabindex="0"
+              type="text"
+              value=""
+            />
+            <span
+              class="sizer"
+            />
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider text"
+              role="alert"
+            >
+              Enter some values
+            </div>
+            <div
+              aria-multiselectable="true"
+              class="menu transition"
+              role="listbox"
+            />
+          </div>
+        </div>
+      </div>
+      <span
+        class="iconfont icon-minus _icon-minus_b24de5"
+        customclass="_icon-minus_b24de5"
+        type="minus"
+      />
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`RuleContent normal input 2`] = `
+<DocumentFragment>
+  <form
+    class="ui form"
+  >
+    <div
+      class="_rule-item_b24de5"
+    >
+      <span
+        class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
+      >
+        <span
+          class="_rule-item-text_b24de5"
+        >
+          If
+        </span>
+      </span>
+      <div
+        class="_rule-item-type_b24de5"
+      >
+        <div
+          class="_rule-item-type-box_b24de5"
+        >
+          <div
+            class="_rule-item-type-text_b24de5"
+          >
+            string
+          </div>
+        </div>
+      </div>
+      <div
+        class="equal width fields _rule-item-left_b24de5"
+      >
+        <div
+          class="field _rule-item-subject_b24de5"
+        >
+          <div
+            aria-expanded="false"
+            class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
+            name="rule_test-id_condition_c-test-id_subject"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              autocomplete="off"
+              class="search"
+              tabindex="0"
+              type="text"
+              value=""
+            />
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider text"
+              role="alert"
+            >
+              Enter a subject
+            </div>
+            <div
+              class="menu transition"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <div
+          class="field _rule-item-operator_b24de5"
+        >
+          <div
+            aria-expanded="false"
+            class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
+            name="rule_test-id_condition_c-test-id_predicate"
+            role="listbox"
+            tabindex="0"
+          >
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider text"
+              role="alert"
+            >
+              is not any of
+            </div>
+            <span
+              class="iconfont icon-angle-down _angle-down_b24de5"
+              customclass="_angle-down_b24de5"
+              type="angle-down"
+            />
+            <div
+              class="menu transition"
+            >
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  is one of
+                </span>
+              </div>
+              <div
+                aria-checked="true"
+                aria-selected="true"
+                class="active selected item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  is not any of
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  starts with
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  does not start with
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  ends with
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  does not end with
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  contains
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  does not contain
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  matches regex
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  does not match regex
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="six wide field"
+        >
+          <div
+            aria-expanded="true"
+            class="ui active visible floating multiple search selection dropdown"
+            name="rule_test-id_condition_c-test-id_objects"
+            role="combobox"
+          >
+            <a
+              class="ui label"
+              value="2022-11-09T10:14:06+08:00"
+            >
+              2022-11-09T10:14:06+08:00
+              <span
+                class="iconfont icon-close _dropdown-remove-icon_b24de5"
+                customclass="_dropdown-remove-icon_b24de5"
+                type="close"
+              />
+            </a>
+            <a
+              class="ui label"
+              value="test text"
+            >
+              test text
+              <span
+                class="iconfont icon-close _dropdown-remove-icon_b24de5"
+                customclass="_dropdown-remove-icon_b24de5"
+                type="close"
+              />
+            </a>
+            <a
+              class="ui label"
+              value="test text 2"
+            >
+              test text 2
+              <span
+                class="iconfont icon-close _dropdown-remove-icon_b24de5"
+                customclass="_dropdown-remove-icon_b24de5"
+                type="close"
+              />
+            </a>
+            <input
+              aria-autocomplete="list"
+              autocomplete="off"
+              class="search"
+              style=""
+              tabindex="0"
+              type="text"
+              value=""
+            />
+            <span
+              class="sizer"
+              style=""
+            >
+              test text 2
+            </span>
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider text"
+              role="alert"
+            >
+              Enter some values
+            </div>
+            <div
+              aria-multiselectable="true"
+              class="visible menu transition"
+              role="listbox"
+            />
+          </div>
+        </div>
+      </div>
+      <span
+        class="iconfont icon-minus _icon-minus_b24de5"
+        customclass="_icon-minus_b24de5"
+        type="minus"
+      />
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`RuleContent number input 1`] = `
+<DocumentFragment>
+  <form
+    class="ui form"
+  >
+    <div
+      class="_rule-item_b24de5"
+    >
+      <span
+        class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
+      >
+        <span
+          class="_rule-item-text_b24de5"
+        >
+          If
+        </span>
+      </span>
+      <div
+        class="_rule-item-type_b24de5"
+      >
+        <div
+          class="_rule-item-type-box_b24de5"
+        >
+          <div
+            class="_rule-item-type-text_b24de5"
+          >
+            number
+          </div>
+        </div>
+      </div>
+      <div
+        class="equal width fields _rule-item-left_b24de5"
+      >
+        <div
+          class="field _rule-item-subject_b24de5"
+        >
+          <div
+            aria-expanded="false"
+            class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
+            name="rule_test-id_condition_c-test-id_subject"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              autocomplete="off"
+              class="search"
+              tabindex="0"
+              type="text"
+              value=""
+            />
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider default text"
+              role="alert"
+            >
+              Enter a subject
+            </div>
+            <div
+              class="menu transition"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <div
+          class="field _rule-item-operator_b24de5"
+        >
+          <div
+            aria-expanded="false"
+            class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
+            name="rule_test-id_condition_c-test-id_predicate"
+            role="listbox"
+            tabindex="0"
+          >
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider default text"
+              role="alert"
+            >
+              Select an operator
+            </div>
+            <span
+              class="iconfont icon-angle-down _angle-down_b24de5"
+              customclass="_angle-down_b24de5"
+              type="angle-down"
+            />
+            <div
+              class="menu transition"
+            >
+              <div
+                aria-checked="false"
+                aria-selected="true"
+                class="selected item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  =
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  !=
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  &lt;
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  &lt;=
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  &gt;
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  &gt;=
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  between
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="six wide field"
+        >
+          <div
+            aria-expanded="true"
+            class="ui active visible floating multiple search selection dropdown"
+            name="rule_test-id_condition_c-test-id_objects"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              autocomplete="off"
+              class="search"
+              style=""
+              tabindex="0"
+              type="text"
+              value=""
+            />
+            <span
+              class="sizer"
+              style=""
+            >
+              200
+            </span>
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider default text"
+              role="alert"
+            >
+              Enter some values
+            </div>
+            <div
+              aria-multiselectable="true"
+              class="visible menu transition"
+              role="listbox"
+            />
+          </div>
+        </div>
+      </div>
+      <span
+        class="iconfont icon-minus _icon-minus_b24de5"
+        customclass="_icon-minus_b24de5"
+        type="minus"
+      />
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`RuleContent other opt 1`] = `
+<span
+  class="iconfont icon-minus _icon-minus_b24de5"
+  customclass="_icon-minus_b24de5"
+  type="minus"
+/>
+`;
+
+exports[`RuleContent segment render 1`] = `
+<body>
+  <div>
+    <form
+      class="ui form"
+    >
+      <div
+        class="_rule-item_b24de5"
+      >
+        <span
+          class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
+        >
+          <span
+            class="_rule-item-text_b24de5"
+          >
+            If
+          </span>
+        </span>
+        <div
+          class="_rule-item-type_b24de5"
+        >
+          <div
+            class="_rule-item-type-box_b24de5"
+          >
+            <div
+              class="_rule-item-type-text_b24de5"
+            >
+              datetime
+            </div>
+          </div>
+        </div>
+        <div
+          class="equal width fields _rule-item-left_b24de5"
+        >
+          <div
+            class="field _rule-item-subject_b24de5"
+          >
+            <div
+              aria-expanded="false"
+              class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
+              name="rule_test-id_condition_c-test-id_subject"
+              role="combobox"
+            >
+              <input
+                aria-autocomplete="list"
+                autocomplete="off"
+                class="search"
+                tabindex="0"
+                type="text"
+                value=""
+              />
+              <div
+                aria-atomic="true"
+                aria-live="polite"
+                class="divider default text"
+                role="alert"
+              >
+                Enter a subject
+              </div>
+              <div
+                class="menu transition"
+                role="listbox"
+              />
+            </div>
+          </div>
+          <div
+            class="field _rule-item-operator_b24de5"
+          >
+            <div
+              aria-expanded="false"
+              class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
+              name="rule_test-id_condition_c-test-id_predicate"
+              role="listbox"
+              tabindex="0"
+            >
+              <div
+                aria-atomic="true"
+                aria-live="polite"
+                class="divider default text"
+                role="alert"
+              >
+                Select an operator
+              </div>
+              <span
+                class="iconfont icon-angle-down _angle-down_b24de5"
+                customclass="_angle-down_b24de5"
+                type="angle-down"
+              />
+              <div
+                class="menu transition"
+              >
+                <div
+                  aria-checked="false"
+                  aria-selected="true"
+                  class="selected item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    before
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    after
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="six wide field _rule-item-datetime_b24de5"
+            name="rule_test-id_condition_c-test-id_datetime"
+          >
+            <div
+              class="rdt"
+            >
+              <input
+                class="form-control"
+                placeholder="Please select"
+                type="text"
+                value="test_value"
+              />
+              <div
+                class="rdtPicker"
+              >
+                <div
+                  class="rdtDays"
+                >
+                  <table>
+                    <thead>
+                      <tr>
+                        <th
+                          class="rdtPrev"
+                        >
+                          <span>
+                            ‹
+                          </span>
+                        </th>
+                        <th
+                          class="rdtSwitch"
+                          colspan="5"
+                          data-value="10"
+                        >
+                          November 2022
+                        </th>
+                        <th
+                          class="rdtNext"
+                        >
+                          <span>
+                            ›
+                          </span>
+                        </th>
+                      </tr>
+                      <tr>
+                        <th
+                          class="dow"
+                        >
+                          Su
+                        </th>
+                        <th
+                          class="dow"
+                        >
+                          Mo
+                        </th>
+                        <th
+                          class="dow"
+                        >
+                          Tu
+                        </th>
+                        <th
+                          class="dow"
+                        >
+                          We
+                        </th>
+                        <th
+                          class="dow"
+                        >
+                          Th
+                        </th>
+                        <th
+                          class="dow"
+                        >
+                          Fr
+                        </th>
+                        <th
+                          class="dow"
+                        >
+                          Sa
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td
+                          class="rdtDay rdtOld"
+                          data-month="9"
+                          data-value="30"
+                          data-year="2022"
+                        >
+                          30
+                        </td>
+                        <td
+                          class="rdtDay rdtOld"
+                          data-month="9"
+                          data-value="31"
+                          data-year="2022"
+                        >
+                          31
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="1"
+                          data-year="2022"
+                        >
+                          1
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="2"
+                          data-year="2022"
+                        >
+                          2
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="3"
+                          data-year="2022"
+                        >
+                          3
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="4"
+                          data-year="2022"
+                        >
+                          4
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="5"
+                          data-year="2022"
+                        >
+                          5
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="6"
+                          data-year="2022"
+                        >
+                          6
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="7"
+                          data-year="2022"
+                        >
+                          7
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="8"
+                          data-year="2022"
+                        >
+                          8
+                        </td>
+                        <td
+                          class="rdtDay rdtActive"
+                          data-month="10"
+                          data-value="9"
+                          data-year="2022"
+                        >
+                          9
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="10"
+                          data-year="2022"
+                        >
+                          10
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="11"
+                          data-year="2022"
+                        >
+                          11
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="12"
+                          data-year="2022"
+                        >
+                          12
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="13"
+                          data-year="2022"
+                        >
+                          13
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="14"
+                          data-year="2022"
+                        >
+                          14
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="15"
+                          data-year="2022"
+                        >
+                          15
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="16"
+                          data-year="2022"
+                        >
+                          16
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="17"
+                          data-year="2022"
+                        >
+                          17
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="18"
+                          data-year="2022"
+                        >
+                          18
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="19"
+                          data-year="2022"
+                        >
+                          19
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="20"
+                          data-year="2022"
+                        >
+                          20
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="21"
+                          data-year="2022"
+                        >
+                          21
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="22"
+                          data-year="2022"
+                        >
+                          22
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="23"
+                          data-year="2022"
+                        >
+                          23
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="24"
+                          data-year="2022"
+                        >
+                          24
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="25"
+                          data-year="2022"
+                        >
+                          25
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="26"
+                          data-year="2022"
+                        >
+                          26
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="27"
+                          data-year="2022"
+                        >
+                          27
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="28"
+                          data-year="2022"
+                        >
+                          28
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="29"
+                          data-year="2022"
+                        >
+                          29
+                        </td>
+                        <td
+                          class="rdtDay"
+                          data-month="10"
+                          data-value="30"
+                          data-year="2022"
+                        >
+                          30
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="1"
+                          data-year="2022"
+                        >
+                          1
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="2"
+                          data-year="2022"
+                        >
+                          2
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="3"
+                          data-year="2022"
+                        >
+                          3
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="4"
+                          data-year="2022"
+                        >
+                          4
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="5"
+                          data-year="2022"
+                        >
+                          5
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="6"
+                          data-year="2022"
+                        >
+                          6
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="7"
+                          data-year="2022"
+                        >
+                          7
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="8"
+                          data-year="2022"
+                        >
+                          8
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="9"
+                          data-year="2022"
+                        >
+                          9
+                        </td>
+                        <td
+                          class="rdtDay rdtNew"
+                          data-month="11"
+                          data-value="10"
+                          data-year="2022"
+                        >
+                          10
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td
+                          class="rdtTimeToggle"
+                          colspan="7"
+                        >
+                          test_value
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <img
+              alt="canlendar"
+              class="_rule-item-datetime-canlendar_b24de5"
+              src="data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='UTF-8'?%3e%3csvg%20width='16px'%20height='16px'%20viewBox='0%200%2016%2016'%20version='1.1'%20xmlns='http://www.w3.org/2000/svg'%20xmlns:xlink='http://www.w3.org/1999/xlink'%3e%3ctitle%3ecalendar-o%3c/title%3e%3cg%20id='迭代需求0627'%20stroke='none'%20stroke-width='1'%20fill='none'%20fill-rule='evenodd'%3e%3cg%20transform='translate(-1377.000000,%20-580.000000)'%20fill='%2374788d'%20fill-rule='nonzero'%20id='编组-26备份-3'%3e%3cg%20transform='translate(749.000000,%20307.000000)'%3e%3cg%20id='编组-20'%20transform='translate(24.000000,%2024.000000)'%3e%3cg%20id='编组-24备份-2'%20transform='translate(0.000000,%2040.000000)'%3e%3cg%20id='编组-45备份-2'%20transform='translate(30.000000,%20201.000000)'%3e%3cg%20id='编组-25'%20transform='translate(358.000000,%200.000000)'%3e%3cg%20id='calendar-o'%20transform='translate(216.000000,%208.000000)'%3e%3cpath%20d='M13,4.33333333%20L13,3%20L3,3%20L3,4.33333333%20L13,4.33333333%20Z%20M13,5.33333333%20L3,5.33333333%20L3,13%20L13,13%20L13,5.33333333%20Z%20M2.33333333,2%20L13.6666667,2%20C13.8507616,2%2014,2.14923842%2014,2.33333333%20L14,13.6666667%20C14,13.8507616%2013.8507616,14%2013.6666667,14%20L2.33333333,14%20C2.14923842,14%202,13.8507616%202,13.6666667%20L2,2.33333333%20C2,2.14923842%202.14923842,2%202.33333333,2%20Z%20M4.83333333,6.66666667%20L5.83333333,6.66666667%20L5.83333333,7.66666667%20L4.83333333,7.66666667%20L4.83333333,6.66666667%20Z%20M7.5,6.66666667%20L8.5,6.66666667%20L8.5,7.66666667%20L7.5,7.66666667%20L7.5,6.66666667%20Z%20M10.1666667,6.66666667%20L11.1666667,6.66666667%20L11.1666667,7.66666667%20L10.1666667,7.66666667%20L10.1666667,6.66666667%20Z%20M4.83333333,8.66666667%20L5.83333333,8.66666667%20L5.83333333,9.66666667%20L4.83333333,9.66666667%20L4.83333333,8.66666667%20Z%20M7.5,8.66666667%20L8.5,8.66666667%20L8.5,9.66666667%20L7.5,9.66666667%20L7.5,8.66666667%20Z%20M10.1666667,8.66666667%20L11.1666667,8.66666667%20L11.1666667,9.66666667%20L10.1666667,9.66666667%20L10.1666667,8.66666667%20Z%20M4.83333333,10.6666667%20L5.83333333,10.6666667%20L5.83333333,11.6666667%20L4.83333333,11.6666667%20L4.83333333,10.6666667%20Z%20M7.5,10.6666667%20L8.5,10.6666667%20L8.5,11.6666667%20L7.5,11.6666667%20L7.5,10.6666667%20Z'%20id='形状'%3e%3c/path%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/g%3e%3c/svg%3e"
+            />
+          </div>
+          <div
+            class="six wide field"
+          >
+            <div
+              aria-expanded="false"
+              class="ui floating search selection dropdown"
+              name="rule_test-id_condition_c-test-id_timezone"
+              role="combobox"
+            >
+              <input
+                aria-autocomplete="list"
+                autocomplete="off"
+                class="search"
+                tabindex="0"
+                type="text"
+                value=""
+              />
+              <div
+                aria-atomic="true"
+                aria-live="polite"
+                class="divider text"
+                role="alert"
+              >
+                UTC +8
+              </div>
+              <span
+                class="iconfont icon-angle-down _angle-down_b24de5"
+                customclass="_angle-down_b24de5"
+                type="angle-down"
+              />
+              <div
+                class="menu transition"
+                role="listbox"
+              >
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +0
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +1
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +2
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +3
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +4
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +5
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +6
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +7
+                  </span>
+                </div>
+                <div
+                  aria-checked="true"
+                  aria-selected="true"
+                  class="active selected item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +8
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +9
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +10
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +11
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC +12
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -12
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -11
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -10
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -9
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -8
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -7
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -6
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -5
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -4
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -3
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -2
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    UTC -1
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span
+          class="iconfont icon-minus _icon-minus_b24de5"
+          customclass="_icon-minus_b24de5"
+          type="minus"
+        />
+      </div>
+    </form>
+  </div>
+  <div>
+    <form
+      class="ui form"
+    >
+      <div
+        class="_rule-item_b24de5"
+      >
+        <span
+          class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
+        >
+          <span
+            class="_rule-item-text_b24de5"
+          >
+            If
+          </span>
+        </span>
+        <div
+          class="_rule-item-type_b24de5"
+        >
+          <div
+            class="_rule-item-type-box_b24de5"
+          >
+            <div
+              class="_rule-item-type-text_b24de5"
+            >
+              segment
+            </div>
+          </div>
+        </div>
+        <div
+          class="equal width fields _rule-item-left_b24de5"
+        >
+          <div
+            class="field _rule-item-subject_b24de5"
+          >
+            <div
+              aria-disabled="true"
+              aria-expanded="false"
+              class="ui disabled floating search selection dropdown _rule-item-subject-dropdown_b24de5"
+              name="rule_test-id_condition_c-test-id_subject"
+              role="combobox"
+            >
+              <input
+                aria-autocomplete="list"
+                autocomplete="off"
+                class="search"
+                tabindex="-1"
+                type="text"
+                value=""
+              />
+              <div
+                aria-atomic="true"
+                aria-live="polite"
+                class="divider default text"
+                role="alert"
+              >
+                Enter a subject
+              </div>
+              <div
+                class="menu transition"
+                role="listbox"
+              >
+                <div
+                  aria-checked="true"
+                  aria-selected="true"
+                  class="active selected item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="field _rule-item-operator_b24de5"
+          >
+            <div
+              aria-expanded="false"
+              class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
+              name="rule_test-id_condition_c-test-id_predicate"
+              role="listbox"
+              tabindex="0"
+            >
+              <div
+                aria-atomic="true"
+                aria-live="polite"
+                class="divider default text"
+                role="alert"
+              >
+                Select an operator
+              </div>
+              <span
+                class="iconfont icon-angle-down _angle-down_b24de5"
+                customclass="_angle-down_b24de5"
+                type="angle-down"
+              />
+              <div
+                class="menu transition"
+              >
+                <div
+                  aria-checked="false"
+                  aria-selected="true"
+                  class="selected item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    is in segments
+                  </span>
+                </div>
+                <div
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    is not in segments
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="six wide field"
+          >
+            <div
+              aria-expanded="false"
+              class="ui floating multiple search selection dropdown"
+              name="rule_test-id_condition_c-test-id_objects"
+              role="combobox"
+            >
+              <input
+                aria-autocomplete="list"
+                autocomplete="off"
+                class="search"
+                tabindex="0"
+                type="text"
+                value=""
+              />
+              <span
+                class="sizer"
+              />
+              <div
+                aria-atomic="true"
+                aria-live="polite"
+                class="divider default text"
+                role="alert"
+              >
+                Please select
+              </div>
+              <span
+                class="iconfont icon-angle-down _angle-down_b24de5"
+                customclass="_angle-down_b24de5"
+                type="angle-down"
+              />
+              <div
+                aria-multiselectable="true"
+                class="menu transition"
+                role="listbox"
+              >
+                <div
+                  aria-checked="false"
+                  aria-selected="true"
+                  class="selected item"
+                  role="option"
+                  style="pointer-events: all;"
+                >
+                  <span
+                    class="text"
+                  >
+                    test
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span
+          class="iconfont icon-minus _icon-minus_b24de5"
+          customclass="_icon-minus_b24de5"
+          type="minus"
+        />
+      </div>
+    </form>
+  </div>
+</body>
+`;
+
+exports[`RuleContent semver input 1`] = `
+<DocumentFragment>
+  <form
+    class="ui form"
+  >
+    <div
+      class="_rule-item_b24de5"
+    >
+      <span
+        class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
+      >
+        <span
+          class="_rule-item-text_b24de5"
+        >
+          If
+        </span>
+      </span>
+      <div
+        class="_rule-item-type_b24de5"
+      >
+        <div
+          class="_rule-item-type-box_b24de5"
+        >
+          <div
+            class="_rule-item-type-text_b24de5"
+          >
+            semver
+            <span
+              class="iconfont icon-question _icon-info_b24de5"
+              customclass="_icon-info_b24de5"
+              type="question"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="equal width fields _rule-item-left_b24de5"
+      >
+        <div
+          class="field _rule-item-subject_b24de5"
+        >
+          <div
+            aria-expanded="false"
+            class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
+            name="rule_test-id_condition_c-test-id_subject"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              autocomplete="off"
+              class="search"
+              tabindex="0"
+              type="text"
+              value=""
+            />
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider default text"
+              role="alert"
+            >
+              Enter a subject
+            </div>
+            <div
+              class="menu transition"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <div
+          class="field _rule-item-operator_b24de5"
+        >
+          <div
+            aria-expanded="false"
+            class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
+            name="rule_test-id_condition_c-test-id_predicate"
+            role="listbox"
+            tabindex="0"
+          >
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider default text"
+              role="alert"
+            >
+              Select an operator
+            </div>
+            <span
+              class="iconfont icon-angle-down _angle-down_b24de5"
+              customclass="_angle-down_b24de5"
+              type="angle-down"
+            />
+            <div
+              class="menu transition"
+            >
+              <div
+                aria-checked="false"
+                aria-selected="true"
+                class="selected item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  =
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  !=
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  &lt;
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  &lt;=
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  &gt;
+                </span>
+              </div>
+              <div
+                aria-checked="false"
+                aria-selected="false"
+                class="item"
+                role="option"
+                style="pointer-events: all;"
+              >
+                <span
+                  class="text"
+                >
+                  &gt;=
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="six wide field"
+        >
+          <div
+            aria-expanded="false"
+            class="ui floating multiple search selection dropdown"
+            name="rule_test-id_condition_c-test-id_objects"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              autocomplete="off"
+              class="search"
+              style=""
+              tabindex="0"
+              type="text"
+              value=""
+            />
+            <span
+              class="sizer"
+              style=""
+            >
+              200
+            </span>
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider default text"
+              role="alert"
+            >
+              Enter some values
+            </div>
+            <div
+              aria-multiselectable="true"
+              class="menu transition"
+              role="listbox"
+            />
+          </div>
+        </div>
+      </div>
+      <span
+        class="iconfont icon-minus _icon-minus_b24de5"
+        customclass="_icon-minus_b24de5"
+        type="minus"
+      />
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`RuleContent snapshot 1`] = `
+<DocumentFragment>
+  <form
+    class="ui form"
+  >
+    <div
+      class="_rule-item_b24de5"
+    >
+      <span
+        class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
+      >
+        <span
+          class="_rule-item-text_b24de5"
+        >
+          If
+        </span>
+      </span>
+      <div
+        class="_rule-item-type_b24de5"
+      >
+        <div
+          class="_rule-item-type-box_b24de5"
+        >
+          <div
+            class="_rule-item-type-text_b24de5"
+          />
+        </div>
+      </div>
+      <div
+        class="equal width fields _rule-item-left_b24de5"
+      >
+        <div
+          class="field _rule-item-subject_b24de5"
+        >
+          <div
+            aria-expanded="false"
+            class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
+            name="rule_test-id_condition_undefined_subject"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              autocomplete="off"
+              class="search"
+              tabindex="0"
+              type="text"
+              value=""
+            />
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider default text"
+              role="alert"
+            >
+              Enter a subject
+            </div>
+            <div
+              class="menu transition"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <div
+          class="field _rule-item-operator_b24de5"
+        >
+          <div
+            aria-expanded="false"
+            class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
+            name="rule_test-id_condition_undefined_predicate"
+            role="listbox"
+            tabindex="0"
+          >
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider default text"
+              role="alert"
+            >
+              Select an operator
+            </div>
+            <span
+              class="iconfont icon-angle-down _angle-down_b24de5"
+              customclass="_angle-down_b24de5"
+              type="angle-down"
+            />
+            <div
+              class="menu transition"
+            />
+          </div>
+        </div>
+        <div
+          class="six wide field"
+        >
+          <div
+            aria-expanded="false"
+            class="ui floating multiple search selection dropdown"
+            name="rule_test-id_condition_undefined_objects"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              autocomplete="off"
+              class="search"
+              tabindex="0"
+              type="text"
+              value=""
+            />
+            <span
+              class="sizer"
+            />
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider default text"
+              role="alert"
+            >
+              Enter some values
+            </div>
+            <div
+              aria-multiselectable="true"
+              class="menu transition"
+              role="listbox"
+            />
+          </div>
+        </div>
+      </div>
+      <span
+        class="iconfont icon-minus _icon-minus_b24de5"
+        customclass="_icon-minus_b24de5"
+        type="minus"
+      />
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`RuleContent snapshot 2 1`] = `
+<DocumentFragment>
+  <form
+    class="ui form"
+  >
+    <div
+      class="_rule-item_b24de5"
+    >
+      <span
+        class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
+      >
+        <span
+          class="_rule-item-text_b24de5"
+        >
+          If
+        </span>
+      </span>
+      <div
+        class="_rule-item-type_b24de5"
+      >
+        <div
+          class="_rule-item-type-box_b24de5"
+        >
+          <div
+            class="_rule-item-type-text_b24de5"
+          />
+        </div>
+      </div>
+      <div
+        class="equal width fields _rule-item-left_b24de5"
+      >
+        <div
+          class="field _rule-item-subject_b24de5"
+        >
+          <div
+            aria-disabled="true"
+            aria-expanded="false"
+            class="ui disabled floating search selection dropdown _rule-item-subject-dropdown_b24de5"
+            name="rule_test-id_condition_undefined_subject"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              autocomplete="off"
+              class="search"
+              tabindex="-1"
+              type="text"
+              value=""
+            />
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider default text"
+              role="alert"
+            >
+              Enter a subject
+            </div>
+            <div
+              class="menu transition"
+              role="listbox"
+            />
+          </div>
+        </div>
+        <div
+          class="field _rule-item-operator_b24de5"
+        >
+          <div
+            aria-disabled="true"
+            aria-expanded="false"
+            class="ui disabled floating selection dropdown _rule-item-operator-dropdown_b24de5"
+            name="rule_test-id_condition_undefined_predicate"
+            role="listbox"
+            tabindex="-1"
+          >
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider default text"
+              role="alert"
+            >
+              Select an operator
+            </div>
+            <span
+              class="iconfont icon-angle-down _angle-down_b24de5"
+              customclass="_angle-down_b24de5"
+              type="angle-down"
+            />
+            <div
+              class="menu transition"
+            />
+          </div>
+        </div>
+        <div
+          class="six wide field"
+        >
+          <div
+            aria-disabled="true"
+            aria-expanded="false"
+            class="ui disabled floating multiple search selection dropdown"
+            name="rule_test-id_condition_undefined_objects"
+            role="combobox"
+          >
+            <input
+              aria-autocomplete="list"
+              autocomplete="off"
+              class="search"
+              tabindex="-1"
+              type="text"
+              value=""
+            />
+            <span
+              class="sizer"
+            />
+            <div
+              aria-atomic="true"
+              aria-live="polite"
+              class="divider default text"
+              role="alert"
+            >
+              Enter some values
+            </div>
+            <div
+              aria-multiselectable="true"
+              class="menu transition"
+              role="listbox"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</DocumentFragment>
+`;

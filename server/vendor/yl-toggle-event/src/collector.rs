@@ -1,0 +1,121 @@
+use async_trait::async_trait;
+use axum::{
+    extract::{Extension, Json},
+    http::{
+        header::{self, AUTHORIZATION},
+        StatusCode,
+    },
+    response::{IntoResponse, Response},
+};
+use axum_extra::TypedHeader;
+use headers::{Error, Header, HeaderMap, HeaderName, HeaderValue, UserAgent};
+use serde::Deserialize;
+use serde_json::{json, Value};
+use std::collections::VecDeque;
+use thiserror::Error;
+
+#[async_trait]
+pub trait EventHandler {
+    async fn handle_events(
+        &self,
+        sdk_key: String,
+        user_agent: String,
+        headers: HeaderMap,
+        data: VecDeque<Value>,
+    ) -> Result<Response, YTEventError>;
+}
+
+pub async fn post_events<T>(
+    Extension(handler): Extension<T>,
+    TypedHeader(SdkAuthorization(sdk_key)): TypedHeader<SdkAuthorization>,
+    TypedHeader(user_agent): TypedHeader<UserAgent>,
+    headers: HeaderMap,
+    Json(data): Json<VecDeque<Value>>,
+) -> Result<Response, YTEventError>
+where
+    T: EventHandler + Clone + Send + Sync + 'static,
+{
+    let ua = match headers.get("UA") {
+        Some(js_ua) => js_ua.to_str().unwrap().to_owned(),
+        None => user_agent.to_string(),
+    };
+    handler.handle_events(sdk_key, ua, headers, data).await?;
+    let status = StatusCode::OK;
+    let body = "";
+    Ok((status, cors_headers(), body).into_response())
+}
+
+pub fn cors_headers() -> [(HeaderName, &'static str); 4] {
+    [
+        (header::CONTENT_TYPE, "application/json"),
+        (header::ACCESS_CONTROL_ALLOW_HEADERS, "*"),
+        (header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"),
+        (
+            header::ACCESS_CONTROL_ALLOW_METHODS,
+            "GET, POST, PUT, DELETE, OPTIONS",
+        ),
+    ]
+}
+
+#[derive(Debug, Error, Deserialize)]
+pub enum YTEventError {
+    #[error("not found {0}")]
+    NotFound(String),
+    #[error("user base64 decode error")]
+    UserDecodeError,
+    #[error("config error: {0}")]
+    ConfigError(String),
+}
+
+impl IntoResponse for YTEventError {
+    fn into_response(self) -> Response {
+        let (status, error_message) = match self {
+            YTEventError::NotFound(_) => (StatusCode::NOT_FOUND, self.to_string()),
+            YTEventError::UserDecodeError => (StatusCode::BAD_REQUEST, self.to_string()),
+            _ => (StatusCode::INTERNAL_SERVER_ERROR, self.to_string()),
+        };
+
+        let body = Json(json!({
+            "error": error_message,
+        }));
+
+        (status, cors_headers(), body).into_response()
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SdkAuthorization(pub String);
+
+impl SdkAuthorization {
+    pub fn encode(&self) -> HeaderValue {
+        HeaderValue::from_str(&self.0).expect("valid header value")
+    }
+}
+
+impl Header for SdkAuthorization {
+    fn name() -> &'static HeaderName {
+        &AUTHORIZATION
+    }
+
+    fn decode<'i, I>(values: &mut I) -> Result<Self, Error>
+    where
+        Self: Sized,
+        I: Iterator<Item = &'i HeaderValue>,
+    {
+        match values.next() {
+            Some(v) => match v.to_str() {
+                Ok(s) => Ok(SdkAuthorization(s.to_owned())),
+                Err(_) => Err(Error::invalid()),
+            },
+            None => Err(Error::invalid()),
+        }
+    }
+
+    fn encode<E: Extend<HeaderValue>>(&self, values: &mut E) {
+        if let Ok(value) = HeaderValue::from_str(&self.0) {
+            values.extend(std::iter::once(value))
+        }
+    }
+}
+
+

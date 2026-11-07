@@ -1,0 +1,121 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Filter Confirm Button click snapshot 1`] = `
+<body>
+  <div>
+    <span
+      class="iconfont icon-filter _icon-filter_8b85ef _icon-filter-selected_8b85ef"
+      customclass="_icon-filter_8b85ef _icon-filter-selected_8b85ef"
+      type="filter"
+    />
+  </div>
+  <div
+    data-suir-portal="true"
+  >
+    <div
+      style="display: flex; position: absolute; left: auto; top: 0px; z-index: auto; right: 0px; bottom: auto; transform: translate(0px, 0px);"
+    >
+      <div
+        class="ui bottom right basic popup transition visible _popup_8b85ef"
+        style="left: auto; right: auto; position: initial;"
+      >
+        <div>
+          <div>
+            <div>
+              1
+            </div>
+            <div>
+              2
+            </div>
+          </div>
+          <div
+            class="_popup-footer_8b85ef"
+          >
+            <span
+              class="_popup-footer-clear_8b85ef"
+            >
+              Clear
+            </span>
+            <span
+              class="_popup-footer-confirm_8b85ef"
+            >
+              Confirm
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Filter Confirm Button click snapshot 2`] = `
+<body>
+  <div>
+    <span
+      class="iconfont icon-filter _icon-filter_8b85ef _icon-filter-selected_8b85ef"
+      customclass="_icon-filter_8b85ef _icon-filter-selected_8b85ef"
+      type="filter"
+    />
+  </div>
+</body>
+`;
+
+exports[`Filter icon click snapshot 1`] = `
+<body>
+  <div>
+    <span
+      class="iconfont icon-filter _icon-filter_8b85ef _icon-filter-selected_8b85ef"
+      customclass="_icon-filter_8b85ef _icon-filter-selected_8b85ef"
+      type="filter"
+    />
+  </div>
+  <div
+    data-suir-portal="true"
+  >
+    <div
+      style="display: flex; position: absolute; left: auto; top: 0px; z-index: auto; right: 0px; bottom: auto; transform: translate(0px, 0px);"
+    >
+      <div
+        class="ui bottom right basic popup transition visible _popup_8b85ef"
+        style="left: auto; right: auto; position: initial;"
+      >
+        <div>
+          <div>
+            <div>
+              1
+            </div>
+            <div>
+              2
+            </div>
+          </div>
+          <div
+            class="_popup-footer_8b85ef"
+          >
+            <span
+              class="_popup-footer-clear_8b85ef"
+            >
+              Clear
+            </span>
+            <span
+              class="_popup-footer-confirm_8b85ef"
+            >
+              Confirm
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Filter snapshot 1`] = `
+<DocumentFragment>
+  <span
+    class="iconfont icon-filter _icon-filter_8b85ef _icon-filter-selected_8b85ef"
+    customclass="_icon-filter_8b85ef _icon-filter-selected_8b85ef"
+    type="filter"
+  />
+</DocumentFragment>
+`;

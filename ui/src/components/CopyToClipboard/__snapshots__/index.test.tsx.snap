@@ -1,0 +1,117 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Click CopyToClipboard 1`] = `
+<body>
+  <div>
+    <span>
+      <span>
+        this is a test text
+      </span>
+    </span>
+  </div>
+  <div
+    data-suir-portal="true"
+  >
+    <div
+      style="display: flex; position: absolute; left: 0px; top: auto; z-index: auto; right: auto; bottom: 0px; transform: translate(0px, 0px);"
+    >
+      <div
+        class="ui top center popup transition visible"
+        style="left: auto; right: auto; position: initial;"
+      >
+        <span>
+          <span
+            class="iconfont icon-success-circle _icon-success_e418e8"
+            customclass="_icon-success_e418e8"
+            type="success-circle"
+          />
+          Copy success
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Click CopyToClipboard 2`] = `
+<body>
+  <div>
+    <span>
+      <span>
+        this is a test text
+      </span>
+    </span>
+  </div>
+  <div
+    data-suir-portal="true"
+  >
+    <div
+      style="display: flex; position: absolute; left: 0px; top: auto; z-index: auto; right: auto; bottom: 0px; transform: translate(0px, 0px);"
+    >
+      <div
+        class="ui top center popup transition visible"
+        style="left: auto; right: auto; position: initial;"
+      >
+        <span>
+          <span
+            class="iconfont icon-success-circle _icon-success_e418e8"
+            customclass="_icon-success_e418e8"
+            type="success-circle"
+          />
+          Copy success
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`CopyToClipboard hover snapshot 1`] = `
+<body>
+  <div>
+    <span>
+      <span>
+        this is a test text
+      </span>
+    </span>
+  </div>
+  <div
+    data-suir-portal="true"
+  >
+    <div
+      style="display: flex; position: absolute; left: 0px; top: auto; z-index: auto; right: auto; bottom: 0px; transform: translate(0px, 0px);"
+    >
+      <div
+        class="ui top center popup transition visible"
+        style="left: auto; right: auto; position: initial;"
+      >
+        <span>
+          Click to copy
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`CopyToClipboard hover snapshot 2`] = `
+<body>
+  <div>
+    <span>
+      <span>
+        this is a test text
+      </span>
+    </span>
+  </div>
+</body>
+`;
+
+exports[`CopyToClipboard snapshot 1`] = `
+<DocumentFragment>
+  <span>
+    <span>
+      this is a test text
+    </span>
+  </span>
+</DocumentFragment>
+`;

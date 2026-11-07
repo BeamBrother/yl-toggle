@@ -1,0 +1,276 @@
+.metrics {
+  background: #fff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.01), 0 3px 6px 3px rgba(0, 0, 0, 0.01), 0 2px 6px 0 rgba(0, 0, 0, 0.03);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.loading-box {
+  min-height: 200px;
+  position: relative;
+}
+
+.angle-down {
+  position: absolute;
+  right: 10px;
+  color: #74788d;
+  top: 9px;
+}
+
+.label {
+  font-size: 13px !important;
+  color: #212529 !important;
+}
+
+.label-required {
+  color: #ff5f57;
+  font-size: 20px;
+  vertical-align: middle;
+  margin-right: 4px;
+  height: 16px;
+  display: inline-block;
+}
+
+.field {
+  display: flex;
+  margin-bottom: 0 !important;
+  width: 100% !important;
+}
+
+.field-middle {
+  margin-right: 12px !important;
+}
+
+.field-right {
+  flex: 1;
+}
+
+.row {
+  background: #fafafa;
+  border-radius: 12px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  padding: 12px !important;
+  display: block !important;
+
+  :global {
+    .ui.form .field {
+      margin-bottom: 0 !important;
+    }
+  }
+}
+
+.row:last-child {
+  margin-bottom: 0;
+}
+
+.title {
+  font-size: 12px;
+  color: #212529;
+  font-weight: 500;
+  font-family: PingFangSC-Medium;
+  line-height: 26px;
+  margin-left: 12px;
+  margin-top: 12px;
+}
+
+.event-title {
+  display: inline-flex;
+  font-size: 12px;
+  line-height: 26px;
+}
+
+.icon-connect-sdk {
+  font-size: 14px !important;
+  margin-right: 4px;
+}
+
+.event-track {
+  color: #556ee6;
+  position: absolute;
+  right: 24px;
+  cursor: pointer;
+}
+
+.save {
+  margin-top: 16px;
+  margin-left: 24px;
+}
+
+.column {
+  position: relative;
+  padding: 12px !important;
+
+  :global {
+    .field {
+      margin-bottom: 0 !important;
+    }
+  }
+}
+
+.btn {
+  width: 80px;
+}
+
+.icon-question {
+  vertical-align: middle;
+  margin-left: 4px;
+  color: #74788d;
+}
+
+.tip-text {
+  color: #74788d;
+  font-size: 12px;
+  margin-left: 12px;
+}
+
+.error-text {
+  color: #f46a6a;
+  font-size: 12px;
+  position: relative;
+  margin-left: 12px;
+}
+
+.error-text-url {
+  color: #f46a6a;
+  font-size: 12px;
+  margin-left: 12px;
+}
+
+.error-text-event {
+  color: #f46a6a;
+  font-size: 12px;
+  margin-left: 26px;
+}
+
+.divider {
+  width: 150px;
+  height: 1px;
+  background: rgba(206, 212, 218, 0.6);
+  margin: 8px 0;
+}
+
+.warning-circle {
+  font-size: 12px !important;
+  color: #ffc300;
+  margin-left: 12px;
+  margin-right: 4px;
+}
+
+.available-sdk {
+  font-size: 12px;
+  color: #d48806;
+}
+
+.metric-explanation {
+  font-size: 12px;
+  color: #556ee6;
+  text-align: right;
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+.formula {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #212529;
+  margin-left: 88px;
+}
+
+.formula-label {
+  margin-right: 12px;
+}
+
+.molecular {
+  text-align: center;
+  font-size: 12px;
+  color: #495057;
+  line-height: 1;
+  height: 12px;
+}
+
+.denominator {
+  text-align: center;
+  font-size: 12px;
+  color: #495057;
+  line-height: 1;
+}
+
+.test-url-popup {
+  width: 320px;
+  height: 120px;
+  padding: 16px 24px !important;
+
+  &-title {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.87);
+    line-height: 24px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 300px;
+  }
+
+  &-divider {
+    margin-right: 4px;
+  }
+
+  &-url {
+    width: 100%;
+    margin-top: 8px !important;
+  }
+
+  &-result {
+    font-size: 14px;
+    color: #f46a6a;
+  }
+}
+
+.test-url-text {
+  font-size: 12px;
+  color: #556ee6;
+  text-align: right;
+  cursor: pointer;
+}
+
+.test-url-success {
+  font-size: 14px;
+  color: #74788d;
+  margin-top: 4px;
+}
+
+.test-url-success-icon {
+  color: #00b365 !important;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.test-url-error {
+  font-size: 14px;
+  color: #f46a6a;
+  margin-top: 4px;
+}
+
+.test-url-error-icon {
+  color: #f5483b !important;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.joyride-content {
+  font-size: 14px;
+  color: #74788d;
+  margin-top: 7px;
+}
+
+.joyride-tips {
+  background: #f8f9fa;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #74788d;
+  padding: 7px 9px;
+  margin-top: 12px;
+}

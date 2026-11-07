@@ -1,0 +1,68 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PutAwayMenu snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="_putaway_cbd81d"
+  >
+    <span
+      class="iconfont icon-type _iconfont_cbd81d"
+      customclass="_iconfont_cbd81d"
+      type="type"
+    />
+  </div>
+</DocumentFragment>
+`;
+
+exports[`PutAwayMenu snapshot 2`] = `
+<DocumentFragment>
+  <div
+    class="_putaway_cbd81d"
+  >
+    <span
+      class="iconfont icon-type _iconfont_cbd81d"
+      customclass="_iconfont_cbd81d"
+      type="type"
+    />
+    <span
+      class="_menu_cbd81d"
+    >
+      title
+    </span>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`hover PutAwayMenu 1`] = `
+<body>
+  <div>
+    <div
+      class="_putaway_cbd81d"
+    >
+      <span
+        class="iconfont icon-type _iconfont_cbd81d"
+        customclass="_iconfont_cbd81d"
+        type="type"
+      />
+    </div>
+  </div>
+  <div
+    data-suir-portal="true"
+  >
+    <div
+      style="display: flex; position: absolute; left: 0px; top: 0px; z-index: auto; right: auto; bottom: auto; transform: translate(20px, 0px);"
+    >
+      <div
+        class="ui right center inverted popup transition visible"
+        style="left: auto; right: auto; position: initial; opacity: 0.8;"
+      >
+        <div
+          class="content"
+        >
+          title
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

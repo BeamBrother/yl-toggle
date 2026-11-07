@@ -1,0 +1,147 @@
+.result {
+  background: #fff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.01), 0 3px 6px 3px rgba(0, 0, 0, 0.01), 0 2px 6px 0 rgba(0, 0, 0, 0.03);
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 12px;
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.start {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  height: 28px;
+}
+
+.start-time {
+  margin-right: 16px;
+  font-size: 13px;
+  color: #74788d;
+}
+
+.tips {
+  background: #fffae0;
+  line-height: 18px;
+  font-size: 13px;
+  color: #592d00;
+  padding: 7px 14px;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.warning-circle {
+  color: #ffc300;
+  margin-right: 10px;
+  position: relative;
+  top: 2px;
+  font-size: 17px !important;
+}
+
+.result-content {
+  margin-top: 16px;
+}
+
+.result-content-header {
+  margin-bottom: 12px;
+}
+
+.analysis-chart {
+  margin-top: 16px;
+  background: #fafafa;
+  border-radius: 12px;
+}
+
+.divider {
+  margin: 0 6px;
+}
+
+.no-data {
+  padding-bottom: 100px;
+}
+
+.modal-header {
+  display: flex;
+}
+
+.modal-warning-circle {
+  font-size: 20px !important;
+  color: #f5483b;
+  padding: 0 10px;
+}
+
+.modal-header-text {
+  font-family: PingFangSC-Medium;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.87);
+  margin-top: 4px;
+}
+
+.table-header {
+  align-items: center;
+  margin-right: 24px;
+
+  & > .metric-name {
+    font-size: 13px;
+    color: #212529;
+    line-height: 20px;
+    height: 20px;
+  }
+
+  & > .type {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #495057;
+    line-height: 24px;
+    height: 32px;
+    background: rgba(33, 37, 41, 0.04);
+  }
+}
+
+.datetime {
+  position: relative;
+}
+
+.datetime-calendar {
+  position: absolute;
+  right: 10px;
+  top: 28px;
+}
+
+.datetime-label {
+  font-size: 13px !important;
+  color: #212529 !important;
+}
+
+.datetime-divider {
+  margin-top: 24px;
+  color: #adb5bc;
+  font-size: 20px;
+}
+
+.diagnose {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.diagnose-result {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #353a40;
+}
+
+.diagnose-reason {
+  color: #556ee6;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+.btn-loader {
+  margin-right: 5px !important;
+}
+
+.btn-text {
+  vertical-align: middle;
+}

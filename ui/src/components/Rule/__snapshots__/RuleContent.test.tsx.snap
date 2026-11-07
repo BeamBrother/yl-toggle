@@ -1,0 +1,1249 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RuleContent opt 1`] = `
+<body>
+  <div>
+    <div
+      data-rbd-droppable-context-id="1"
+      data-rbd-droppable-id="droppable"
+    >
+      <div>
+        <div
+          aria-describedby="rbd-hidden-text-1-hidden-text-3"
+          data-rbd-drag-handle-context-id="1"
+          data-rbd-drag-handle-draggable-id="rule_testId1"
+          data-rbd-draggable-context-id="1"
+          data-rbd-draggable-id="rule_testId1"
+          draggable="false"
+          role="button"
+          tabindex="0"
+        >
+          <div
+            class="_rule_b24de5"
+          >
+            <div
+              class="accordion ui"
+            >
+              <div
+                class="active title _rule-accordion-title_b24de5"
+              >
+                <span
+                  class="iconfont icon-angle-down _icon-accordion_b24de5"
+                  customclass="_icon-accordion_b24de5"
+                  type="angle-down"
+                />
+                <div
+                  class="_rule-title_b24de5"
+                >
+                  <div
+                    class="equal width fields _rule-title-input_b24de5"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <div
+                        class="field _rule-input_b24de5"
+                      >
+                        <div
+                          class="ui input"
+                        >
+                          <input
+                            placeholder="Rule 1"
+                            type="text"
+                            value=""
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <span
+                    class="_rule-title-operation_b24de5"
+                  >
+                    <span
+                      class="iconfont icon-drag _icon-drag_b24de5"
+                      customclass="_icon-drag_b24de5"
+                      type="drag"
+                    />
+                    <span
+                      class="iconfont icon-archive _icon-archive_b24de5"
+                      customclass="_icon-archive_b24de5"
+                      type="archive"
+                    />
+                  </span>
+                </div>
+              </div>
+              <div
+                class="content active"
+              >
+                <div
+                  class="_rule-content_b24de5"
+                >
+                  <div
+                    class="_rule-add-one_b24de5"
+                    name="rule_testId1_add"
+                  >
+                    <div>
+                      <button
+                        class="ui secondary button _rule-add-btn_b24de5"
+                        type="button"
+                      >
+                        <span
+                          class="iconfont icon-add _iconfont_b24de5"
+                          customclass="_iconfont_b24de5"
+                          type="add"
+                        />
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    class="_serve_2e8c38"
+                  >
+                    <div
+                      class="_serve-select_2e8c38"
+                    >
+                      <span
+                        class="_serve-text_2e8c38"
+                      >
+                        <span
+                          class="_label-required_2e8c38"
+                        >
+                          *
+                        </span>
+                        Serve
+                      </span>
+                      <div
+                        class="field _serve-form-field_2e8c38"
+                        style="width: 308px;"
+                      >
+                        <div
+                          aria-expanded="false"
+                          class="ui floating selection dropdown _serve-dropdown_2e8c38"
+                          name="rule_testId1_serve"
+                          role="listbox"
+                          style="width: 308px;"
+                          tabindex="0"
+                        >
+                          <div
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="divider text"
+                            role="alert"
+                          >
+                            Please select serve
+                          </div>
+                          <span
+                            class="iconfont icon-angle-down _angle-down_2e8c38"
+                            customclass="_angle-down_2e8c38"
+                            type="angle-down"
+                          />
+                          <div
+                            class="menu transition"
+                          >
+                            <div
+                              aria-checked="false"
+                              aria-selected="true"
+                              class="selected item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <div
+                                class="text _dropdown-variation_2e8c38"
+                              >
+                                <span
+                                  class="_dropdown-variation-color_2e8c38"
+                                  style="background: rgb(85, 110, 230);"
+                                />
+                                <span
+                                  class="_dropdown-variation-text_2e8c38"
+                                >
+                                  name
+                                </span>
+                              </div>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                a percentage rollout
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      Í
+    </div>
+  </div>
+  <div
+    aria-atomic="true"
+    aria-live="assertive"
+    id="rbd-announcement-1"
+    style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0px; padding: 0px; overflow: hidden; clip: rect(0px); clip-path: inset(100%);"
+  />
+  <div
+    id="rbd-hidden-text-1-hidden-text-3"
+    style="display: none;"
+  >
+    
+  Press space bar to start a drag.
+  When dragging you can use the arrow keys to move the item around and escape to cancel.
+  Some screen readers may require you to be in focus mode or to use your pass through key
+
+  </div>
+  <div
+    data-suir-portal="true"
+  >
+    <div
+      style="display: flex; position: absolute; left: auto; top: 0px; z-index: auto; right: 0px; bottom: auto; transform: translate(0px, 0px);"
+    >
+      <div
+        class="ui bottom right basic popup transition visible _popup_b24de5"
+        style="left: auto; right: auto; position: initial;"
+      >
+        <div
+          class="_menu_b24de5"
+        >
+          <div
+            class="_menu-item-centering_b24de5"
+          >
+            string
+          </div>
+          <div
+            class="_menu-item-centering_b24de5"
+          >
+            number
+          </div>
+          <div
+            class="_menu-item-centering_b24de5"
+          >
+            datetime
+          </div>
+          <div
+            class="_menu-item-centering_b24de5"
+          >
+            semver
+          </div>
+          <div
+            class="_menu-item-centering_b24de5"
+          >
+            segment
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`RuleContent opt 2`] = `
+<div>
+  <div>
+    <div
+      data-rbd-droppable-context-id="1"
+      data-rbd-droppable-id="droppable"
+    >
+      <div>
+        <div
+          aria-describedby="rbd-hidden-text-1-hidden-text-3"
+          data-rbd-drag-handle-context-id="1"
+          data-rbd-drag-handle-draggable-id="rule_testId1"
+          data-rbd-draggable-context-id="1"
+          data-rbd-draggable-id="rule_testId1"
+          draggable="false"
+          role="button"
+          tabindex="0"
+        >
+          <div
+            class="_rule_b24de5"
+          >
+            <div
+              class="accordion ui"
+            >
+              <div
+                class="active title _rule-accordion-title_b24de5"
+              >
+                <span
+                  class="iconfont icon-angle-down _icon-accordion_b24de5"
+                  customclass="_icon-accordion_b24de5"
+                  type="angle-down"
+                />
+                <div
+                  class="_rule-title_b24de5"
+                >
+                  <div
+                    class="equal width fields _rule-title-input_b24de5"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <div
+                        class="field _rule-input_b24de5"
+                      >
+                        <div
+                          class="ui input"
+                        >
+                          <input
+                            placeholder="Rule 1"
+                            type="text"
+                            value=""
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <span
+                    class="_rule-title-operation_b24de5"
+                  >
+                    <span
+                      class="iconfont icon-drag _icon-drag_b24de5"
+                      customclass="_icon-drag_b24de5"
+                      type="drag"
+                    />
+                    <span
+                      class="iconfont icon-archive _icon-archive_b24de5"
+                      customclass="_icon-archive_b24de5"
+                      type="archive"
+                    />
+                  </span>
+                </div>
+              </div>
+              <div
+                class="content active"
+              >
+                <div
+                  class="_rule-content_b24de5"
+                >
+                  <div
+                    class="_rule-item_b24de5"
+                  >
+                    <span
+                      class="_rule-item-prefix_b24de5 _rule-item-first_b24de5"
+                    >
+                      <span
+                        class="_rule-item-text_b24de5"
+                      >
+                        If
+                      </span>
+                    </span>
+                    <div
+                      class="_rule-item-type_b24de5"
+                    >
+                      <div
+                        class="_rule-item-type-box_b24de5"
+                      >
+                        <div
+                          class="_rule-item-type-text_b24de5"
+                        >
+                          number
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="equal width fields _rule-item-left_b24de5"
+                    >
+                      <div
+                        class="field _rule-item-subject_b24de5"
+                      >
+                        <div
+                          aria-expanded="false"
+                          class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
+                          name="test-name-1544"
+                          role="combobox"
+                        >
+                          <input
+                            aria-autocomplete="list"
+                            autocomplete="off"
+                            class="search"
+                            tabindex="0"
+                            type="text"
+                            value=""
+                          />
+                          <div
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="divider default text"
+                            role="alert"
+                          >
+                            Enter a subject
+                          </div>
+                          <div
+                            class="menu transition"
+                            role="listbox"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="field _rule-item-operator_b24de5"
+                      >
+                        <div
+                          aria-expanded="false"
+                          class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
+                          name="test-name-2057"
+                          role="listbox"
+                          tabindex="0"
+                        >
+                          <div
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="divider default text"
+                            role="alert"
+                          >
+                            Select an operator
+                          </div>
+                          <span
+                            class="iconfont icon-angle-down _angle-down_b24de5"
+                            customclass="_angle-down_b24de5"
+                            type="angle-down"
+                          />
+                          <div
+                            class="menu transition"
+                          >
+                            <div
+                              aria-checked="false"
+                              aria-selected="true"
+                              class="selected item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                =
+                              </span>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                !=
+                              </span>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                &lt;
+                              </span>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                &lt;=
+                              </span>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                &gt;
+                              </span>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                &gt;=
+                              </span>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                between
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="six wide field"
+                      >
+                        <div
+                          aria-expanded="false"
+                          class="ui floating multiple search selection dropdown"
+                          name="test-name-3552"
+                          role="combobox"
+                        >
+                          <input
+                            aria-autocomplete="list"
+                            autocomplete="off"
+                            class="search"
+                            tabindex="0"
+                            type="text"
+                            value=""
+                          />
+                          <span
+                            class="sizer"
+                          />
+                          <div
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="divider default text"
+                            role="alert"
+                          >
+                            Enter some values
+                          </div>
+                          <div
+                            aria-multiselectable="true"
+                            class="menu transition"
+                            role="listbox"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <span
+                      class="iconfont icon-minus _icon-minus_b24de5"
+                      customclass="_icon-minus_b24de5"
+                      type="minus"
+                    />
+                  </div>
+                  <div
+                    class="_rule-item_b24de5"
+                  >
+                    <span
+                      class="_rule-item-prefix_b24de5"
+                    >
+                      <span
+                        class="_rule-item-text_b24de5"
+                      >
+                        and
+                      </span>
+                    </span>
+                    <div
+                      class="_rule-item-type_b24de5"
+                    >
+                      <div
+                        class="_rule-item-type-box_b24de5"
+                      >
+                        <div
+                          class="_rule-item-type-text_b24de5"
+                        >
+                          semver
+                          <span
+                            class="iconfont icon-question _icon-info_b24de5"
+                            customclass="_icon-info_b24de5"
+                            type="question"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="equal width fields _rule-item-left_b24de5"
+                    >
+                      <div
+                        class="field _rule-item-subject_b24de5"
+                      >
+                        <div
+                          aria-expanded="false"
+                          class="ui floating search selection dropdown _rule-item-subject-dropdown_b24de5"
+                          name="test-name-4643"
+                          role="combobox"
+                        >
+                          <input
+                            aria-autocomplete="list"
+                            autocomplete="off"
+                            class="search"
+                            tabindex="0"
+                            type="text"
+                            value=""
+                          />
+                          <div
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="divider default text"
+                            role="alert"
+                          >
+                            Enter a subject
+                          </div>
+                          <div
+                            class="menu transition"
+                            role="listbox"
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="field _rule-item-operator_b24de5"
+                      >
+                        <div
+                          aria-expanded="false"
+                          class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
+                          name="test-name-5156"
+                          role="listbox"
+                          tabindex="0"
+                        >
+                          <div
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="divider default text"
+                            role="alert"
+                          >
+                            Select an operator
+                          </div>
+                          <span
+                            class="iconfont icon-angle-down _angle-down_b24de5"
+                            customclass="_angle-down_b24de5"
+                            type="angle-down"
+                          />
+                          <div
+                            class="menu transition"
+                          >
+                            <div
+                              aria-checked="false"
+                              aria-selected="true"
+                              class="selected item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                =
+                              </span>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                !=
+                              </span>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                &lt;
+                              </span>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                &lt;=
+                              </span>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                &gt;
+                              </span>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                &gt;=
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="six wide field"
+                      >
+                        <div
+                          aria-expanded="false"
+                          class="ui floating multiple search selection dropdown"
+                          name="test-name-6508"
+                          role="combobox"
+                        >
+                          <input
+                            aria-autocomplete="list"
+                            autocomplete="off"
+                            class="search"
+                            tabindex="0"
+                            type="text"
+                            value=""
+                          />
+                          <span
+                            class="sizer"
+                          />
+                          <div
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="divider default text"
+                            role="alert"
+                          >
+                            Enter some values
+                          </div>
+                          <div
+                            aria-multiselectable="true"
+                            class="menu transition"
+                            role="listbox"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <span
+                      class="iconfont icon-minus _icon-minus_b24de5"
+                      customclass="_icon-minus_b24de5"
+                      type="minus"
+                    />
+                  </div>
+                  <div
+                    class="_rule-item_b24de5"
+                  >
+                    <span
+                      class="_rule-item-prefix_b24de5"
+                    >
+                      <span
+                        class="_rule-item-text_b24de5"
+                      >
+                        and
+                      </span>
+                    </span>
+                    <div
+                      class="_rule-item-type_b24de5"
+                    >
+                      <div
+                        class="_rule-item-type-box_b24de5"
+                      >
+                        <div
+                          class="_rule-item-type-text_b24de5"
+                        >
+                          segment
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="equal width fields _rule-item-left_b24de5"
+                    >
+                      <div
+                        class="field _rule-item-subject_b24de5"
+                      >
+                        <div
+                          aria-disabled="true"
+                          aria-expanded="false"
+                          class="ui disabled floating search selection dropdown _rule-item-subject-dropdown_b24de5"
+                          name="test-name-7490"
+                          role="combobox"
+                        >
+                          <input
+                            aria-autocomplete="list"
+                            autocomplete="off"
+                            class="search"
+                            tabindex="-1"
+                            type="text"
+                            value=""
+                          />
+                          <div
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="divider text"
+                            role="alert"
+                          >
+                            user
+                          </div>
+                          <div
+                            class="menu transition"
+                            role="listbox"
+                          >
+                            <div
+                              aria-checked="true"
+                              aria-selected="true"
+                              class="active selected item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                user
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="field _rule-item-operator_b24de5"
+                      >
+                        <div
+                          aria-expanded="false"
+                          class="ui floating selection dropdown _rule-item-operator-dropdown_b24de5"
+                          name="test-name-8169"
+                          role="listbox"
+                          tabindex="0"
+                        >
+                          <div
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="divider default text"
+                            role="alert"
+                          >
+                            Select an operator
+                          </div>
+                          <span
+                            class="iconfont icon-angle-down _angle-down_b24de5"
+                            customclass="_angle-down_b24de5"
+                            type="angle-down"
+                          />
+                          <div
+                            class="menu transition"
+                          >
+                            <div
+                              aria-checked="false"
+                              aria-selected="true"
+                              class="selected item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                is in segments
+                              </span>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                is not in segments
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        class="six wide field"
+                      >
+                        <div
+                          aria-expanded="true"
+                          class="ui active visible floating multiple search selection dropdown"
+                          name="test-name-8988"
+                          role="combobox"
+                        >
+                          <input
+                            aria-autocomplete="list"
+                            autocomplete="off"
+                            class="search"
+                            tabindex="0"
+                            type="text"
+                            value=""
+                          />
+                          <span
+                            class="sizer"
+                          />
+                          <div
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="divider default text"
+                            role="alert"
+                          >
+                            Please select
+                          </div>
+                          <span
+                            class="iconfont icon-angle-down _angle-down_b24de5"
+                            customclass="_angle-down_b24de5"
+                            type="angle-down"
+                          />
+                          <div
+                            aria-multiselectable="true"
+                            class="visible menu transition"
+                            role="listbox"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <span
+                      class="iconfont icon-minus _icon-minus_b24de5"
+                      customclass="_icon-minus_b24de5"
+                      type="minus"
+                    />
+                  </div>
+                  <div
+                    class="_rule-add_b24de5"
+                    name="rule_testId1_add"
+                  >
+                    <div>
+                      <button
+                        class="ui secondary button _rule-add-btn_b24de5"
+                        type="button"
+                      >
+                        <span
+                          class="iconfont icon-add _iconfont_b24de5"
+                          customclass="_iconfont_b24de5"
+                          type="add"
+                        />
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    class="_serve_2e8c38"
+                  >
+                    <div
+                      class="_serve-select_2e8c38"
+                    >
+                      <span
+                        class="_serve-text_2e8c38"
+                      >
+                        <span
+                          class="_label-required_2e8c38"
+                        >
+                          *
+                        </span>
+                        Serve
+                      </span>
+                      <div
+                        class="field _serve-form-field_2e8c38"
+                        style="width: 308px;"
+                      >
+                        <div
+                          aria-expanded="false"
+                          class="ui floating selection dropdown _serve-dropdown_2e8c38"
+                          name="test-name-10229"
+                          role="listbox"
+                          style="width: 308px;"
+                          tabindex="0"
+                        >
+                          <div
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="divider text"
+                            role="alert"
+                          >
+                            Please select serve
+                          </div>
+                          <span
+                            class="iconfont icon-angle-down _angle-down_2e8c38"
+                            customclass="_angle-down_2e8c38"
+                            type="angle-down"
+                          />
+                          <div
+                            class="menu transition"
+                          >
+                            <div
+                              aria-checked="false"
+                              aria-selected="true"
+                              class="selected item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <div
+                                class="text _dropdown-variation_2e8c38"
+                              >
+                                <span
+                                  class="_dropdown-variation-color_2e8c38"
+                                  style="background: rgb(85, 110, 230);"
+                                />
+                                <span
+                                  class="_dropdown-variation-text_2e8c38"
+                                >
+                                  name
+                                </span>
+                              </div>
+                            </div>
+                            <div
+                              aria-checked="false"
+                              aria-selected="false"
+                              class="item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                a percentage rollout
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      Í
+    </div>
+  </div>
+  <div
+    aria-atomic="true"
+    aria-live="assertive"
+    id="rbd-announcement-1"
+    style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0px; padding: 0px; overflow: hidden; clip: rect(0px); clip-path: inset(100%);"
+  />
+  <div
+    id="rbd-hidden-text-1-hidden-text-3"
+    style="display: none;"
+  >
+    
+  Press space bar to start a drag.
+  When dragging you can use the arrow keys to move the item around and escape to cancel.
+  Some screen readers may require you to be in focus mode or to use your pass through key
+
+  </div>
+</div>
+`;
+
+exports[`RuleContent snapshot 1`] = `
+<DocumentFragment>
+  <div
+    data-rbd-droppable-context-id="0"
+    data-rbd-droppable-id="droppable"
+  >
+    <div>
+      <div
+        aria-describedby="rbd-hidden-text-0-hidden-text-0"
+        data-rbd-drag-handle-context-id="0"
+        data-rbd-drag-handle-draggable-id="rule_testId1"
+        data-rbd-draggable-context-id="0"
+        data-rbd-draggable-id="rule_testId1"
+        draggable="false"
+        role="button"
+        tabindex="0"
+      >
+        <div
+          class="_rule_b24de5"
+        >
+          <div
+            class="accordion ui"
+          >
+            <div
+              class="title _rule-accordion-title_b24de5"
+            >
+              <span
+                class="iconfont icon-angle-right _icon-accordion_b24de5"
+                customclass="_icon-accordion_b24de5"
+                type="angle-right"
+              />
+              <div
+                class="_rule-title_b24de5"
+              >
+                <div
+                  class="equal width fields _rule-title-input_b24de5"
+                >
+                  <div
+                    class="field"
+                  >
+                    <div
+                      class="field _rule-input_b24de5"
+                    >
+                      <div
+                        class="ui input"
+                      >
+                        <input
+                          placeholder="Rule 1"
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="content"
+            >
+              <div
+                class="_rule-content_b24de5"
+              >
+                <div
+                  class="_rule-add-one_b24de5"
+                  name="rule_testId1_add"
+                >
+                  <div>
+                    <button
+                      class="ui secondary button _rule-add-btn_b24de5"
+                      type="button"
+                    >
+                      <span
+                        class="iconfont icon-add _iconfont_b24de5"
+                        customclass="_iconfont_b24de5"
+                        type="add"
+                      />
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    Í
+  </div>
+</DocumentFragment>
+`;
+
+exports[`RuleContent snapshot 2`] = `
+<DocumentFragment>
+  <div
+    data-rbd-droppable-context-id="0"
+    data-rbd-droppable-id="droppable"
+  >
+    <div>
+      <div
+        data-rbd-draggable-context-id="0"
+        data-rbd-draggable-id="rule_testId1"
+      >
+        <div
+          class="_rule_b24de5"
+        >
+          <div
+            class="accordion ui"
+          >
+            <div
+              class="active title _rule-accordion-title_b24de5"
+            >
+              <span
+                class="iconfont icon-angle-down _icon-accordion_b24de5"
+                customclass="_icon-accordion_b24de5"
+                type="angle-down"
+              />
+              <div
+                class="_rule-title_b24de5"
+              >
+                <div
+                  class="equal width fields _rule-title-input_b24de5"
+                >
+                  <div
+                    class="field"
+                  >
+                    <div
+                      class="disabled field _rule-input_b24de5"
+                    >
+                      <div
+                        class="ui disabled input"
+                      >
+                        <input
+                          disabled=""
+                          placeholder="Rule 1"
+                          tabindex="-1"
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="content active"
+            >
+              <div
+                class="_rule-content_b24de5"
+              >
+                <div
+                  class="_rule-add-one_b24de5"
+                  name="rule_testId1_add"
+                >
+                  <div>
+                    <button
+                      class="ui secondary disabled button _rule-add-btn_b24de5"
+                      disabled=""
+                      tabindex="-1"
+                      type="button"
+                    >
+                      <span
+                        class="iconfont icon-add _iconfont_b24de5"
+                        customclass="_iconfont_b24de5"
+                        type="add"
+                      />
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    Í
+  </div>
+</DocumentFragment>
+`;

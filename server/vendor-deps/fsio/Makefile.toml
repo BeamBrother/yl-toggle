@@ -1,0 +1,20 @@
+
+[config]
+additional_profiles = [
+    "docs-all-modification-tasks",
+    "ci-coverage-tasks",
+    "ci-all-build-tasks",
+    "ci-static-code-analysis-tasks",
+    "publish-pre-cleanup"
+]
+
+[tasks.clean-target-test-directory]
+script_runner = "@duckscript"
+script = [
+    "rm -Rf ./target/__test"
+]
+
+[tasks.pre-test]
+dependencies = [
+    "clean-target-test-directory"
+]

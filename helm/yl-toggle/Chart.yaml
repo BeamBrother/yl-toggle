@@ -1,0 +1,8 @@
+apiVersion: v2
+appVersion: "3.0.0"
+description: A Helm chart for yl-toggle feature management service
+name: yl-toggle
+version: 0.4.0
+home: https://github.com/yl-toggle/yl-toggle
+sources:
+  - https://github.com/yl-toggle/yl-toggle

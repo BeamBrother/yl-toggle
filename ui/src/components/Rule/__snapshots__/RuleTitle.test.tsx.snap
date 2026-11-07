@@ -1,0 +1,269 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RuleTitle opt 1`] = `
+<DocumentFragment>
+  <form
+    class="ui form"
+  >
+    <div
+      data-rbd-droppable-context-id="1"
+      data-rbd-droppable-id="droppable"
+    >
+      <div>
+        <div
+          aria-describedby="rbd-hidden-text-1-hidden-text-3"
+          data-rbd-drag-handle-context-id="1"
+          data-rbd-drag-handle-draggable-id="rule_test_id"
+          data-rbd-draggable-context-id="1"
+          data-rbd-draggable-id="rule_test_id"
+          draggable="false"
+          role="button"
+          tabindex="0"
+        >
+          <div
+            class="_rule_b24de5"
+          >
+            <div
+              class="accordion ui"
+            >
+              <div
+                class="title _rule-accordion-title_b24de5"
+              >
+                <span
+                  class="iconfont icon-angle-right _icon-accordion_b24de5"
+                  customclass="_icon-accordion_b24de5"
+                  type="angle-right"
+                />
+                <div
+                  class="_rule-title_b24de5"
+                >
+                  <div
+                    class="equal width fields _rule-title-input_b24de5"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <div
+                        class="field _rule-input_b24de5"
+                      >
+                        <div
+                          class="ui input"
+                        >
+                          <input
+                            placeholder="Rule 1"
+                            type="text"
+                            value=""
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <span
+                    class="_rule-title-operation_b24de5"
+                  >
+                    <span
+                      class="iconfont icon-drag _icon-drag_b24de5"
+                      customclass="_icon-drag_b24de5"
+                      type="drag"
+                    />
+                    <span
+                      class="iconfont icon-archive _icon-archive_b24de5"
+                      customclass="_icon-archive_b24de5"
+                      type="archive"
+                    />
+                  </span>
+                </div>
+              </div>
+              <div
+                class="content"
+              >
+                <div
+                  class="_rule-content_b24de5"
+                >
+                  <div
+                    class="_rule-add-one_b24de5"
+                    name="rule_test_id_add"
+                  >
+                    <div>
+                      <button
+                        class="ui secondary button _rule-add-btn_b24de5"
+                        type="button"
+                      >
+                        <span
+                          class="iconfont icon-add _iconfont_b24de5"
+                          customclass="_iconfont_b24de5"
+                          type="add"
+                        />
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    class="_serve_2e8c38"
+                  >
+                    <div
+                      class="_serve-select_2e8c38"
+                    >
+                      <span
+                        class="_serve-text_2e8c38"
+                      >
+                        <span
+                          class="_label-required_2e8c38"
+                        >
+                          *
+                        </span>
+                        Serve
+                      </span>
+                      <div
+                        class="field _serve-form-field_2e8c38"
+                        style="width: 308px;"
+                      >
+                        <div
+                          aria-expanded="false"
+                          class="ui floating selection dropdown _serve-dropdown_2e8c38"
+                          name="rule_test_id_serve"
+                          role="listbox"
+                          style="width: 308px;"
+                          tabindex="0"
+                        >
+                          <div
+                            aria-atomic="true"
+                            aria-live="polite"
+                            class="divider text"
+                            role="alert"
+                          >
+                            Please select serve
+                          </div>
+                          <span
+                            class="iconfont icon-angle-down _angle-down_2e8c38"
+                            customclass="_angle-down_2e8c38"
+                            type="angle-down"
+                          />
+                          <div
+                            class="menu transition"
+                          >
+                            <div
+                              aria-checked="false"
+                              aria-selected="true"
+                              class="selected item"
+                              role="option"
+                              style="pointer-events: all;"
+                            >
+                              <span
+                                class="text"
+                              >
+                                a percentage rollout
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      Í
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`RuleTitle snapshot 1`] = `
+<DocumentFragment>
+  <form
+    class="ui form"
+  >
+    <div
+      data-rbd-droppable-context-id="0"
+      data-rbd-droppable-id="droppable"
+    >
+      <div>
+        <div
+          aria-describedby="rbd-hidden-text-0-hidden-text-0"
+          data-rbd-drag-handle-context-id="0"
+          data-rbd-drag-handle-draggable-id="rule_test_id"
+          data-rbd-draggable-context-id="0"
+          data-rbd-draggable-id="rule_test_id"
+          draggable="false"
+          role="button"
+          tabindex="0"
+        >
+          <div
+            class="_rule_b24de5"
+          >
+            <div
+              class="accordion ui"
+            >
+              <div
+                class="title _rule-accordion-title_b24de5"
+              >
+                <span
+                  class="iconfont icon-angle-right _icon-accordion_b24de5"
+                  customclass="_icon-accordion_b24de5"
+                  type="angle-right"
+                />
+                <div
+                  class="_rule-title_b24de5"
+                >
+                  <div
+                    class="equal width fields _rule-title-input_b24de5"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <div
+                        class="field _rule-input_b24de5"
+                      >
+                        <div
+                          class="ui input"
+                        >
+                          <input
+                            placeholder="Rule 1"
+                            type="text"
+                            value=""
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="content"
+              >
+                <div
+                  class="_rule-content_b24de5"
+                >
+                  <div
+                    class="_rule-add-one_b24de5"
+                    name="rule_test_id_add"
+                  >
+                    <div>
+                      <button
+                        class="ui secondary button _rule-add-btn_b24de5"
+                        type="button"
+                      >
+                        <span
+                          class="iconfont icon-add _iconfont_b24de5"
+                          customclass="_iconfont_b24de5"
+                          type="add"
+                        />
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      Í
+    </div>
+  </form>
+</DocumentFragment>
+`;

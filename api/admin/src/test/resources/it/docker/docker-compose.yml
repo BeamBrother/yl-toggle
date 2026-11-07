@@ -1,0 +1,11 @@
+# database integration test
+
+services:
+  database:
+    image: mariadb:11.8.9
+    ports:
+      - "13308:13308"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=yl-toggle
+      - MYSQL_TCP_PORT=13308

@@ -1,0 +1,225 @@
+---
+sidebar_position: 1
+---
+
+# JavaScript SDK
+
+本文介绍如何在一个前端项目中使用 yl-toggle SDK。
+
+:::tip Notice
+JavaScript SDK 从 [ 2.0.1 ](https://www.npmjs.com/package/yl-toggle-client-sdk-js/v/2.0.1) 版本开始支持事件上报的能力。目前支持的事件包括：`页面事件（pageview）`、`点击事件（click）`和`自定义事件`。
+:::
+
+
+:::note SDK quick links
+除了本参考指南外，我们还提供源代码、API 参考文档和示例应用程序，相关链接如下所示：
+
+| **Resource**  | **Location**                                                 |
+| ------------- | ------------------------------------------------------------ |
+| SDK API 文档  | [ SDK API docs](https://yl-toggle.github.io/client-sdk-js/) |
+| GitHub 代码库 | [Client Side SDK for JavaScript](https://github.com/yl-toggle/client-sdk-js) |
+| 接入示例      | [Demo code](https://github.com/yl-toggle/client-sdk-js/blob/main/example/index.html) (HTML+JS) |
+| 已发布模块    | [npm](https://www.npmjs.com/package/yl-toggle-client-sdk-js) |
+
+:::
+
+## 快速尝试 Demo Code
+
+我们提供了一个可运行的演示代码，让您了解如何使用 yl-toggle SDK
+
+1. 首先需要选择通过连接哪个环境的yl-toggle来控制你的程序
+    * 可以使用我们提供的在线的[演示环境](https://yl-toggle.io/login)
+    * 也可以使用自己搭建的[docker环境](https://gitee.com/yl-toggle/yl-toggle)
+
+2. 下载此 repo 中的演示代码：
+
+```bash
+git clone https://gitee.com/yl-toggle/client-sdk-js.git
+cd client-sdk-js
+```
+
+3. 修改`example/index.html`程序中的链接信息。
+    * 对于在线演示环境:
+        * `remoteUrl` = "https://yl-toggle.io/server"
+        * `clientSdkKey`  请从如下界面中拷贝：
+
+      ![client_sdk_key snapshot](/client_sdk_key_snapshot_cn.png)
+    * 对于本地docker环境:
+        * `remoteUrl` = "http://YOUR_DOCKER_IP:4009/server"
+        * `clientSdkKey` = "client-25614c7e03e9cb49c0e96357b797b1e47e7f2dff"
+
+4. 运行程序。
+
+```
+// open example/index.html in browser
+```
+
+## 分步指南
+
+本指南将说明中如何在 JavaScript 应用程序中使用 yl-toggle 功能开关。
+
+### 步骤 1. 安装 JavaScript SDK
+
+首先，在您的应用程序中安装 yl-toggle SDK 作为依赖项。
+
+NPM：
+
+```shell
+npm install yl-toggle-client-sdk-js --save
+```
+
+或者通过CDN：
+
+```js
+<script type="text/javascript" src="https://unpkg.com/yl-toggle-client-sdk-js@latest/dist/yl-toggle-client-sdk-js.min.js"></script>
+```
+
+### 步骤 2. 创建一个 yl-toggle instance
+
+安装并导入 SDK 后，创建 yl-toggle sdk 的单个共享实例。
+
+NPM：
+
+```js
+const user = new YTUser();
+user.with("ATTRIBUTE_NAME_IN_RULE", VALUE_OF_ATTRIBUTE);
+
+const fp = new YlToggle({
+  remoteUrl: /* yl-toggle Server URI */,
+  clientSdkKey: /* clientSdkKey */,
+  user,
+});
+
+fp.start();
+```
+
+或者通过CDN：
+
+```js
+const user = new ylToggle.YTUser();
+user.with("ATTRIBUTE_NAME_IN_RULE", VALUE_OF_ATTRIBUTE);
+
+const fp = new ylToggle.YlToggle({
+    remoteUrl: /* yl-toggle Server URI */,
+    clientSdkKey: /* clientSdkKey */,
+    user,
+});
+
+fp.start();
+```
+
+### 步骤 3. 使用 yl-toggle 开关获取设置的值
+
+您可以使用 sdk 拿到对应开关名设置的值。
+
+```js
+fp.on('ready', function() {
+    const result = fp.boolValue('YOUR_TOGGLE_KEY', false);
+    if (result) {
+        do_some_thing();
+    } else {
+        do_other_thing();
+    }
+    const reason = fp.boolDetail('YOUR_TOGGLE_KEY', false);
+    console.log(reason);
+})
+```
+
+### 步骤 4. 单元测试 (可选)
+
+NPM：
+
+```js
+test("yl-toggle unit testing", (done) => {
+  let fp = yl-toggle.newForTest({ testToggle: true });
+  fp.start();
+
+  fp.on("ready", function () {
+    let t = fp.boolValue('YOUR_TOGGLE_KEY', false);
+    expect(t).toBe(true);
+    done();
+  });
+});
+```
+
+或者通过CDN：
+
+```js
+test("yl-toggle unit testing", (done) => {
+  let fp = ylToggle.YlToggle.newForTest({ testToggle: true });
+  fp.start();
+
+  fp.on("ready", function () {
+    let t = fp.boolValue('YOUR_TOGGLE_KEY', false);
+    expect(t).toBe(true);
+    done();
+  });
+});
+```
+
+## 事件上报
+
+:::note
+JavaScript SDK 从 2.0.1 版本开始支持事件上报的能力。
+:::
+
+JavaScript SDK 支持上报 `页面事件`，`点击事件`和`自定义事件`。
+
+其中，`页面事件`，`点击事件`由SDK自动触发，无须用户手动上报。
+
+### 上报自定义事件
+当SDK`ready`后，调用SDK提供的`track`方法上报自定义事件。
+
+
+```js
+fp.on('ready', function() {
+  const result = fp.boolValue('YOUR_TOGGLE_KEY', false);
+  if (result) {
+    do_some_thing();
+  } else {
+    do_other_thing();
+  }
+  const reason = fp.boolDetail('YOUR_TOGGLE_KEY', false);
+  console.log(reason);
+
+  // 上报自定义事件
+  // 第一个参数是自定义事件名
+  // 第二个可选参数是自定义指标值
+  // highlight-start
+  fp.track('YOUR_CUSTOM_EVENT_NAME_1');
+  fp.track('YOUR_CUSTOM_EVENT_NAME_2', 5.5);
+  // highlight-end
+})
+```
+
+
+## SDK初始化的参数
+
+| 选项            | 是否必填       | 默认值 | 描述                                                                                                                                      |
+|-------------------|----------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| remoteUrl         | 若其他URL未填写则必填 | n/a     | 远端 URL 用来获取开关和上报事件 |
+| togglesUrl        | no             | n/a     | 单独设置开关下发 URL，如果设置会忽略 remoteUrl前缀的地址 |
+| eventsUrl         | no             | n/a     | 单独设置事件上报 URL，如果设置会忽略 remoteUrl前缀的地址 |
+| clientSdkKey      | yes            | n/a     | SDK Key用来验证权限   |
+| user              | yes            | n/a     | User 对象可以通过With方法设置属性，用来根据属性判断开关规则 |
+| refreshInterval   | no            | 1000    | 设置 SDK 的开关和事件刷新时间   |
+| timeoutInterval   | no            | 10000    | 设置 SDK 初始化等待超时时间，超时后SDK将发布`error`事件   |
+
+
+## SDK发布的事件
+
+- **ready** - SDK成功从`Server端`获取开关后发布`ready`事件 
+- **cache_ready** - SDK成功从本地缓存`LocalStorage`中获取缓存开关后发布`cache_ready`事件，`cache_ready`发布时不会关心SDK是否成功`ready`
+- **error** - SDK无法从`Server端`成功获取开关，且超过超时时间，将发布`error`事件
+- **update** - 除了首次从`Server端`获取开关外，SDK后续通过定期轮询的方式从`Server端`成功获取开关后发布`update`事件
+- **fetch_toggle_error** - SDK无法从`Server端`拉取开关结果时，将发布`fetch_toggle_error`事件
+- **fetch_event_error** - SDK初始化过程中，无法从`Server端`拉取平台上配置的事件（自定义事件、点击事件、页面事件）时，将发布`fetch_event_error`事件
+
+
+## 集成测试
+
+我们对所有 SDK 提供了统一的集成测试。通过以下命令运行测试。
+
+```shell
+npm run test
+```

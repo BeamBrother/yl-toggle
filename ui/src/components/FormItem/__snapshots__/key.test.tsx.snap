@@ -1,0 +1,93 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Key snapshot 1`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="field"
+    >
+      <label>
+        <span
+          class="_label-required_063ad5"
+        >
+          *
+        </span>
+        Key
+        <span
+          class="iconfont icon-question _icon-question_063ad5"
+          customclass="_icon-question_063ad5"
+          type="question"
+        />
+      </label>
+      <div
+        class="field _input_063ad5"
+      >
+        <div
+          class="ui input"
+        >
+          <input
+            name="key"
+            placeholder="Please input key"
+            type="text"
+            value="test"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="_tip-text_063ad5"
+    >
+      Key can only contain letters, numbers, '.', '_' or '-'.
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Key snapshot 2`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="field"
+    >
+      <label>
+        <span
+          class="_label-required_063ad5"
+        >
+          *
+        </span>
+        Key
+        <span
+          class="iconfont icon-question _icon-question_063ad5"
+          customclass="_icon-question_063ad5"
+          type="question"
+        />
+      </label>
+      <div
+        class="error field _input_063ad5"
+      >
+        <div
+          class="ui input"
+        >
+          <input
+            aria-invalid="true"
+            name="key"
+            placeholder="Please input key"
+            type="text"
+            value="test"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="_error-text_063ad5"
+    >
+      error message
+    </div>
+    <div
+      class="_tip-text_063ad5"
+    >
+      Key can only contain letters, numbers, '.', '_' or '-'.
+    </div>
+  </div>
+</DocumentFragment>
+`;

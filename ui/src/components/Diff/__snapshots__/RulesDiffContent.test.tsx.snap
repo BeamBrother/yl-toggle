@@ -1,0 +1,1356 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RulesDiffContent snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="_rule-content_6397d7"
+  >
+    <div>
+      <div>
+        <table
+          class="ui small unstackable very basic table"
+        >
+          <thead
+            class="_table-header_a8252c"
+          >
+            <tr
+              class=""
+            >
+              <th
+                class=""
+                colspan="6"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                >
+                  Rule 1
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class=""
+          >
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                if
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  string
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  str
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  is not any of
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                  style="background: unset;"
+                >
+                  aaa
+                </div>
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: rgba(33, 37, 41, 0.08);"
+                >
+                  222
+                </div>
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                and
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  number
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  num
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  =
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: rgba(33, 37, 41, 0.08);"
+                >
+                  222
+                </div>
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-remove_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                and
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                  style="background: unset;"
+                >
+                  datetime
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                  style="background: unset;"
+                >
+                  time
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                  style="background: unset;"
+                >
+                  before
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                    style="background: unset;"
+                  >
+                    2023-01-10T10:14:06+08:00
+                  </div>
+                </div>
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                and
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  semver
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  ver
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  !=
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                    style="background: rgba(33, 37, 41, 0.08);"
+                  >
+                    0.0.1
+                  </div>
+                </div>
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                and
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  segment
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  is not in
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                    style="background: rgba(33, 37, 41, 0.08);"
+                  >
+                    _cn
+                  </div>
+                </div>
+              </td>
+              <td
+                class=""
+              />
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              />
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                Serve
+              </td>
+              <td
+                class=""
+                colspan="5"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                >
+                  0
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <table
+          class="ui small unstackable very basic table"
+        >
+          <thead
+            class="_table-header_a8252c"
+          >
+            <tr
+              class=""
+            >
+              <th
+                class=""
+                colspan="6"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                >
+                  Rule2
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class=""
+          >
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                if
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  string
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  str
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  is one of
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                    style="background: rgba(33, 37, 41, 0.08);"
+                  >
+                    ioio
+                  </div>
+                </div>
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-same_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                Serve
+              </td>
+              <td
+                class=""
+                colspan="5"
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                  >
+                    10000
+                  </div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                  >
+                    0
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div>
+        <table
+          class="ui small unstackable very basic table"
+        >
+          <thead
+            class="_table-header_a8252c"
+          >
+            <tr
+              class=""
+            >
+              <th
+                class=""
+                colspan="6"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                >
+                  Rule 1M
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class=""
+          >
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                if
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  string
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  str
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  is not any of
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: rgba(33, 37, 41, 0.08);"
+                >
+                  222
+                </div>
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                and
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  number
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  num
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  =
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: rgba(33, 37, 41, 0.08);"
+                >
+                  222
+                </div>
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                  style="background: unset;"
+                >
+                  333
+                </div>
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              />
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                and
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  semver
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  ver
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  !=
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                    style="background: rgba(33, 37, 41, 0.08);"
+                  >
+                    0.0.1
+                  </div>
+                </div>
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                and
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  segment
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  is not in
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                    style="background: rgba(33, 37, 41, 0.08);"
+                  >
+                    _cn
+                  </div>
+                </div>
+              </td>
+              <td
+                class=""
+              />
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-add_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                and
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                  style="background: unset;"
+                >
+                  string
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                  style="background: unset;"
+                >
+                  str2
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                  style="background: unset;"
+                >
+                  is not any of
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                    style="background: unset;"
+                  >
+                    333
+                  </div>
+                </div>
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-modify_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                Serve
+              </td>
+              <td
+                class=""
+                colspan="5"
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                  >
+                    5000
+                  </div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                  >
+                    5000
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <table
+          class="ui small unstackable very basic table"
+        >
+          <thead
+            class="_table-header_a8252c"
+          >
+            <tr
+              class=""
+            >
+              <th
+                class=""
+                colspan="6"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                >
+                  Rule2
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class=""
+          >
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                if
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  string
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  str
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                >
+                  is one of
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                    style="background: rgba(33, 37, 41, 0.08);"
+                  >
+                    ioio
+                  </div>
+                </div>
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-same_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                Serve
+              </td>
+              <td
+                class=""
+                colspan="5"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                >
+                  0
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`RulesDiffContent snapshot 2`] = `
+<DocumentFragment>
+  <div
+    class="_rule-content_6397d7"
+  >
+    <div>
+      <div
+        class="_empty_6397d7"
+      >
+        <table
+          class="ui small unstackable very basic table"
+        >
+          <thead
+            class="_table-header_a8252c"
+          >
+            <tr
+              class=""
+            >
+              <th
+                class=""
+                colspan="6"
+              />
+            </tr>
+          </thead>
+          <tbody
+            class=""
+          >
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              />
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-same_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                Serve
+              </td>
+              <td
+                class=""
+                colspan="5"
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                  >
+                    10000
+                  </div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                  >
+                    0
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div>
+        <table
+          class="ui small unstackable very basic table"
+        >
+          <thead
+            class="_table-header_a8252c _diff-item-add_a8252c"
+          >
+            <tr
+              class=""
+            >
+              <th
+                class=""
+                colspan="6"
+              >
+                Rule3
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class=""
+          >
+            <tr
+              class="_diff-item-add_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                if
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                  style="background: unset;"
+                >
+                  string
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                  style="background: unset;"
+                >
+                  str
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                  style="background: unset;"
+                >
+                  is one of
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                    style="background: unset;"
+                  >
+                    ioio
+                  </div>
+                </div>
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-add_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                Serve
+              </td>
+              <td
+                class=""
+                colspan="5"
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                  >
+                    10000
+                  </div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                  >
+                    0
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`RulesDiffContent snapshot 3`] = `
+<DocumentFragment>
+  <div
+    class="_rule-content_6397d7"
+  >
+    <div>
+      <div>
+        <table
+          class="ui small unstackable very basic table"
+        >
+          <thead
+            class="_table-header_a8252c _diff-item-remove_a8252c"
+          >
+            <tr
+              class=""
+            >
+              <th
+                class=""
+                colspan="6"
+              >
+                Rule3
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class=""
+          >
+            <tr
+              class="_diff-item-remove_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                if
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                  style="background: unset;"
+                >
+                  string
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                  style="background: unset;"
+                >
+                  str
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                  style="background: unset;"
+                >
+                  is one of
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                    style="background: unset;"
+                  >
+                    ioio
+                  </div>
+                </div>
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-remove_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                Serve
+              </td>
+              <td
+                class=""
+                colspan="5"
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                  >
+                    10000
+                  </div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                  >
+                    0
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div
+        class="_empty_6397d7"
+      >
+        <table
+          class="ui small unstackable very basic table"
+        >
+          <thead
+            class="_table-header_a8252c"
+          >
+            <tr
+              class=""
+            >
+              <th
+                class=""
+                colspan="6"
+              />
+            </tr>
+          </thead>
+          <tbody
+            class=""
+          >
+            <tr
+              class="_diff-item-normal_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              />
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                  style="background: unset;"
+                />
+              </td>
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item-same_a8252c _condition-diff-item_6397d7"
+            >
+              <td
+                class=""
+              >
+                Serve
+              </td>
+              <td
+                class=""
+                colspan="5"
+              >
+                <div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                  >
+                    10000
+                  </div>
+                  <div
+                    class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                  >
+                    0
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

@@ -1,0 +1,87 @@
+.modal-inner-box {
+  min-height: 405px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  font-family: PingFangSC-Medium, sans-serif;
+  font-size: 16px;
+  color: #212529;
+  height: 25px;
+  margin-bottom: 9px;
+}
+
+.modal-header-icon {
+  font-size: 16px !important;
+  cursor: pointer;
+  color: #495057;
+}
+
+.modal-info-circle {
+  font-size: 17px;
+  color: #0a70f5;
+  margin-right: 9px;
+}
+
+.modal-tips {
+  height: 36px;
+  background: #EFF8FF;
+  font-size: 14px;
+  color: #042866;
+  line-height: 36px;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  padding: 0 16px;
+}
+
+.modal-content {
+  margin-top: 52px;
+  margin-bottom: 70px;
+}
+
+.modal-footer {
+  display: flex;
+  height: 43px;
+  justify-content: flex-end;
+  align-items: flex-end;
+  border-top: 1px solid #ced4da;
+
+  & > button {
+    margin-left: 8px !important;
+  }
+}
+
+.comment {
+  margin: 24px -16px 0;
+  padding: 0 24px;
+  align-items: center;
+}
+
+.comment-title {
+  margin-bottom: 8px;
+}
+
+.comment-content {
+  height: 190px;
+  overflow: auto;
+}
+
+.comment-input {
+  :global {
+    .ui.input {
+      width: 100%;
+    }
+
+    .ui.input > input {
+      height: 32px;
+    }
+  }
+}
+
+.diff-box {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  margin: 0 -16px -4px;
+}

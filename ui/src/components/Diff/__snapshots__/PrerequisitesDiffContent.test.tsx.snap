@@ -1,0 +1,351 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DiffPrerequisites snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="_diff-content_a8252c"
+  >
+    <div
+      class="_before_a8252c"
+    >
+      <div
+        class="_diff-fields_a8252c"
+      >
+        <table
+          class="ui small unstackable very basic table"
+        >
+          <thead
+            class="_table-header_a8252c"
+          >
+            <tr
+              class=""
+            >
+              <th
+                class="_table-header-name_dbe969"
+              >
+                Toggles
+              </th>
+              <th
+                class=""
+              >
+                Return value
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class=""
+          >
+            <tr
+              class="_diff-item_dbe969 _diff-item-remove_a8252c"
+            >
+              <td
+                class="_table-item-name_dbe969"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                >
+                  key 1
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                >
+                  value 1
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="_diff-item_dbe969 _diff-item-same_a8252c"
+            >
+              <td
+                class="_table-item-name_dbe969"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                >
+                  key 2
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                >
+                  value 2
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="_diff-item_dbe969 _diff-item-same_a8252c"
+            >
+              <td
+                class="_table-item-name_dbe969"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                >
+                  key 3
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                >
+                  value 3
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="_diff-item_dbe969 "
+            >
+              <td
+                class="_table-item-name_dbe969"
+              />
+              <td
+                class=""
+              />
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div
+      class="_after_a8252c"
+    >
+      <div
+        class="_diff-fields_a8252c"
+      >
+        <table
+          class="ui small unstackable very basic table"
+        >
+          <thead
+            class="_table-header_a8252c"
+          >
+            <tr
+              class=""
+            >
+              <th
+                class="_table-header-name_dbe969"
+              >
+                Toggles
+              </th>
+              <th
+                class=""
+              >
+                Return value
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class=""
+          >
+            <tr
+              class="_diff-item_dbe969 "
+            >
+              <td
+                class="_table-item-name_dbe969"
+              />
+              <td
+                class=""
+              />
+            </tr>
+            <tr
+              class="_diff-item_dbe969 _diff-item-same_a8252c"
+            >
+              <td
+                class="_table-item-name_dbe969"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                >
+                  key 2
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                >
+                  value 2
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="_diff-item_dbe969 _diff-item-same_a8252c"
+            >
+              <td
+                class="_table-item-name_dbe969"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                >
+                  key 3
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                >
+                  value 3
+                </div>
+              </td>
+            </tr>
+            <tr
+              class="_diff-item_dbe969 _diff-item-add_a8252c"
+            >
+              <td
+                class="_table-item-name_dbe969"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                >
+                  key 4
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-undefined_dfd3c7"
+                >
+                  value 4
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`DiffPrerequisites snapshot 2`] = `
+<DocumentFragment>
+  <div
+    class="_diff-content_a8252c"
+  >
+    <div
+      class="_before_a8252c"
+    >
+      <div
+        class="_diff-fields_a8252c"
+      >
+        <table
+          class="ui small unstackable very basic table"
+        >
+          <thead
+            class="_table-header_a8252c"
+          >
+            <tr
+              class=""
+            >
+              <th
+                class="_table-header-name_dbe969"
+              >
+                Toggles
+              </th>
+              <th
+                class=""
+              >
+                Return value
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class=""
+          >
+            <tr
+              class="_diff-item_dbe969"
+            >
+              <td
+                class="_table-item-name_dbe969"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                >
+                  key 1
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+                >
+                  value 1
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div
+      class="_after_a8252c"
+    >
+      <div
+        class="_diff-fields_a8252c"
+      >
+        <table
+          class="ui small unstackable very basic table"
+        >
+          <thead
+            class="_table-header_a8252c"
+          >
+            <tr
+              class=""
+            >
+              <th
+                class="_table-header-name_dbe969"
+              >
+                Toggles
+              </th>
+              <th
+                class=""
+              >
+                Return value
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class=""
+          >
+            <tr
+              class="_diff-item_dbe969"
+            >
+              <td
+                class="_table-item-name_dbe969"
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+                >
+                  key 1
+                </div>
+              </td>
+              <td
+                class=""
+              >
+                <div
+                  class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+                >
+                  value 2
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

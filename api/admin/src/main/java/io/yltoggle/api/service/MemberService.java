@@ -1,0 +1,313 @@
+package io.yltoggle.api.service;
+
+import io.yltoggle.api.auth.TokenHelper;
+import io.yltoggle.api.base.component.SpringBeanManager;
+import io.yltoggle.api.base.constants.MessageKey;
+import io.yltoggle.api.base.db.ExcludeTenant;
+import io.yltoggle.api.base.enums.MemberSourceEnum;
+import io.yltoggle.api.base.enums.MemberStatusEnum;
+import io.yltoggle.api.base.enums.OrganizationRoleEnum;
+import io.yltoggle.api.base.enums.ResourceType;
+import io.yltoggle.api.base.exception.ForbiddenException;
+import io.yltoggle.api.base.security.IEncryptionService;
+import io.yltoggle.api.base.tenant.TenantContext;
+import io.yltoggle.api.dao.entity.Member;
+import io.yltoggle.api.dao.entity.Organization;
+import io.yltoggle.api.dao.entity.OrganizationMember;
+import io.yltoggle.api.dao.exception.ResourceNotFoundException;
+import io.yltoggle.api.dao.repository.MemberRepository;
+import io.yltoggle.api.dao.repository.OrganizationMemberRepository;
+import io.yltoggle.api.dao.repository.OrganizationRepository;
+import io.yltoggle.api.dao.utils.PageRequestUtil;
+import io.yltoggle.api.dto.MemberCreateRequest;
+import io.yltoggle.api.dto.MemberModifyPasswordRequest;
+import io.yltoggle.api.dto.MemberItemResponse;
+import io.yltoggle.api.dto.MemberResponse;
+import io.yltoggle.api.dto.MemberSearchRequest;
+import io.yltoggle.api.dto.MemberUpdateRequest;
+import io.yltoggle.api.mapper.MemberMapper;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.Predicate;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+@ExcludeTenant
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@Data
+public class MemberService {
+
+    private final MemberRepository memberRepository;
+
+    private final MemberIncludeDeletedService memberIncludeDeletedService;
+
+    private final OrganizationRepository organizationRepository;
+
+    private final OrganizationMemberRepository organizationMemberRepository;
+
+    @PersistenceContext
+    public final EntityManager entityManager;
+
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    @Value("${app.security.encryption.impl:plaintext}")
+    private String encryptionName;
+
+    @Transactional(rollbackFor = Exception.class)
+    public List<MemberResponse> createUserInCurrentOrganization(MemberCreateRequest createRequest) {
+        return this.create(TenantContext.getCurrentOrganization().getOrganizationId(), createRequest,
+                MemberStatusEnum.ACTIVE);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public List<MemberResponse> create(Long organizationId,
+                                       MemberCreateRequest createRequest,
+                                       MemberStatusEnum memberStatusEnum) {
+        List<Member> savedMembers = memberRepository.saveAll(
+                newMembers(organizationId, createRequest, memberStatusEnum));
+        return savedMembers.stream().map(item -> translateResponse(item)).collect(Collectors.toList());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public MemberResponse update(MemberUpdateRequest updateRequest) {
+        Member member = findMemberByAccount(updateRequest.getAccount());
+        MemberMapper.INSTANCE.mapEntity(updateRequest, member);
+        if (StringUtils.isNotBlank(updateRequest.getPassword()) ||
+                Objects.nonNull(updateRequest.getRole())) {
+            verifyAdminPrivileges();
+            OrganizationMember organizationMember = member.getOrganizationMembers()
+                    .stream()
+                    .filter(it -> it.getOrganization().getId().equals(TenantContext.getCurrentOrganization()
+                            .getOrganizationId())).findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException(ResourceType.ORGANIZATION_MEMBER,
+                            member.getAccount()));
+            organizationMember.setRole(updateRequest.getRole());
+        }
+        if (StringUtils.isNotBlank(updateRequest.getNickname()) &&
+                !updateRequest.getAccount().equals(TokenHelper.getAccount())) {
+            throw new ForbiddenException();
+        }
+        return translateResponse(save(member));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public MemberItemResponse modifyPassword(MemberModifyPasswordRequest modifyPasswordRequest) {
+        Member member = findLoggedInMember();
+        verifyPassword(modifyPasswordRequest.getOldPassword(), member.getPassword());
+        member.setPassword(passwordEncoder.encode(modifyPasswordRequest.getNewPassword()));
+        return MemberMapper.INSTANCE.entityToItemResponse(save(member));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public MemberItemResponse modifyPasswordAndActive(Member member, String password) {
+        if (member == null || StringUtils.isEmpty(password)) {
+            throw new IllegalArgumentException("member or password invalid");
+        }
+        member.setPassword(passwordEncoder.encode(password));
+        member.setStatus(MemberStatusEnum.ACTIVE);
+        return MemberMapper.INSTANCE.entityToItemResponse(save(member));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateVisitedTime(String account) {
+        Member member = findMemberByAccount(account);
+        member.setVisitedTime(new Date());
+        save(member);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public MemberResponse delete(String account) {
+        verifyAdminPrivileges();
+        Member member = findMemberByAccount(account);
+        member.setDeleted(true);
+        member.deleteOrganization(Long.parseLong(TenantContext.getCurrentTenant()));
+        save(member);
+        return translateResponse(member);
+    }
+
+    public Member save(Member member) {
+        return memberRepository.save(member);
+    }
+
+    private List<Member> saveAll(Iterable<Member> members) {
+        return memberRepository.saveAll(members);
+    }
+
+    private MemberResponse translateResponse(Member member) {
+        MemberResponse memberResponse = MemberMapper.INSTANCE.entityToResponse(member);
+        OrganizationRoleEnum role = member.getRole(Long.parseLong(TenantContext.getCurrentTenant()));
+        memberResponse.setRole(role == null ? null : role.name());
+        return memberResponse;
+    }
+
+    private List<Member> newMembers(Long organizationId, MemberCreateRequest createRequest,
+                                    MemberStatusEnum memberStatusEnum) {
+        return createRequest.getAccounts()
+                .stream()
+                .filter(account -> memberIncludeDeletedService.validateAccountIncludeDeleted(account))
+                .map(account -> newMember(organizationId, account, createRequest, memberStatusEnum))
+                .collect(Collectors.toList());
+    }
+
+    private Member newMember(Long organizationId, String account, MemberCreateRequest createRequest,
+                             MemberStatusEnum memberStatusEnum) {
+        Member member = new Member();
+        member.setAccount(account);
+        member.setStatus(memberStatusEnum);
+        member.setSource(createRequest.getSource());
+        member.setPassword(new BCryptPasswordEncoder().encode(createRequest.getPassword()));
+
+        Organization organization = organizationRepository.findById(organizationId).get();
+        boolean valid = memberStatusEnum == MemberStatusEnum.ACTIVE;
+        member.addOrganization(organization, createRequest.getRole(), valid);
+
+        return member;
+    }
+
+    private void verifyPassword(String oldPassword, String newPassword) {
+        if (!passwordEncoder.matches(oldPassword, newPassword)) {
+            throw new IllegalArgumentException(MessageKey.INVALID_OLD_PASSWORD);
+        }
+    }
+
+    public Optional<Member> findByAccount(String account) {
+        IEncryptionService encryptionService = SpringBeanManager.getBeanByName(encryptionName);
+        account = encryptionService.encrypt(account);
+        return memberRepository.findByAccount(account);
+    }
+
+    public Optional<Member> findById(Long memberId) {
+        return memberRepository.findById(memberId);
+    }
+
+    public boolean existsByAccount(String account) {
+        IEncryptionService encryptionService = SpringBeanManager.getBeanByName(encryptionName);
+        account = encryptionService.encrypt(account);
+        return memberRepository.existsByAccount(account);
+    }
+
+    private void verifyAdminPrivileges() {
+        if (!TokenHelper.isOwner()) {
+            throw new ForbiddenException();
+        }
+    }
+
+    public Page<MemberItemResponse> list(MemberSearchRequest searchRequest) {
+        Pageable pageable = PageRequestUtil.toPageable(searchRequest, Sort.Direction.DESC, "createdTime");
+        Specification<OrganizationMember> spec = (root, query, cb) -> {
+            Predicate p1 = cb.equal(root.get("organization").get("id"), TenantContext.getCurrentOrganization()
+                    .getOrganizationId());
+            Predicate p2 = cb.notEqual(root.get("member").get("source"), MemberSourceEnum.ACCESS_TOKEN.name());
+            return query.where(cb.and(p1, p2)).getRestriction();
+        };
+        Page<OrganizationMember> organizationMembers = organizationMemberRepository.findAll(spec, pageable);
+        List<Long> memberIds = organizationMembers.getContent()
+                .stream()
+                .map(organizationMember -> organizationMember.getMember().getId())
+                .collect(Collectors.toList());
+        Map<Long, Member> idToMember = memberRepository.findAllById(memberIds).stream()
+                .collect(Collectors.toMap(Member::getId, Function.identity()));
+        return convertToResponse(getOwnerTotalCount(),
+                TokenHelper.isOwner(),
+                organizationMembers, idToMember);
+    }
+
+    private long getOwnerTotalCount() {
+        Specification<OrganizationMember> spec = (root, query, cb) -> {
+            Predicate p1 = cb.equal(root.get("organization").get("id"), TenantContext.getCurrentOrganization()
+                    .getOrganizationId());
+            Predicate p2 = cb.equal(root.get("role"), OrganizationRoleEnum.OWNER);
+            return query.where(cb.and(p1, p2)).getRestriction();
+        };
+        return organizationMemberRepository.count(spec);
+
+    }
+
+    private Page<MemberItemResponse> convertToResponse(long ownerCount,
+                                                       boolean currentIsOwner,
+                                                       Page<OrganizationMember> organizationMembers,
+                                                       Map<Long, Member> idToMember) {
+        List<MemberItemResponse> responseList = organizationMembers.stream()
+                // filter member who is already deleted.
+                .filter(item -> idToMember.get(item.getMember().getId()) != null)
+                .map(item -> {
+                    MemberItemResponse response = MemberMapper.INSTANCE
+                            .entityToItemResponse(idToMember.get(item.getMember().getId()));
+                    response.setVisitedTime(item.getLoginTime());
+                    if (item.getRole() == null) {
+                        response.setAllowEdit(false);
+                        return response;
+                    }
+                    response.setRole(item.getRole().name());
+                    boolean allowEdit = currentIsOwner;
+
+                    if (allowEdit && item.getRole().isOwner() && ownerCount == 1) {
+                        allowEdit = false;
+                    }
+                    response.setAllowEdit(allowEdit);
+                    response.setValid(item.getValid());
+                    response.setOrganizationMemberCreateBy(item.getCreatedBy().getAccount());
+                    return response;
+                })
+                .collect(Collectors.toList());
+
+        return PageableExecutionUtils.getPage(responseList,
+                organizationMembers.getPageable(),
+                organizationMembers::getTotalElements);
+    }
+
+    public MemberItemResponse queryByAccount(String account) {
+        Member member = findMemberByAccount(account, true);
+        return MemberMapper.INSTANCE.entityToItemResponse(member);
+    }
+
+    private Member findLoggedInMember() {
+        return findMemberByAccount(TokenHelper.getAccount());
+    }
+
+    private Member findMemberByAccount(String account) {
+        return findMemberByAccount(account, false);
+    }
+
+    private Member findMemberByAccount(String account, boolean includeDeleted) {
+        IEncryptionService encryptionService = SpringBeanManager.getBeanByName(encryptionName);
+        account = encryptionService.encrypt(account);
+        Optional<Member> member = includeDeleted ? memberIncludeDeletedService
+                .queryMemberByAccountIncludeDeleted(account) : memberRepository.findByAccount(account);
+        String finalAccount = account;
+        return member.orElseThrow(() -> new ResourceNotFoundException(ResourceType.MEMBER, finalAccount));
+    }
+
+    public void updateLoginTime(Member member, Long organizationId) {
+        member.getOrganizationMembers().forEach(organizationMember -> {
+            if (organizationId == organizationMember.getOrganization().getId()) {
+                organizationMember.setLoginTime(new Date());
+            }
+        });
+        memberRepository.save(member);
+    }
+
+}

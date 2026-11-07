@@ -1,0 +1,7 @@
+[toolchain]
+version = "1.99.1"
+components = [
+  "cargo",
+  "clippy",
+  "rustfmt",
+]

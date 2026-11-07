@@ -1,0 +1,239 @@
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Dropdown, DropdownProps } from 'semantic-ui-react';
+import classNames from 'classnames';
+import { FormattedMessage, useIntl } from 'react-intl';
+import Icon from 'components/Icon';
+import Modal from 'components/Modal';
+import PutAwayMemu from 'components/PutAwayMenu';
+import TextLimit from 'components/TextLimit';
+import Loading from 'components/Loading';
+import { IRouterParams, IProject, IEnvironment } from 'interfaces/project';
+import {
+  TOGGLE_PATH,
+  TARGETING_PATH,
+  SEGMENT_PATH,
+  SEGMENT_ADD_PATH,
+  SEGMENT_EDIT_PATH,
+  CONNECT_SDK_PATH,
+  SETTING_PATH,
+  EVENT_TRACKER_PATH,
+  TRACK_EVENT_PATH,
+} from 'router/routes';
+import { SidebarContainer } from './hooks';
+import { useMatchedRoutePath } from 'utils/router';
+import styles from './sidebar.module.scss';
+import { useParams } from 'utils/useParams';
+
+interface IProps {
+  children?: import('react').ReactNode;
+  isLoading: boolean;
+  projectInfo: IProject;
+  backgroundColor: string;
+}
+
+const ProjectSiderbar = (props: IProps) => {
+  const { isLoading, projectInfo, backgroundColor } = props;
+  const { projectKey, environmentKey, toggleKey, navigation } = useParams<IRouterParams>();
+  const [ selectedItem, setSelectedItem ] = useState<string>();
+  const [ open, setOpen ] = useState<boolean>(false);
+  const [ env, setEnv ] = useState<string>('');
+  const [ envName, setEnvName ] = useState<string>('');
+  const navigate = useNavigate();
+  const matchedPath = useMatchedRoutePath([
+    TOGGLE_PATH,
+    TARGETING_PATH,
+    CONNECT_SDK_PATH,
+    TRACK_EVENT_PATH,
+    SEGMENT_PATH,
+    SEGMENT_ADD_PATH,
+    SEGMENT_EDIT_PATH,
+    SETTING_PATH,
+    EVENT_TRACKER_PATH,
+  ]);
+  const intl = useIntl();
+
+  const { isPutAway } = SidebarContainer.useContainer();
+
+  const sidebarCls = classNames(
+    styles.sidebar,
+    {
+      [styles['sidebar-close']]: isPutAway
+    }
+  );
+
+  const envCls = classNames(
+    'joyride-environment',
+    styles.environment,
+    {
+      [styles['environment-close']]: isPutAway
+    }
+  );
+
+  const menuCls = classNames(
+    styles['project-menu-item'],
+    {
+      [styles['project-menu-item-close']]: isPutAway
+    }
+  );
+
+  const segmentCls = classNames(
+    'joyride-segment',
+    styles['project-menu-item'],
+    {
+      [styles['project-menu-item-close']]: isPutAway
+    }
+  );
+
+  useEffect(() => {
+    const path = matchedPath;
+    if (path === TOGGLE_PATH || path === TARGETING_PATH || path === CONNECT_SDK_PATH || path === TRACK_EVENT_PATH) {
+      setSelectedItem('toggle');
+    } else if (path === SEGMENT_PATH || path === SEGMENT_ADD_PATH || path === SEGMENT_EDIT_PATH) {
+      setSelectedItem('segments');
+    } else if (path === SETTING_PATH) {
+      setSelectedItem('settings');
+    } else if (path === EVENT_TRACKER_PATH) {
+      setSelectedItem('eventTracker');
+    }
+  }, [matchedPath]);
+
+  const options = projectInfo.environments.map((env: IEnvironment) => {
+    return {
+      key: env.key,
+      text: env.name,
+      value: env.key,
+    };
+  });
+
+  const handleChangeEnv = useCallback(async (e: SyntheticEvent, detail: DropdownProps) => {
+    setOpen(true);
+    setEnv(detail.value as string);
+    setEnvName((e.target as HTMLElement).innerText);
+  }, []);
+
+  const gotoPage = useCallback(() => {
+    setOpen(false);
+    let url = '';
+    if (matchedPath === TOGGLE_PATH) {
+      url = `/${projectKey}/${env}/toggles`;
+    } else if (matchedPath === TARGETING_PATH) {
+      url = `/${projectKey}/${env}/${toggleKey}/${navigation}`;
+    } else if (matchedPath === SEGMENT_PATH) {
+      url = `/${projectKey}/${env}/segments`;
+    } else if (matchedPath === SETTING_PATH) {
+      url = `/${projectKey}/${env}/settings`;
+    } else if (matchedPath === EVENT_TRACKER_PATH) {
+      url = `/${projectKey}/${env}/event-tracker`;
+    }
+    navigate(url);
+  }, [navigate, projectKey, toggleKey, navigation, env, matchedPath]);
+
+  const gotoToggles = useCallback(() => {
+    navigate(`/${projectKey}/${environmentKey}/toggles`);
+  }, [projectKey, environmentKey, navigate]);
+
+  const gotoSegments = useCallback(() => {
+    navigate(`/${projectKey}/${environmentKey}/segments`);
+  }, [projectKey, environmentKey, navigate]);
+
+  const gotoSettings = useCallback(() => {
+    navigate(`/${projectKey}/${environmentKey}/settings`);
+  }, [projectKey, environmentKey, navigate]);
+
+  const gotoLiveEvents = useCallback(() => {
+    navigate(`/${projectKey}/${environmentKey}/event-tracker`);
+  }, [projectKey, environmentKey, navigate]);
+
+  return (
+    <div className={sidebarCls}>
+      {
+         isLoading ? <Loading style={{backgroundColor: 'transparent'}} /> : (
+          <>
+            <div className={styles['project-name']}>
+              <TextLimit
+                text={projectInfo.name}
+                popupProps={{
+                  position: 'top left',
+                  offset: [0, -8],
+                }}
+              />
+            </div>
+            <div className={envCls} style={{ backgroundColor }}>
+              <Dropdown
+                className={styles['environment-dropdown']}
+                value={environmentKey}
+                pointing={isPutAway ? 'left' : 'top'}
+                options={options}
+                selection
+                floating
+                fluid
+                icon={<Icon customclass={styles['angle-down']} type='angle-down' />}
+                onChange={handleChangeEnv}
+              />
+            </div>
+
+            <div className={styles['project-menu']}>
+              <div className={`${selectedItem ==='toggle' && styles.selected} ${menuCls}`} onClick={gotoToggles}>
+                <PutAwayMemu
+                  type='toggle'
+                  isPutAway={isPutAway}
+                  title={intl.formatMessage({id: 'common.toggles.text'})}
+                />
+              </div>
+              <div className={`${selectedItem ==='eventTracker' && styles.selected} ${menuCls}`} onClick={gotoLiveEvents}>
+                <PutAwayMemu
+                  type='debugger'
+                  isPutAway={isPutAway}
+                  title={intl.formatMessage({id: 'common.event.tracker.text'})}
+                />
+              </div>
+            </div>
+            <div className={`${selectedItem ==='segments' && styles.selected} ${segmentCls}`} onClick={gotoSegments}>
+              <PutAwayMemu
+                type='member'
+                isPutAway={isPutAway}
+                title={intl.formatMessage({id: 'common.segments.text'})}
+              />
+            </div>
+
+            <div className={`${selectedItem ==='settings' && styles.selected} ${menuCls}`} onClick={gotoSettings}>
+              <PutAwayMemu
+                type='setting'
+                isPutAway={isPutAway}
+                title={intl.formatMessage({id: 'common.toggle.approval.settings.text'})}
+              />
+            </div>
+          </>
+        )
+      }
+
+      <Modal
+        open={open}
+        width={400}
+        handleCancel={() => {setOpen(false);}}
+        handleConfirm={gotoPage}
+      >
+        <div>
+          <div className={styles['modal-header']}>
+            <Icon customclass={styles['warning-circle']} type='warning-circle' />
+            <span className={styles['modal-header-text']}>
+              <FormattedMessage id='sidebar.modal.title' />
+            </span>
+          </div>
+          <div className={styles['modal-content']}>
+            {
+              intl.formatMessage({
+                id: 'sidebar.modal.content'
+              }, {
+                envName
+              })
+            }
+          </div>
+        </div>
+      </Modal>
+    </div>
+	);
+};
+
+export default ProjectSiderbar;

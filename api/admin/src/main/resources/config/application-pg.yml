@@ -1,0 +1,58 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    jdbc-url: jdbc:postgresql://127.0.0.1:5432/yl-toggle
+    username: postgres
+    password: mysecretpassword
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 50
+      idle-timeout: 60000
+      max-lifetime: 300000
+      connection-timeout: 15000
+      connection-test-query: SELECT 1 FROM DUAL
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+    open-in-view: true
+  flyway:
+    enabled: false
+
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: info
+  config: classpath:logback/logback.xml
+  file:
+    path: ./logs
+
+app:
+  toggle-deadline: 30
+  server-data-source: MEMORY # DB MEMORY
+  server-base-urls: http://127.0.0.1:4006
+  analysis-base-url: http://10.97.37.21:4006
+  get-started-server-url: https://yl-toggle-df.intra.xiaojukeji.com/server
+  maximum-dependency-depth: 20
+  security:
+    jwt:
+      keystore-location: keys/keystore.jks
+      keystore-password: password
+      key-alias: jwtsigning
+      private-key-passphrase: password
+      exclude-tenant-uri:
+        - /internal/**
+        - /actuator/health
+        - /api/login
+        - /api/guestLogin
+        - /api/v3/api-docs.yaml
+        - /api/application/**
+      guest-disabled: true
+      guest-default-password: Guest_12345
+    encryption:
+      impl: plaintext

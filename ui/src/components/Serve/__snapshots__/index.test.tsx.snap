@@ -1,0 +1,746 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Serve select 1`] = `
+<DocumentFragment>
+  <div
+    class="_serve_2e8c38"
+  >
+    <div
+      class="_serve-select_2e8c38"
+    >
+      <span
+        class="_serve-text_2e8c38"
+      >
+        <span
+          class="_label-required_2e8c38"
+        >
+          *
+        </span>
+        Serve
+      </span>
+      <div
+        class="field _serve-form-field_2e8c38"
+      >
+        <div
+          aria-expanded="false"
+          class="ui floating selection dropdown _serve-dropdown_2e8c38"
+          name="defaultServe"
+          role="listbox"
+          tabindex="0"
+        >
+          <div
+            aria-atomic="true"
+            aria-live="polite"
+            class="divider text"
+            role="alert"
+          >
+            a percentage rollout
+          </div>
+          <span
+            class="iconfont icon-angle-down _angle-down_2e8c38"
+            customclass="_angle-down_2e8c38"
+            type="angle-down"
+          />
+          <div
+            class="menu transition"
+          >
+            <div
+              aria-checked="false"
+              aria-selected="false"
+              class="item"
+              role="option"
+              style="pointer-events: all;"
+            >
+              <div
+                class="text _dropdown-variation_2e8c38"
+              >
+                <span
+                  class="_dropdown-variation-color_2e8c38"
+                  style="background: rgb(85, 110, 230);"
+                />
+                <span
+                  class="_dropdown-variation-text_2e8c38"
+                >
+                  Variation 1
+                </span>
+              </div>
+            </div>
+            <div
+              aria-checked="false"
+              aria-selected="false"
+              class="item"
+              role="option"
+              style="pointer-events: all;"
+            >
+              <div
+                class="text _dropdown-variation_2e8c38"
+              >
+                <span
+                  class="_dropdown-variation-color_2e8c38"
+                  style="background: rgb(255, 156, 27);"
+                />
+                <span
+                  class="_dropdown-variation-text_2e8c38"
+                >
+                  Variation 2
+                </span>
+              </div>
+            </div>
+            <div
+              aria-checked="true"
+              aria-selected="true"
+              class="active selected item"
+              role="option"
+              style="pointer-events: all;"
+            >
+              <span
+                class="text"
+              >
+                a percentage rollout
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="_percentage-content_2e8c38"
+    >
+      <div
+        class="_percentage_2e8c38"
+      >
+        <span
+          class="_percentage-item_2e8c38"
+          style="background: rgb(85, 110, 230);"
+        />
+        <span
+          class="_percentage-item_2e8c38"
+          style="background: rgb(255, 156, 27);"
+        />
+      </div>
+      <div
+        class="_message_2e8c38"
+        name="defaultServe_total"
+      >
+        <span
+          class="iconfont icon-remove-circle _message-iconfont_2e8c38"
+          customclass="_message-iconfont_2e8c38"
+          type="remove-circle"
+        />
+        100% needs to be assigned to a variation
+      </div>
+      <div
+        class="_variation_2e8c38"
+      >
+        <div
+          class="_variation-item_2e8c38"
+        >
+          <div
+            class="ui mini icon input _variation-item-input_2e8c38"
+          >
+            <input
+              type="text"
+              value=""
+            />
+            <div>
+              <span
+                class="_input-percentage_2e8c38"
+              >
+                %
+              </span>
+              <span
+                class="_input-operation_2e8c38"
+              >
+                <span
+                  class="iconfont icon-angle-up _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
+                  type="angle-up"
+                />
+                <span
+                  class="iconfont icon-angle-down _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
+                  type="angle-down"
+                />
+              </span>
+            </div>
+          </div>
+          <div
+            class="_variation-name_2e8c38"
+          >
+            <span
+              class="_variation-name-color_2e8c38"
+              style="background: rgb(85, 110, 230);"
+            />
+            <span
+              class="_variation-name-text_2e8c38"
+            >
+              Variation 1
+            </span>
+          </div>
+        </div>
+        <div
+          class="_variation-item_2e8c38"
+        >
+          <div
+            class="ui mini icon input _variation-item-input_2e8c38"
+          >
+            <input
+              type="text"
+              value=""
+            />
+            <div>
+              <span
+                class="_input-percentage_2e8c38"
+              >
+                %
+              </span>
+              <span
+                class="_input-operation_2e8c38"
+              >
+                <span
+                  class="iconfont icon-angle-up _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
+                  type="angle-up"
+                />
+                <span
+                  class="iconfont icon-angle-down _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
+                  type="angle-down"
+                />
+              </span>
+            </div>
+          </div>
+          <div
+            class="_variation-name_2e8c38"
+          >
+            <span
+              class="_variation-name-color_2e8c38"
+              style="background: rgb(255, 156, 27);"
+            />
+            <span
+              class="_variation-name-text_2e8c38"
+            >
+              Variation 2
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Serve snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="_serve_2e8c38"
+  >
+    <div
+      class="_serve-select_2e8c38"
+    >
+      <span
+        class="_serve-text_2e8c38"
+      >
+        <span
+          class="_label-required_2e8c38"
+        >
+          *
+        </span>
+        Serve
+      </span>
+      <div
+        class="field _serve-form-field_2e8c38"
+      >
+        <div
+          aria-expanded="false"
+          class="ui floating selection dropdown _serve-dropdown_2e8c38"
+          name="defaultServe"
+          role="listbox"
+          tabindex="0"
+        >
+          <div
+            aria-atomic="true"
+            aria-live="polite"
+            class="divider text"
+            role="alert"
+          >
+            Please select serve
+          </div>
+          <span
+            class="iconfont icon-angle-down _angle-down_2e8c38"
+            customclass="_angle-down_2e8c38"
+            type="angle-down"
+          />
+          <div
+            class="menu transition"
+          >
+            <div
+              aria-checked="false"
+              aria-selected="true"
+              class="selected item"
+              role="option"
+              style="pointer-events: all;"
+            >
+              <span
+                class="text"
+              >
+                a percentage rollout
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Serve snapshot 2`] = `
+<DocumentFragment>
+  <div
+    class="_serve_2e8c38"
+  >
+    <div
+      class="_serve-select_2e8c38"
+    >
+      <span
+        class="_serve-text_2e8c38"
+      >
+        <span
+          class="_label-required_2e8c38"
+        >
+          *
+        </span>
+        Serve
+      </span>
+      <div
+        class="field _serve-form-field_2e8c38"
+      >
+        <div
+          aria-expanded="false"
+          class="ui floating selection dropdown _serve-dropdown_2e8c38"
+          name="defaultServe"
+          role="listbox"
+          tabindex="0"
+        >
+          <div
+            aria-atomic="true"
+            aria-live="polite"
+            class="divider text"
+            role="alert"
+          >
+            Please select serve
+          </div>
+          <span
+            class="iconfont icon-angle-down _angle-down_2e8c38"
+            customclass="_angle-down_2e8c38"
+            type="angle-down"
+          />
+          <div
+            class="menu transition"
+          >
+            <div
+              aria-checked="false"
+              aria-selected="true"
+              class="selected item"
+              role="option"
+              style="pointer-events: all;"
+            >
+              <div
+                class="text _dropdown-variation_2e8c38"
+              >
+                <span
+                  class="_dropdown-variation-color_2e8c38"
+                  style="background: rgb(85, 110, 230);"
+                />
+                <span
+                  class="_dropdown-variation-text_2e8c38"
+                >
+                  Variation 1
+                </span>
+              </div>
+            </div>
+            <div
+              aria-checked="false"
+              aria-selected="false"
+              class="item"
+              role="option"
+              style="pointer-events: all;"
+            >
+              <div
+                class="text _dropdown-variation_2e8c38"
+              >
+                <span
+                  class="_dropdown-variation-color_2e8c38"
+                  style="background: rgb(255, 156, 27);"
+                />
+                <span
+                  class="_dropdown-variation-text_2e8c38"
+                >
+                  Variation 2
+                </span>
+              </div>
+            </div>
+            <div
+              aria-checked="false"
+              aria-selected="false"
+              class="item"
+              role="option"
+              style="pointer-events: all;"
+            >
+              <span
+                class="text"
+              >
+                a percentage rollout
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Serve snapshot 3`] = `
+<DocumentFragment>
+  <div
+    class="_serve_2e8c38"
+  >
+    <div
+      class="_serve-select_2e8c38"
+    >
+      <span
+        class="_serve-text_2e8c38"
+      >
+        <span
+          class="_label-required_2e8c38"
+        >
+          *
+        </span>
+        Serve
+      </span>
+      <div
+        class="field _serve-form-field_2e8c38"
+      >
+        <div
+          aria-disabled="true"
+          aria-expanded="false"
+          class="ui disabled floating selection dropdown _serve-dropdown_2e8c38"
+          name="defaultServe"
+          role="listbox"
+          tabindex="-1"
+        >
+          <div
+            aria-atomic="true"
+            aria-live="polite"
+            class="divider text"
+            role="alert"
+          >
+            a percentage rollout
+          </div>
+          <span
+            class="iconfont icon-angle-down _angle-down_2e8c38"
+            customclass="_angle-down_2e8c38"
+            type="angle-down"
+          />
+          <div
+            class="menu transition"
+          >
+            <div
+              aria-checked="false"
+              aria-selected="false"
+              class="item"
+              role="option"
+              style="pointer-events: all;"
+            >
+              <div
+                class="text _dropdown-variation_2e8c38"
+              >
+                <span
+                  class="_dropdown-variation-color_2e8c38"
+                  style="background: rgb(85, 110, 230);"
+                />
+                <span
+                  class="_dropdown-variation-text_2e8c38"
+                >
+                  Variation 1
+                </span>
+              </div>
+            </div>
+            <div
+              aria-checked="false"
+              aria-selected="false"
+              class="item"
+              role="option"
+              style="pointer-events: all;"
+            >
+              <div
+                class="text _dropdown-variation_2e8c38"
+              >
+                <span
+                  class="_dropdown-variation-color_2e8c38"
+                  style="background: rgb(255, 156, 27);"
+                />
+                <span
+                  class="_dropdown-variation-text_2e8c38"
+                >
+                  Variation 2
+                </span>
+              </div>
+            </div>
+            <div
+              aria-checked="true"
+              aria-selected="true"
+              class="active selected item"
+              role="option"
+              style="pointer-events: all;"
+            >
+              <span
+                class="text"
+              >
+                a percentage rollout
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="_percentage-content_2e8c38"
+    >
+      <div
+        class="_percentage_2e8c38"
+      >
+        <span
+          class="_percentage-item_2e8c38"
+          style="width: 0%; background: rgb(85, 110, 230);"
+        />
+        <span
+          class="_percentage-item_2e8c38"
+          style="width: 0%; background: rgb(255, 156, 27);"
+        />
+      </div>
+      <div
+        class="_message_2e8c38"
+        name="defaultServe_total"
+      >
+        <span
+          class="iconfont icon-remove-circle _message-iconfont_2e8c38"
+          customclass="_message-iconfont_2e8c38"
+          type="remove-circle"
+        />
+        100% needs to be assigned to a variation
+      </div>
+      <div
+        class="_variation_2e8c38"
+      >
+        <div
+          class="_variation-item_2e8c38"
+        >
+          <div
+            class="ui mini disabled icon input _variation-item-input_2e8c38"
+          >
+            <input
+              disabled=""
+              tabindex="-1"
+              type="text"
+              value="0"
+            />
+            <div>
+              <span
+                class="_input-percentage_2e8c38"
+              >
+                %
+              </span>
+              <span
+                class="_input-operation_2e8c38"
+              >
+                <span
+                  class="iconfont icon-angle-up _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
+                  type="angle-up"
+                />
+                <span
+                  class="iconfont icon-angle-down _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
+                  type="angle-down"
+                />
+              </span>
+            </div>
+          </div>
+          <div
+            class="_variation-name_2e8c38"
+          >
+            <span
+              class="_variation-name-color_2e8c38"
+              style="background: rgb(85, 110, 230);"
+            />
+            <span
+              class="_variation-name-text_2e8c38"
+            >
+              Variation 1
+            </span>
+          </div>
+        </div>
+        <div
+          class="_variation-item_2e8c38"
+        >
+          <div
+            class="ui mini disabled icon input _variation-item-input_2e8c38"
+          >
+            <input
+              disabled=""
+              tabindex="-1"
+              type="text"
+              value="0"
+            />
+            <div>
+              <span
+                class="_input-percentage_2e8c38"
+              >
+                %
+              </span>
+              <span
+                class="_input-operation_2e8c38"
+              >
+                <span
+                  class="iconfont icon-angle-up _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
+                  type="angle-up"
+                />
+                <span
+                  class="iconfont icon-angle-down _iconfont_2e8c38"
+                  customclass="_iconfont_2e8c38"
+                  type="angle-down"
+                />
+              </span>
+            </div>
+          </div>
+          <div
+            class="_variation-name_2e8c38"
+          >
+            <span
+              class="_variation-name-color_2e8c38"
+              style="background: rgb(255, 156, 27);"
+            />
+            <span
+              class="_variation-name-text_2e8c38"
+            >
+              Variation 2
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Serve snapshot 4`] = `
+<DocumentFragment>
+  <div
+    class="_serve_2e8c38"
+  >
+    <div
+      class="_serve-select_2e8c38"
+    >
+      <span
+        class="_serve-text_2e8c38"
+      >
+        <span
+          class="_label-required_2e8c38"
+        >
+          *
+        </span>
+        Serve
+      </span>
+      <div
+        class="field _serve-form-field_2e8c38"
+      >
+        <div
+          aria-disabled="false"
+          aria-expanded="false"
+          class="ui floating selection dropdown _serve-dropdown_2e8c38"
+          name="defaultServe"
+          role="listbox"
+          tabindex="0"
+        >
+          <div
+            aria-atomic="true"
+            aria-live="polite"
+            class="divider text"
+            role="alert"
+          >
+            Variation 1
+          </div>
+          <span
+            class="iconfont icon-angle-down _angle-down_2e8c38"
+            customclass="_angle-down_2e8c38"
+            type="angle-down"
+          />
+          <div
+            class="menu transition"
+          >
+            <div
+              aria-checked="true"
+              aria-selected="true"
+              class="active selected item"
+              role="option"
+              style="pointer-events: all;"
+            >
+              <div
+                class="text _dropdown-variation_2e8c38"
+              >
+                <span
+                  class="_dropdown-variation-color_2e8c38"
+                  style="background: rgb(85, 110, 230);"
+                />
+                <span
+                  class="_dropdown-variation-text_2e8c38"
+                >
+                  Variation 1
+                </span>
+              </div>
+            </div>
+            <div
+              aria-checked="false"
+              aria-selected="false"
+              class="item"
+              role="option"
+              style="pointer-events: all;"
+            >
+              <div
+                class="text _dropdown-variation_2e8c38"
+              >
+                <span
+                  class="_dropdown-variation-color_2e8c38"
+                  style="background: rgb(255, 156, 27);"
+                />
+                <span
+                  class="_dropdown-variation-text_2e8c38"
+                >
+                  Variation 2
+                </span>
+              </div>
+            </div>
+            <div
+              aria-checked="false"
+              aria-selected="false"
+              class="item"
+              role="option"
+              style="pointer-events: all;"
+            >
+              <span
+                class="text"
+              >
+                a percentage rollout
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

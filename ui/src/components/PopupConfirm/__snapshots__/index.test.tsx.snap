@@ -1,0 +1,50 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PopupConFirm snapshot 1`] = `
+<body>
+  <div>
+    <span>
+      this is test text.
+    </span>
+  </div>
+  <div
+    data-suir-portal="true"
+  >
+    <div
+      style="display: flex; position: absolute; left: 0px; top: 0px;"
+    >
+      <div
+        class="ui top left flowing popup transition visible _popup_39039c"
+        style="left: auto; right: auto; position: initial;"
+      >
+        <div
+          class="_content_39039c"
+        >
+          <span
+            class="iconfont icon-error-circle _iconfont_39039c"
+            customclass="_iconfont_39039c"
+            type="error-circle"
+          />
+          <span>
+            popup confirm text
+          </span>
+        </div>
+        <div
+          class="_btn-group_39039c"
+        >
+          <button
+            class="ui mini secondary button _btn-cancel_39039c"
+          >
+            Cancel
+          </button>
+          <button
+            class="ui mini primary button"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

@@ -1,0 +1,5 @@
+[hooks]
+pre-push = "cd server && cargo fmt -- --check && cargo clippy --all-targets --all-features --locked -- -D warnings && cargo test --locked --all-features"
+
+[logging]
+verbose = true

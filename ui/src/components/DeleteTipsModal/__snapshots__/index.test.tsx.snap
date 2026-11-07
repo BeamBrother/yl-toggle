@@ -1,0 +1,127 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DeleteTipsModal snapshot 1`] = `
+<body
+  class="dimmable dimmed"
+>
+  <div />
+  <div
+    data-suir-portal="true"
+  >
+    <div
+      class="ui page modals dimmer transition visible active"
+      style="display: flex !important;"
+    >
+      <div
+        class="ui mini modal transition visible active"
+        style="width: 400px;"
+      >
+        <div
+          class="content"
+        >
+          <div>
+            <div
+              class="_modal-header_e23648"
+            >
+              <span
+                class="iconfont icon-warning-circle _warning-circle_e23648"
+                customclass="_warning-circle_e23648"
+                type="warning-circle"
+              />
+              <span
+                class="_modal-header-text_e23648"
+              >
+                test title
+              </span>
+            </div>
+            <div
+              class="_modal-content_e23648"
+            >
+              test content
+            </div>
+            <div
+              class="_footer_e23648"
+            >
+              <button
+                class="ui mini basic button _btn_e23648"
+                type="reset"
+              >
+                Cancel
+              </button>
+              <button
+                class="ui mini primary button _btn_e23648"
+                type="submit"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`DeleteTipsModal snapshot 2`] = `
+<body
+  class="dimmable dimmed"
+>
+  <div />
+  <div
+    data-suir-portal="true"
+  >
+    <div
+      class="ui page modals dimmer transition visible active"
+      style="display: flex !important;"
+    >
+      <div
+        class="ui mini modal transition visible active"
+        style="width: 400px;"
+      >
+        <div
+          class="content"
+        >
+          <div>
+            <div
+              class="_modal-header_e23648"
+            >
+              <span
+                class="iconfont icon-warning-circle _warning-circle_e23648"
+                customclass="_warning-circle_e23648"
+                type="warning-circle"
+              />
+              <span
+                class="_modal-header-text_e23648"
+              >
+                test title
+              </span>
+            </div>
+            <div
+              class="_modal-content_e23648"
+            >
+              test content
+            </div>
+            <div
+              class="_footer_e23648"
+            >
+              <button
+                class="ui mini basic button _btn_e23648"
+                type="reset"
+              >
+                Cancel
+              </button>
+              <button
+                class="ui mini primary button _btn_e23648"
+                type="submit"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

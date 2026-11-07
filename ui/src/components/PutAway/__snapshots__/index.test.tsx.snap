@@ -1,0 +1,65 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PutAway false snapshot 1`] = `
+<body>
+  <div>
+    <div
+      class="_put-away_cb3619"
+    >
+      <div
+        class="_put-away-divider_cb3619"
+      />
+      <span
+        class="iconfont icon-put-away _iconfont_cb3619"
+        customclass="_iconfont_cb3619"
+        type="put-away"
+      />
+      <span
+        class="_menu_cb3619"
+      >
+        Collapse
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`PutAway true snapshot 1`] = `
+<body>
+  <div>
+    <div
+      class="_put-away_cb3619 _put-away-close_cb3619"
+    >
+      <div
+        class="_put-away-divider_cb3619 _put-away-divider-close_cb3619"
+      />
+      <span
+        class="iconfont icon-put-up _iconfont_cb3619"
+        customclass="_iconfont_cb3619"
+        type="put-up"
+      />
+    </div>
+    <div
+      id="footer"
+      style="left: 100px;"
+    />
+  </div>
+</body>
+`;
+
+exports[`click PutAway 1`] = `
+<DocumentFragment>
+  <div
+    class="_put-away_cb3619 _put-away-close_cb3619"
+  >
+    <div
+      class="_put-away-divider_cb3619 _put-away-divider-close_cb3619"
+    />
+    <span
+      class="iconfont icon-put-up _iconfont_cb3619"
+      customclass="_iconfont_cb3619"
+      type="put-up"
+    />
+  </div>
+</DocumentFragment>
+`;

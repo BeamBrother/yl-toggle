@@ -1,0 +1,2046 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Add Variations and delete 1`] = `
+<div>
+  <div>
+    <div
+      class="_variation_2ece17"
+    >
+      <div
+        class="_line_9f8bc5"
+      >
+        <div
+          class="_name_9f8bc5"
+        >
+          <span
+            class="_name-color_9f8bc5"
+            style="background: rgb(85, 110, 230);"
+          />
+        </div>
+        <div
+          class="_left_9f8bc5"
+        >
+          <div
+            class="equal width fields"
+          >
+            <div
+              class="field _drawer-variation-name_9f8bc5"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  name
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="name"
+                  index="0"
+                >
+                  <input
+                    name="variation_test_id_name"
+                    placeholder="name"
+                    type="text"
+                    value="name"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="field _drawer-variation-value_9f8bc5"
+            >
+              <div
+                class="field _status-dropdown_9f8bc5"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  value
+                </span>
+                <div
+                  aria-expanded="false"
+                  class="ui fluid floating selection dropdown"
+                  customname="value"
+                  name="variation_test_id_normal"
+                  role="listbox"
+                  tabindex="0"
+                >
+                  <div
+                    aria-atomic="true"
+                    aria-live="polite"
+                    class="divider default text"
+                    role="alert"
+                  >
+                    Please select
+                  </div>
+                  <span
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
+                    type="angle-down"
+                  />
+                  <div
+                    class="menu transition"
+                  >
+                    <div
+                      aria-checked="false"
+                      aria-selected="true"
+                      class="selected item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        true
+                      </span>
+                    </div>
+                    <div
+                      aria-checked="false"
+                      aria-selected="false"
+                      class="item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        false
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="six wide field"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label_9f8bc5"
+                >
+                  description
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="description"
+                  index="0"
+                >
+                  <input
+                    name="description"
+                    placeholder="description"
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="_operation-holder_9f8bc5"
+        />
+      </div>
+      <div
+        class="_line_9f8bc5"
+      >
+        <div
+          class="_name_9f8bc5"
+        >
+          <span
+            class="_name-color_9f8bc5"
+            style="background: rgb(255, 156, 27);"
+          />
+        </div>
+        <div
+          class="_left_9f8bc5"
+        >
+          <div
+            class="equal width fields"
+          >
+            <div
+              class="field _drawer-variation-name_9f8bc5"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  name
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="name"
+                  index="1"
+                >
+                  <input
+                    name="variation_test_name"
+                    placeholder="name"
+                    type="text"
+                    value="variation1"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="field _drawer-variation-value_9f8bc5"
+            >
+              <div
+                class="field _status-dropdown_9f8bc5"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  value
+                </span>
+                <div
+                  aria-expanded="false"
+                  class="ui fluid floating selection dropdown"
+                  customname="value"
+                  name="variation_test_normal"
+                  role="listbox"
+                  tabindex="0"
+                >
+                  <div
+                    aria-atomic="true"
+                    aria-live="polite"
+                    class="divider default text"
+                    role="alert"
+                  >
+                    Please select
+                  </div>
+                  <span
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
+                    type="angle-down"
+                  />
+                  <div
+                    class="menu transition"
+                  >
+                    <div
+                      aria-checked="false"
+                      aria-selected="true"
+                      class="selected item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        true
+                      </span>
+                    </div>
+                    <div
+                      aria-checked="false"
+                      aria-selected="false"
+                      class="item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        false
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="six wide field"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label_9f8bc5"
+                >
+                  description
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="description"
+                  index="1"
+                >
+                  <input
+                    name="description"
+                    placeholder="description"
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="_operation_9f8bc5"
+        >
+          <span
+            class="iconfont icon-minus _iconfont_9f8bc5"
+            customclass="_iconfont_9f8bc5"
+            type="minus"
+          />
+        </div>
+      </div>
+      <div
+        class="_line_9f8bc5"
+      >
+        <div
+          class="_name_9f8bc5"
+        >
+          <span
+            class="_name-color_9f8bc5"
+            style="background: rgb(42, 200, 228);"
+          />
+        </div>
+        <div
+          class="_left_9f8bc5"
+        >
+          <div
+            class="equal width fields"
+          >
+            <div
+              class="field _drawer-variation-name_9f8bc5"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  name
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="name"
+                  index="2"
+                >
+                  <input
+                    name="variation_test_name"
+                    placeholder="name"
+                    type="text"
+                    value="variation2"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="field _drawer-variation-value_9f8bc5"
+            >
+              <div
+                class="field _status-dropdown_9f8bc5"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  value
+                </span>
+                <div
+                  aria-expanded="false"
+                  class="ui fluid floating selection dropdown"
+                  customname="value"
+                  name="variation_test_normal"
+                  role="listbox"
+                  tabindex="0"
+                >
+                  <div
+                    aria-atomic="true"
+                    aria-live="polite"
+                    class="divider default text"
+                    role="alert"
+                  >
+                    Please select
+                  </div>
+                  <span
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
+                    type="angle-down"
+                  />
+                  <div
+                    class="menu transition"
+                  >
+                    <div
+                      aria-checked="false"
+                      aria-selected="true"
+                      class="selected item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        true
+                      </span>
+                    </div>
+                    <div
+                      aria-checked="false"
+                      aria-selected="false"
+                      class="item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        false
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="six wide field"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label_9f8bc5"
+                >
+                  description
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="description"
+                  index="2"
+                >
+                  <input
+                    name="description"
+                    placeholder="description"
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="_operation_9f8bc5"
+        >
+          <span
+            class="iconfont icon-minus _iconfont_9f8bc5"
+            customclass="_iconfont_9f8bc5"
+            type="minus"
+          />
+        </div>
+      </div>
+      <div
+        class="_line_9f8bc5"
+      >
+        <div
+          class="_name_9f8bc5"
+        >
+          <span
+            class="_name-color_9f8bc5"
+            style="background: rgb(167, 108, 236);"
+          />
+        </div>
+        <div
+          class="_left_9f8bc5"
+        >
+          <div
+            class="equal width fields"
+          >
+            <div
+              class="field _drawer-variation-name_9f8bc5"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  name
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="name"
+                  index="3"
+                >
+                  <input
+                    name="variation_test_name"
+                    placeholder="name"
+                    type="text"
+                    value="variation3"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="field _drawer-variation-value_9f8bc5"
+            >
+              <div
+                class="field _status-dropdown_9f8bc5"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  value
+                </span>
+                <div
+                  aria-expanded="false"
+                  class="ui fluid floating selection dropdown"
+                  customname="value"
+                  name="variation_test_normal"
+                  role="listbox"
+                  tabindex="0"
+                >
+                  <div
+                    aria-atomic="true"
+                    aria-live="polite"
+                    class="divider default text"
+                    role="alert"
+                  >
+                    Please select
+                  </div>
+                  <span
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
+                    type="angle-down"
+                  />
+                  <div
+                    class="menu transition"
+                  >
+                    <div
+                      aria-checked="false"
+                      aria-selected="true"
+                      class="selected item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        true
+                      </span>
+                    </div>
+                    <div
+                      aria-checked="false"
+                      aria-selected="false"
+                      class="item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        false
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="six wide field"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label_9f8bc5"
+                >
+                  description
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="description"
+                  index="3"
+                >
+                  <input
+                    name="description"
+                    placeholder="description"
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="_operation_9f8bc5"
+        >
+          <span
+            class="iconfont icon-minus _iconfont_9f8bc5"
+            customclass="_iconfont_9f8bc5"
+            type="minus"
+          />
+        </div>
+      </div>
+      <div
+        class="_drawer-variation-add_2ece17"
+      >
+        <button
+          class="ui primary button _variation-add-btn_2ece17"
+          type="button"
+        >
+          <span
+            class="iconfont icon-add _iconfont_2ece17"
+            customclass="_iconfont_2ece17"
+            type="add"
+          />
+          <span
+            class="_variation-add-btn-text_2ece17"
+          >
+            Add Variation
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Add Variations and delete 2`] = `
+<div>
+  <div>
+    <div
+      class="_variation_2ece17"
+    >
+      <div
+        class="_line_9f8bc5"
+      >
+        <div
+          class="_name_9f8bc5"
+        >
+          <span
+            class="_name-color_9f8bc5"
+            style="background: rgb(85, 110, 230);"
+          />
+        </div>
+        <div
+          class="_left_9f8bc5"
+        >
+          <div
+            class="equal width fields"
+          >
+            <div
+              class="field _drawer-variation-name_9f8bc5"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  name
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="name"
+                  index="0"
+                >
+                  <input
+                    name="variation_test_id_name"
+                    placeholder="name"
+                    type="text"
+                    value="name"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="field _drawer-variation-value_9f8bc5"
+            >
+              <div
+                class="field _status-dropdown_9f8bc5"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  value
+                </span>
+                <div
+                  aria-expanded="false"
+                  class="ui fluid floating selection dropdown"
+                  customname="value"
+                  name="variation_test_id_normal"
+                  role="listbox"
+                  tabindex="0"
+                >
+                  <div
+                    aria-atomic="true"
+                    aria-live="polite"
+                    class="divider default text"
+                    role="alert"
+                  >
+                    Please select
+                  </div>
+                  <span
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
+                    type="angle-down"
+                  />
+                  <div
+                    class="menu transition"
+                  >
+                    <div
+                      aria-checked="false"
+                      aria-selected="true"
+                      class="selected item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        true
+                      </span>
+                    </div>
+                    <div
+                      aria-checked="false"
+                      aria-selected="false"
+                      class="item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        false
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="six wide field"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label_9f8bc5"
+                >
+                  description
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="description"
+                  index="0"
+                >
+                  <input
+                    name="description"
+                    placeholder="description"
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="_operation-holder_9f8bc5"
+        />
+      </div>
+      <div
+        class="_line_9f8bc5"
+      >
+        <div
+          class="_name_9f8bc5"
+        >
+          <span
+            class="_name-color_9f8bc5"
+            style="background: rgb(255, 156, 27);"
+          />
+        </div>
+        <div
+          class="_left_9f8bc5"
+        >
+          <div
+            class="equal width fields"
+          >
+            <div
+              class="field _drawer-variation-name_9f8bc5"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  name
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="name"
+                  index="1"
+                >
+                  <input
+                    name="variation_test_name"
+                    placeholder="name"
+                    type="text"
+                    value="variation2"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="field _drawer-variation-value_9f8bc5"
+            >
+              <div
+                class="field _status-dropdown_9f8bc5"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  value
+                </span>
+                <div
+                  aria-expanded="false"
+                  class="ui fluid floating selection dropdown"
+                  customname="value"
+                  name="variation_test_normal"
+                  role="listbox"
+                  tabindex="0"
+                >
+                  <div
+                    aria-atomic="true"
+                    aria-live="polite"
+                    class="divider default text"
+                    role="alert"
+                  >
+                    Please select
+                  </div>
+                  <span
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
+                    type="angle-down"
+                  />
+                  <div
+                    class="menu transition"
+                  >
+                    <div
+                      aria-checked="false"
+                      aria-selected="true"
+                      class="selected item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        true
+                      </span>
+                    </div>
+                    <div
+                      aria-checked="false"
+                      aria-selected="false"
+                      class="item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        false
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="six wide field"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label_9f8bc5"
+                >
+                  description
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="description"
+                  index="1"
+                >
+                  <input
+                    name="description"
+                    placeholder="description"
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="_operation_9f8bc5"
+        >
+          <span
+            class="iconfont icon-minus _iconfont_9f8bc5"
+            customclass="_iconfont_9f8bc5"
+            type="minus"
+          />
+        </div>
+      </div>
+      <div
+        class="_line_9f8bc5"
+      >
+        <div
+          class="_name_9f8bc5"
+        >
+          <span
+            class="_name-color_9f8bc5"
+            style="background: rgb(42, 200, 228);"
+          />
+        </div>
+        <div
+          class="_left_9f8bc5"
+        >
+          <div
+            class="equal width fields"
+          >
+            <div
+              class="field _drawer-variation-name_9f8bc5"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  name
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="name"
+                  index="2"
+                >
+                  <input
+                    name="variation_test_name"
+                    placeholder="name"
+                    type="text"
+                    value="variation3"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="field _drawer-variation-value_9f8bc5"
+            >
+              <div
+                class="field _status-dropdown_9f8bc5"
+              >
+                <span
+                  class="_label-text_9f8bc5"
+                >
+                  <span
+                    class="_label-required_9f8bc5"
+                  >
+                    *
+                  </span>
+                  value
+                </span>
+                <div
+                  aria-expanded="false"
+                  class="ui fluid floating selection dropdown"
+                  customname="value"
+                  name="variation_test_normal"
+                  role="listbox"
+                  tabindex="0"
+                >
+                  <div
+                    aria-atomic="true"
+                    aria-live="polite"
+                    class="divider default text"
+                    role="alert"
+                  >
+                    Please select
+                  </div>
+                  <span
+                    class="iconfont icon-angle-down _angle-down_9f8bc5"
+                    customclass="_angle-down_9f8bc5"
+                    type="angle-down"
+                  />
+                  <div
+                    class="menu transition"
+                  >
+                    <div
+                      aria-checked="false"
+                      aria-selected="true"
+                      class="selected item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        true
+                      </span>
+                    </div>
+                    <div
+                      aria-checked="false"
+                      aria-selected="false"
+                      class="item"
+                      role="option"
+                      style="pointer-events: all;"
+                    >
+                      <span
+                        class="text"
+                      >
+                        false
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="six wide field"
+            >
+              <div
+                class="field"
+              >
+                <span
+                  class="_label_9f8bc5"
+                >
+                  description
+                </span>
+                <div
+                  class="ui fluid input"
+                  customname="description"
+                  index="2"
+                >
+                  <input
+                    name="description"
+                    placeholder="description"
+                    type="text"
+                    value=""
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="_operation_9f8bc5"
+        >
+          <span
+            class="iconfont icon-minus _iconfont_9f8bc5"
+            customclass="_iconfont_9f8bc5"
+            type="minus"
+          />
+        </div>
+      </div>
+      <div
+        class="_drawer-variation-add_2ece17"
+      >
+        <button
+          class="ui primary button _variation-add-btn_2ece17"
+          type="button"
+        >
+          <span
+            class="iconfont icon-add _iconfont_2ece17"
+            customclass="_iconfont_2ece17"
+            type="add"
+          />
+          <span
+            class="_variation-add-btn-text_2ece17"
+          >
+            Add Variation
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Variations error name 1`] = `
+<DocumentFragment>
+  <div
+    class="_variation_2ece17"
+  >
+    <div
+      class="_line_9f8bc5"
+    >
+      <div
+        class="_name_9f8bc5"
+      >
+        <span
+          class="_name-color_9f8bc5"
+          style="background: rgb(85, 110, 230);"
+        />
+      </div>
+      <div
+        class="_left_9f8bc5"
+      >
+        <div
+          class="equal width fields"
+        >
+          <div
+            class="field _drawer-variation-name_9f8bc5"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label-text_9f8bc5"
+              >
+                <span
+                  class="_label-required_9f8bc5"
+                >
+                  *
+                </span>
+                name
+              </span>
+              <div
+                class="ui fluid input"
+                customname="name"
+                index="0"
+              >
+                <input
+                  name="variation_test_id_name"
+                  placeholder="name"
+                  type="text"
+                  value="name"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="field _drawer-variation-value_9f8bc5"
+          >
+            <div
+              class="field _status-dropdown_9f8bc5"
+            >
+              <span
+                class="_label-text_9f8bc5"
+              >
+                <span
+                  class="_label-required_9f8bc5"
+                >
+                  *
+                </span>
+                value
+              </span>
+              <div
+                aria-expanded="false"
+                class="ui fluid floating selection dropdown"
+                customname="value"
+                name="variation_test_id_normal"
+                role="listbox"
+                tabindex="0"
+              >
+                <div
+                  aria-atomic="true"
+                  aria-live="polite"
+                  class="divider default text"
+                  role="alert"
+                >
+                  Please select
+                </div>
+                <span
+                  class="iconfont icon-angle-down _angle-down_9f8bc5"
+                  customclass="_angle-down_9f8bc5"
+                  type="angle-down"
+                />
+                <div
+                  class="menu transition"
+                >
+                  <div
+                    aria-checked="false"
+                    aria-selected="true"
+                    class="selected item"
+                    role="option"
+                    style="pointer-events: all;"
+                  >
+                    <span
+                      class="text"
+                    >
+                      true
+                    </span>
+                  </div>
+                  <div
+                    aria-checked="false"
+                    aria-selected="false"
+                    class="item"
+                    role="option"
+                    style="pointer-events: all;"
+                  >
+                    <span
+                      class="text"
+                    >
+                      false
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="six wide field"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label_9f8bc5"
+              >
+                description
+              </span>
+              <div
+                class="ui fluid input"
+                customname="description"
+                index="0"
+              >
+                <input
+                  name="description"
+                  placeholder="description"
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="_operation-holder_9f8bc5"
+      />
+    </div>
+    <div
+      class="_line_9f8bc5"
+    >
+      <div
+        class="_name_9f8bc5"
+      >
+        <span
+          class="_name-color_9f8bc5"
+          style="background: rgb(255, 156, 27);"
+        />
+      </div>
+      <div
+        class="_left_9f8bc5"
+      >
+        <div
+          class="equal width fields"
+        >
+          <div
+            class="field _drawer-variation-name_9f8bc5"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label-text_9f8bc5"
+              >
+                <span
+                  class="_label-required_9f8bc5"
+                >
+                  *
+                </span>
+                name
+              </span>
+              <div
+                class="ui fluid input"
+                customname="name"
+                index="1"
+              >
+                <input
+                  name="variation_test_id2_name"
+                  placeholder="name"
+                  type="text"
+                  value="name"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="field _drawer-variation-value_9f8bc5"
+          >
+            <div
+              class="field _status-dropdown_9f8bc5"
+            >
+              <span
+                class="_label-text_9f8bc5"
+              >
+                <span
+                  class="_label-required_9f8bc5"
+                >
+                  *
+                </span>
+                value
+              </span>
+              <div
+                aria-expanded="false"
+                class="ui fluid floating selection dropdown"
+                customname="value"
+                name="variation_test_id2_normal"
+                role="listbox"
+                tabindex="0"
+              >
+                <div
+                  aria-atomic="true"
+                  aria-live="polite"
+                  class="divider default text"
+                  role="alert"
+                >
+                  Please select
+                </div>
+                <span
+                  class="iconfont icon-angle-down _angle-down_9f8bc5"
+                  customclass="_angle-down_9f8bc5"
+                  type="angle-down"
+                />
+                <div
+                  class="menu transition"
+                >
+                  <div
+                    aria-checked="false"
+                    aria-selected="true"
+                    class="selected item"
+                    role="option"
+                    style="pointer-events: all;"
+                  >
+                    <span
+                      class="text"
+                    >
+                      true
+                    </span>
+                  </div>
+                  <div
+                    aria-checked="false"
+                    aria-selected="false"
+                    class="item"
+                    role="option"
+                    style="pointer-events: all;"
+                  >
+                    <span
+                      class="text"
+                    >
+                      false
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="six wide field"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label_9f8bc5"
+              >
+                description
+              </span>
+              <div
+                class="ui fluid input"
+                customname="description"
+                index="1"
+              >
+                <input
+                  name="description"
+                  placeholder="description"
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="_operation-holder_9f8bc5"
+      />
+    </div>
+    <div
+      class="_drawer-variation-add_2ece17"
+    >
+      <button
+        class="ui primary button _variation-add-btn_2ece17"
+        type="button"
+      >
+        <span
+          class="iconfont icon-add _iconfont_2ece17"
+          customclass="_iconfont_2ece17"
+          type="add"
+        />
+        <span
+          class="_variation-add-btn-text_2ece17"
+        >
+          Add Variation
+        </span>
+      </button>
+    </div>
+    <div
+      class="_error-text_2ece17"
+      name="variations_duplicated"
+    >
+      Variation names are duplicated, please change!
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Variations snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="_variation_2ece17"
+  >
+    <div
+      class="_line_9f8bc5"
+    >
+      <div
+        class="_name_9f8bc5"
+      >
+        <span
+          class="_name-color_9f8bc5"
+          style="background: rgb(85, 110, 230);"
+        />
+      </div>
+      <div
+        class="_left_9f8bc5"
+      >
+        <div
+          class="equal width fields"
+        >
+          <div
+            class="field _drawer-variation-name_9f8bc5"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label-text_9f8bc5"
+              >
+                <span
+                  class="_label-required_9f8bc5"
+                >
+                  *
+                </span>
+                name
+              </span>
+              <div
+                class="ui fluid input"
+                customname="name"
+                index="0"
+              >
+                <input
+                  name="variation_test_id_name"
+                  placeholder="name"
+                  type="text"
+                  value="name"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="field _drawer-variation-value_9f8bc5"
+          >
+            <div
+              class="field _status-dropdown_9f8bc5"
+            >
+              <span
+                class="_label-text_9f8bc5"
+              >
+                <span
+                  class="_label-required_9f8bc5"
+                >
+                  *
+                </span>
+                value
+              </span>
+              <div
+                aria-expanded="false"
+                class="ui fluid floating selection dropdown"
+                customname="value"
+                name="variation_test_id_normal"
+                role="listbox"
+                tabindex="0"
+              >
+                <div
+                  aria-atomic="true"
+                  aria-live="polite"
+                  class="divider default text"
+                  role="alert"
+                >
+                  Please select
+                </div>
+                <span
+                  class="iconfont icon-angle-down _angle-down_9f8bc5"
+                  customclass="_angle-down_9f8bc5"
+                  type="angle-down"
+                />
+                <div
+                  class="menu transition"
+                >
+                  <div
+                    aria-checked="false"
+                    aria-selected="true"
+                    class="selected item"
+                    role="option"
+                    style="pointer-events: all;"
+                  >
+                    <span
+                      class="text"
+                    >
+                      true
+                    </span>
+                  </div>
+                  <div
+                    aria-checked="false"
+                    aria-selected="false"
+                    class="item"
+                    role="option"
+                    style="pointer-events: all;"
+                  >
+                    <span
+                      class="text"
+                    >
+                      false
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="six wide field"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label_9f8bc5"
+              >
+                description
+              </span>
+              <div
+                class="ui fluid input"
+                customname="description"
+                index="0"
+              >
+                <input
+                  name="description"
+                  placeholder="description"
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="_operation-holder_9f8bc5"
+      />
+    </div>
+    <div
+      class="_drawer-variation-add_2ece17"
+    >
+      <button
+        class="ui primary button _variation-add-btn_2ece17"
+        type="button"
+      >
+        <span
+          class="iconfont icon-add _iconfont_2ece17"
+          customclass="_iconfont_2ece17"
+          type="add"
+        />
+        <span
+          class="_variation-add-btn-text_2ece17"
+        >
+          Add Variation
+        </span>
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Variations snapshot 2`] = `
+<DocumentFragment>
+  <div
+    class="_variation_2ece17"
+  >
+    <div
+      class="_line_9f8bc5"
+    >
+      <div
+        class="_name_9f8bc5"
+      >
+        <span
+          class="_name-color_9f8bc5"
+          style="background: rgb(85, 110, 230);"
+        />
+      </div>
+      <div
+        class="_left_9f8bc5"
+      >
+        <div
+          class="equal width fields"
+        >
+          <div
+            class="field _drawer-variation-name_9f8bc5"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label-text_9f8bc5"
+              >
+                <span
+                  class="_label-required_9f8bc5"
+                >
+                  *
+                </span>
+                name
+              </span>
+              <div
+                class="ui fluid input"
+                customname="name"
+                index="0"
+              >
+                <input
+                  name="variation_test_id_name"
+                  placeholder="name"
+                  type="text"
+                  value="name"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="field _drawer-variation-value_9f8bc5"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label-text_9f8bc5"
+              >
+                <span
+                  class="_label-required_9f8bc5"
+                >
+                  *
+                </span>
+                value
+              </span>
+              <div
+                class="ui fluid input"
+                customname="value"
+                index="0"
+              >
+                <input
+                  name="variation_test_id"
+                  placeholder="value"
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="six wide field"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label_9f8bc5"
+              >
+                description
+              </span>
+              <div
+                class="ui fluid input"
+                customname="description"
+                index="0"
+              >
+                <input
+                  name="description"
+                  placeholder="description"
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="_operation-holder_9f8bc5"
+      />
+    </div>
+    <div
+      class="_drawer-variation-add_2ece17"
+    >
+      <button
+        class="ui primary button _variation-add-btn_2ece17"
+        type="button"
+      >
+        <span
+          class="iconfont icon-add _iconfont_2ece17"
+          customclass="_iconfont_2ece17"
+          type="add"
+        />
+        <span
+          class="_variation-add-btn-text_2ece17"
+        >
+          Add Variation
+        </span>
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Variations snapshot 3`] = `
+<DocumentFragment>
+  <div
+    class="_variation_2ece17"
+  >
+    <div
+      class="_line_9f8bc5"
+    >
+      <div
+        class="_name_9f8bc5"
+      >
+        <span
+          class="_name-color_9f8bc5"
+          style="background: rgb(85, 110, 230);"
+        />
+      </div>
+      <div
+        class="_left_9f8bc5"
+      >
+        <div
+          class="equal width fields"
+        >
+          <div
+            class="field _drawer-variation-name_9f8bc5"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label-text_9f8bc5"
+              >
+                <span
+                  class="_label-required_9f8bc5"
+                >
+                  *
+                </span>
+                name
+              </span>
+              <div
+                class="ui fluid input"
+                customname="name"
+                index="0"
+              >
+                <input
+                  name="variation_test_id_name"
+                  placeholder="name"
+                  type="text"
+                  value="name"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="field _drawer-variation-value_9f8bc5"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label-text_9f8bc5"
+              >
+                <span
+                  class="_label-required_9f8bc5"
+                >
+                  *
+                </span>
+                value
+              </span>
+              <div
+                class="ui fluid input"
+                customname="value"
+                index="0"
+              >
+                <input
+                  name="variation_test_id"
+                  placeholder="value"
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="six wide field"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label_9f8bc5"
+              >
+                description
+              </span>
+              <div
+                class="ui fluid input"
+                customname="description"
+                index="0"
+              >
+                <input
+                  name="description"
+                  placeholder="description"
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="_operation-holder_9f8bc5"
+      />
+    </div>
+    <div
+      class="_drawer-variation-add_2ece17"
+    >
+      <button
+        class="ui primary button _variation-add-btn_2ece17"
+        type="button"
+      >
+        <span
+          class="iconfont icon-add _iconfont_2ece17"
+          customclass="_iconfont_2ece17"
+          type="add"
+        />
+        <span
+          class="_variation-add-btn-text_2ece17"
+        >
+          Add Variation
+        </span>
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Variations snapshot 4`] = `
+<DocumentFragment>
+  <div
+    class="_variation_2ece17"
+  >
+    <div
+      class="_line_9f8bc5"
+    >
+      <div
+        class="_name_9f8bc5"
+      >
+        <span
+          class="_name-color_9f8bc5"
+          style="background: rgb(85, 110, 230);"
+        />
+      </div>
+      <div
+        class="_left_9f8bc5"
+      >
+        <div
+          class="equal width fields"
+        >
+          <div
+            class="field _drawer-variation-name_9f8bc5"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label-text_9f8bc5"
+              >
+                <span
+                  class="_label-required_9f8bc5"
+                >
+                  *
+                </span>
+                name
+              </span>
+              <div
+                class="ui fluid input"
+                customname="name"
+                index="0"
+              >
+                <input
+                  name="variation_test_id_name"
+                  placeholder="name"
+                  type="text"
+                  value="name"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="field _drawer-variation-value_9f8bc5"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label-text_9f8bc5"
+              >
+                <span
+                  class="_label-required_9f8bc5"
+                >
+                  *
+                </span>
+                value
+              </span>
+              <div
+                class="ui fluid icon input"
+                customname="value"
+                index="0"
+              >
+                <input
+                  name="variation_test_id"
+                  placeholder="value"
+                  type="text"
+                  value=""
+                />
+                <span
+                  class="iconfont icon-code _icon-evaluate_9f8bc5"
+                  customclass="_icon-evaluate_9f8bc5"
+                  type="code"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="six wide field"
+          >
+            <div
+              class="field"
+            >
+              <span
+                class="_label_9f8bc5"
+              >
+                description
+              </span>
+              <div
+                class="ui fluid input"
+                customname="description"
+                index="0"
+              >
+                <input
+                  name="description"
+                  placeholder="description"
+                  type="text"
+                  value=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="_operation-holder_9f8bc5"
+      />
+    </div>
+    <div
+      class="_drawer-variation-add_2ece17"
+    >
+      <button
+        class="ui primary button _variation-add-btn_2ece17"
+        type="button"
+      >
+        <span
+          class="iconfont icon-add _iconfont_2ece17"
+          customclass="_iconfont_2ece17"
+          type="add"
+        />
+        <span
+          class="_variation-add-btn-text_2ece17"
+        >
+          Add Variation
+        </span>
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;

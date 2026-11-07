@@ -1,0 +1,18 @@
+# Keep build context small for root-context builds (docker build -f server/Dockerfile .)
+**/node_modules
+server/target
+api/node
+ui/build
+.git
+.idea
+.zcode
+docs
+pictures
+*.log
+.tools
+analysis/target
+api/*/target
+docs/.docusaurus
+docs/build
+docs/node_modules
+server/yl-toggle-server-linux

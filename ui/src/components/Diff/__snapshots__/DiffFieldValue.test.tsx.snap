@@ -1,0 +1,48 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DiffFieldValue snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="_diff-field-value_dfd3c7 _field-value-same_dfd3c7"
+  >
+    Test Text
+  </div>
+</DocumentFragment>
+`;
+
+exports[`DiffFieldValue snapshot 2`] = `
+<DocumentFragment>
+  <div
+    class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+  >
+    Test Text
+  </div>
+</DocumentFragment>
+`;
+
+exports[`DiffFieldValue snapshot 3`] = `
+<DocumentFragment>
+  <div
+    class="_diff-field-value_dfd3c7 _field-value-add_dfd3c7"
+  >
+    Test Text
+  </div>
+</DocumentFragment>
+`;
+
+exports[`DiffFieldValue snapshot 4`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+    >
+      Test Text1
+    </div>
+    <div
+      class="_diff-field-value_dfd3c7 _field-value-remove_dfd3c7"
+    >
+      Test text2
+    </div>
+  </div>
+</DocumentFragment>
+`;

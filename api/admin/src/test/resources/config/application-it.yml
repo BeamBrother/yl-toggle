@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    jdbc-url: jdbc:mariadb://127.0.0.1:13308/yl-toggle?useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false&rewriteBatchedStatements=TRUE&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+  flyway:
+    enabled: true
+    clean-disabled: true
+    table: flyway_schema_history
+
+app:
+  toggle-deadline: 30
+  server-data-source: MEMORY # DB
+  security:
+    jwt:
+      keystore-location: keys/keystore.jks
+      keystore-password: password
+      key-alias: jwtsigning
+      private-key-passphrase: password
+      exclude-tenant-uri:
+        - /api/server/toggles
+        - /api/server/sdk_keys
+        - /api/server/events
+        - /api/v3/api-docs.yaml
+        - /api/actuator/health
+      guest-disabled: true
+      guest-default-password: Guest_12345

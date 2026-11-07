@@ -1,0 +1,73 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Name snapshot 1`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="field"
+    >
+      <label>
+        <span
+          class="_label-required_063ad5"
+        >
+          *
+        </span>
+        Name
+      </label>
+      <div
+        class="field _input_063ad5"
+      >
+        <div
+          class="ui input"
+        >
+          <input
+            name="name"
+            placeholder="Please input name"
+            type="text"
+            value="test"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Name snapshot 2`] = `
+<DocumentFragment>
+  <div>
+    <div
+      class="field"
+    >
+      <label>
+        <span
+          class="_label-required_063ad5"
+        >
+          *
+        </span>
+        Name
+      </label>
+      <div
+        class="error field _input_063ad5"
+      >
+        <div
+          class="ui input"
+        >
+          <input
+            aria-invalid="true"
+            name="name"
+            placeholder="Please input name"
+            type="text"
+            value="test"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="_error-text_063ad5"
+    >
+      error message
+    </div>
+  </div>
+</DocumentFragment>
+`;

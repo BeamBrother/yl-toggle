@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PutAwayMenu snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="_title_ee4416"
+  >
+    <div
+      class="_divider_ee4416"
+    />
+    <div
+      class="_name_ee4416"
+    >
+      title
+    </div>
+    <span
+      class="iconfont icon-question _icon-question_ee4416"
+      customclass="_icon-question_ee4416"
+      type="question"
+    />
+  </div>
+</DocumentFragment>
+`;

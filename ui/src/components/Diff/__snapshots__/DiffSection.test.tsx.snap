@@ -1,0 +1,78 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DiffSection snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="_diff-section_91cb86"
+  >
+    <div
+      class="_head-line_91cb86"
+    >
+      <div
+        class="_before_91cb86"
+      >
+        <div
+          class="_title_91cb86"
+        >
+          Test
+        </div>
+      </div>
+      <div
+        class="_after_91cb86"
+      >
+        <div
+          class="_title_91cb86"
+        >
+          Test
+        </div>
+      </div>
+    </div>
+    <div
+      class="_content_91cb86"
+    >
+      <div>
+        test
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`DiffSection snapshot 2`] = `
+<DocumentFragment>
+  <div
+    class="_diff-section_91cb86"
+    hidden=""
+  >
+    <div
+      class="_head-line_91cb86"
+    >
+      <div
+        class="_before_91cb86"
+      >
+        <div
+          class="_title_91cb86"
+        >
+          Test
+        </div>
+      </div>
+      <div
+        class="_after_91cb86"
+      >
+        <div
+          class="_title_91cb86"
+        >
+          Test
+        </div>
+      </div>
+    </div>
+    <div
+      class="_content_91cb86"
+    >
+      <div>
+        test
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

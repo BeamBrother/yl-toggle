@@ -1,0 +1,92 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SizeTips snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="_size-tips_dc7bb3"
+  >
+    <div
+      class="_main_dc7bb3"
+    >
+      <div
+        class="_icon_dc7bb3"
+      >
+        <span
+          class="iconfont icon-warning-circle _warning-icon_dc7bb3"
+          customclass="_warning-icon_dc7bb3"
+          type="warning-circle"
+        />
+      </div>
+      <div
+        class="_content_dc7bb3"
+      >
+        <div
+          class="_tips-title_dc7bb3"
+        >
+          Warning tips
+        </div>
+        <div
+          class="_tips-content_dc7bb3"
+        >
+          The total content of this page can not exceed 1 MB, and will not be released normally when it is larger than 1 MB. Currently, it has reached 0 KB!
+        </div>
+      </div>
+    </div>
+    <div
+      class="_actions_dc7bb3"
+    >
+      <button
+        class="ui primary button _button_dc7bb3"
+      >
+        I see
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`SizeTips snapshot 2`] = `
+<DocumentFragment>
+  <div
+    class="_size-tips_dc7bb3"
+    hidden=""
+  >
+    <div
+      class="_main_dc7bb3"
+    >
+      <div
+        class="_icon_dc7bb3"
+      >
+        <span
+          class="iconfont icon-warning-circle _warning-icon_dc7bb3"
+          customclass="_warning-icon_dc7bb3"
+          type="warning-circle"
+        />
+      </div>
+      <div
+        class="_content_dc7bb3"
+      >
+        <div
+          class="_tips-title_dc7bb3"
+        >
+          Warning tips
+        </div>
+        <div
+          class="_tips-content_dc7bb3"
+        >
+          The total content of this page can not exceed 1 MB, and will not be released normally when it is larger than 1 MB. Currently, it has reached 0 KB!
+        </div>
+      </div>
+    </div>
+    <div
+      class="_actions_dc7bb3"
+    >
+      <button
+        class="ui primary button _button_dc7bb3"
+      >
+        I see
+      </button>
+    </div>
+  </div>
+</DocumentFragment>
+`;

@@ -1,0 +1,42 @@
+name: Build & Test & Coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Test
+      run: make test
+    - name: Release
+      run: make release
+
+  coverage:
+    runs-on: ubuntu-latest
+    container:
+      image: xd009642/tarpaulin:develop-nightly
+      options: --security-opt seccomp=unconfined
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: generate code coverage
+        run: |
+          cargo +nightly tarpaulin --verbose --workspace --timeout 120 --out xml
+      - name: upload to codecov.io
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true
+

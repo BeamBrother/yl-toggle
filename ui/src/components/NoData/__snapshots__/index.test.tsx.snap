@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`NoData snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="_no-data_947f35"
+  >
+    <div>
+      <img
+        alt="no-data"
+        class="_no-data-image_947f35"
+        src="/src/images/no-data.png"
+      />
+    </div>
+    <div>
+      No Data
+    </div>
+  </div>
+</DocumentFragment>
+`;
