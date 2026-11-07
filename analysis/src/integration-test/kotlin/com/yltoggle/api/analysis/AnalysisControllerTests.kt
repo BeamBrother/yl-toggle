@@ -8,12 +8,11 @@ import org.testcontainers.junit.jupiter.Container
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Testcontainers
-import org.testcontainers.containers.MySQLContainer
+import org.testcontainers.containers.MariaDBContainer
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
 
-// for mac with M1/M2 chips:  docker pull arm64v8/mysql:8.0
-// for mac with M1/M2 chips:  docker pull arm64v8/postgres:14.6
+// MariaDB matches the deployment database. PostgreSQL remains covered as a supported deployment target.
 @Tag("integration")
 @Testcontainers
 class AnalysisControllerTests {
@@ -21,7 +20,7 @@ class AnalysisControllerTests {
     companion object {
         @Container
         @JvmField
-        val mysql: MySQLContainer<*> = MySQLContainer(DockerImageName.parse("mysql:8.0"))
+        val mysql: MariaDBContainer<*> = MariaDBContainer(DockerImageName.parse("mariadb:11.8.9"))
             .withDatabaseName("yl-toggle-events")
             .withInitScript("init.sql")
             .withUsername("root")

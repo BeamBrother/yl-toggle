@@ -59,23 +59,23 @@ spec:
             - name: TZ
               value: {{ $top.Values.timezone }}
             {{- if eq .name $top.Values.backendAPI.name }}
-            - name: spring.datasource.username
+            - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: {{ .database.secret_name | quote }}
                   key: {{ .database.username_secret_key | quote }}
-            - name: spring.datasource.password
+            - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .database.secret_name | quote }}
                   key: {{ .database.password_secret_key | quote }}
             {{- if $top.Values.ldap.enabled }}
-            - name: app.security.ldap.userDn
+            - name: APP_SECURITY_LDAP_USER_DN
               valueFrom:
                 secretKeyRef:
                   name: {{ $top.Values.ldap.credentialsSecretName | quote }}
                   key: {{ $top.Values.ldap.credentialsManagerDnSecretKey | quote }}
-            - name: app.security.ldap.password
+            - name: APP_SECURITY_LDAP_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ $top.Values.ldap.credentialsSecretName | quote }}
@@ -83,12 +83,12 @@ spec:
             {{- end }}
             {{- end }}
             {{- if eq .name $top.Values.analysisAPI.name }}
-            - name: app.datasource.username
+            - name: APP_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: {{ .database.secret_name | quote }}
                   key: {{ .database.username_secret_key | quote }}
-            - name: app.datasource.password
+            - name: APP_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .database.secret_name | quote }}

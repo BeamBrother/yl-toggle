@@ -159,6 +159,7 @@ impl SdkRepository {
         self.inner.all_event_string(server_sdk_key)
     }
 
+    #[cfg_attr(feature = "unstable", allow(dead_code))]
     pub fn client_sync_now(&self, sdk_key: &str, t: SyncType) -> Result<String, YTServerError> {
         let sdk_clients = self.inner.sdk_clients.write();
         let client = match sdk_clients.get(sdk_key) {
@@ -430,6 +431,17 @@ mod tests {
         assert!(client.is_some());
 
         let client = client.unwrap();
+        for _ in 0..100 {
+            if client.initialized() {
+                break;
+            }
+            tokio::time::sleep(Duration::from_millis(20)).await;
+        }
+        assert!(
+            client.initialized(),
+            "SDK client did not finish initial sync"
+        );
+
         let user = YTUser::new().with("city", "4");
         let default: HashMap<String, String> = HashMap::default();
         let v = client.json_value("json_toggle", &user, json!(default));

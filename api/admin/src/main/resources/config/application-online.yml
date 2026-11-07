@@ -33,6 +33,7 @@ logging:
     path: ./logs
 
 app:
+  sdk-version-fetch-enabled: true
   toggle-deadline: 30
   server-data-source: MEMORY # DB
   server-base-urls: http://127.0.0.1:4007 # , split

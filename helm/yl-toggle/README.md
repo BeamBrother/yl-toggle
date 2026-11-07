@@ -36,6 +36,7 @@ The following table lists the configurable parameters of the yl-toggle chart and
 | `backendAPI.enabled` | Enables or disables backend API service deployment | `true` |
 | `backendAPI.replicaCount` | The number of replicas for backend API service | `2` |
 | `backendAPI.logLevel` | Backend API service logging level | `"INFO"` |
+| `backendAPI.sdkVersionFetchEnabled` | Fetch public SDK version metadata at startup and daily | `true` |
 | `backendAPI.ports.http` | Backend API service HTTP port number | `4008` |
 | `backendAPI.image.repository` | Container repository to pull the image from | `"yl-toggle/api"` |
 | `backendAPI.image.tag` | Image tag to use; defaults to the chart app version | `3.0.0` |

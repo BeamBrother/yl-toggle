@@ -58,7 +58,8 @@
           "conditions": [
             {
               "type": "segment",
-              "predicate": "in",
+              "subject": "user",
+              "predicate": "is in",
               "objects": [
                 "some_segment1-fjoaefjaam"
               ]
@@ -107,7 +108,8 @@
           "conditions": [
             {
               "type": "segment",
-              "predicate": "in",
+              "subject": "user",
+              "predicate": "is in",
               "objects": [
                 "some_segment1-fjoaefjaam"
               ]
@@ -156,7 +158,8 @@
           "conditions": [
             {
               "type": "segment",
-              "predicate": "in",
+              "subject": "user",
+              "predicate": "is in",
               "objects": [
                 "some_segment1-fjoaefjaam"
               ]
@@ -227,7 +230,8 @@
           "conditions": [
             {
               "type": "segment",
-              "predicate": "in",
+              "subject": "user",
+              "predicate": "is in",
               "objects": [
                 "some_segment1-fjoaefjaam"
               ]

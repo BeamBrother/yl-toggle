@@ -81,8 +81,8 @@ impl EventsBufferConfig {
     }
 }
 
-/// Snapshot for operational monitoring. `upstream_deliveries` counts successful
-/// posts, so an event fan-out to both ingestion services counts twice.
+/// Snapshot for operational monitoring. `upstream_deliveries` counts delivered
+/// payload entries, so fan-out to both ingestion services is counted per destination.
 #[derive(Debug, Clone, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EventsStats {
@@ -249,17 +249,24 @@ async fn flush_once(inner: &BufferInner) {
                 Err(e) => {
                     warn!(
                         "events buffer analysis serialize error, dropped {} events: {}",
-                        events.len(),
+                        analysis_events.len(),
                         e
                     );
                     inner
                         .dropped_send
-                        .fetch_add(events.len() as u64, Ordering::Relaxed);
+                        .fetch_add(analysis_events.len() as u64, Ordering::Relaxed);
                     post_with_retry(inner, &inner.events_url, &headers, &body, events.len()).await;
                     continue;
                 }
             };
-            post_with_retry(inner, analysis_url, &headers, &analysis_body, events.len()).await;
+            post_with_retry(
+                inner,
+                analysis_url,
+                &headers,
+                &analysis_body,
+                analysis_events.len(),
+            )
+            .await;
         }
         post_with_retry(inner, &inner.events_url, &headers, &body, events.len()).await;
     }
@@ -450,6 +457,74 @@ mod tests {
         assert_eq!(batches[1].1[0]["i"], 3);
         assert_eq!(batches[2].1.len(), 1);
         assert_eq!(batches[2].1[0]["i"], 10);
+    }
+
+    #[tokio::test]
+    async fn test_flush_flattens_nested_events_for_analysis() {
+        let backend_events = Arc::new(AtomicUsize::new(0));
+        let analysis_events = Arc::new(AtomicUsize::new(0));
+
+        let backend_state = backend_events.clone();
+        let analysis_state = analysis_events.clone();
+        let app = Router::new()
+            .route(
+                "/internal/server/events",
+                post(move |body: String| async move {
+                    let events: Vec<Value> = serde_json::from_str(&body).expect("backend array");
+                    backend_state.fetch_add(events.len(), Ordering::SeqCst);
+                    axum::http::StatusCode::OK
+                }),
+            )
+            .route(
+                "/events",
+                post(move |body: String| async move {
+                    let envelopes: Vec<Value> =
+                        serde_json::from_str(&body).expect("analysis envelopes");
+                    let count = envelopes
+                        .iter()
+                        .filter_map(|envelope| envelope.get("events"))
+                        .filter_map(Value::as_array)
+                        .map(Vec::len)
+                        .sum::<usize>();
+                    analysis_state.fetch_add(count, Ordering::SeqCst);
+                    axum::http::StatusCode::OK
+                }),
+            );
+        let listener_addr = std::net::SocketAddr::from(([127, 0, 0, 1], 9411));
+        tokio::spawn(async move {
+            let listener = tokio::net::TcpListener::bind(listener_addr).await.unwrap();
+            axum::serve(listener, app).await.unwrap();
+        });
+        tokio::time::sleep(Duration::from_millis(100)).await;
+
+        let buffer = EventsBuffer::new(
+            Url::parse(&format!("http://{}/internal/server/events", listener_addr)).unwrap(),
+            Some(Url::parse(&format!("http://{}/events", listener_addr)).unwrap()),
+            Duration::from_secs(2),
+            Arc::new(Client::new()),
+            EventsBufferConfig {
+                capacity: 100,
+                max_batch: 100,
+                flush_interval: Duration::from_secs(3600),
+                retries: 1,
+                retry_base_delay: Duration::from_millis(1),
+            },
+        );
+        buffer.push(
+            test_headers("server-key-nested"),
+            vec![
+                serde_json::json!({"events": [{"kind": "access"}, {"kind": "custom"}]}),
+                serde_json::json!({"kind": "pageview"}),
+            ]
+            .into_iter()
+            .collect(),
+        );
+
+        flush_once(&buffer.inner).await;
+
+        assert_eq!(backend_events.load(Ordering::SeqCst), 2);
+        assert_eq!(analysis_events.load(Ordering::SeqCst), 3);
+        assert_eq!(buffer.stats().upstream_deliveries, 5);
     }
 
     #[tokio::test]

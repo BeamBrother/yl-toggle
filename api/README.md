@@ -11,7 +11,7 @@ The yl-toggle management API exposes the REST API used by the portal and adminis
 ## Requirements
 
 - Java 25
-- Maven 3.9+
+- Maven Wrapper (bundled; downloads Maven 3.9.14)
 - MariaDB 11.8.9+
 - Docker Engine 24+ with Compose v2 for the example deployment
 
@@ -45,7 +45,7 @@ Replace the database and service URLs with values for your environment.
 ```bash
 git clone https://github.com/yl-toggle/yl-toggle.git
 cd yl-toggle/api
-mvn verify
+./mvnw verify        # Windows: .\\mvnw.cmd verify
 java -jar admin/target/api.jar
 ```
 

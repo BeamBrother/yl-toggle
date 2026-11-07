@@ -1,6 +1,7 @@
 # Fully offline release build against the project's vendored crate sources.
 FROM rust:1.99.1-slim-trixie AS build
 WORKDIR /src
+ENV RUSTUP_TOOLCHAIN=1.99.1
 COPY . ./
 RUN cargo build --release --offline --bin yl-toggle-server --bin healthcheck
 

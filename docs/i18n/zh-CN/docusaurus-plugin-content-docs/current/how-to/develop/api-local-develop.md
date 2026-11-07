@@ -7,7 +7,7 @@ sidebar_position: 2
 ## 环境要求
 
 - JDK 25
-- Maven 3.9+
+- Maven Wrapper（已内置，会下载 Maven 3.9.14）
 - MariaDB 11.8.9+
 
 ## 获取源码
@@ -36,15 +36,17 @@ API 默认端口为 `8080`。
 API 是多模块 Maven 项目，Web 服务位于 `admin` 模块。
 
 ```shell
-mvn verify
+./mvnw verify
 ```
+
+Windows 请使用 `.mvnw.cmd verify`。
 
 Maven 构建不再耦合 UI；前端开发与构建请在 `../ui` 中执行。
 
 ## 本地运行
 
 ```shell
-mvn -pl admin -am spring-boot:run
+./mvnw -pl admin -am spring-boot:run
 ```
 
 访问 [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health) 验证服务状态。
@@ -52,6 +54,6 @@ mvn -pl admin -am spring-boot:run
 如需生产样式包：
 
 ```shell
-mvn -pl admin -am package
+./mvnw -pl admin -am package
 java -jar admin/target/api.jar
 ```

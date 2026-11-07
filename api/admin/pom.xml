@@ -73,6 +73,13 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>project-local</id>
+            <url>file://${project.basedir}/../repo</url>
+        </repository>
+    </repositories>
+
     <build>
         <finalName>api</finalName>
         <plugins>

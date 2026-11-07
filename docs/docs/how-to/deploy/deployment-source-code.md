@@ -41,7 +41,7 @@ Build and run:
 ```bash
 git clone https://github.com/yl-toggle/yl-toggle.git
 cd yl-toggle/api
-mvn verify
+./mvnw verify # Windows: .\\mvnw.cmd verify
 java -jar admin/target/api.jar \
   --server.port=4008 \
   --spring.datasource.jdbc-url='jdbc:mariadb://10.100.1.4:13306/yl-toggle?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai' \

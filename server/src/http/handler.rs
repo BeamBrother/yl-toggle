@@ -20,7 +20,9 @@ use std::{
     sync::Arc,
 };
 use yl_toggle_event::collector::{EventHandler, YTEventError};
-use yl_toggle_server_sdk::{Repository, SyncType, YTUser};
+#[cfg(not(feature = "unstable"))]
+use yl_toggle_server_sdk::SyncType;
+use yl_toggle_server_sdk::{Repository, YTUser};
 
 #[async_trait]
 pub trait HttpHandler {
@@ -153,7 +155,6 @@ impl HttpHandler for FpHttpHandler {
         Ok(status.into_response())
     }
     #[cfg(feature = "unstable")]
-
     async fn update_segments(
         &self,
         params: SegmentUpdateParams,

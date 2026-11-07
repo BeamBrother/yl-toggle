@@ -25,6 +25,10 @@
             <classifier>thin</classifier>
             <exclusions>
                 <exclusion>
+                    <groupId>io.socket</groupId>
+                    <artifactId>socket.io-client</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.codehaus.groovy</groupId>
                     <artifactId>groovy</artifactId>
                 </exclusion>
@@ -44,6 +48,12 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>project-local</id>
+            <url>file://${project.basedir}/../repo</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>

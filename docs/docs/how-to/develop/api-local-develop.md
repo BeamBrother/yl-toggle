@@ -7,7 +7,7 @@ sidebar_position: 2
 ## Requirements
 
 - JDK 25
-- Maven 3.9+
+- Maven Wrapper (bundled; downloads Maven 3.9.14)
 - MariaDB 11.8.9+
 
 ## Get the source code
@@ -36,15 +36,17 @@ The default API port is `8080`.
 The API is a multi-module Maven project. The web application is in the `admin` module.
 
 ```shell
-mvn verify
+./mvnw verify
 ```
+
+On Windows, use `.mvnw.cmd verify`.
 
 Maven no longer builds the UI; frontend development and builds are performed in `../ui`.
 
 ## Run locally
 
 ```shell
-mvn -pl admin -am spring-boot:run
+./mvnw -pl admin -am spring-boot:run
 ```
 
 Open [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health) to verify startup.
@@ -52,6 +54,6 @@ Open [http://localhost:8080/actuator/health](http://localhost:8080/actuator/heal
 For a production-style package:
 
 ```shell
-mvn -pl admin -am package
+./mvnw -pl admin -am package
 java -jar admin/target/api.jar
 ```

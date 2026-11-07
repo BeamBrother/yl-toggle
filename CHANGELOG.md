@@ -13,6 +13,8 @@ yl-toggle 3.0.0 is a unified runtime and dependency modernization release. Appli
 - A thin local Java SDK artifact that avoids conflicting embedded Jackson classes.
 - Bounded, retrying event buffering between the evaluation server and ingestion services.
 - Helm chart `appVersion` alignment and image-tag defaults based on the chart app version.
+- An opt-in Analysis integration-test profile using MariaDB 11.8.9 and PostgreSQL Testcontainers.
+- A management-API switch for public SDK metadata lookups, with lookups disabled in the offline Compose stack.
 
 ### Changed
 
@@ -40,6 +42,10 @@ yl-toggle 3.0.0 is a unified runtime and dependency modernization release. Appli
 - Portal syntax-highlighting dependencies are split into bounded chunks instead of one large shared asset.
 - Documentation anchors and Docusaurus markdown configuration are upgraded, and blog posts define stable truncation excerpts.
 - Redoc is served through the portal at `/api-docs`, and NGINX now proxies the Redoc container's internal port correctly.
+- Nested Analysis event envelopes are counted by their flattened event count for delivery metrics.
+- The RuleTitle interaction test now executes its async body instead of awaiting an uncalled function object.
+- Docker source builds use the vendored Java SDK correctly and keep Rust release builds offline.
+- The all-in-one image uses the Rust HTTP probe instead of installing curl at runtime, and Helm environment names now satisfy Kubernetes identifier rules.
 
 ### Breaking
 

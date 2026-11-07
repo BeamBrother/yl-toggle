@@ -37,6 +37,7 @@ backendAPI:
   enabled: true # Enables or disables backend API service deployment
   replicaCount: 2 # The number of replicas for backend API service
   logLevel: INFO # Backend API service logging level
+  sdkVersionFetchEnabled: true # Fetch public SDK version metadata at startup and daily
   ports:
     http: 4008 # Backend API service HTTP port number
   image:

@@ -158,12 +158,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <id>project-local</id>
-      <url>file://${maven.multiModuleProjectDirectory}/repo</url>
-    </repository>
-  </repositories>
   <build>
     <pluginManagement>
       <plugins>

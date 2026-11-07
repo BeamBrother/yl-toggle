@@ -5,8 +5,7 @@ deployServer() {
    /usr/local/bin/yl-toggle-server
    check_num=0
 	while true; do
-		status_code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${YT_SERVER_PORT}/internal/all_secrets")
-		if [[ $status_code == 200 ]]; then
+		if /usr/local/bin/healthcheck "http://127.0.0.1:${YT_SERVER_PORT}/internal/all_secrets"; then
 		    echo "yl-toggle Server deplay successfully."
 		    exit 0
 		elif [[ $check_num == 150 ]];then
@@ -24,8 +23,7 @@ deployAnalysis() {
     java ${ANALYSIS_JVM_ARGS} -jar /usr/local/bin/analysis.jar --server.port=${analysis_server_port} --spring.profiles.active=${analysis_spring_profiles_active} &
     check_num=0
 	while true; do
-		status_code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${analysis_server_port}/analysis?metric=name&toggle=zp_test&type=binomial&start=1676517701000&end=1676519469152" --header "Authorization: 1111")
-		if [[ $status_code == 200 ]]; then
+		if /usr/local/bin/healthcheck "http://127.0.0.1:${analysis_server_port}/actuator/health"; then
 		    echo "yl-toggle Analysis deplay successfully."
 		    if [[ $1 == 0 ]];then
 		    	deployServer
@@ -45,8 +43,7 @@ deployApi() {
     java ${API_JVM_ARGS} -jar /usr/local/bin/api.jar --server.port=${api_server_port} --spring.profiles.active=${api_spring_profiles_active} & 
     check_num=0
     while true; do
-        status_code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${api_server_port}/actuator/health")
-        if [[ $status_code == 200 ]]; then
+        if /usr/local/bin/healthcheck "http://127.0.0.1:${api_server_port}/actuator/health"; then
             echo "yl-toggle API deplay successfully."
             if [[ $1 == 0 ]];then
                 deployAnalysis 0

@@ -44,13 +44,16 @@ curl http://127.0.0.1:4009/api/v3/api-docs.yaml
 ## Local development
 
 ```bash
-# Management API
+# Management API (Windows: .\\mvnw.cmd verify)
 cd api
-mvn verify
+./mvnw verify
 
 # Analysis API
 cd ../analysis
 mvn verify
+
+# Optional database integration tests (requires Docker)
+mvn -Pintegration verify
 
 # Evaluation server
 cd ../server

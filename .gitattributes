@@ -1,0 +1,13 @@
+# Treat large vendored crate trees as no-diff in `git diff` while retaining normal file history.
+server/vendor/** -diff
+server/vendor-deps/** -diff
+
+# Binary artifacts
+*.jar binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary

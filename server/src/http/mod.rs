@@ -49,7 +49,9 @@ where
     #[cfg(feature = "unstable")]
     let app = app
         .route("/internal/server/segments", post(update_segments::<T>))
-        .route("/intelnal/server/check_secrets", post(check_secrets::<T>));
+        // Keep the historical misspelling for compatibility with existing callers.
+        .route("/intelnal/server/check_secrets", post(check_secrets::<T>))
+        .route("/internal/server/check_secrets", post(check_secrets::<T>));
 
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();

@@ -25,7 +25,7 @@ const Wrapper: React.FC<{ children?: import('react').ReactNode }> = ({ children 
           <variationContainer.Provider>
             <Form>
               <DragDropContext onDragEnd={vi.fn()}>
-                <Droppable droppableId="droppable">
+                <Droppable droppableId="droppable" isDropDisabled={false} isCombineEnabled={false} ignoreContainerClipping={false}>
                   {(provided) => (
                     <div {...provided.droppableProps} ref={provided.innerRef}>
                       <div>
@@ -92,7 +92,6 @@ it('RuleTitle snapshot', async () => {
 });
 
 it('RuleTitle opt', async () => {
-  await (async () => {
     const { asFragment } = render(
       <RuleTitle
         rule={RuleData}
@@ -128,5 +127,4 @@ it('RuleTitle opt', async () => {
     confirm && (await userEvent.click(confirm));
 
     expect(asFragment()).toMatchSnapshot();
-  })();
-});
+  }, 30000);

@@ -6,6 +6,7 @@ COPY . .
 RUN npm run build
 
 FROM nginx:stable-alpine3.24
+COPY nginx-default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /src/build /usr/share/nginx/html
-EXPOSE 8081
+EXPOSE 4009
 CMD ["nginx", "-g", "daemon off;"]

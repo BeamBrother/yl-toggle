@@ -8,6 +8,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,8 +31,11 @@ public class SdkVersionScheduler {
 
     public static final Map<String, String> latestVersions = new HashMap<>(3);
 
+    @Value("${app.sdk-version-fetch-enabled:true}")
+    private boolean fetchEnabled;
+
     private static final OkHttpClient httpClient =
-            new OkHttpClient.Builder().connectionPool(new ConnectionPool()).callTimeout(10, TimeUnit.SECONDS)
+            new OkHttpClient.Builder().connectionPool(new ConnectionPool()).callTimeout(3, TimeUnit.SECONDS)
                     .retryOnConnectionFailure(false).build();
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -39,6 +43,9 @@ public class SdkVersionScheduler {
     @Scheduled(cron = "0 0 0 * * ?")  // every day at 0:00
     @EventListener(ApplicationReadyEvent.class)
     public void fetchLatestJavaSdkVersion() {
+        if (!fetchEnabled) {
+            return;
+        }
         String latestVersion = getSdkVersionFromSearchMavenOrg("server-sdk-java");
         if (StringUtils.isBlank(latestVersion)) {
             latestVersion = getSdkVersionFromDeveloperAliyunCom("server-sdk-java");
@@ -49,6 +56,9 @@ public class SdkVersionScheduler {
     @Scheduled(cron = "0 1 0 * * ?")  // every day at 0:01
     @EventListener(ApplicationReadyEvent.class)
     public void fetchLatestAndroidSdkVersion() {
+        if (!fetchEnabled) {
+            return;
+        }
         String latestVersion = getSdkVersionFromSearchMavenOrg("client-sdk-android");
         if (StringUtils.isBlank(latestVersion)) {
             latestVersion = getSdkVersionFromDeveloperAliyunCom("client-sdk-android");
@@ -59,6 +69,9 @@ public class SdkVersionScheduler {
     @Scheduled(cron = "0 2 0 * * ?")  // every day at 0:02
     @EventListener(ApplicationReadyEvent.class)
     public void fetchLatestRustSdkVersion() {
+        if (!fetchEnabled) {
+            return;
+        }
         String latestVersion = getRustSdkVersionFromCratesIo();
         latestVersions.put(RUST_SDK_VERSION, latestVersion);
     }
